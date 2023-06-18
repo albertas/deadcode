@@ -1,0 +1,72 @@
+[project]
+name = "deadcode"
+version = "0.0.2"
+authors = [
+    {name = "Albertas Gimbutas", email = "albertasgim@gmail.com"},
+]
+description = "Find and remove dead code."
+readme = "README.md"
+requires-python = ">= 3.8"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+]
+
+[project.scripts]
+deadcode = "deadcode.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/albertas/deadcode"
+Documentation = "https://deadcode.readthedocs.io/"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+
+[tool.hatch.publish.index]  # Hatch docs: https://hatch.pypa.io/latest/config/build/
+disable = true
+
+[tool.hatch.build]
+include = ["**/*.py"]
+exclude = ["tests/**"]
+
+
+[tool.ruff]  # https://beta.ruff.rs/docs/settings/
+line-length = 120
+
+
+[tool.mypy]
+exclude = ["build", "dist", "venv"]
+python_version = "3.8"
+strict = true
+pretty = true
+color_output = true
+show_error_codes = true
+warn_return_any = true
+warn_unused_configs = true
+
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+known_third_party = ["deadcode"]
+
+
+[tool.black]
+max_line_length = 120
+line_length = 120
+target_version = ["py38"]
+
+
+[tool.pytest.ini_options]
+addopts = "--cov=. --cov-fail-under=90.0"
