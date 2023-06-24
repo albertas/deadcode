@@ -27,16 +27,16 @@ ignore-names = ["BaseTestCase"]
 ignore-names-in-files = ["migrations"]
 ```
 
-Command line options:
+### Command line options
 
-| Option                            | Type | Meaning  |
-|-----------------------------------|------|----------|
-|<pre>--exclude</pre>               | list | Path expressions to completely skip files from being analysed. |
-|<pre>--ignore-names</pre>          | list | Removes provided list of names from the error output. Regexp expressions to match multiple names can also be provided, e.g. `.*Mixin` will match all classes ending with `Mixin`. |
-|<pre>--ignore-names-in-files</pre> | list | Unused names from files matching provided path expressions. |
-|<pre>--no-color</pre>              | None | Removes colors from the output. |
-|<pre>--count</pre>                 | None | Provides the count of the detected unused names instead of printing them all out. |
-|<pre>--quiet</pre>                 | None | Does not output anything. Makefile still fails with exit code 1 if unused names are found. |
+| Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Meaning  |
+|--------------------------|------|----------|
+|`--exclude`               | list | Path expressions to completely skip files from being analysed. |
+|`--ignore-names`          | list | Removes provided list of names from the error output. Regexp expressions to match multiple names can also be provided, e.g. `.*Mixin` will match all classes ending with `Mixin`. |
+|`--ignore-names-in-files` | list | Unused names from files matching provided path expressions. |
+|`--no-color`              | None | Removes colors from the output. |
+|`--count`                 | None | Provides the count of the detected unused names instead of printing them all out. |
+|`--quiet`                 | None | Does not output anything. Makefile still fails with exit code 1 if unused names are found. |
 
 
 ## Contributing
