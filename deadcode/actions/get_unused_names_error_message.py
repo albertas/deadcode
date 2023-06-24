@@ -8,6 +8,12 @@ def get_unused_names_error_message(unused_names: Dict[VariableName, Filename], a
     if not unused_names:
         return None
 
+    if args.quite:
+        return ""
+
+    if args.count:
+        return f"{len(unused_names)}"
+
     if args.no_color:
         return "\n".join([f"{filename} DC100 Global {name} is never used" for name, filename in unused_names.items()])
 

@@ -21,13 +21,14 @@ def main(
     files = read_files(python_filenames)
 
     global_names = parse_global_names(files, args=args)
-    abstract_syntax_trees_of_files = parse_abstract_syntax_trees(files)
+    abstract_syntax_trees_of_files = parse_abstract_syntax_trees(files, args=args)
     unused_names = find_unused_names(abstract_syntax_trees_of_files, global_names, args=args)
 
     if error_message := get_unused_names_error_message(unused_names, args=args):
         return error_message
 
-    print("\033[1mWell done!\033[0m ✨ 🚀 ✨")
+    if not args.count and not args.quite:
+        print("\033[1mWell done!\033[0m ✨ 🚀 ✨")
     return None
 
 

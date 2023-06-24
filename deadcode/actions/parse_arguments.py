@@ -57,6 +57,18 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
         action="store_true",
         default=False,
     )
+    parser.add_argument(
+        "--quite",
+        help="Does not output anything. Makefile still fails with exit code 1 if unused names are found.",
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "--count",
+        help="Provides the count of the detected unused names instead of printing them all out.",
+        action="store_true",
+        default=False,
+    )
 
     parsed_args = parser.parse_args(args).__dict__
 

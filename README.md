@@ -35,6 +35,9 @@ Command line options:
 |<pre>--ignore-names</pre>          | list | Removes provided list of names from the error output. Regexp expressions to match multiple names can also be provided, e.g. `.*Mixin` will match all classes ending with `Mixin`. |
 |<pre>--ignore-names-in-files</pre> | list | Unused names from files matching provided path expressions. |
 |<pre>--no-color</pre>              | None | Removes colors from the output. |
+|<pre>--count</pre>                 | None | Provides the count of the detected unused names instead of printing them all out. |
+|<pre>--quite</pre>                 | None | Does not output anything. Makefile still fails with exit code 1 if unused names are found. |
+
 
 ## Contributing
 - `make check` - runs unit tests and other checks using virtual environment.
