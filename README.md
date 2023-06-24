@@ -16,7 +16,7 @@ deadcode .
 
 Or with command line options:
 ```
-deadcode . --exclude=venv,tests --ignore-names=BaseTestCase --ignore-names-in-files=migrations
+deadcode . --exclude=venv,tests --ignore-names=BaseTestCase,.*Mixin --ignore-names-in-files=migrations
 ```
 
 The same options can be provided in `pyproject.toml` settings file:
@@ -28,12 +28,13 @@ ignore-names-in-files = ["migrations"]
 ```
 
 Command line options:
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Type  | Meaning  |
-|---------------------------|-------|----------|
-|`--exclude`                | list | Path expressions to completely skip files from being analysed. |
-|`--ignore-names`           | list | Removes provided list of names from the error output. |
-|`--ignore-names-in-files`  | list | Unused names from files matching provided path expressions. |
-|`--no-color`               | None | Removes colors from the output. |
+
+| Option                            | Type | Meaning  |
+|-----------------------------------|------|----------|
+|<pre>--exclude</pre>               | list | Path expressions to completely skip files from being analysed. |
+|<pre>--ignore-names</pre>          | list | Removes provided list of names from the error output. Regexp expressions to match multiple names can also be provided, e.g. `.*Mixin` will match all classes ending with `Mixin`. |
+|<pre>--ignore-names-in-files</pre> | list | Unused names from files matching provided path expressions. |
+|<pre>--no-color</pre>              | None | Removes colors from the output. |
 
 ## Contributing
 - `make check` - runs unit tests and other checks using virtual environment.
