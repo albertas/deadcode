@@ -1,6 +1,8 @@
 # deadcode
 `deadcode` package implements `DC100` - `unused-global-name` check for detecting
-defined variables/functions/classes but never used in a whole code base.
+variable/function/class names which are never used in a whole code base.
+Only globally defined names are being checked.
+Unused local names can be detected by other tools like `ruff`.
 
 # Installation
 ```shell
