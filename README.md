@@ -30,7 +30,7 @@ ignore-names-in-files = ["migrations"]
 Command line options:
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Type  | Meaning  |
 |---------------------------|-------|----------|
-|`--exclude`                | list | Path expressions to completely skips files from being analysed. |
+|`--exclude`                | list | Path expressions to completely skip files from being analysed. |
 |`--ignore-names`           | list | Removes provided list of names from the error output. |
 |`--ignore-names-in-files`  | list | Unused names from files matching provided path expressions. |
 |`--no-color`               | None | Removes colors from the output. |
