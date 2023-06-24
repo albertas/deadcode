@@ -28,11 +28,12 @@ ignore-names-in-files = ["migrations"]
 ```
 
 Command line options:
-| Option                    | Type  | Meaning  |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Type  | Meaning  |
 |---------------------------|-------|----------|
-|`--exclude`                | list (comma separated values) | Path expressions to completely skips files from being analysed. |
-|`--ignore-names`           | list (comma separated values) | Removes provided list of names from the error output. |
-|`--ignore-names-in-files`  | list (comma separated values) | Unused names from files matching provided path expressions. |
+|`--exclude`                | list | Path expressions to completely skips files from being analysed. |
+|`--ignore-names`           | list | Removes provided list of names from the error output. |
+|`--ignore-names-in-files`  | list | Unused names from files matching provided path expressions. |
+|`--no-color`               | None | Removes colors from the output. |
 
 ## Contributing
 - `make check` - runs unit tests and other checks using virtual environment.
