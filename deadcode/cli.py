@@ -24,7 +24,7 @@ def main(
     abstract_syntax_trees_of_files = parse_abstract_syntax_trees(files, args=args)
     unused_names = find_unused_names(abstract_syntax_trees_of_files, global_names, args=args)
 
-    if error_message := get_unused_names_error_message(unused_names, args=args):
+    if (error_message := get_unused_names_error_message(unused_names, args=args)) is not None:
         return error_message
 
     if not args.count and not args.quiet:
