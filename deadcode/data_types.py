@@ -17,5 +17,5 @@ class Args:
     ignore_names: List[Pathname]
     ignore_names_in_files: List[Pathname]
     no_color: bool
-    quite: bool
+    quiet: bool
     count: bool

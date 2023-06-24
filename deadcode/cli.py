@@ -27,7 +27,7 @@ def main(
     if error_message := get_unused_names_error_message(unused_names, args=args):
         return error_message
 
-    if not args.count and not args.quite:
+    if not args.count and not args.quiet:
         print("\033[1mWell done!\033[0m ✨ 🚀 ✨")
     return None
 

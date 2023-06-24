@@ -58,7 +58,7 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
         default=False,
     )
     parser.add_argument(
-        "--quite",
+        "--quiet",
         help="Does not output anything. Makefile still fails with exit code 1 if unused names are found.",
         action="store_true",
         default=False,

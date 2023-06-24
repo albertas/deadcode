@@ -11,7 +11,7 @@ def parse_abstract_syntax_trees(files: Dict[Filename, FileContent], args: Args) 
         try:
             abstract_syntax_trees_for_files[filename] = ast.dump(ast.parse(file_content))  # Note: indent=1 for debug
         except:  # noqa: E722
-            if not args.count and not args.quite:
+            if not args.count and not args.quiet:
                 print(f"Error: Failed to parse {filename} file, ignoring it.")
             abstract_syntax_trees_for_files[filename] = ""
     return abstract_syntax_trees_for_files

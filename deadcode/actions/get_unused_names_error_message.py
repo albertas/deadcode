@@ -8,7 +8,7 @@ def get_unused_names_error_message(unused_names: Dict[VariableName, Filename], a
     if not unused_names:
         return None
 
-    if args.quite:
+    if args.quiet:
         return ""
 
     if args.count:
