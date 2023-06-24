@@ -14,14 +14,7 @@ pip install deadcode
 deadcode .
 ```
 
-Command line options:
-| Option                    | Type  | Meaning  |
-|---------------------------|-------|----------|
-|`--exclude`                | list (comma separated values) | Path expressions to completely skips files from being analysed. |
-|`--ignore-names`           | list (comma separated values) | Removes provided list of names from the error output. |
-|`--ignore-names-in-files`  | list (comma separated values) | Unused names from files matching provided path expressions. |
-
-Command line option usage example:
+Or with command line options:
 ```
 deadcode . --exclude=venv,tests --ignore-names=BaseTestCase --ignore-names-in-files=migrations
 ```
@@ -33,6 +26,13 @@ exclude = ["venv", "tests"]
 ignore-names = ["BaseTestCase"]
 ignore-names-in-files = ["migrations"]
 ```
+
+Command line options:
+| Option                    | Type  | Meaning  |
+|---------------------------|-------|----------|
+|`--exclude`                | list (comma separated values) | Path expressions to completely skips files from being analysed. |
+|`--ignore-names`           | list (comma separated values) | Removes provided list of names from the error output. |
+|`--ignore-names-in-files`  | list (comma separated values) | Unused names from files matching provided path expressions. |
 
 ## Contributing
 - `make check` - runs unit tests and other checks using virtual environment.
