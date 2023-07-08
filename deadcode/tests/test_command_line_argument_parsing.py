@@ -1,3 +1,7 @@
+"""
+These tests should test command line value conversion into internal Args instance.
+"""
+
 from deadcode.actions.parse_arguments import parse_arguments
 from deadcode.tests.base import BaseTestCase
 

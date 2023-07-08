@@ -44,27 +44,6 @@ class DeadCodeIntegrationTests(BaseTestCase):
 
         self.assertEqual(unused_names, None)
 
-    def test_file_contains_syntax_error(self):
-        pass
-
-    def test_reliably_remove_comments_by_using_ast_parse_and_ast_unparse(self):
-        pass
-
-    def test_parse_variable_usage_expressions_from_whole_ast_dump(self):
-        pass
-
-    def test_unused_names_found_in_subdirectories(self):
-        pass
-
-    def test_exclude_option(self):
-        pass
-
-    def test_ignore_names_option(self):
-        pass
-
-    def test_ignore_names_in_files_option(self):
-        pass
-
     def test_run_dead_code_finder_with_a_subprocess_in_a_right_directory_main(self):
         unused_names = main(
             [
@@ -81,6 +60,3 @@ class DeadCodeIntegrationTests(BaseTestCase):
                 "tests/files/variables.py:5:0: DC100 Global third_global_varialbe is never used"
             ),
         )
-
-    def test_variable_is_marked_as_used_even_if_its_imported_as_a_different_name(self):
-        pass
