@@ -64,6 +64,7 @@ It is assumed that `deadcode` will be run using the same Python version as the
 checked code base is implemented in.
 
 ## Feature requests
-[ ] Split error codes into DC100, DC200, DC300 for variables, functions, class. It will be possible to disable each check separately.
-[ ] Add unused class method detection DC310 check.
-[ ] Add target python version option, if specified it will be used for code base check.
+ - [ ] Split error codes into DC100, DC200, DC300 for variables, functions, class. It will be possible to disable each check separately.
+ - [ ] Add unused class method detection DC310 check.
+ - [ ] Add target python version option, if specified it will be used for code base check.
+ - [ ] Add `--fix` option to automatically remove detected dead code occourencies
