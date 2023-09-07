@@ -59,11 +59,6 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
 
         # Is it first line, which have to be ignored?
         elif current_lineno == from_line:
-            empty_lines_before_removed_block_list, empty_lines_in_a_row_list = (
-                empty_lines_in_a_row_list,
-                empty_lines_before_removed_block_list,
-            )
-
             indentation_of_first_removed_line = get_indentation(line)
 
             if from_line == to_line:
@@ -73,6 +68,12 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
                     line = remove_as_from_end(line[:from_col]) + line[to_col:]
 
                 unused_part_index += 1
+
+                empty_lines_before_removed_block_list, empty_lines_in_a_row_list = (
+                    empty_lines_in_a_row_list,
+                    empty_lines_before_removed_block_list,
+                )
+
                 was_block_removed = True
             else:
                 line = line[:from_col]
@@ -88,6 +89,11 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
             # TODO: Add tests for case, when comments are added at the start or end of the removed block
             if line.strip() and not line.startswith("#"):
                 updated_content_lines.append(line)
+
+            empty_lines_before_removed_block_list, empty_lines_in_a_row_list = (
+                empty_lines_in_a_row_list,
+                empty_lines_before_removed_block_list,
+            )
             was_block_removed = True
 
         # Do not remove the line
@@ -118,6 +124,7 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
                     # Add lines after
                     updated_content_lines.extend(empty_lines_in_a_row_list)
                     empty_lines_in_a_row_list.clear()
+                    empty_lines_before_removed_block_list.clear()
                 else:
                     updated_content_lines.extend(empty_lines_before_removed_block_list)
                     empty_lines_before_removed_block_list.clear()

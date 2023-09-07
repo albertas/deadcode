@@ -115,6 +115,67 @@ class TestFixCliOption(BaseTestCase):
             }
         )
 
+    def test_empty_lines_are_removed_properly(self):
+        self.files = {
+            "foo.py": """
+                NAME = "World"
+
+                UNUSED_VARIABLE = "This variable is unused"
+
+
+                def say_hello_world():
+                    print(f"Hello {NAME}")
+
+
+                def unused_function():
+                    pass
+
+
+                say_hello_world()
+
+
+                class Example:
+                    def foo(self):
+                        pass
+
+
+                class UnusedClass:
+                    def unused_method(self):
+                        pass
+
+
+                instance = Example()
+                print(instance.foo())
+                """
+        }
+
+        main(["ignore_names_by_pattern.py", "--no-color", "--fix"])
+
+        self.maxDiff = None
+        self.assertFiles(
+            {
+                "foo.py": """
+                    NAME = "World"
+
+
+                    def say_hello_world():
+                        print(f"Hello {NAME}")
+
+
+                    say_hello_world()
+
+
+                    class Example:
+                        def foo(self):
+                            pass
+
+
+                    instance = Example()
+                    print(instance.foo())
+                """
+            }
+        )
+
 
 class TestAddPassForEmptyBlock(BaseTestCase):
     def test_empty_class_block(self):
