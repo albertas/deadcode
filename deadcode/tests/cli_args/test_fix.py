@@ -108,9 +108,74 @@ class TestFixCliOption(BaseTestCase):
                 "ignore_names_by_pattern.py": """
                 used_variable = "one"
 
-
                 spam = "Spam"
                 print(spam, used_variable)
+                """
+            }
+        )
+
+    def test_empty_lines_are_removed_properly_indented(self):
+        self.files = {
+            "foo.py": """
+                    name = "World"
+
+                    unused_variable = "This variable is unused"
+
+
+                    def say_hello_world():
+                        print(f"Hello {name}")
+
+
+                    def unused_function():
+                        pass
+
+
+                    say_hello_world()
+
+
+                    class Example:
+                        def unused_method(self):
+                            pass
+
+                        def foo(self):
+                            another_unused_variable = "Hello world"
+
+                            with open("example.txt") as unused_file:
+                                print("File was openned")
+
+
+                    class UnusedClass:
+                        def unused_method(self):
+                            pass
+
+
+                    instance = Example()
+                    print(instance.foo())
+                """
+        }
+
+        main(["ignore_names_by_pattern.py", "--no-color", "--fix"])
+
+        self.assertFiles(
+            {
+                "foo.py": """
+                    name = "World"
+
+                    def say_hello_world():
+                        print(f"Hello {name}")
+
+
+                    say_hello_world()
+
+
+                    class Example:
+                        def foo(self):
+                            with open("example.txt"):
+                                print("File was openned")
+
+
+                    instance = Example()
+                    print(instance.foo())
                 """
             }
         )
@@ -151,12 +216,10 @@ class TestFixCliOption(BaseTestCase):
 
         main(["ignore_names_by_pattern.py", "--no-color", "--fix"])
 
-        self.maxDiff = None
         self.assertFiles(
             {
                 "foo.py": """
                     NAME = "World"
-
 
                     def say_hello_world():
                         print(f"Hello {NAME}")

@@ -69,12 +69,13 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
 
                 unused_part_index += 1
 
-                empty_lines_before_removed_block_list, empty_lines_in_a_row_list = (
-                    empty_lines_in_a_row_list,
-                    empty_lines_before_removed_block_list,
-                )
+                if not line.strip():
+                    empty_lines_before_removed_block_list, empty_lines_in_a_row_list = (
+                        empty_lines_in_a_row_list,
+                        empty_lines_before_removed_block_list,
+                    )
 
-                was_block_removed = True
+                    was_block_removed = True
             else:
                 line = line[:from_col]
 
@@ -112,19 +113,25 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
                 # Add pass if needed - if its a file end we should also check if pass have to be added.
                 next_line_after_removed_block = line
 
-                if ends_with_semicolon(previous_non_removed_line) and indentation_is_not_childs(
-                    previous_line=previous_non_removed_line, current_line=next_line_after_removed_block
-                ):
-                    updated_content_lines.append(f"{indentation_of_first_removed_line}pass\n")
+                if ends_with_semicolon(previous_non_removed_line):
+                    if indentation_is_not_childs(
+                        previous_line=previous_non_removed_line, current_line=next_line_after_removed_block
+                    ):
+                        updated_content_lines.append(f"{indentation_of_first_removed_line}pass\n")
 
-                # Add empty lines
-                if indentation_is_not_childs(
-                    previous_line=previous_non_removed_line, current_line=next_line_after_removed_block
-                ):
-                    # Add lines after
-                    updated_content_lines.extend(empty_lines_in_a_row_list)
-                    empty_lines_in_a_row_list.clear()
-                    empty_lines_before_removed_block_list.clear()
+                    # Add empty lines
+                    if indentation_is_not_childs(
+                        previous_line=previous_non_removed_line, current_line=next_line_after_removed_block
+                    ):
+                        # Add lines after
+                        updated_content_lines.extend(empty_lines_in_a_row_list)
+                        empty_lines_in_a_row_list.clear()
+                        empty_lines_before_removed_block_list.clear()
+                    else:
+                        updated_content_lines.extend(empty_lines_before_removed_block_list)
+                        empty_lines_before_removed_block_list.clear()
+                        empty_lines_in_a_row_list.clear()
+
                 else:
                     updated_content_lines.extend(empty_lines_before_removed_block_list)
                     empty_lines_before_removed_block_list.clear()
