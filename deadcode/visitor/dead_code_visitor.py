@@ -491,7 +491,8 @@ class DeadCodeVisitor(ast.NodeVisitor):
     def visit_While(self, node: ast.While) -> None:
         self._handle_conditional_node(node, "while")
 
-    def visit_MatchClass(self, node: ast.MatchClass) -> None:  # type: ignore
+    # def visit_MatchClass(self, node: ast.MatchClass) -> None:  # type: ignore
+    def visit_MatchClass(self, node) -> None:  # type: ignore
         for kwd_attr in node.kwd_attrs:
             self.used_names.add(kwd_attr)
 
