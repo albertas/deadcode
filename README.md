@@ -16,7 +16,7 @@ deadcode .
 
 Or with command line options:
 ```
-deadcode . --exclude=venv,tests --ignore-names=BaseTestCase,.*Mixin --ignore-names-in-files=migrations
+deadcode . --exclude=venv,tests --ignore-names=BaseTestCase,*Mixin --ignore-names-in-files=migrations
 ```
 
 The same options can be provided in `pyproject.toml` settings file:
@@ -31,8 +31,9 @@ ignore-names-in-files = ["migrations"]
 
 | Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Meaning  |
 |--------------------------|------|----------|
+|`--fix`                   | None | Automatically remove detected unused code parts from the code base. |
 |`--exclude`               | list | Path expressions to completely skip files from being analysed. |
-|`--ignore-names`          | list | Removes provided list of names from the error output. Regexp expressions to match multiple names can also be provided, e.g. `.*Mixin` will match all classes ending with `Mixin`. |
+|`--ignore-names`          | list | Removes provided list of names from the error output. Regexp expressions to match multiple names can also be provided, e.g. `*Mixin` will match all classes ending with `Mixin`. |
 |`--ignore-names-in-files` | list | Unused names from files matching provided path expressions. |
 |`--no-color`              | None | Removes colors from the output. |
 |`--count`                 | None | Provides the count of the detected unused names instead of printing them all out. |
@@ -64,7 +65,10 @@ It is assumed that `deadcode` will be run using the same Python version as the
 checked code base is implemented in.
 
 ## Feature requests
- - [ ] Split error codes into DC100, DC200, DC300 for variables, functions, class. It will be possible to disable each check separately.
- - [ ] Add unused class method detection DC310 check.
- - [ ] Add target python version option, if specified it will be used for code base check.
- - [ ] Add `--fix` option to automatically remove detected dead code occourencies
+- [ ] Split error codes into DC100, DC200, DC300 for variables, functions, class. It will be possible to disable each check separately.
+- [+] Add unused class method detection DC310 check.
+- [ ] Add a check for empty python files.
+- [ ] Add target python version option, if specified it will be used for code base check.
+- [+] Add `--fix` option to automatically remove detected dead code occourencies
+- [+] Replace `.*` with only `*` in regexp matching.
+- [ ] Add a `--depth` parameter to ignore nested code.. (To only check global scope use 0).

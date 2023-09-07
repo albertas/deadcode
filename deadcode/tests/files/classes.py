@@ -3,7 +3,7 @@ class UnusedClass(object):
 
 
 class ThisClassIsUsed:
-    name = "One"
+    pass
 
 
 instance_of_a_used_class = ThisClassIsUsed()

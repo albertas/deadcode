@@ -28,6 +28,20 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
     parser = argparse.ArgumentParser()
     parser.add_argument("paths", help="Paths where to search for python files", nargs="+")
     parser.add_argument(
+        "--fix",
+        help="Removes unused code",
+        action="store_true",
+        default=False,
+    )
+
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        help="Shows logs useful for debuging",
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
         "--exclude",
         help="PATHS to files not to analyse at all (comma separated values)",
         nargs="*",
@@ -43,6 +57,21 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
         default=[],
         type=str,
     )
+
+    # TODO: implement the support for:
+    parser.add_argument(
+        "--ignore-definitions",
+        help="Ignores definitions of provided names",
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "--ignore-definitions-if-inherits-from",
+        help="Ignores definition if inherits from",
+        action="store_true",
+        default=False,
+    )
+
     parser.add_argument(
         "--ignore-names-in-files",
         help="PATHS to files not to report NAMES from (comma separated values)",
@@ -95,6 +124,7 @@ def parse_pyproject_toml() -> Dict[str, Any]:
 
     with open(pyproject_toml_filename, "rb") as f:
         pyproject_toml = tomllib.load(f)
+
     config: Dict[str, Any] = pyproject_toml.get("tool", {}).get("deadcode", {})
     config = {k.replace("--", "").replace("-", "_"): v for k, v in config.items()}
     return config

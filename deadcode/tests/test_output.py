@@ -5,8 +5,7 @@ from deadcode.tests.base import BaseTestCase
 class TestCountOptionOutput(BaseTestCase):
     def test_count_several_classes(self):
         # Having
-        self.read_files_mock = self.patch("deadcode.cli.read_files")
-        self.read_files_mock.return_value = {
+        self.files = {
             "ignore_names_by_pattern.py": """
 class MyModel:
     pass
@@ -30,8 +29,7 @@ class ThisClassShouldBeIgnored:
 
     def test_count_variables_function_and_class(self):
         # Having
-        self.read_files_mock = self.patch("deadcode.cli.read_files")
-        self.read_files_mock.return_value = {
+        self.files = {
             "ignore_names_by_pattern.py": """
 first_variable = 0
 def this_is_a_function():
@@ -52,8 +50,7 @@ class MyModel:
 class TestQuietOptionOutput(BaseTestCase):
     def test_count_several_classes(self):
         # Having
-        self.read_files_mock = self.patch("deadcode.cli.read_files")
-        self.read_files_mock.return_value = {
+        self.files = {
             "ignore_names_by_pattern.py": """
 class MyModel:
     pass
@@ -77,8 +74,7 @@ class ThisClassShouldBeIgnored:
 
     def test_count_variables_function_and_class(self):
         # Having
-        self.read_files_mock = self.patch("deadcode.cli.read_files")
-        self.read_files_mock.return_value = {
+        self.files = {
             "ignore_names_by_pattern.py": """
 first_variable = 0
 def this_is_a_function():
@@ -98,8 +94,7 @@ class MyModel:
 
 class TestVerboseOutput(BaseTestCase):
     def test_colorful_output(self):
-        self.read_files_mock = self.patch("deadcode.cli.read_files")
-        self.read_files_mock.return_value = {
+        self.files = {
             "tests/files/variables.py": """\
 unused_global_variable = True
 ANOTHER_GLOBAL_VARIABLE = "This variable is unused"
@@ -122,8 +117,7 @@ print(THIS_ONE_IS_USED)"""
         )
 
     def test_no_color_option(self):
-        self.read_files_mock = self.patch("deadcode.cli.read_files")
-        self.read_files_mock.return_value = {
+        self.files = {
             "tests/files/variables.py": """\
 unused_global_variable = True
 ANOTHER_GLOBAL_VARIABLE = "This variable is unused"

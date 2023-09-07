@@ -22,4 +22,4 @@ black: ../venv
 	../venv/bin/black .
 
 deadcode: ../venv
-	../venv/bin/deadcode . --exclude=tests
+	../venv/bin/deadcode . -v
