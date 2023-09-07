@@ -16,7 +16,10 @@ class TestFixCliOption(BaseTestCase):
         unused_names = main(["ignore_names_by_pattern.py", "--no-color", "--fix"])
         self.assertEqual(
             unused_names,
-            ("ignore_names_by_pattern.py:1:0: DC100 Global UnusedClass is never used"),
+            (
+                "ignore_names_by_pattern.py:1:0: DC100 Global UnusedClass is never used\n\n"
+                "Removed \x1b[1m1\x1b[0m unused code item!"
+            ),
         )
 
         self.assertFiles({"ignore_names_by_pattern.py": """"""})
@@ -32,7 +35,10 @@ class TestFixCliOption(BaseTestCase):
         unused_names = main(["ignore_names_by_pattern.py", "--no-color", "--fix"])
         self.assertEqual(
             unused_names,
-            ("ignore_names_by_pattern.py:1:0: DC100 Global foo is never used"),
+            (
+                "ignore_names_by_pattern.py:1:0: DC100 Global foo is never used\n\n"
+                "Removed \x1b[1m1\x1b[0m unused code item!"
+            ),
         )
 
         self.assertFiles({"ignore_names_by_pattern.py": """"""})
@@ -55,13 +61,53 @@ class TestFixCliOption(BaseTestCase):
         unused_names = main(["ignore_names_by_pattern.py", "--no-color", "--fix"])
         self.assertEqual(
             unused_names,
-            ("ignore_names_by_pattern.py:3:0: DC100 Global foo is never used"),
+            (
+                "ignore_names_by_pattern.py:3:0: DC100 Global foo is never used\n\n"
+                "Removed \x1b[1m1\x1b[0m unused code item!"
+            ),
         )
 
         self.assertFiles(
             {
                 "ignore_names_by_pattern.py": """
                 used_variable = "one"
+
+                spam = "Spam"
+                print(spam, used_variable)
+                """
+            }
+        )
+
+    def test_function_removal_of_several_items(self):
+        self.files = {
+            "ignore_names_by_pattern.py": """
+                used_variable = "one"
+
+                unused_variable = ""
+
+                def unused_function(bar: str = "Bar") -> str:
+                    return 1 ** 2
+
+                spam = "Spam"
+                print(spam, used_variable)
+                """
+        }
+
+        unused_names = main(["ignore_names_by_pattern.py", "--no-color", "--fix"])
+        self.assertEqual(
+            unused_names,
+            (
+                "ignore_names_by_pattern.py:3:0: DC100 Global unused_variable is never used\n"
+                "ignore_names_by_pattern.py:5:0: DC100 Global unused_function is never used\n\n"
+                "Removed \x1b[1m2\x1b[0m unused code items!"
+            ),
+        )
+
+        self.assertFiles(
+            {
+                "ignore_names_by_pattern.py": """
+                used_variable = "one"
+
 
                 spam = "Spam"
                 print(spam, used_variable)
