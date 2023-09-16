@@ -69,11 +69,12 @@ checked code base is implemented in.
 - [x] Add unused class method detection DC310 check.
 - [x] Add `--fix` option to automatically remove detected dead code occourencies
 - [x] Split error codes into DC010, DC020, DC030 for variables, functions, class.
-    - [ ] Should have different codes for ignoring name and ignoring whole definition.
+    - [x] Should have different codes for ignoring name and ignoring whole definition (reserved DCxx0 - ignore name, DCxx1 - ignore definition).
     - [ ] Allow to disable each check separately using:
         - [ ] inline comment.
         - [ ] pyproject.toml file
 - [ ] Add a check for empty python files.
+- [ ] Add a check for code in comments.
 - [ ] Add target python version option, if specified it will be used for code base check.
 - [ ] Add a `--depth` parameter to ignore nested code.. (To only check global scope use 0).
 - [ ] Add options:
