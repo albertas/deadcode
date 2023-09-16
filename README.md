@@ -68,7 +68,8 @@ checked code base is implemented in.
 - [x] Replace `.*` with only `*` in regexp matching.
 - [x] Add unused class method detection DC310 check.
 - [x] Add `--fix` option to automatically remove detected dead code occourencies
-- [x] Split error codes into DC100, DC200, DC300 for variables, functions, class.
+- [x] Split error codes into DC010, DC020, DC030 for variables, functions, class.
+    - [ ] Should have different codes for ignoring name and ignoring whole definition.
     - [ ] Allow to disable each check separately using:
         - [ ] inline comment.
         - [ ] pyproject.toml file
