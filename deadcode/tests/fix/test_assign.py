@@ -19,7 +19,7 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
         unused_names = main(["ignore_names_by_pattern.py", "--no-color", "--fix"])
         self.assertEqual(
             unused_names,
-            ("foo.py:1:0: DC010 Variable `unused_variable` is never used\n\n" "Removed 1 unused code item!"),
+            ("foo.py:1:0: DC001 Variable `unused_variable` is never used\n\n" "Removed 1 unused code item!"),
         )
 
         self.assertFiles({"foo.py": """"""})
@@ -35,7 +35,7 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
         unused_names = main(["ignore_names_by_pattern.py", "--no-color", "--fix"])
         self.assertEqual(
             unused_names,
-            ("foo.py:1:0: DC010 Variable `unused_variable` is never used\n\n" "Removed 1 unused code item!"),
+            ("foo.py:1:0: DC001 Variable `unused_variable` is never used\n\n" "Removed 1 unused code item!"),
         )
 
         self.assertFiles({"foo.py": """"""})

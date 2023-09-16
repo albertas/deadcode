@@ -13,24 +13,37 @@ UnusedCodeType = Literal[
     "name",
     "unused_file",
     "commented_out_code",
+    "ignore_expression",
 ]
 
 
 UnusedCodeErrorCode = Literal[
-    "DC010", "DC020", "DC030", "DC040", "DC050", "DC060", "DC070", "DC080", "DC090", "DC110", "DC120"
+    "DC001",
+    "DC002",
+    "DC003",
+    "DC004",
+    "DC005",
+    "DC006",
+    "DC007",
+    "DC008",
+    "DC009",
+    "DC011",
+    "DC012",
+    "DC013",
 ]
 
 
 ERROR_TYPE_TO_ERROR_CODE: Dict[UnusedCodeType, UnusedCodeErrorCode] = {
-    "variable": "DC010",
-    "function": "DC020",
-    "class": "DC030",
-    "method": "DC040",
-    "attribute": "DC050",
-    "name": "DC060",
-    "import": "DC070",
-    "property": "DC080",
-    "unreachable_code": "DC090",
-    "unused_file": "DC110",
-    "commented_out_code": "DC120",
+    "variable": "DC001",
+    "function": "DC002",
+    "class": "DC003",
+    "method": "DC004",
+    "attribute": "DC005",
+    "name": "DC006",
+    "import": "DC007",
+    "property": "DC008",
+    "unreachable_code": "DC009",
+    "unused_file": "DC011",
+    "commented_out_code": "DC012",
+    "ignore_expression": "DC013",
 }

@@ -24,7 +24,7 @@ class IgnoreNamesByPatternTests(BaseTestCase):
 
         self.assertEqual(
             unused_names,
-            ("ignore_names_by_pattern.py:7:0: DC030 Class `Unused` is never used"),
+            ("ignore_names_by_pattern.py:7:0: DC003 Class `Unused` is never used"),
         )
 
     def test_ignore_names_matched_by_dot_regexp_pattern(self):
@@ -50,7 +50,7 @@ class IgnoreNamesByPatternTests(BaseTestCase):
 
         self.assertEqual(
             unused_names,
-            ("ignore_names_by_pattern.py:7:0: DC030 Class `Unused` is never used"),
+            ("ignore_names_by_pattern.py:7:0: DC003 Class `Unused` is never used"),
         )
 
     def test_ignore_names_matched_exactly(self):
@@ -75,5 +75,5 @@ class IgnoreNamesByPatternTests(BaseTestCase):
 
         self.assertEqual(
             unused_names,
-            ("ignore_names_by_pattern.py:7:0: DC030 Class `Unused` is never used"),
+            ("ignore_names_by_pattern.py:7:0: DC003 Class `Unused` is never used"),
         )
