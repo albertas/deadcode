@@ -64,7 +64,7 @@ class RelativeImportTests(BaseTestCase):
         # The same check works without a Syntax error
         self.files = {"foo.py": "unused_var = None"}
         unused_names = main(["foo.py", "--no-color"])
-        assert unused_names == "foo.py:1:0: DC001 Variable `unused_var` is never used"
+        assert unused_names == "foo.py:1:0: DC010 Variable `unused_var` is never used"
 
     def test_ignore_variable_names_in_comments(self):
         self.files = {
@@ -75,7 +75,7 @@ class RelativeImportTests(BaseTestCase):
                 """
         }
         unused_names = main(["ignore_names_by_pattern.py", "--no-color"])
-        assert unused_names == "foo.py:2:0: DC001 Variable `unused_var` is never used"
+        assert unused_names == "foo.py:2:0: DC010 Variable `unused_var` is never used"
 
     def test_ignore_variable_names_in_strings(self):
         self.files = {
@@ -88,7 +88,7 @@ class RelativeImportTests(BaseTestCase):
                 """
         }
         unused_names = main(["ignore_names_by_pattern.py", "--no-color"])
-        assert unused_names == "foo.py:4:0: DC001 Variable `unused_var` is never used"
+        assert unused_names == "foo.py:4:0: DC010 Variable `unused_var` is never used"
 
     # TODO:
     def test_unused_names_found_in_subdirectories(self):
