@@ -81,3 +81,4 @@ checked code base is implemented in.
     - [ ] --ignore-definitions-if-decorated-with
     - [ ] --ignore-names-if-inherits-from
     - [ ] --ignore-names-if-decorated-with
+- [ ] Distinguish between definitions with same name, but different files.
