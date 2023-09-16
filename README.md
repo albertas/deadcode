@@ -54,7 +54,7 @@ ignore-names-in-files = ["migrations"]
 | DC009  | unreachable-code   | Unreachable `else` block
 | DC011  | empty-file         | Empty file
 | DC012* | commented-out-code | Commented out code
-| DC013* | ignore-expression  | *This error code can ony be used in `# noqa: DC013` comments (no errors will be reported for following code block)*
+| DC013* | ignore-expression  | *This error code can ony be used in `# noqa: DC013` comments (no errors will be reported for expression which begins in current line)*
 
 `*` - are not yet implemented rules.
 
