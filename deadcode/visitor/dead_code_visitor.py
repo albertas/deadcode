@@ -6,6 +6,7 @@ import string
 from pathlib import Path
 
 from typing import Callable, List, Optional, Set, TextIO, Tuple, Union
+from deadcode.constants import UnusedCodeType
 from deadcode.data_types import Args
 from deadcode.visitor.code_item import CodeItem
 from deadcode.visitor.utils import LoggingList, LoggingSet
@@ -322,7 +323,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
             )
 
         last_node = last_node or first_node
-        type_: str = collection.type_  # type: ignore
+        type_: UnusedCodeType = collection.type_  # type: ignore
         first_lineno = lines.get_first_line_number(first_node)
 
         if ignored(first_lineno):

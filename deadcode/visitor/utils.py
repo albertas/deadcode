@@ -2,6 +2,7 @@ import ast
 from typing import Union
 
 from deadcode.visitor.code_item import CodeItem
+from deadcode.constants import UnusedCodeType
 
 
 def _safe_eval(node: ast.AST, default: bool) -> bool:
@@ -62,7 +63,7 @@ def get_decorator_name(decorator: Union[ast.Call, ast.Attribute]) -> str:
 
 
 class LoggingList(list):  # type: ignore
-    def __init__(self, type_: str, verbose: bool) -> None:
+    def __init__(self, type_: UnusedCodeType, verbose: bool) -> None:
         self.type_ = type_
         self._verbose = verbose
         return super().__init__()
@@ -74,12 +75,12 @@ class LoggingList(list):  # type: ignore
 
 
 class LoggingSet(set):  # type: ignore
-    def __init__(self, typ: str, verbose: bool) -> None:
-        self.typ = typ
+    def __init__(self, type_: UnusedCodeType, verbose: bool) -> None:
+        self.type_ = type_
         self._verbose = verbose
         return super().__init__()
 
     def add(self, name: str) -> None:
         if self._verbose:
-            print(f'use {self.typ} "{name}"')
+            print(f'use {self.type_} "{name}"')
         super().add(name)

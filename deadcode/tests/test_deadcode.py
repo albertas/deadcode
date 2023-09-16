@@ -11,9 +11,9 @@ class DeadCodeIntegrationTests(TestCase):
         self.assertEqual(
             unused_names,
             (
-                "tests/files/variables.py:1:0: DC100 Global unused_global_variable is never used\n"
-                "tests/files/variables.py:3:0: DC100 Global ANOTHER_GLOBAL_VARIABLE is never used\n"
-                "tests/files/variables.py:5:0: DC100 Global third_global_varialbe is never used"
+                "tests/files/variables.py:1:0: DC001 Variable `unused_global_variable` is never used\n"
+                "tests/files/variables.py:3:0: DC001 Variable `ANOTHER_GLOBAL_VARIABLE` is never used\n"
+                "tests/files/variables.py:5:0: DC001 Variable `third_global_varialbe` is never used"
             ),
         )
 
@@ -23,9 +23,9 @@ class DeadCodeIntegrationTests(TestCase):
         self.assertEqual(
             unused_names,
             (
-                "tests/files/functions.py:1:0: DC100 Global unused_function is never used\n"
-                "tests/files/functions.py:13:0: DC100 Global another_unused_function is never used\n"
-                "tests/files/functions.py:14:4: DC100 Global this_is_unused_closure is never used"
+                "tests/files/functions.py:1:0: DC002 Function `unused_function` is never used\n"
+                "tests/files/functions.py:13:0: DC002 Function `another_unused_function` is never used\n"
+                "tests/files/functions.py:14:4: DC002 Function `this_is_unused_closure` is never used"
             ),
         )
 
@@ -37,8 +37,8 @@ class DeadCodeIntegrationTests(TestCase):
         self.assertEqual(
             unused_names,
             (
-                "tests/files/classes.py:1:0: DC100 Global UnusedClass is never used\n"
-                "tests/files/classes.py:13:0: DC100 Global AnotherUnusedClass is never used"
+                "tests/files/classes.py:1:0: DC003 Class `UnusedClass` is never used\n"
+                "tests/files/classes.py:13:0: DC003 Class `AnotherUnusedClass` is never used"
             ),
         )
 
@@ -53,9 +53,9 @@ class DeadCodeIntegrationTests(TestCase):
         self.assertEqual(
             unused_names,
             (
-                "tests/files/variables.py:1:0: DC100 Global unused_global_variable is never used\n"
-                "tests/files/variables.py:3:0: DC100 Global ANOTHER_GLOBAL_VARIABLE is never used\n"
-                "tests/files/variables.py:5:0: DC100 Global third_global_varialbe is never used"
+                "tests/files/variables.py:1:0: DC001 Variable `unused_global_variable` is never used\n"
+                "tests/files/variables.py:3:0: DC001 Variable `ANOTHER_GLOBAL_VARIABLE` is never used\n"
+                "tests/files/variables.py:5:0: DC001 Variable `third_global_varialbe` is never used"
             ),
         )
 

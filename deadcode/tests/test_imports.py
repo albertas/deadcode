@@ -16,10 +16,9 @@ class RelativeImportTests(BaseTestCase):
         # Variable is used, because its imported in another file
         self.files = {
             "foo.py": "used_var = None",
-            "bar.py": """\
-from foo import used_var as foo_var
-print(foo_var)
-""",
+            "bar.py": """
+                from foo import used_var as foo_var
+                print(foo_var)""",
         }
         unused_names = main(["ignore_names_by_pattern.py", "--no-color"])
         assert unused_names is None
@@ -27,10 +26,9 @@ print(foo_var)
     def test_module_imported_and_var_from_it_is_used(self):
         self.files = {
             "foo.py": "used_var = None",
-            "bar.py": """\
-import foo
-print(foo.used_var)
-""",
+            "bar.py": """
+                import foo
+                print(foo.used_var)""",
         }
         unused_names = main(["ignore_names_by_pattern.py", "--no-color"])
         # Attribute(value=Name(id='foo', ctx=Load()), attr='used_var', ctx=Load())
@@ -39,10 +37,9 @@ print(foo.used_var)
     def test_module_imported_with_alias_and_var_from_it_is_used(self):
         self.files = {
             "foo.py": "used_var = None",
-            "bar.py": """\
-import foo as f
-print(f.used_var)
-""",
+            "bar.py": """
+                import foo as f
+                print(f.used_var)""",
         }
         unused_names = main(["ignore_names_by_pattern.py", "--no-color"])
         assert unused_names is None
@@ -52,10 +49,9 @@ print(f.used_var)
         # https://docs.python.org/3/tutorial/modules.html#intra-package-references
         self.files = {
             "eggs/foo.py": "used_var = None",
-            "eggs/spam/bar.py": """\
-from .. import foo as f
-print(f.used_var)
-""",
+            "eggs/spam/bar.py": """
+                from .. import foo as f
+                print(f.used_var)""",
         }
         unused_names = main(["ignore_names_by_pattern.py", "--no-color"])
         assert unused_names is None
@@ -68,7 +64,7 @@ print(f.used_var)
         # The same check works without a Syntax error
         self.files = {"foo.py": "unused_var = None"}
         unused_names = main(["foo.py", "--no-color"])
-        assert unused_names == "foo.py:1:0: DC100 Global unused_var is never used"
+        assert unused_names == "foo.py:1:0: DC001 Variable `unused_var` is never used"
 
     def test_ignore_variable_names_in_comments(self):
         self.files = {
@@ -79,7 +75,7 @@ print(f.used_var)
                 """
         }
         unused_names = main(["ignore_names_by_pattern.py", "--no-color"])
-        assert unused_names == "foo.py:2:0: DC100 Global unused_var is never used"
+        assert unused_names == "foo.py:2:0: DC001 Variable `unused_var` is never used"
 
     def test_ignore_variable_names_in_strings(self):
         self.files = {
@@ -92,7 +88,7 @@ print(f.used_var)
                 """
         }
         unused_names = main(["ignore_names_by_pattern.py", "--no-color"])
-        assert unused_names == "foo.py:4:0: DC100 Global unused_var is never used"
+        assert unused_names == "foo.py:4:0: DC001 Variable `unused_var` is never used"
 
     # TODO:
     def test_unused_names_found_in_subdirectories(self):

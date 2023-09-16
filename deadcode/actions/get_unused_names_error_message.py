@@ -14,14 +14,17 @@ def get_unused_names_error_message(unused_names: List[CodeItem], args: Args) -> 
     if args.count:
         return f"{len(unused_names)}"
 
-    if args.no_color:
-        return "\n".join(
-            [f"{item.filename_with_position} DC100 Global {item.name} is never used" for item in unused_names]
+    error_messages_of_unused_code_items = []
+    for item in unused_names:
+        error_message = (
+            f"{item.filename_with_position} "
+            f"\033[91m{item.error_code}\033[0m "
+            f"{item.type_.replace('_', ' ').capitalize()} "
+            f"`\033[1m{item.name}\033[0m` "
+            f"is never used"
         )
+        if args.no_color:
+            error_message = error_message.replace("\033[91m", "").replace("\033[1m", "").replace("\033[0m", "")
+        error_messages_of_unused_code_items.append(error_message)
 
-    return "\n".join(
-        [
-            f"{item.filename_with_position} \033[91mDC100\033[0m Global \033[1m{item.name}\033[0m is never used"
-            for item in unused_names
-        ]
-    )
+    return "\n".join(error_messages_of_unused_code_items)

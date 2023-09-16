@@ -31,6 +31,8 @@
 from pathlib import Path
 from typing import Optional, Tuple
 
+from deadcode.constants import UnusedCodeType, ERROR_TYPE_TO_ERROR_CODE
+
 
 class CodeItem:
     """
@@ -48,12 +50,13 @@ class CodeItem:
         "name_line",
         "name_column",
         "message",
+        "error_code",
     )
 
     def __init__(
         self,
         name: str,
-        type_: str,
+        type_: UnusedCodeType,
         filename: Path,
         first_lineno: int,
         last_lineno: int,
@@ -70,6 +73,7 @@ class CodeItem:
         self.last_lineno = last_lineno
         self.first_column = first_column
         self.last_column = last_column
+        self.error_code = ERROR_TYPE_TO_ERROR_CODE[type_]
         self.message = message or f"unused {type_} '{name}'"
 
         self.name_line = name_line
