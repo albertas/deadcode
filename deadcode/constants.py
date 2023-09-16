@@ -16,7 +16,19 @@ UnusedCodeType = Literal[
 ]
 
 
-UnusedCodeErrorCode = Literal["DC010", "DC020", "DC030", "DC040", "DC050", "DC060", "DC070", "DC080", "DC090", "DC110", "DC120"]
+UnusedCodeErrorCode = Literal[
+    "DC010",
+    "DC020",
+    "DC030",
+    "DC040",
+    "DC050",
+    "DC060",
+    "DC070",
+    "DC080",
+    "DC090",
+    "DC110",
+    "DC120"
+]
 
 
 ERROR_TYPE_TO_ERROR_CODE: Dict[UnusedCodeType, UnusedCodeErrorCode] = {
