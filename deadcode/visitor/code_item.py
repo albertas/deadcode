@@ -58,12 +58,12 @@ class CodeItem:
         name: str,
         type_: UnusedCodeType,
         filename: Path,
-        first_lineno: int,
-        last_lineno: int,
-        first_column: int,
-        last_column: Optional[int],
-        name_line: int,
-        name_column: int,
+        first_lineno: int = 0,
+        last_lineno: int = 0,
+        first_column: int = 0,
+        last_column: Optional[int] = None,
+        name_line: Optional[int] = None,
+        name_column: Optional[int] = None,
         message: str = "",
     ):
         self.name = name
@@ -74,14 +74,19 @@ class CodeItem:
         self.first_column = first_column
         self.last_column = last_column
         self.error_code = ERROR_TYPE_TO_ERROR_CODE[type_]
-        self.message = message or f"unused {type_} '{name}'"
+        self.message = message
 
         self.name_line = name_line
         self.name_column = name_column
 
     @property
     def filename_with_position(self) -> str:
-        return f"{self.filename}:{self.name_line}:{self.name_column}:"
+        filename_with_position = str(self.filename)
+        if self.name_line is not None:
+            filename_with_position += f":{self.name_line}"
+            if self.name_column is not None:
+                filename_with_position += f":{self.name_column}:"
+        return filename_with_position
 
     @property
     def size(self) -> int:

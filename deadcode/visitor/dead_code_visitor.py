@@ -2,6 +2,7 @@ import ast
 import sys
 import re
 import string
+import os
 
 from pathlib import Path
 
@@ -140,12 +141,23 @@ class DeadCodeVisitor(ast.NodeVisitor):
         #     self.scan(module_string, filename=module)
 
         # TODO: should parse the AST here.
-        for filename in self.filenames:
-            with open(filename) as f:
-                node = parse_abstract_syntax_tree(f.read(), args=self.args, filename=filename)
-
-            self.filename = Path(filename)
-            self.visit(node)
+        for file_path in self.filenames:
+            with open(file_path) as f:
+                filename = os.path.basename(file_path)
+                file_content = f.read()
+                if file_content.strip() or (filename.startswith("__") and filename.endswith("__.py")):
+                    node = parse_abstract_syntax_tree(file_content, args=self.args, filename=file_path)
+                    self.filename = Path(file_path)
+                    self.visit(node)
+                else:
+                    self.unused_file.append(
+                        CodeItem(
+                            name=filename,
+                            type_="unused_file",
+                            filename=Path(file_path),
+                            message="Empty file",
+                        )
+                    )
 
         # unique_imports = {item.name for item in self.defined_imports}
         # for import_name in unique_imports:
@@ -183,6 +195,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
             + self.unused_props
             + self.unused_vars
             + self.unreachable_code
+            + self.unused_file
         )
 
         return sorted(unused_code, key=by_size if sort_by_size else by_name)
