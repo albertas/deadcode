@@ -65,10 +65,19 @@ It is assumed that `deadcode` will be run using the same Python version as the
 checked code base is implemented in.
 
 ## Feature requests
-- [ ] Split error codes into DC100, DC200, DC300 for variables, functions, class. It will be possible to disable each check separately.
-- [+] Add unused class method detection DC310 check.
+- [x] Replace `.*` with only `*` in regexp matching.
+- [x] Add unused class method detection DC310 check.
+- [x] Add `--fix` option to automatically remove detected dead code occourencies
+- [x] Split error codes into DC100, DC200, DC300 for variables, functions, class.
+    - [ ] Allow to disable each check separately using:
+        - [ ] inline comment.
+        - [ ] pyproject.toml file
 - [ ] Add a check for empty python files.
 - [ ] Add target python version option, if specified it will be used for code base check.
-- [+] Add `--fix` option to automatically remove detected dead code occourencies
-- [+] Replace `.*` with only `*` in regexp matching.
 - [ ] Add a `--depth` parameter to ignore nested code.. (To only check global scope use 0).
+- [ ] Add options:
+    - [ ] --ignore-definitions
+    - [ ] --ignore-definitions-if-inherits-from
+    - [ ] --ignore-definitions-if-decorated-with
+    - [ ] --ignore-names-if-inherits-from
+    - [ ] --ignore-names-if-decorated-with
