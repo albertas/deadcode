@@ -56,7 +56,7 @@ ignore-names-in-files = ["migrations"]
 | DC012* | commented-out-code | Commented out code
 | DC013* | ignore-expression  | *This error code can ony be used in `# noqa: DC013` comments (no errors will be reported for following code block)*
 
-* - are not yet implemented rules.
+`*` - are not yet implemented rules.
 
 ## Contributing
 - `make check` - runs unit tests and other checks using virtual environment.
