@@ -62,14 +62,14 @@ def get_decorator_name(decorator: Union[ast.Call, ast.Attribute]) -> str:
 
 
 class LoggingList(list):  # type: ignore
-    def __init__(self, typ: str, verbose: bool) -> None:
-        self.typ = typ
+    def __init__(self, type_: str, verbose: bool) -> None:
+        self.type_ = type_
         self._verbose = verbose
         return super().__init__()
 
     def append(self, item: CodeItem) -> None:
         if self._verbose:
-            print(f'define {self.typ} "{item.name}"')
+            print(f'define {self.type_} "{item.name}"')
         super().append(item)
 
 

@@ -31,14 +31,6 @@ from deadcode.visitor.ignore import (
 class DeadCodeVisitor(ast.NodeVisitor):
     """Finds dead code."""
 
-    # TODO: Should work with only one file.
-    # The state should be passed as function argument.
-    # The state should be passed as defined.
-
-    # Should simplify the code by using functional programming.
-
-    # First step is to make the parameters work.
-
     def __init__(self, filenames: List[str], args: Args) -> None:
         # Dict[Filename, AbstractSyntaxTree]
         # self.abstract_syntax_trees_of_files = abstract_syntax_trees_of_files
@@ -330,18 +322,18 @@ class DeadCodeVisitor(ast.NodeVisitor):
             )
 
         last_node = last_node or first_node
-        typ: str = collection.typ  # type: ignore
+        type_: str = collection.type_  # type: ignore
         first_lineno = lines.get_first_line_number(first_node)
 
         if ignored(first_lineno):
-            self._log(f'Ignoring {typ} "{name}"')
+            self._log(f'Ignoring {type_} "{name}"')
         else:
             last_lineno = lines.get_last_line_number(last_node)
 
             collection.append(
                 CodeItem(
                     name=name,
-                    typ=typ,
+                    type_=type_,
                     filename=self.filename,
                     first_lineno=first_lineno,
                     last_lineno=last_lineno,
@@ -447,17 +439,17 @@ class DeadCodeVisitor(ast.NodeVisitor):
         first_arg = node.args.args[0].arg if node.args.args else None
 
         if "@property" in decorator_names:
-            typ = "property"
+            type_ = "property"
         elif "@staticmethod" in decorator_names or "@classmethod" in decorator_names or first_arg == "self":
-            typ = "method"
+            type_ = "method"
         else:
-            typ = "function"
+            type_ = "function"
 
         if any(_match(name, self.ignore_decorators) for name in decorator_names):
-            self._log(f'Ignoring {typ} "{node.name}" (decorator whitelisted)')
-        elif typ == "property":
+            self._log(f'Ignoring {type_} "{node.name}" (decorator whitelisted)')
+        elif type_ == "property":
             self._define(self.defined_props, node.name, node)
-        elif typ == "method":
+        elif type_ == "method":
             self._define(self.defined_methods, node.name, node, ignore=_ignore_method)
         else:
             self._define(self.defined_funcs, node.name, node, ignore=_ignore_function)

@@ -39,7 +39,7 @@ class CodeItem:
 
     __slots__ = (
         "name",
-        "typ",
+        "type_",
         "filename",
         "first_lineno",
         "last_lineno",
@@ -53,7 +53,7 @@ class CodeItem:
     def __init__(
         self,
         name: str,
-        typ: str,
+        type_: str,
         filename: Path,
         first_lineno: int,
         last_lineno: int,
@@ -64,13 +64,13 @@ class CodeItem:
         message: str = "",
     ):
         self.name = name
-        self.typ = typ
+        self.type_ = type_
         self.filename = filename
         self.first_lineno = first_lineno
         self.last_lineno = last_lineno
         self.first_column = first_column
         self.last_column = last_column
-        self.message = message or f"unused {typ} '{name}'"
+        self.message = message or f"unused {type_} '{name}'"
 
         self.name_line = name_line
         self.name_column = name_column
@@ -97,13 +97,13 @@ class CodeItem:
     #     from deadcode.visitor.utils import format_path
 
     #     filename = format_path(self.filename)
-    #     if self.typ == "unreachable_code":
+    #     if self.type_ == "unreachable_code":
     #         return f"# {self.message} ({filename}:{self.first_lineno})"
     #     else:
     #         prefix = ""
-    #         if self.typ in ["attribute", "method", "property"]:
+    #         if self.type_ in ["attribute", "method", "property"]:
     #             prefix = "_."
-    #         return "{}{}  # unused {} ({}:{:d})".format(prefix, self.name, self.typ, filename, self.first_lineno)
+    #         return "{}{}  # unused {} ({}:{:d})".format(prefix, self.name, self.type_, filename, self.first_lineno)
 
     def _tuple(self) -> Tuple[Path, int, str]:
         return (self.filename, self.first_lineno, self.name)
