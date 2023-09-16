@@ -23,7 +23,7 @@ The same options can be provided in `pyproject.toml` settings file:
 ```
 [tool.deadcode]
 exclude = ["venv", "tests"]
-ignore-names = ["BaseTestCase"]
+ignore-names = ["BaseTestCase", "*Mixin"]
 ignore-names-in-files = ["migrations"]
 ```
 
