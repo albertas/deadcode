@@ -33,16 +33,11 @@ class DeadCodeVisitor(ast.NodeVisitor):
     """Finds dead code."""
 
     def __init__(self, filenames: List[str], args: Args) -> None:
-        # Dict[Filename, AbstractSyntaxTree]
-        # self.abstract_syntax_trees_of_files = abstract_syntax_trees_of_files
         self.filenames = filenames
 
         self.args = args
 
         self.ignore_decorators: List[str] = []
-
-        # ignore_definitions=[],
-        # ignore_definitions_if_inherits_from=[],
 
         verbose = False
         # verbose = args.verbose
@@ -55,6 +50,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
         self.defined_methods: List[CodeItem] = LoggingList("method", verbose)
         self.defined_props: List[CodeItem] = LoggingList("property", verbose)
         self.defined_vars: List[CodeItem] = LoggingList("variable", verbose)
+        self.unused_file: List[CodeItem] = LoggingList("unused_file", verbose)
         self.unreachable_code: List[CodeItem] = LoggingList("unreachable_code", verbose)
 
         # The purpose and the interface of the visitor is not known

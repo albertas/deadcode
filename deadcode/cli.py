@@ -23,12 +23,6 @@ def main(
         fix_unused_code(unused_names)
 
     if (error_message := get_unused_names_error_message(unused_names, args=args)) is not None:
-        if args.fix:
-            error_message = (
-                f"{error_message}\n\nRemoved \033[1m{len(unused_names)}\033[0m unused code item"
-                f"{'s' if len(unused_names) > 1 else ''}!"
-            )
-
         return error_message
 
     if not args.count and not args.quiet:
