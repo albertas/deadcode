@@ -31,13 +31,13 @@ ignore-names-in-files = ["migrations"]
 
 | Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Meaning  |
 |--------------------------|------|----------|
-|`--fix`                   | None | Automatically remove detected unused code parts from the code base. |
+|`--fix`                   | -    | Automatically remove detected unused code parts from the code base. |
 |`--exclude`               | list | Path expressions to completely skip files from being analysed. |
 |`--ignore-names`          | list | Removes provided list of names from the error output. Regexp expressions to match multiple names can also be provided, e.g. `*Mixin` will match all classes ending with `Mixin`. |
 |`--ignore-names-in-files` | list | Unused names from files matching provided path expressions. |
-|`--no-color`              | None | Removes colors from the output. |
-|`--count`                 | None | Provides the count of the detected unused names instead of printing them all out. |
-|`--quiet`                 | None | Does not output anything. Makefile still fails with exit code 1 if unused names are found. |
+|`--no-color`              | -    | Removes colors from the output. |
+|`--count`                 | -    | Provides the count of the detected unused names instead of printing them all out. |
+|`--quiet`                 | -    | Does not output anything. Makefile still fails with exit code 1 if unused names are found. |
 
 
 ## Rules
