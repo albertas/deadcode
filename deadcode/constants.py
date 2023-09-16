@@ -12,7 +12,7 @@ UnusedCodeType = Literal[
     "unreachable_code",
     "name",
     "unused_file",
-    "code_in_comments",
+    "commented_out_code",
 ]
 
 
@@ -32,5 +32,5 @@ ERROR_TYPE_TO_ERROR_CODE: Dict[UnusedCodeType, UnusedCodeErrorCode] = {
     "property": "DC080",
     "unreachable_code": "DC090",
     "unused_file": "DC110",
-    "code_in_comments": "DC120",
+    "commented_out_code": "DC120",
 }

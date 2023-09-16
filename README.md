@@ -40,6 +40,22 @@ ignore-names-in-files = ["migrations"]
 |`--quiet`                 | None | Does not output anything. Makefile still fails with exit code 1 if unused names are found. |
 
 
+## Rules
+| Code    | Name               | Message        |
+|---------|--------------------|----------------|
+| DC010   | unused-variable    | Variable `{name}` is never used
+| DC020   | unused-function    | Function `{name}` is never used
+| DC030   | unused-class       | Class `{name}` is never used
+| DC040   | unused-method      | Method `{name}` is never used
+| DC050   | unused-attribute   | Attribute `{name}` is never used
+| DC060   | unused-name        | Name `{name}` is never used
+| DC070   | unused-import      | Import `{name}` is never used
+| DC080   | unused-property    | Property `{name}` is never used
+| DC090   | unreachable-code   | Unreachable `else` block
+| DC110   | empty-file         | Empty file
+| DC120   | commented-out-code | Commented out code
+
+
 ## Contributing
 - `make check` - runs unit tests and other checks using virtual environment.
 

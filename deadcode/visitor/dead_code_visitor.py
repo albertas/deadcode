@@ -278,7 +278,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
                 name,
                 node,
                 last_node=node.body if isinstance(node, ast.IfExp) else node.body[-1],
-                message=f"unsatisfiable '{name}' condition",
+                message=f"Unsatisfiable `{name}` condition",
             )
         elif utils.condition_is_always_true(node.test):
             else_body = node.orelse
@@ -287,7 +287,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
                     self.unreachable_code,
                     name,
                     else_body,  # type: ignore
-                    message="unreachable 'else' expression",
+                    message="Unreachable `else` expression",
                 )
             elif else_body:
                 self._define(
@@ -295,7 +295,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
                     "else",
                     else_body[0],  # type: ignore
                     last_node=else_body[-1],  # type: ignore
-                    message="unreachable 'else' block",
+                    message="Unreachable `else` block",
                 )
             elif name == "if":
                 # Redundant if-condition without else block.
@@ -303,7 +303,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
                     self.unreachable_code,
                     name,
                     node,
-                    message="redundant if-condition",
+                    message="Redundant `if` condition",
                 )
 
     def _define(
