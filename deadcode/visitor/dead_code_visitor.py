@@ -8,7 +8,7 @@ from pathlib import Path
 
 from typing import Callable, List, Optional, Set, TextIO, Tuple, Union
 from deadcode.constants import UnusedCodeType
-from deadcode.data_types import Args
+from deadcode.data_types import Args, Part
 from deadcode.visitor.code_item import CodeItem
 from deadcode.visitor.utils import LoggingList, LoggingSet
 from deadcode.visitor import utils
@@ -180,11 +180,15 @@ class DeadCodeVisitor(ast.NodeVisitor):
         """
 
         def by_name(item: CodeItem) -> Tuple[str, int]:
-            return (str(item.filename).lower(), item.first_lineno)
+            # TODO: return (str(item.filename).lower(), item.first_lineno)
+            first_line = 0
+            if item.code_parts:
+                first_line = item.code_parts[0][0]
+            return (str(item.filename).lower(), first_line)
 
-        def by_size(item: CodeItem) -> Tuple[int, str, int]:
-            # TODO: default sorting should be by type or by filename
-            return (item.size,) + by_name(item)
+        # def by_size(item: CodeItem) -> Tuple[int, str, int]:
+        #     # TODO: default sorting should be by type or by filename
+        #     return (item.size,) + by_name(item)
 
         unused_code = (
             self.unused_attrs
@@ -198,7 +202,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
             + self.unused_file
         )
 
-        return sorted(unused_code, key=by_size if sort_by_size else by_name)
+        return sorted(unused_code, key=by_name)
 
     # TODO: investigate whitelisting options
     # def report(self, sort_by_size=False, make_whitelist=False):
@@ -345,12 +349,9 @@ class DeadCodeVisitor(ast.NodeVisitor):
                     name=name,
                     type_=type_,
                     filename=self.filename,
-                    first_lineno=first_lineno,
-                    last_lineno=last_lineno,
-                    first_column=last_node.col_offset,
-                    last_column=last_node.end_col_offset,
-                    name_line=last_node.lineno,
-                    name_column=last_node.col_offset,
+                    code_parts=[Part(first_lineno, last_lineno, last_node.col_offset, last_node.end_col_offset or 0)],
+                    name_line=last_node.lineno,  # TODO: Maybe this should be a property?
+                    name_column=last_node.col_offset,  # TODO: Maybe this should be a property?
                     message=message,
                 )
             )

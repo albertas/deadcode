@@ -3,8 +3,8 @@ from typing import List
 
 from deadcode.actions.merge_overlaping_file_parts import merge_overlaping_file_parts
 from deadcode.actions.remove_file_parts_from_content import remove_file_parts_from_content
-from deadcode.data_types import Part
 from deadcode.visitor.code_item import CodeItem
+from deadcode.utils.flatten_lists import flatten_list
 
 
 def fix_unused_code(unused_items: List[CodeItem]) -> None:
@@ -21,9 +21,7 @@ def fix_unused_code(unused_items: List[CodeItem]) -> None:
         filename_to_unused_items[str(unused_item.filename)].append(unused_item)
 
     for filename, unused_items in filename_to_unused_items.items():
-        file_parts = [
-            Part(item.first_lineno, item.last_lineno, item.first_column, item.last_column or 0) for item in unused_items
-        ]
+        file_parts = flatten_list([item.code_parts for item in unused_items])
 
         unused_file_parts = merge_overlaping_file_parts(file_parts)
 

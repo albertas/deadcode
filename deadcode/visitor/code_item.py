@@ -29,12 +29,14 @@
 
 
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 from deadcode.constants import UnusedCodeType, ERROR_TYPE_TO_ERROR_CODE
 
+from deadcode.data_types import Part
 
-class CodeItem:
+
+class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple methods are reimplemented.
     """
     Store information about code object such as name, type and its location.
     """
@@ -43,10 +45,7 @@ class CodeItem:
         "name",
         "type_",
         "filename",
-        "first_lineno",
-        "last_lineno",
-        "first_column",
-        "last_column",
+        "code_parts",
         "name_line",
         "name_column",
         "message",
@@ -58,10 +57,12 @@ class CodeItem:
         name: str,
         type_: UnusedCodeType,
         filename: Path,
-        first_lineno: int = 0,
-        last_lineno: int = 0,
-        first_column: int = 0,
-        last_column: Optional[int] = None,
+        # These arguments are being converted to Part
+        # first_lineno: int = 0,
+        # last_lineno: int = 0,
+        # first_column: int = 0,
+        # last_column: Optional[int] = None,
+        code_parts: Optional[List[Part]] = None,  # TODO: I should use a dataclass instead of a tuple for Part.
         name_line: Optional[int] = None,
         name_column: Optional[int] = None,
         message: str = "",
@@ -69,10 +70,20 @@ class CodeItem:
         self.name = name
         self.type_ = type_
         self.filename = filename
-        self.first_lineno = first_lineno
-        self.last_lineno = last_lineno
-        self.first_column = first_column
-        self.last_column = last_column
+
+        if code_parts is None:
+            self.code_parts = []
+        else:
+            self.code_parts = code_parts
+
+        # if first_lineno is not None:
+        #     pass
+
+        # self.first_lineno = first_lineno
+        # self.last_lineno = last_lineno
+        # self.first_column = first_column
+        # self.last_column = last_column
+
         self.error_code = ERROR_TYPE_TO_ERROR_CODE[type_]
         self.message = message
 
@@ -88,10 +99,10 @@ class CodeItem:
                 filename_with_position += f":{self.name_column}:"
         return filename_with_position
 
-    @property
-    def size(self) -> int:
-        assert self.last_lineno >= self.first_lineno
-        return self.last_lineno - self.first_lineno + 1
+    # @property
+    # def size(self) -> int:
+    #     assert self.last_lineno >= self.first_lineno
+    #     return self.last_lineno - self.first_lineno + 1
 
     # def get_report(self) -> str:
     #     from deadcode.visitor.utils import format_path
@@ -115,7 +126,12 @@ class CodeItem:
     #         return "{}{}  # unused {} ({}:{:d})".format(prefix, self.name, self.type_, filename, self.first_lineno)
 
     def _tuple(self) -> Tuple[Path, int, str]:
-        return (self.filename, self.first_lineno, self.name)
+        # TODO: this should no longer be needed, when dataclass is used.
+        first_line = 0
+        if self.code_parts:
+            first_line = self.code_parts[0][0]
+
+        return (self.filename, first_line, self.name)
 
     def __repr__(self) -> str:
         return repr(self.name)
