@@ -50,6 +50,7 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
     empty_lines_before_removed_block_list: List[str] = []
 
     for current_lineno, line in enumerate(content_lines, start=1):
+        from_line, to_line, from_col, to_col = 0, 0, 0, 0
         if unused_part := list_get(unused_file_parts, unused_part_index):
             from_line, to_line, from_col, to_col = unused_part
 

@@ -13,16 +13,23 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
         self.files = {
             "foo.py": """
                 unused_variable = 123
+                print("Keep the file")
                 """
         }
 
-        unused_names = main(["ignore_names_by_pattern.py", "--no-color", "--fix"])
+        unused_names = main(["foo.py", "--no-color", "--fix"])
         self.assertEqual(
             unused_names,
             ("foo.py:1:0: DC001 Variable `unused_variable` is never used\n\n" "Removed 1 unused code item!"),
         )
 
-        self.assertFiles({"foo.py": """"""})
+        self.assertFiles(
+            {
+                "foo.py": """
+                print("Keep the file")
+            """
+            }
+        )
 
     @skip
     def test_variable_with_type_hint(self):
@@ -32,7 +39,7 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
         """
         }
 
-        unused_names = main(["ignore_names_by_pattern.py", "--no-color", "--fix"])
+        unused_names = main(["foo.py", "--no-color", "--fix"])
         self.assertEqual(
             unused_names,
             ("foo.py:1:0: DC001 Variable `unused_variable` is never used\n\n" "Removed 1 unused code item!"),

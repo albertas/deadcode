@@ -1,5 +1,6 @@
 from collections import defaultdict
 from typing import List
+import os
 
 from deadcode.actions.merge_overlaping_file_parts import merge_overlaping_file_parts
 from deadcode.actions.remove_file_parts_from_content import remove_file_parts_from_content
@@ -29,10 +30,13 @@ def fix_unused_code(unused_items: List[CodeItem]) -> None:
             file_content_lines = f.readlines()
 
         updated_file_content_lines = remove_file_parts_from_content(file_content_lines, unused_file_parts)
-
-        with open(filename, "w") as f:
-            # TODO: is there a method writelines?
-            f.write("".join(updated_file_content_lines))
+        updated_file_content = "".join(updated_file_content_lines)
+        if updated_file_content.strip():
+            with open(filename, "w") as f:
+                # TODO: is there a method writelines?
+                f.write(updated_file_content)
+        else:
+            os.remove(filename)
 
     # TODO: update this one: solution is to use read and write operations.
     #

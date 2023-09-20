@@ -10,6 +10,8 @@ class TestFixCliOption(BaseTestCase):
             "ignore_names_by_pattern.py": """
                 class UnusedClass:
                     pass
+
+                print("Keep the file")
                 """
         }
 
@@ -22,13 +24,21 @@ class TestFixCliOption(BaseTestCase):
             ),
         )
 
-        self.assertFiles({"ignore_names_by_pattern.py": """"""})
+        self.assertFiles(
+            {
+                "ignore_names_by_pattern.py": """
+            print("Keep the file")
+        """
+            }
+        )
 
     def test_function_removal(self):
         self.files = {
             "ignore_names_by_pattern.py": """
                 def foo(bar: str = "Bar") -> str:
                     return 1 ** 2
+
+                print("Keep the file")
                 """
         }
 
@@ -38,7 +48,13 @@ class TestFixCliOption(BaseTestCase):
             ("ignore_names_by_pattern.py:1:0: DC002 Function `foo` is never used\n\n" "Removed 1 unused code item!"),
         )
 
-        self.assertFiles({"ignore_names_by_pattern.py": """"""})
+        self.assertFiles(
+            {
+                "ignore_names_by_pattern.py": """
+                print("Keep the file")
+        """
+            }
+        )
 
     # TODO: treat variables unused if they are referenced only by other unused code.
 
@@ -497,9 +513,16 @@ class TestKeepCorrectNumberOfEmptyLinesAfterRemovalOfCodeBlock(BaseTestCase):
         self.files = {
             "foo.py": """
             bar = 1
+            print("Keep the file")
             """
         }
 
         main([".", "--fix"])
 
-        self.assertFiles({"foo.py": """"""})
+        self.assertFiles(
+            {
+                "foo.py": """
+            print("Keep the file")
+        """
+            }
+        )
