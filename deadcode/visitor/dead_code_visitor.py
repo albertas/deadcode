@@ -6,7 +6,7 @@ import os
 
 from pathlib import Path
 
-from typing import Callable, List, Optional, Set, TextIO, Tuple, Union
+from typing import Callable, List, Optional, Set, TextIO, Union
 from deadcode.constants import UnusedCodeType
 from deadcode.data_types import Args, Part
 from deadcode.visitor.code_item import CodeItem
@@ -54,17 +54,23 @@ class DeadCodeVisitor(ast.NodeVisitor):
         self.unused_file: List[CodeItem] = LoggingList("unused_file", verbose)
         self.unreachable_code: List[CodeItem] = LoggingList("unreachable_code", verbose)
 
-        # The purpose and the interface of the visitor is not known
-        # Lets investigate the vulture code and pass here what ever I have.
-
         self.used_names: Set[str] = LoggingSet("name", self.verbose)
 
         self.filename = Path()
         self.code: List[str] = []
-        # self.found_dead_code_or_error = False
+
+        # Note: scope is a stack containing current module name, class names, function names
+        self.scope_parts: List[str] = []
 
         # Workaround
         # self.noqa_lines = {}
+
+    @property
+    def scope(self) -> str:
+        return ".".join(self.scope_parts)
+
+    def add_used_name(self, name: str, scope: Optional[str] = None) -> None:
+        self.used_names.add(name)
 
     # def scan(self, code, filename=""):
     #     filename = Path(filename)
@@ -144,6 +150,9 @@ class DeadCodeVisitor(ast.NodeVisitor):
         for file_path in self.filenames:
             with open(file_path) as f:
                 filename = os.path.basename(file_path)
+                module_name = os.path.splitext(filename)[0]
+                self.scope_parts = [module_name]
+
                 file_content = f.read()
                 if file_content.strip() or (filename.startswith("__") and filename.endswith("__.py")):
                     node = parse_abstract_syntax_tree(file_content, args=self.args, filename=file_path)
@@ -179,17 +188,6 @@ class DeadCodeVisitor(ast.NodeVisitor):
         Return ordered list of unused CodeItem objects.
         """
 
-        def by_name(item: CodeItem) -> Tuple[str, int]:
-            # TODO: return (str(item.filename).lower(), item.first_lineno)
-            first_line = 0
-            if item.code_parts:
-                first_line = item.code_parts[0][0]
-            return (str(item.filename).lower(), first_line)
-
-        # def by_size(item: CodeItem) -> Tuple[int, str, int]:
-        #     # TODO: default sorting should be by type or by filename
-        #     return (item.size,) + by_name(item)
-
         unused_code = (
             self.unused_attrs
             + self.unused_classes
@@ -202,7 +200,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
             + self.unused_file
         )
 
-        return sorted(unused_code, key=by_name)
+        return sorted(unused_code, key=lambda item: (item.filename, item.name_line or 0))
 
     # TODO: investigate whitelisting options
     # def report(self, sort_by_size=False, make_whitelist=False):
@@ -273,7 +271,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
                 ignore=_ignore_import,
             )
             if alias is not None:
-                self.used_names.add(name_and_alias.name)
+                self.add_used_name(name_and_alias.name)
 
     def _handle_conditional_node(self, node: Union[ast.If, ast.IfExp, ast.While], name: str) -> None:
         if utils.condition_is_always_false(node.test):
@@ -350,6 +348,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
                     type_=type_,
                     filename=self.filename,
                     code_parts=[Part(first_lineno, last_lineno, last_node.col_offset, last_node.end_col_offset or 0)],
+                    scope=self.scope,
                     name_line=last_node.lineno,  # TODO: Maybe this should be a property?
                     name_column=last_node.col_offset,  # TODO: Maybe this should be a property?
                     message=message,
@@ -375,7 +374,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
         if isinstance(node.ctx, ast.Store):
             self._define(self.defined_attrs, node.attr, node)
         elif isinstance(node.ctx, ast.Load):
-            self.used_names.add(node.attr)
+            self.add_used_name(node.attr)
 
     def visit_BinOp(self, node: ast.BinOp) -> None:
         """
@@ -394,7 +393,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
         ):
             attr_name_arg = node.args[1]
             if isinstance(attr_name_arg, ast.Str):
-                self.used_names.add(attr_name_arg.s)
+                self.add_used_name(attr_name_arg.s)
 
         # Parse variable names in new format strings:
         # "{my_var}".format(**locals())
@@ -423,7 +422,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
             vars = re.sub(r"\[\w*\]", "", field_name).split(".")
             for var in vars:
                 if is_identifier(var):
-                    self.used_names.add(var)
+                    self.add_used_name(var)
 
     @staticmethod
     def _is_locals_call(node: ast.AST) -> bool:
@@ -480,7 +479,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
     def visit_Name(self, node: ast.Name) -> None:
         if isinstance(node.ctx, (ast.Load, ast.Del)) and node.id not in IGNORED_VARIABLE_NAMES:
-            self.used_names.add(node.id)
+            self.add_used_name(node.id)
         elif isinstance(node.ctx, (ast.Param, ast.Store)):
             self._define_variable(node.id, node)
 
@@ -489,7 +488,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
             assert isinstance(node.value, (ast.List, ast.Tuple))
             for elt in node.value.elts:
                 if isinstance(elt, ast.Str):
-                    self.used_names.add(elt.s)
+                    self.add_used_name(elt.s)
 
     def visit_While(self, node: ast.While) -> None:
         self._handle_conditional_node(node, "while")
@@ -497,9 +496,17 @@ class DeadCodeVisitor(ast.NodeVisitor):
     # def visit_MatchClass(self, node: ast.MatchClass) -> None:  # type: ignore
     def visit_MatchClass(self, node) -> None:  # type: ignore
         for kwd_attr in node.kwd_attrs:
-            self.used_names.add(kwd_attr)
+            self.add_used_name(kwd_attr)
 
     def visit(self, node: ast.AST) -> None:
+        was_scope_increased = True
+        if isinstance(node, ast.ClassDef):
+            self.scope_parts.append(node.name)
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            self.scope_parts.append(node.name)
+        else:
+            was_scope_increased = False
+
         method_name = "visit_" + node.__class__.__name__
         visitor = getattr(self, method_name, None)
         if self.verbose:
@@ -518,6 +525,9 @@ class DeadCodeVisitor(ast.NodeVisitor):
             self.visit(ast.parse(type_comment, filename="<type_comment>", mode=mode))
 
         self.generic_visit(node)
+
+        if was_scope_increased:
+            self.scope_parts.pop()
 
     def _handle_ast_list(self, ast_list: List[ast.AST]) -> None:
         """

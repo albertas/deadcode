@@ -46,6 +46,7 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
         "type_",
         "filename",
         "code_parts",
+        "scope",
         "name_line",
         "name_column",
         "message",
@@ -63,6 +64,7 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
         # first_column: int = 0,
         # last_column: Optional[int] = None,
         code_parts: Optional[List[Part]] = None,  # TODO: I should use a dataclass instead of a tuple for Part.
+        scope: Optional[str] = None,
         name_line: Optional[int] = None,
         name_column: Optional[int] = None,
         message: str = "",
@@ -70,6 +72,7 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
         self.name = name
         self.type_ = type_
         self.filename = filename
+        self.scope = scope
 
         if code_parts is None:
             self.code_parts = []
@@ -89,6 +92,10 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
 
         self.name_line = name_line
         self.name_column = name_column
+
+    @property
+    def scoped_name(self) -> str:
+        return f"{self.scope}.{self.name}"
 
     @property
     def filename_with_position(self) -> str:
