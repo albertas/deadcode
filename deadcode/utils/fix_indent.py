@@ -2,13 +2,11 @@ import sys
 from typing import Optional
 
 
-def cleandoc(doc: str) -> Optional[str]:
-    """Clean up indentation from docstrings.
+def fix_indent(doc: str) -> Optional[str]:
+    """Finds indentation of a first line and removes it from all following lines.
 
-    This is a modified version of inspect.cleandoc by keeping trailing lines.
-
-    Any whitespace that can be uniformly removed from the second line
-    onwards is removed."""
+    Implemented based on inspect.cleandoc by keeping trailing lines.
+    """
     try:
         lines = doc.expandtabs().split("\n")
     except UnicodeError:
@@ -16,7 +14,7 @@ def cleandoc(doc: str) -> Optional[str]:
     else:
         # Find minimum indentation of any non-blank lines after first line.
         margin = sys.maxsize
-        for line in lines[1:]:
+        for line in lines[0:]:
             content = len(line.lstrip())
             if content:
                 indent = len(line) - content

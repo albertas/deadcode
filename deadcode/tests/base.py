@@ -3,7 +3,7 @@ from typing import Dict, List, Union
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
-from deadcode.utils.cleandoc import cleandoc
+from deadcode.utils.fix_indent import fix_indent
 from deadcode.data_types import Args
 
 
@@ -28,7 +28,7 @@ class BaseTestCase(TestCase):
             self.updated_files[mock.filename] = file_content
             return len(file_content)
 
-        file_content = cleandoc(self.files[mock.filename])
+        file_content = fix_indent(self.files[mock.filename])
         mock.__enter__().read.return_value = file_content
         mock.__enter__().readlines.return_value = [f"{line}\n" for line in file_content.split("\n")]
         mock.__enter__().write.side_effect = cache_file_content
@@ -64,16 +64,39 @@ class BaseTestCase(TestCase):
 
         # os.listdir should be patched with files keys
 
-    def assertFiles(self, expected_updated_files: Dict[str, str]):
+    def assertFiles(self, files: Dict[str, str], removed: List[str] = None):
+        expected_removed_files = removed
+        expected_files = files
+
+        # Check if removed files match
+        removed_filenames = [call.args[0] for call in self.os_remove.mock_calls]
+        if expected_removed_files:
+            self.assertEqual(removed_filenames, expected_removed_files)
+
+        # Check if non removed files are the same
+        unchanged_files = {
+            filename: file_content
+            for filename, file_content in self.files.items()
+            if filename not in self.updated_files and filename not in removed_filenames
+        }
+        self.assertListEqual(
+            list(expected_files.keys()), list(self.updated_files.keys()) + list(unchanged_files.keys())
+        )
+
+        # Check if non removed file contents match (both changed and unchanged)
+        for filename, content in expected_files.items():
+            self.assertEqual(
+                fix_indent(content),
+                fix_indent(self.updated_files.get(filename, unchanged_files.get(filename)) or ""),
+            )
+
+    def assertUpdatedFiles(self, expected_updated_files: Dict[str, str]):
+        """Checks if updated files match expected updated files."""
+
         self.assertListEqual(list(expected_updated_files.keys()), list(self.updated_files.keys()))
 
         for filename, content in expected_updated_files.items():
             self.assertEqual(
-                cleandoc(content),
+                fix_indent(content),
                 self.updated_files[filename],
             )
-        # This will return all the different contents for read.
-        # but only sequentional write operations.
-        #
-        # I would like to have write operation per filename.
-        # self.fix_file_mock.write.assert_called_once_with('class UnusedClass:\n    pass')

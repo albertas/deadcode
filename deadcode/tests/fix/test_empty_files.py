@@ -19,9 +19,7 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
             ("foo.py DC011 Empty file\n\n" "Removed 1 unused code item!"),
         )
 
-        self.assertFiles({})
-
-        self.os_remove.assert_called_once_with("foo.py")
+        self.assertFiles({}, removed=["foo.py"])
 
     def test_file_removal_from_subpath(self):
         self.files = {
@@ -35,6 +33,4 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
             ("bar/foo.py DC011 Empty file\n\n" "Removed 1 unused code item!"),
         )
 
-        self.assertFiles({})
-
-        self.os_remove.assert_called_once_with("bar/foo.py")
+        self.assertFiles({}, removed=["bar/foo.py"])
