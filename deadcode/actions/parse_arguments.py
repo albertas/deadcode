@@ -61,32 +61,42 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
     parser.add_argument(
         "--ignore-definitions",
         help="Ignores definitions of provided names",
-        action="store_true",
-        default=False,
+        nargs="*",
+        action="append",
+        default=[],
+        type=str,
     )
     parser.add_argument(
         "--ignore-definitions-if-inherits-from",
         help="Ignores class definitions if they inherit from provided class name.",
-        action="store_true",
-        default=False,
+        nargs="*",
+        action="append",
+        default=[],
+        type=str,
     )
     parser.add_argument(
         "--ignore-definitions-if-decorated-with",
         help="Ignores definitions of code items, which are decorated with provided decorator names",
-        action="store_true",
-        default=False,
+        nargs="*",
+        action="append",
+        default=[],
+        type=str,
     )
     parser.add_argument(
         "--ignore-names-if-inherits-from",
         help="Ignores names of classes, which inherits from provided class names",
-        action="store_true",
-        default=False,
+        nargs="*",
+        action="append",
+        default=[],
+        type=str,
     )
     parser.add_argument(
         "--ignore-names-if-decorated-with",
         help="Ignores names of code items, which are decorated with provided decorator names",
-        action="store_true",
-        default=False,
+        nargs="*",
+        action="append",
+        default=[],
+        type=str,
     )
 
     parser.add_argument(

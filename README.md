@@ -34,11 +34,11 @@ ignore-names-in-files = ["migrations"]
 |`--exclude`                                | list | Path expressions to completely skip files from being analysed. |
 |`--ignore-names`                           | list | Removes provided list of names from the error output. Regexp expressions to match multiple names can also be provided, e.g. `*Mixin` will match all classes ending with `Mixin`. |
 |`--ignore-names-in-files`                  | list | Unused names from files matching provided path expressions. |
-|`--ignore-names-if-inherits-from`          | -    | Ignores names of classes, which inherits from provided class names. |
-|`--ignore-names-if-decorated-with`         | -    | Ignores names of code items, which are decorated with provided decorator names |
-|`--ignore-definitions`                     | -    | Ignores definitions of provided names. |
-|`--ignore-definitions-if-inherits-from`    | -    | Ignores class definitions if they inherit from provided class name. |
-|`--ignore-definitions-if-decorated-with`   | -    | Ignores definitions of code items, which are decorated with provided decorator names. |
+|`--ignore-names-if-inherits-from`          | list | Ignores names of classes, which inherits from provided class names. |
+|`--ignore-names-if-decorated-with`         | list | Ignores names of code items, which are decorated with provided decorator names |
+|`--ignore-definitions`                     | list | Ignores definitions of provided names. |
+|`--ignore-definitions-if-inherits-from`    | list | Ignores class definitions if they inherit from provided class name. |
+|`--ignore-definitions-if-decorated-with`   | list | Ignores definitions of code items, which are decorated with provided decorator names. |
 |`--no-color`                               | -    | Removes colors from the output. |
 |`--count`                                  | -    | Provides the count of the detected unused names instead of printing them all out. |
 |`--quiet`                                  | -    | Does not output anything. Makefile still fails with exit code 1 if unused names are found. |

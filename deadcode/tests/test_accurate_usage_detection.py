@@ -13,7 +13,6 @@ class TestAccurateUsageDetection(BaseTestCase):
 
         # When new type is defined: during import or definition: scope has to be updated.
 
-
         self.files = {
             "foo.py": """
                 class X:
