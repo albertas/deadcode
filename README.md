@@ -88,10 +88,10 @@ code base is implemented in.
 
 ## Feature requests
 - [x] Replace `.*` with only `*` in regexp matching.
-- [x] Add unused class method detection DC310 check.
+- [x] Add unused class method detection DC004 check.
 - [x] Add `--fix` option to automatically remove detected dead code occourencies
 - [x] Add a check for empty python files.
-- [x] Split error codes into DC010, DC020, DC030 for variables, functions, class.
+- [x] Split error codes into DC001, DC002, DC003 for variables, functions, class.
     - [x] Should have different codes for ignoring name and ignoring whole definition (reserved DCxx0 - ignore name, DCxx1 - ignore definition).
     - [ ] Allow to disable each check separately using:
         - [ ] inline comment.
