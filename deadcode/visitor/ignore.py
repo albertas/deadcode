@@ -47,6 +47,10 @@ def _match(name: Union[str, Path], patterns: List[str], case: bool = True) -> bo
     return any(func(str(name), pattern) for pattern in patterns)
 
 
+def _match_many(names: Union[List[str], List[Path]], patterns: List[str], case: bool = True) -> bool:
+    return any(_match(name, patterns, case) for name in names)
+
+
 def _is_test_file(filename: Path) -> bool:
     return _match(
         filename.resolve(),

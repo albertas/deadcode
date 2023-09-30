@@ -2,7 +2,7 @@ from deadcode.cli import main
 from deadcode.tests.base import BaseTestCase
 
 
-class IgnoreDefinitionsByPatternTests(BaseTestCase):
+class TestIgnoreDefinitionsByPattern(BaseTestCase):
     def test_ignore_class_definition(self):
         self.files = {
             "foo.py": """

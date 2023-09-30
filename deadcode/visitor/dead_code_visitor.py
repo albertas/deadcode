@@ -22,6 +22,7 @@ from deadcode.visitor.ignore import (
     IGNORED_VARIABLE_NAMES,
     _get_unused_items,
     _match,
+    _match_many,
     _assigns_special_variable__all__,
     _ignore_class,
     _ignore_import,
@@ -517,7 +518,19 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
         # TODO: use decorator for this code chunk
         should_turn_off_ignore_new_definitions = False
-        if (node_name := getattr(node, "name", None)) and _match(node_name, self.args.ignore_definitions):
+
+        if (
+            (
+                # Name is in ignore_definitions
+                (node_name := getattr(node, "name", None)) and
+                _match(node_name, self.args.ignore_definitions)
+            ) or (
+                # Class inherits from ignore_definitions_if_inherits_from
+                (bases_attr := getattr(node, "bases", [])) and
+                (bases := [base.id for base in bases_attr]) and
+                _match_many(bases, self.args.ignore_definitions_if_inherits_from)
+            )
+        ):
             if not self.should_ignore_new_definitions:
                 self.should_ignore_new_definitions = True
                 should_turn_off_ignore_new_definitions = True
