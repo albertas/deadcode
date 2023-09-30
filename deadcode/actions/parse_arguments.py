@@ -128,8 +128,9 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
 
     parsed_args = parser.parse_args(args).__dict__
 
-    for field_name in ["exclude", "ignore_names", "ignore_names_in_files"]:
-        parsed_args[field_name] = flatten_lists_of_comma_separated_values(parsed_args.get(field_name))
+    for arg_name, arg_value in parsed_args.items():
+        if isinstance(arg_value, list) and arg_name != "paths":
+            parsed_args[arg_name] = flatten_lists_of_comma_separated_values(parsed_args.get(arg_name))
 
     # Extend the Args with the values provided in the pyproject.toml
     for key, item in parse_pyproject_toml().items():

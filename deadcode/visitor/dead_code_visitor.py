@@ -16,6 +16,7 @@ from deadcode.actions.parse_abstract_syntax_tree import parse_abstract_syntax_tr
 
 # TODO: from deadcode.visitor import noqa
 from deadcode.visitor import lines
+from deadcode.utils.print_ast import print_ast as show
 from deadcode.visitor.ignore import (
     # TODO: ERROR_CODES,
     IGNORED_VARIABLE_NAMES,
@@ -61,6 +62,10 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
         # Note: scope is a stack containing current module name, class names, function names
         self.scope_parts: List[str] = []
+
+        # This flag is used to stop registering code definitions in a code item
+        # during recursive its parsing
+        self.should_ignore_new_definitions = False
 
         # Workaround
         # self.noqa_lines = {}
@@ -329,6 +334,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
                 (ignore and ignore(self.filename, name))
                 or _match(name, self.args.ignore_names)
                 or _match(self.filename, self.args.ignore_names_in_files)
+                or self.should_ignore_new_definitions
                 # TODO: noqa comments should be supported
                 # or noqa.ignore_line(self.noqa_lines, lineno, ERROR_CODES[typ])
             )
@@ -499,6 +505,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
             self.add_used_name(kwd_attr)
 
     def visit(self, node: ast.AST) -> None:
+        # TODO: use decorator for this code chunk
         was_scope_increased = True
         if isinstance(node, ast.ClassDef):
             self.scope_parts.append(node.name)
@@ -506,6 +513,14 @@ class DeadCodeVisitor(ast.NodeVisitor):
             self.scope_parts.append(node.name)
         else:
             was_scope_increased = False
+
+
+        # TODO: use decorator for this code chunk
+        should_turn_off_ignore_new_definitions = False
+        if (node_name := getattr(node, "name", None)) and _match(node_name, self.args.ignore_definitions):
+            if not self.should_ignore_new_definitions:
+                self.should_ignore_new_definitions = True
+                should_turn_off_ignore_new_definitions = True
 
         method_name = "visit_" + node.__class__.__name__
         visitor = getattr(self, method_name, None)
@@ -526,6 +541,13 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
         self.generic_visit(node)
 
+
+        # TODO: use decorator for this code chunk
+        if should_turn_off_ignore_new_definitions:
+            self.should_ignore_new_definitions = False
+
+
+        # TODO: use decorator for this code chunk
         if was_scope_increased:
             self.scope_parts.pop()
 
