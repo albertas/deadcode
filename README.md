@@ -100,8 +100,8 @@ code base is implemented in.
 - [ ] Add target python version option, if specified it will be used for code base check.
 - [ ] Add a `--depth` parameter to ignore nested code.. (To only check global scope use 0).
 - [ ] Add options:
-    - [ ] --ignore-definitions
-    - [ ] --ignore-definitions-if-inherits-from
+    - [x] --ignore-definitions
+    - [x] --ignore-definitions-if-inherits-from
     - [ ] --ignore-definitions-if-decorated-with
     - [ ] --ignore-names-if-inherits-from
     - [ ] --ignore-names-if-decorated-with
