@@ -15,8 +15,8 @@ from deadcode.visitor import utils
 from deadcode.actions.parse_abstract_syntax_tree import parse_abstract_syntax_tree
 
 # TODO: from deadcode.visitor import noqa
+from deadcode.utils.print_ast import print_ast as show  # noqa: F401
 from deadcode.visitor import lines
-from deadcode.utils.print_ast import print_ast as show
 from deadcode.visitor.ignore import (
     # TODO: ERROR_CODES,
     IGNORED_VARIABLE_NAMES,
@@ -515,21 +515,18 @@ class DeadCodeVisitor(ast.NodeVisitor):
         else:
             was_scope_increased = False
 
-
         # TODO: use decorator for this code chunk
         should_turn_off_ignore_new_definitions = False
 
         if (
-            (
-                # Name is in ignore_definitions
-                (node_name := getattr(node, "name", None)) and
-                _match(node_name, self.args.ignore_definitions)
-            ) or (
-                # Class inherits from ignore_definitions_if_inherits_from
-                (bases_attr := getattr(node, "bases", [])) and
-                (bases := [base.id for base in bases_attr]) and
-                _match_many(bases, self.args.ignore_definitions_if_inherits_from)
-            )
+            # Name is in ignore_definitions
+            (node_name := getattr(node, "name", None))
+            and _match(node_name, self.args.ignore_definitions)
+        ) or (
+            # Class inherits from ignore_definitions_if_inherits_from
+            (bases_attr := getattr(node, "bases", []))
+            and (bases := [base.id for base in bases_attr if getattr(base, "id", None)])
+            and _match_many(bases, self.args.ignore_definitions_if_inherits_from)
         ):
             if not self.should_ignore_new_definitions:
                 self.should_ignore_new_definitions = True
@@ -554,11 +551,9 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
         self.generic_visit(node)
 
-
         # TODO: use decorator for this code chunk
         if should_turn_off_ignore_new_definitions:
             self.should_ignore_new_definitions = False
-
 
         # TODO: use decorator for this code chunk
         if was_scope_increased:

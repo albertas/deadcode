@@ -20,8 +20,9 @@ class TestIgnoreDefinitionsByPattern(BaseTestCase):
 
         self.assertEqual(unused_names, None)
 
-        self.assertFiles({
-            "foo.py": """
+        self.assertFiles(
+            {
+                "foo.py": """
                 class UnusedClass:
                     unused_attribute = None
 
@@ -31,7 +32,8 @@ class TestIgnoreDefinitionsByPattern(BaseTestCase):
                     class UnusedInnerClass:
                         unused_class_attribute = ""
                 """
-        })
+            }
+        )
 
     def test_ignore_class_definition_another_class_is_detected(self):
         self.files = {
@@ -56,8 +58,9 @@ class TestIgnoreDefinitionsByPattern(BaseTestCase):
             ("foo.py:10:0: DC003 Class `AnotherUnusedClass` is never used\n\nRemoved 1 unused code item!"),
         )
 
-        self.assertFiles({
-            "foo.py": """
+        self.assertFiles(
+            {
+                "foo.py": """
                 class UnusedClass:
                     unused_attribute = None
 
@@ -67,7 +70,8 @@ class TestIgnoreDefinitionsByPattern(BaseTestCase):
                     class UnusedInnerClass:
                         unused_class_attribute = ""
                 """
-        })
+            }
+        )
 
     def test_ignore_class_definition_matched_by_pattern(self):
         self.files = {
@@ -86,8 +90,9 @@ class TestIgnoreDefinitionsByPattern(BaseTestCase):
 
         self.assertEqual(unused_names, None)
 
-        self.assertFiles({
-            "foo.py": """
+        self.assertFiles(
+            {
+                "foo.py": """
                 class UnusedClass:
                     unused_attribute = None
 
@@ -97,4 +102,5 @@ class TestIgnoreDefinitionsByPattern(BaseTestCase):
                     class UnusedInnerClass:
                         unused_class_attribute = ""
                 """
-        })
+            }
+        )
