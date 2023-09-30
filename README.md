@@ -69,7 +69,7 @@ ignore-names-in-files = ["migrations"]
 [ruff](https://pypi.org/project/ruff/) and
 [flake8](https://pypi.org/project/flake8/) - don't have rules for unused global
 code detection, only for local ones `F823`, `F841`, `F842`. `deadcode` package
-tries to add a new `DCXXX` checks for detecting variables/functions/classes
+tries to add new `DCXXX` checks for detecting variables/functions/classes/files
 which are not used in a whole code base.
 
 `deadcode` - is supposed to be used inline with other static code checkers like `ruff`.
@@ -77,7 +77,8 @@ which are not used in a whole code base.
 There is an alternative [vulture](https://pypi.org/project/vulture/) package.
 
 ## Known limitations
-If the same unused name is repeated in several files - it wont be detected.
+In case there are several definitions using the same name - they all wont be
+reported if at least one usage of that name is being detected.
 
 Files with syntax errors will be ignored, because `deadcode` uses `ast` to
 build abstract syntax tree for name usage detection.
