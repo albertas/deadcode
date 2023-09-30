@@ -17,8 +17,11 @@ class Args:
     paths: List[Pathname]
     exclude: List[Pathname]
     ignore_definitions: List[Pathname]
+    ignore_definitions_if_decorated_with: List[Pathname]
     ignore_definitions_if_inherits_from: List[Pathname]
     ignore_names: List[Pathname]
+    ignore_names_if_decorated_with: List[Pathname]
+    ignore_names_if_inherits_from: List[Pathname]
     ignore_names_in_files: List[Pathname]
     no_color: bool
     quiet: bool
