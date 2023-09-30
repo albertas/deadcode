@@ -63,7 +63,7 @@ multi_line_output = 3
 known_third_party = ["deadcode"]
 
 [tool.deadcode]
-ignore_names = ["visit_*", "ERROR_CODES", "parse_noqa", "ignore_line", "fix_indent", "scoped_name"]
+ignore_names = ["visit_*", "ERROR_CODES", "parse_noqa", "ignore_line", "fix_indent", "scoped_name", "print_ast"]
 exclude = ["tests"]
 
 [tool.black]
