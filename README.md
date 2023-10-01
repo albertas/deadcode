@@ -29,21 +29,28 @@ ignore-names-in-files = ["migrations"]
 ### Command line options
 
 | Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Meaning  |
-|-------------------------------------------|------|----------|
-|`--fix`                                    | -    | Automatically remove detected unused code parts from the code base. |
-|`--exclude`                                | list | Path expressions to completely skip files from being analysed. |
-|`--ignore-names`                           | list | Removes provided list of names from the error output. Regexp expressions to match multiple names can also be provided, e.g. `*Mixin` will match all classes ending with `Mixin`. |
-|`--ignore-names-in-files`                  | list | Unused names from files matching provided path expressions. |
-|`--ignore-names-if-inherits-from`          | list | Ignores names of classes, which inherits from provided class names. |
-|`--ignore-names-if-decorated-with`         | list | Ignores names of code items, which are decorated with one of the provided decorator names. |
-|`--ignore-if-decorated-with`               | list | Ignores both the name and its definition if its decorated with one of the provided decorator names. |
-|`--ignore-if-inherits-from`                | list | Ignores both the name and its definition if the class inerits from the provided class name. |
-|`--ignore-definitions`                     | list | Ignores definitions of provided names. |
-|`--ignore-definitions-if-inherits-from`    | list | Ignores class definitions if they inherit from provided class name. |
-|`--ignore-definitions-if-decorated-with`   | list | Ignores definitions of code items, which are decorated with provided decorator names. |
+|-------------------------------------------|------|----------------------------------------------------------------------|
+|`--fix`                                    | -    | Automatically remove detected unused code expressions from the code base. |
+|`--exclude`                                | list | Filenames (or path expressions), which will be completely skipped without being analysed. |
+|`--ignore-names`                           | list | Removes provided list of names from the output. Regexp expressions to match multiple names can also be provided, e.g. `*Mixin` will match all classes ending with `Mixin`. |
+|`--ignore-names-in-files`                  | list | Ignores unused names in files, which filenames match provided path expressions. |
+|`--ignore-names-if-inherits-from`          | list | Ignores names of classes, which inherit from provided class names. |
+|`--ignore-names-if-decorated-with`         | list | Ignores names of an expression, which is decorated with one of the provided decorator names. |
+|`--ignore-bodies-of`                       | list | Ignores body of an expression if its name matches any of the provided names. |
+|`--ignore-bodies-if-decorated-with`        | list | Ignores body of an expression if its decorated with one of the provided decorator names. |
+|`--ignore-bodies-if-inherits-from`         | list | Ignores body of a class if it inherits from any of the provided class names. |
+|`--ignore-definitions`                     | list | Ignores definition (including name and body) if a name of an expression matches any of the provided ones. |
+|`--ignore-definitions-if-inherits-from`    | list | Ignores definition (including name and body) of a class if it inherits from any of the provided class names. |
+|`--ignore-definitions-if-decorated-with`   | list | Ignores definition (including name and body) of an expression, which is decorated with any of the provided decorator names. |
 |`--no-color`                               | -    | Removes colors from the output. |
 |`--count`                                  | -    | Provides the count of the detected unused names instead of printing them all out. |
 |`--quiet`                                  | -    | Does not output anything. Makefile still fails with exit code 1 if unused names are found. |
+
+
+##### Glossory
+name - variable, function or class name.
+body - code block which follows after `:` in function or class definition.
+definition - whole class or function definition expression including its name and body.
 
 
 ## Rules
