@@ -68,6 +68,8 @@ ignore_names = [
     "fix",
     "fix_indent",
     "ignore_definitions_if_decorated_with",
+    "ignore_if_decorated_with",
+    "ignore_if_inherits_from",
     "ignore_line",
     "ignore_names_if_decorated_with",
     "ignore_names_if_inherits_from",

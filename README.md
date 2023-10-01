@@ -35,7 +35,9 @@ ignore-names-in-files = ["migrations"]
 |`--ignore-names`                           | list | Removes provided list of names from the error output. Regexp expressions to match multiple names can also be provided, e.g. `*Mixin` will match all classes ending with `Mixin`. |
 |`--ignore-names-in-files`                  | list | Unused names from files matching provided path expressions. |
 |`--ignore-names-if-inherits-from`          | list | Ignores names of classes, which inherits from provided class names. |
-|`--ignore-names-if-decorated-with`         | list | Ignores names of code items, which are decorated with provided decorator names |
+|`--ignore-names-if-decorated-with`         | list | Ignores names of code items, which are decorated with one of the provided decorator names. |
+|`--ignore-if-decorated-with`               | list | Ignores both the name and its definition if its decorated with one of the provided decorator names. |
+|`--ignore-if-inherits-from`                | list | Ignores both the name and its definition if the class inerits from the provided class name. |
 |`--ignore-definitions`                     | list | Ignores definitions of provided names. |
 |`--ignore-definitions-if-inherits-from`    | list | Ignores class definitions if they inherit from provided class name. |
 |`--ignore-definitions-if-decorated-with`   | list | Ignores definitions of code items, which are decorated with provided decorator names. |

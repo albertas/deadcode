@@ -48,24 +48,7 @@ class BaseTestCase(TestCase):
 
         self.os_remove = self.patch("deadcode.actions.fix_unused_code.os.remove")
 
-        self.args = Args(
-            fix=False,
-            verbose=False,
-            paths=[],
-            exclude=[],
-            ignore_definitions=[],
-            ignore_definitions_if_decorated_with=[],
-            ignore_definitions_if_inherits_from=[],
-            ignore_names=[],
-            ignore_names_if_decorated_with=[],
-            ignore_names_if_inherits_from=[],
-            ignore_names_in_files=[],
-            no_color=False,
-            quiet=False,
-            count=False,
-        )
-
-        # os.listdir should be patched with files keys
+        self.args = Args()
 
     def assertFiles(self, files: Dict[str, str], removed: List[str] = None):
         expected_removed_files = removed

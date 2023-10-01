@@ -1,7 +1,7 @@
 import ast
 
 from dataclasses import dataclass
-from typing import List, NamedTuple
+from typing import Iterable, NamedTuple
 
 
 AbstractSyntaxTree = ast.Module  # Should be module instead of ast
@@ -12,20 +12,22 @@ Pathname = str  # Can contain wildewards
 
 @dataclass
 class Args:
-    fix: bool
-    verbose: bool
-    paths: List[Pathname]
-    exclude: List[Pathname]
-    ignore_definitions: List[Pathname]
-    ignore_definitions_if_decorated_with: List[Pathname]
-    ignore_definitions_if_inherits_from: List[Pathname]
-    ignore_names: List[Pathname]
-    ignore_names_if_decorated_with: List[Pathname]
-    ignore_names_if_inherits_from: List[Pathname]
-    ignore_names_in_files: List[Pathname]
-    no_color: bool
-    quiet: bool
-    count: bool
+    fix: bool = False
+    verbose: bool = False
+    paths: Iterable[Pathname] = ()
+    exclude: Iterable[Pathname] = ()
+    ignore_definitions: Iterable[Pathname] = ()
+    ignore_definitions_if_decorated_with: Iterable[Pathname] = ()
+    ignore_definitions_if_inherits_from: Iterable[Pathname] = ()
+    ignore_if_decorated_with: Iterable[Pathname] = ()
+    ignore_if_inherits_from: Iterable[Pathname] = ()
+    ignore_names: Iterable[Pathname] = ()
+    ignore_names_if_decorated_with: Iterable[Pathname] = ()
+    ignore_names_if_inherits_from: Iterable[Pathname] = ()
+    ignore_names_in_files: Iterable[Pathname] = ()
+    no_color: bool = False
+    quiet: bool = False
+    count: bool = False
 
 
 class Part(NamedTuple):

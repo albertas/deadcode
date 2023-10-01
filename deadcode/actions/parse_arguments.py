@@ -82,6 +82,24 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
         default=[],
         type=str,
     )
+
+    parser.add_argument(
+        "--ignore-if-decorated-with",
+        help="Ignores both the name and its definition if its decorated with one of the provided decorator names.",
+        nargs="*",
+        action="append",
+        default=[],
+        type=str,
+    )
+    parser.add_argument(
+        "--ignore-if-inherits-from",
+        help="Ignores both the name and its definition if the class inerits from the provided class name.",
+        nargs="*",
+        action="append",
+        default=[],
+        type=str,
+    )
+
     parser.add_argument(
         "--ignore-names-if-inherits-from",
         help="Ignores names of classes, which inherits from provided class names",

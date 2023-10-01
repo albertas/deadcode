@@ -1,12 +1,13 @@
 import ast
-import sys
+from itertools import chain
+import os
 import re
 import string
-import os
+import sys
 
 from pathlib import Path
 
-from typing import Callable, List, Optional, Set, TextIO, Union
+from typing import Callable, List, Optional, Set, TextIO, Union, Iterable
 from deadcode.constants import UnusedCodeType
 from deadcode.data_types import Args, Part
 from deadcode.visitor.code_item import CodeItem
@@ -189,21 +190,21 @@ class DeadCodeVisitor(ast.NodeVisitor):
         #         module_string = module_data.decode("utf-8")
         #         self.scan(module_string, filename=path)
 
-    def get_unused_code_items(self, sort_by_size: bool = False) -> List[CodeItem]:
+    def get_unused_code_items(self, sort_by_size: bool = False) -> Iterable[CodeItem]:
         """
         Return ordered list of unused CodeItem objects.
         """
 
-        unused_code = (
-            self.unused_attrs
-            + self.unused_classes
-            + self.unused_funcs
-            + self.unused_imports
-            + self.unused_methods
-            + self.unused_props
-            + self.unused_vars
-            + self.unreachable_code
-            + self.unused_file
+        unused_code = chain(
+            self.unused_attrs,
+            self.unused_classes,
+            self.unused_funcs,
+            self.unused_imports,
+            self.unused_methods,
+            self.unused_props,
+            self.unused_vars,
+            self.unreachable_code,
+            self.unused_file,
         )
 
         return sorted(unused_code, key=lambda item: (item.filename, item.name_line or 0))
@@ -222,31 +223,31 @@ class DeadCodeVisitor(ast.NodeVisitor):
     #     return self.found_dead_code_or_error
 
     @property
-    def unused_classes(self) -> List[CodeItem]:
+    def unused_classes(self) -> Iterable[CodeItem]:
         return _get_unused_items(self.defined_classes, self.used_names)
 
     @property
-    def unused_funcs(self) -> List[CodeItem]:
+    def unused_funcs(self) -> Iterable[CodeItem]:
         return _get_unused_items(self.defined_funcs, self.used_names)
 
     @property
-    def unused_imports(self) -> List[CodeItem]:
+    def unused_imports(self) -> Iterable[CodeItem]:
         return _get_unused_items(self.defined_imports, self.used_names)
 
     @property
-    def unused_methods(self) -> List[CodeItem]:
+    def unused_methods(self) -> Iterable[CodeItem]:
         return _get_unused_items(self.defined_methods, self.used_names)
 
     @property
-    def unused_props(self) -> List[CodeItem]:
+    def unused_props(self) -> Iterable[CodeItem]:
         return _get_unused_items(self.defined_props, self.used_names)
 
     @property
-    def unused_vars(self) -> List[CodeItem]:
+    def unused_vars(self) -> Iterable[CodeItem]:
         return _get_unused_items(self.defined_vars, self.used_names)
 
     @property
-    def unused_attrs(self) -> List[CodeItem]:
+    def unused_attrs(self) -> Iterable[CodeItem]:
         return _get_unused_items(self.defined_attrs, self.used_names)
 
     def _log(self, *args, file: Optional[TextIO] = None, force: bool = False) -> None:  # type: ignore

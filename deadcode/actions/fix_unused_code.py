@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import List
+from typing import Iterable
 import os
 
 from deadcode.actions.merge_overlaping_file_parts import merge_overlaping_file_parts
@@ -8,7 +8,7 @@ from deadcode.visitor.code_item import CodeItem
 from deadcode.utils.flatten_lists import flatten_list
 
 
-def fix_unused_code(unused_items: List[CodeItem]) -> None:
+def fix_unused_code(unused_items: Iterable[CodeItem]) -> None:
     # Reading and writing should be patched in this file.
 
     # Group unused_names by filenames
