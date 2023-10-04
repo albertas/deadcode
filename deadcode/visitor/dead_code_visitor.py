@@ -519,15 +519,17 @@ class DeadCodeVisitor(ast.NodeVisitor):
         # TODO: use decorator for this code chunk
         should_turn_off_ignore_new_definitions = False
 
+
+        node_name = getattr(node, "name", None)
+        bases_attr = getattr(node, "bases", [])
+        bases = [base.id for base in bases_attr if getattr(base, "id", None)]
+
         if (
             # Name is in ignore_definitions
-            (node_name := getattr(node, "name", None))
-            and _match(node_name, self.args.ignore_definitions)
+            node_name and _match(node_name, self.args.ignore_definitions)
         ) or (
             # Class inherits from ignore_definitions_if_inherits_from
-            (bases_attr := getattr(node, "bases", []))
-            and (bases := [base.id for base in bases_attr if getattr(base, "id", None)])
-            and _match_many(bases, self.args.ignore_definitions_if_inherits_from)
+            bases_attr and bases and _match_many(bases, self.args.ignore_definitions_if_inherits_from)
         ):
             if not self.should_ignore_new_definitions:
                 self.should_ignore_new_definitions = True
@@ -542,6 +544,12 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
         if visitor:
             visitor(node)
+
+        # Class inherits from ignore_bodies_if_inherits_from
+        if bases and _match_many(bases, self.args.ignore_bodies_if_inherits_from):
+            if not self.should_ignore_new_definitions:
+                self.should_ignore_new_definitions = True
+                should_turn_off_ignore_new_definitions = True
 
         # There isn't a clean subset of node types that might have type
         # comments, so just check all of them.
