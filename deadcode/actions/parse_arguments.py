@@ -29,7 +29,7 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
     parser.add_argument("paths", help="Paths where to search for python files", nargs="+")
     parser.add_argument(
         "--fix",
-        help="Removes unused code",
+        help="Automatically remove detected unused code expressions from the code base.",
         action="store_true",
         default=False,
     )
@@ -43,7 +43,7 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
     )
     parser.add_argument(
         "--exclude",
-        help="PATHS to files not to analyse at all (comma separated values)",
+        help="Filenames (or path expressions), which will be completely skipped without being analysed.",
         nargs="*",
         action="append",
         default=[],
@@ -51,16 +51,45 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
     )
     parser.add_argument(
         "--ignore-names",
-        help="NAMES not to report (comma separated values)",
+        help=(
+            "Removes provided list of names from the output. "
+            "Regexp expressions to match multiple names can also be provided."
+        ),
         nargs="*",
         action="append",
         default=[],
         type=str,
     )
-
+    parser.add_argument(
+        "--ignore-bodies-of",
+        help="Ignores body of an expression if its name matches any of the provided names.",
+        nargs="*",
+        action="append",
+        default=[],
+        type=str,
+    )
+    parser.add_argument(
+        "--ignore-bodies-if-decorated-with",
+        help="Ignores body of an expression if its decorated with one of the provided decorator names.",
+        nargs="*",
+        action="append",
+        default=[],
+        type=str,
+    )
+    parser.add_argument(
+        "--ignore-bodies-if-inherits-from",
+        help="Ignores body of a class if it inherits from any of the provided class names.",
+        nargs="*",
+        action="append",
+        default=[],
+        type=str,
+    )
     parser.add_argument(
         "--ignore-definitions",
-        help="Ignores definitions of provided names",
+        help=(
+            "Ignores definition (including name and body) if a "
+            "name of an expression matches any of the provided ones."
+        ),
         nargs="*",
         action="append",
         default=[],
@@ -68,7 +97,10 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
     )
     parser.add_argument(
         "--ignore-definitions-if-inherits-from",
-        help="Ignores class definitions if they inherit from provided class name.",
+        help=(
+            "Ignores definition (including name and body) of a class if "
+            "it inherits from any of the provided class names."
+        ),
         nargs="*",
         action="append",
         default=[],
@@ -76,7 +108,10 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
     )
     parser.add_argument(
         "--ignore-definitions-if-decorated-with",
-        help="Ignores definitions of code items, which are decorated with provided decorator names",
+        help=(
+            "Ignores definition (including name and body) of an expression, "
+            "which is decorated with any of the provided decorator names."
+        ),
         nargs="*",
         action="append",
         default=[],
@@ -102,7 +137,7 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
 
     parser.add_argument(
         "--ignore-names-if-inherits-from",
-        help="Ignores names of classes, which inherits from provided class names",
+        help="Ignores names of classes, which inherit from provided class names.",
         nargs="*",
         action="append",
         default=[],
@@ -110,7 +145,7 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
     )
     parser.add_argument(
         "--ignore-names-if-decorated-with",
-        help="Ignores names of code items, which are decorated with provided decorator names",
+        help="Ignores names of an expression, which is decorated with one of the provided decorator names.",
         nargs="*",
         action="append",
         default=[],
@@ -119,7 +154,7 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
 
     parser.add_argument(
         "--ignore-names-in-files",
-        help="PATHS to files not to report NAMES from (comma separated values)",
+        help="Ignores unused names in files, which filenames match provided path expressions.",
         nargs="*",
         action="append",
         default=[],
