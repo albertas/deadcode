@@ -1,5 +1,3 @@
-from unittest import skip
-
 from deadcode.cli import main
 from deadcode.tests.base import BaseTestCase
 
@@ -27,9 +25,7 @@ class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
                 """
         }
 
-        output = main(
-            ["ignore_names_by_pattern.py", "--no-color", "--ignore-bodies-if-inherits-from=Base", "--fix"]
-        )
+        output = main(["ignore_names_by_pattern.py", "--no-color", "--ignore-bodies-if-inherits-from=Base", "--fix"])
 
         self.assertFiles(
             {
