@@ -16,9 +16,21 @@ NOQA_REGEXP = re.compile(
 
 NOQA_CODE_MAP = {
     # flake8 F401: module imported but unused.
-    "F401": "V104",
+    "F401": "DC007",
     # flake8 F841: local variable is assigned to but never used.
-    "F841": "V107",
+    "F841": "DC001",
+    "DC001": "DC001",
+    "DC002": "DC002",
+    "DC003": "DC003",
+    "DC004": "DC004",
+    "DC005": "DC005",
+    "DC006": "DC006",
+    "DC007": "DC007",
+    "DC008": "DC008",
+    "DC009": "DC009",
+    "DC011": "DC011",
+    "DC012": "DC012",
+    "DC013": "DC013",
 }
 
 
@@ -29,7 +41,7 @@ def _parse_error_codes(matches_dict: Dict[str, str]) -> List[str]:
 
 def parse_noqa(code: str) -> Dict[str, Set[int]]:
     noqa_lines = defaultdict(set)
-    for lineno, line in enumerate(code, start=1):
+    for lineno, line in enumerate(code.split("\n"), start=1):
         match = NOQA_REGEXP.search(line)
         if match:
             for error_code in _parse_error_codes(match.groupdict()):

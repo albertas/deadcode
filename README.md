@@ -71,6 +71,15 @@ definition - whole class or function definition expression including its name an
 
 `*` - are not yet implemented rules.
 
+## Ignoring checks with noqa comments
+Inline `# noqa` comments can be used to ignore `deadcode` checks.
+E.g. unused `Foo` class wont be detected/fixed because `# noqa: DC003` comment is used:
+
+```python
+class Foo:  # noqa: DC003
+    pass
+```
+
 ## Contributing
 - `make check` - runs unit tests and other checks using virtual environment.
 

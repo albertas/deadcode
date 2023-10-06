@@ -7,7 +7,7 @@ import sys
 
 from pathlib import Path
 
-from typing import Callable, List, Optional, Set, TextIO, Union, Iterable
+from typing import Callable, Dict, List, Optional, Set, TextIO, Union, Iterable
 from deadcode.constants import UnusedCodeType
 from deadcode.data_types import Args, Part
 from deadcode.visitor.code_item import CodeItem
@@ -15,11 +15,11 @@ from deadcode.visitor.utils import LoggingList, LoggingSet
 from deadcode.visitor import utils
 from deadcode.actions.parse_abstract_syntax_tree import parse_abstract_syntax_tree
 
-# TODO: from deadcode.visitor import noqa
+from deadcode.visitor import noqa
 from deadcode.utils.print_ast import print_ast as show  # noqa: F401
 from deadcode.visitor import lines
 from deadcode.visitor.ignore import (
-    # TODO: ERROR_CODES,
+    ERROR_CODES,
     IGNORED_VARIABLE_NAMES,
     _get_unused_items,
     _match,
@@ -69,8 +69,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
         # during recursive its parsing
         self.should_ignore_new_definitions = False
 
-        # Workaround
-        # self.noqa_lines = {}
+        self.noqa_lines: Dict[str, Set[int]] = {}
 
     @property
     def scope(self) -> str:
@@ -162,6 +161,8 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
                 file_content = f.read()
                 if file_content.strip() or (filename.startswith("__") and filename.endswith("__.py")):
+                    self.noqa_lines = noqa.parse_noqa(file_content)
+
                     node = parse_abstract_syntax_tree(file_content, args=self.args, filename=file_path)
                     self.filename = Path(file_path)
                     self.visit(node)
@@ -331,21 +332,20 @@ class DeadCodeVisitor(ast.NodeVisitor):
             f"ignore_definitions_if_inherits_from={self.args.ignore_definitions_if_inherits_from}"
         )
 
-        def ignored(lineno: int) -> bool:
+        def ignored(lineno: int, type_: UnusedCodeType) -> bool:
             return bool(
                 (ignore and ignore(self.filename, name))
                 or _match(name, self.args.ignore_names)
                 or _match(self.filename, self.args.ignore_names_in_files)
                 or self.should_ignore_new_definitions
-                # TODO: noqa comments should be supported
-                # or noqa.ignore_line(self.noqa_lines, lineno, ERROR_CODES[typ])
+                or noqa.ignore_line(self.noqa_lines, lineno, ERROR_CODES[type_])
             )
 
         last_node = last_node or first_node
         type_: UnusedCodeType = collection.type_  # type: ignore
         first_lineno = lines.get_first_line_number(first_node)
 
-        if ignored(first_lineno):
+        if ignored(first_lineno, type_=type_):
             self._log(f'Ignoring {type_} "{name}"')
         else:
             last_lineno = lines.get_last_line_number(last_node)
