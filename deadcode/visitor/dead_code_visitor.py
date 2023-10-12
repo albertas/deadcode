@@ -204,7 +204,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
             self.unused_methods,
             self.unused_props,
             self.unused_vars,
-            self.unreachable_code,
+            # self.unreachable_code,  # TODO: removal of unreachable_code has a lot of edge cases
             self.unused_file,
         )
 
