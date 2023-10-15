@@ -365,7 +365,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
             message=message,
             inherits_from=inherits_from,
         )
-        self.scopes.add_to_scope(code_item)
+        self.scopes.add(code_item)
 
         if ignored(first_lineno, type_=type_):
             self._log(f'Ignoring {type_} "{name}"')
@@ -461,16 +461,10 @@ class DeadCodeVisitor(ast.NodeVisitor):
         bases = [base.id for base in bases_attr if getattr(base, "id", None)]
         inherits_from = bases[:]
 
-        current_scope = list((self.scopes.get_scope(self.scope) or {}).keys())
-
         for base in bases:
-            if base in current_scope:
-                try:
-                    base_code_item = current_scope[current_scope.index(base)]
-                    if parent_inherits_from := getattr(base_code_item, "inherits_from", None):
-                        inherits_from.extend(parent_inherits_from)
-                except ValueError:
-                    logger.error("Was not able to resolve base string to code_item in current scope")
+            if base_code_item := self.scopes.get(name=base, scope=self.scope):
+                if base_inherits_from := getattr(base_code_item, "inherits_from", None):
+                    inherits_from.extend(base_inherits_from)
 
         return inherits_from
 
