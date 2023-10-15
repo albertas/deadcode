@@ -83,3 +83,39 @@ class TestScopeTracking(BaseTestCase):
         )
 
         self.assertIsNone(result)
+
+    def test_take_parent_scopes_into_consideration_when_searching_for_definition(self):
+        self.files = {
+            "foo.py": """
+                class Foo:
+                    pass
+
+
+                class Bar(Foo):
+                    class Spam(Foo):
+                        pass
+
+                    class Eggs(Spam):
+                        pass
+                """
+        }
+
+        result = main(["foo.py", "--no-color", "--fix", "--ignore-definitions-if-inherits-from=Foo"])
+        self.assertFiles(
+            {
+                "foo.py": """
+                class Foo:
+                    pass
+
+
+                class Bar(Foo):
+                    class Spam(Foo):
+                        pass
+
+                    class Eggs(Spam):
+                        pass
+                """
+            }
+        )
+
+        self.assertIsNone(result)
