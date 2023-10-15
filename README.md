@@ -124,3 +124,7 @@ code base is implemented in.
     - [ ] --ignore-names-if-inherits-from
     - [ ] --ignore-names-if-decorated-with
 - [ ] Distinguish between definitions with same name, but different files.
+- [ ] Repeated application of `deadcode` till the output stops changing.
+- [ ] Unreachable code detection and fixing.
+- [ ] `--fix --dry [filenames]` - only show whats about to change in the listed filenames.
+- [ ] Benchmarking performance with larger projects (time, CPU and memory consumption) in order to optimize.
