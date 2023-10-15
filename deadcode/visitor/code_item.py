@@ -29,7 +29,7 @@
 
 
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 from deadcode.constants import UnusedCodeType, ERROR_TYPE_TO_ERROR_CODE
 
@@ -47,6 +47,7 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
         "filename",
         "code_parts",
         "scope",
+        "inherits_from",
         "name_line",
         "name_column",
         "message",
@@ -65,6 +66,7 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
         # last_column: Optional[int] = None,
         code_parts: Optional[List[Part]] = None,  # TODO: I should use a dataclass instead of a tuple for Part.
         scope: Optional[str] = None,
+        inherits_from: Optional[List[str]] = None,
         name_line: Optional[int] = None,
         name_column: Optional[int] = None,
         message: str = "",
@@ -73,6 +75,7 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
         self.type_ = type_
         self.filename = filename
         self.scope = scope
+        self.inherits_from = inherits_from
 
         if code_parts is None:
             self.code_parts = []
@@ -132,21 +135,16 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
     #             prefix = "_."
     #         return "{}{}  # unused {} ({}:{:d})".format(prefix, self.name, self.type_, filename, self.first_lineno)
 
-    def _tuple(self) -> Tuple[Path, int, str]:
-        # TODO: this should no longer be needed, when dataclass is used.
-        first_line = 0
-        if self.code_parts:
-            first_line = self.code_parts[0][0]
-
-        return (self.filename, first_line, self.name)
-
     def __repr__(self) -> str:
         return repr(self.name)
 
     def __eq__(self, other: object) -> bool:
+        if isinstance(other, str):
+            return self.name == other
+
         if isinstance(other, CodeItem):
-            return self._tuple() == other._tuple()
+            return self.name == other.name
         return False
 
     def __hash__(self) -> int:
-        return hash(self._tuple())
+        return hash(self.name)

@@ -37,7 +37,7 @@ ERROR_CODES = {
 
 
 def _get_unused_items(defined_items: Iterable[CodeItem], used_names: Set[str]) -> Iterable[CodeItem]:
-    unused_items = [item for item in set(defined_items) if item.name not in used_names]
+    unused_items = [item for item in defined_items if item.name not in used_names]
     unused_items.sort(key=lambda item: item.name.lower())
     return unused_items
 

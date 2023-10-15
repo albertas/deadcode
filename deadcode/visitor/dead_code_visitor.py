@@ -4,6 +4,7 @@ import os
 import re
 import string
 import sys
+from logging import getLogger
 
 from pathlib import Path
 
@@ -14,6 +15,7 @@ from deadcode.visitor.code_item import CodeItem
 from deadcode.visitor.utils import LoggingList, LoggingSet
 from deadcode.visitor import utils
 from deadcode.actions.parse_abstract_syntax_tree import parse_abstract_syntax_tree
+from deadcode.utils.nested_scopes import NestedScope
 
 from deadcode.visitor import noqa
 from deadcode.utils.print_ast import print_ast as show  # noqa: F401
@@ -31,6 +33,8 @@ from deadcode.visitor.ignore import (
     _ignore_method,
     _ignore_variable,
 )
+
+logger = getLogger()
 
 
 class DeadCodeVisitor(ast.NodeVisitor):
@@ -70,6 +74,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
         self.should_ignore_new_definitions = False
 
         self.noqa_lines: Dict[str, Set[int]] = {}
+        self.scopes = NestedScope()
 
     @property
     def scope(self) -> str:
@@ -175,6 +180,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
                             message="Empty file",
                         )
                     )
+        self.scopes
 
         # unique_imports = {item.name for item in self.defined_imports}
         # for import_name in unique_imports:
@@ -345,23 +351,26 @@ class DeadCodeVisitor(ast.NodeVisitor):
         type_: UnusedCodeType = collection.type_  # type: ignore
         first_lineno = lines.get_first_line_number(first_node)
 
+        last_lineno = lines.get_last_line_number(last_node)
+
+        inherits_from = getattr(first_node, "inherits_from", None)
+        code_item = CodeItem(
+            name=name,
+            type_=type_,
+            filename=self.filename,
+            code_parts=[Part(first_lineno, last_lineno, last_node.col_offset, last_node.end_col_offset or 0)],
+            scope=self.scope,
+            name_line=last_node.lineno,  # TODO: Maybe this should be a property?
+            name_column=last_node.col_offset,  # TODO: Maybe this should be a property?
+            message=message,
+            inherits_from=inherits_from,
+        )
+        self.scopes.add_to_scope(code_item)
+
         if ignored(first_lineno, type_=type_):
             self._log(f'Ignoring {type_} "{name}"')
         else:
-            last_lineno = lines.get_last_line_number(last_node)
-
-            collection.append(
-                CodeItem(
-                    name=name,
-                    type_=type_,
-                    filename=self.filename,
-                    code_parts=[Part(first_lineno, last_lineno, last_node.col_offset, last_node.end_col_offset or 0)],
-                    scope=self.scope,
-                    name_line=last_node.lineno,  # TODO: Maybe this should be a property?
-                    name_column=last_node.col_offset,  # TODO: Maybe this should be a property?
-                    message=message,
-                )
-            )
+            collection.append(code_item)
 
     def _define_variable(self, name: str, node: ast.AST) -> None:
         self._define(
@@ -443,6 +452,28 @@ class DeadCodeVisitor(ast.NodeVisitor):
             and not node.keywords
         )
 
+    def get_inherits_from(self, node: ast.AST) -> Optional[List[str]]:
+        """Returns a set of base classes from any level in inheritance tree."""
+
+        if not (bases_attr := getattr(node, "bases", None)):
+            return None
+
+        bases = [base.id for base in bases_attr if getattr(base, "id", None)]
+        inherits_from = bases[:]
+
+        current_scope = list((self.scopes.get_scope(self.scope) or {}).keys())
+
+        for base in bases:
+            if base in current_scope:
+                try:
+                    base_code_item = current_scope[current_scope.index(base)]
+                    if parent_inherits_from := getattr(base_code_item, "inherits_from", None):
+                        inherits_from.extend(parent_inherits_from)
+                except ValueError:
+                    logger.error("Was not able to resolve base string to code_item in current scope")
+
+        return inherits_from
+
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         for decorator in node.decorator_list:
             if _match(utils.get_decorator_name(decorator), self.ignore_decorators):  # type: ignore
@@ -507,6 +538,32 @@ class DeadCodeVisitor(ast.NodeVisitor):
             self.add_used_name(kwd_attr)
 
     def visit(self, node: ast.AST) -> None:
+        node_name = getattr(node, "name", None)
+        if inherits_from := self.get_inherits_from(node):
+            node.inherits_from = inherits_from  # type: ignore
+
+        should_turn_off_ignore_new_definitions = False
+        if (
+            # Name is in ignore_definitions
+            node_name
+            and _match(node_name, self.args.ignore_definitions)
+        ) or (
+            # Class inherits from ignore_definitions_if_inherits_from
+            inherits_from
+            and _match_many(inherits_from, self.args.ignore_definitions_if_inherits_from)
+        ):
+            if not self.should_ignore_new_definitions:
+                self.should_ignore_new_definitions = True
+                should_turn_off_ignore_new_definitions = True
+
+        method_name = "visit_" + node.__class__.__name__
+        visitor = getattr(self, method_name, None)
+        # if self.verbose:
+        #     lineno = getattr(node, "lineno", 1)
+
+        if visitor:
+            visitor(node)
+
         # TODO: use decorator for this code chunk
         was_scope_increased = True
         if isinstance(node, ast.ClassDef):
@@ -516,39 +573,8 @@ class DeadCodeVisitor(ast.NodeVisitor):
         else:
             was_scope_increased = False
 
-        # TODO: use decorator for this code chunk
-        should_turn_off_ignore_new_definitions = False
-
-        node_name = getattr(node, "name", None)
-        bases_attr = getattr(node, "bases", [])
-        bases = [base.id for base in bases_attr if getattr(base, "id", None)]
-
-        if (
-            # Name is in ignore_definitions
-            node_name
-            and _match(node_name, self.args.ignore_definitions)
-        ) or (
-            # Class inherits from ignore_definitions_if_inherits_from
-            bases_attr
-            and bases
-            and _match_many(bases, self.args.ignore_definitions_if_inherits_from)
-        ):
-            if not self.should_ignore_new_definitions:
-                self.should_ignore_new_definitions = True
-                should_turn_off_ignore_new_definitions = True
-
-        method_name = "visit_" + node.__class__.__name__
-        visitor = getattr(self, method_name, None)
-        if self.verbose:
-            lineno = getattr(node, "lineno", 1)
-            line = self.code[lineno - 1] if self.code else ""
-            self._log(lineno, ast.dump(node), line)
-
-        if visitor:
-            visitor(node)
-
         # Class inherits from ignore_bodies_if_inherits_from
-        if bases and _match_many(bases, self.args.ignore_bodies_if_inherits_from):
+        if inherits_from and _match_many(inherits_from, self.args.ignore_bodies_if_inherits_from):
             if not self.should_ignore_new_definitions:
                 self.should_ignore_new_definitions = True
                 should_turn_off_ignore_new_definitions = True
