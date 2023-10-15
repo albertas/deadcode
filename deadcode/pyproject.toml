@@ -35,7 +35,7 @@ build-backend = "hatchling.build"
 
 
 [tool.hatch.publish.index]  # Hatch docs: https://hatch.pypa.io/latest/config/build/
-disable = true
+disable = false
 
 [tool.hatch.build]
 include = ["**/*.py"]
