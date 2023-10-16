@@ -119,3 +119,44 @@ class TestScopeTracking(BaseTestCase):
         )
 
         self.assertIsNone(result)
+
+    def test_type_tracking_for_function_arguments(self):
+        self.files = {
+            "foo.py": """
+                class Foo:
+                    def bar(self):
+                        pass
+
+                def spam(eggs):
+                    eggs.bar()
+
+                foo = Foo()
+                spam(foo)
+
+                def bar():
+                    pass
+                """
+        }
+
+        result = main(["foo.py", "--no-color", "--fix"])
+
+        # TODO: detect eggs type inside spam function and mark Foo.bar as used in CodeItem instance.
+        # Usages should be marked directly on the CodeItem instances, not in a pool of names.
+
+        self.assertFiles(
+            {
+                "foo.py": """
+                class Foo:
+                    def bar(self):
+                        pass
+
+                def spam(eggs):
+                    eggs.bar()
+
+                foo = Foo()
+                spam(foo)
+                """
+            }
+        )
+
+        self.assertIsNone(result)
