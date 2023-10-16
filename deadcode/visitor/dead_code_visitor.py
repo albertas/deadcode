@@ -83,81 +83,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
     def add_used_name(self, name: str, scope: Optional[str] = None) -> None:
         self.used_names.add(name)
 
-    # def scan(self, code, filename=""):
-    #     filename = Path(filename)
-    #     self.code = code.splitlines()
-    #     self.noqa_lines = noqa.parse_noqa(self.code)
-    #     self.filename = filename
-
-    #     def handle_syntax_error(e):
-    #         text = f' at "{e.text.strip()}"' if e.text else ""
-    #         self._log(
-    #             f"{utils.format_path(filename)}:{e.lineno}: {e.msg}{text}",
-    #             file=sys.stderr,
-    #             force=True,
-    #         )
-    #         self.found_dead_code_or_error = True
-
-    #     try:
-    #         node = ast.parse(code, filename=str(self.filename), type_comments=True)
-    #     except SyntaxError as err:
-    #         handle_syntax_error(err)
-    #     except ValueError as err:
-    #         # ValueError is raised if source contains null bytes.
-    #         self._log(
-    #             f'{utils.format_path(filename)}: invalid source code "{err}"',
-    #             file=sys.stderr,
-    #             force=True,
-    #         )
-    #         self.found_dead_code_or_error = True
-    #     else:
-    #         # When parsing type comments, visiting can throw SyntaxError.
-    #         try:
-    #             self.visit(node)
-    #         except SyntaxError as err:
-    #             handle_syntax_error(err)
-
-    # TODO: do not load the AST of all the files into memory.
-    # Should instead parse the files one by one and discard already parsed files.
-    # The memory might add up for larger projects, especially that AST is whay larger the the code itself.
-
     def visit_abstract_syntax_trees(self) -> None:
-        # NEXTODO:
-        # So whats here? These examples could be moved to exclusion before.
-        # Also AST should not be constructed until the parsing part.
-
-        # def prepare_pattern(pattern):
-        #     if not any(char in pattern for char in "*?["):
-        #         pattern = f"*{pattern}*"
-        #     return pattern
-
-        # exclude = [prepare_pattern(pattern) for pattern in (self.args.exclude or [])]
-
-        # def exclude_path(path):
-        #     return _match(path, exclude, case=False)
-
-        # # paths = [Path(path) for path in paths]
-
-        # for module in utils.get_modules(paths):
-        #     if exclude_path(module):
-        #         self._log("Excluded:", module)
-        #         continue
-
-        # self._log("Scanning:", module)
-        # try:
-        #     module_string = utils.read_file(module)
-        # except utils.VultureInputException as err:  # noqa: F841
-        #     self._log(
-        #         f"Error: Could not read file {module} - {err}\n"
-        #         f"Try to change the encoding to UTF-8.",
-        #         file=sys.stderr,
-        #         force=True,
-        #     )
-        #     self.found_dead_code_or_error = True
-        # else:
-        #     self.scan(module_string, filename=module)
-
-        # TODO: should parse the AST here.
         for file_path in self.filenames:
             with open(file_path) as f:
                 filename = os.path.basename(file_path)
@@ -180,24 +106,8 @@ class DeadCodeVisitor(ast.NodeVisitor):
                             message="Empty file",
                         )
                     )
-        self.scopes
 
-        # unique_imports = {item.name for item in self.defined_imports}
-        # for import_name in unique_imports:
-        #     path = Path("whitelists") / (import_name + "_whitelist.py")
-        #     if exclude_path(path):
-        #         self._log("Excluded whitelist:", path)
-        #     else:
-        #         try:
-        #             module_data = pkgutil.get_data("vulture", str(path))
-        #             self._log("Included whitelist:", path)
-        #         except OSError:
-        #             # Most imported modules don't have a whitelist.
-        #             continue
-        #         module_string = module_data.decode("utf-8")
-        #         self.scan(module_string, filename=path)
-
-    def get_unused_code_items(self, sort_by_size: bool = False) -> Iterable[CodeItem]:
+    def get_unused_code_items(self) -> Iterable[CodeItem]:
         """
         Return ordered list of unused CodeItem objects.
         """
@@ -215,19 +125,6 @@ class DeadCodeVisitor(ast.NodeVisitor):
         )
 
         return sorted(unused_code, key=lambda item: (item.filename, item.name_line or 0))
-
-    # TODO: investigate whitelisting options
-    # def report(self, sort_by_size=False, make_whitelist=False):
-    #     """
-    #     Print ordered list of CodeItem objects to stdout.
-    #     """
-    #     for item in self.get_unused_code_items(sort_by_size=sort_by_size):
-    #         self._log(
-    #             item.get_whitelist_string() if make_whitelist else item.get_report(add_size=sort_by_size),
-    #             force=True,
-    #         )
-    #         self.found_dead_code_or_error = True
-    #     return self.found_dead_code_or_error
 
     @property
     def unused_classes(self) -> Iterable[CodeItem]:
@@ -552,8 +449,6 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
         method_name = "visit_" + node.__class__.__name__
         visitor = getattr(self, method_name, None)
-        # if self.verbose:
-        #     lineno = getattr(node, "lineno", 1)
 
         if visitor:
             visitor(node)
