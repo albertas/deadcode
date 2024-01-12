@@ -1,3 +1,7 @@
+ifndef VERBOSE
+  MAKEFLAGS += --no-print-directory
+endif
+
 check: venv
 	cd deadcode && make check
 
