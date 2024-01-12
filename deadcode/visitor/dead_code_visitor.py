@@ -81,7 +81,14 @@ class DeadCodeVisitor(ast.NodeVisitor):
         return ".".join(self.scope_parts)
 
     def add_used_name(self, name: str, scope: Optional[str] = None) -> None:
+        # TODO: Usage should be tracked on CodeItem.
+
+        # TODO: Lets first resolve, how to correctly set the type of a function argument.
+        # We should have CodeItem as a type, not only name as string.
+        # TODO: investigate: am I always able to retrieve the type of a variable?
+
         self.used_names.add(name)
+        self.scopes.mark_as_used(name, self.scope)
 
     def visit_abstract_syntax_trees(self) -> None:
         for file_path in self.filenames:
@@ -169,6 +176,8 @@ class DeadCodeVisitor(ast.NodeVisitor):
         We delegate to this method instead of using visit_alias() to have
         access to line numbers and to filter imports from __future__.
         """
+        # TODO: store full module path. Consider relative and absolute module import collisions.
+
         assert isinstance(node, (ast.Import, ast.ImportFrom))
         for name_and_alias in node.names:
             # Store only top-level module name ("os.path" -> "os").
@@ -430,6 +439,15 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
     def visit(self, node: ast.AST) -> None:
         node_name = getattr(node, "name", None)
+
+        # > TODO: Expr scope has to be updated after visiting nested nodes.
+        # Do I have to merge custom visits with visit method in order to achieve this?
+        #
+        # I should write a unit test with only an exrepssion and check which methods are being called.
+        # I should only handled that single expression handling properly.
+
+        # breakpoint()
+
         if inherits_from := self.get_inherits_from(node):
             node.inherits_from = inherits_from  # type: ignore
 
@@ -475,7 +493,19 @@ class DeadCodeVisitor(ast.NodeVisitor):
             mode = "func_type" if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) else "eval"
             self.visit(ast.parse(type_comment, filename="<type_comment>", mode=mode))
 
-        self.generic_visit(node)
+        ###########
+        # """Called if no explicit visitor function exists for a node."""
+        # TODO: for assignment statements unused_code unit should be whole assignment statement instead of a name itself
+        # Note: Node is None if file is empty, contains only a docstring, a comment or has a SyntaxError.
+        if node:
+            for _, value in ast.iter_fields(node):
+                if isinstance(value, list):
+                    self._handle_ast_list(value)
+                    for item in value:
+                        if isinstance(item, ast.AST):
+                            self.visit(item)
+                elif isinstance(value, ast.AST):
+                    self.visit(value)
 
         # TODO: use decorator for this code chunk
         if should_turn_off_ignore_new_definitions:
@@ -504,20 +534,3 @@ class DeadCodeVisitor(ast.NodeVisitor):
                     message=f"unreachable code after '{class_name}'",
                 )
                 return None
-
-    def generic_visit(self, node: ast.AST) -> None:
-        """Called if no explicit visitor function exists for a node."""
-        # TODO: for assignment statements unused_code unit should be whole assignment statement instead of a name itself
-
-        # Note: Node is None if file is empty, contains only a docstring, a comment or has a SyntaxError.
-        if not node:
-            return None
-
-        for _, value in ast.iter_fields(node):
-            if isinstance(value, list):
-                self._handle_ast_list(value)
-                for item in value:
-                    if isinstance(item, ast.AST):
-                        self.visit(item)
-            elif isinstance(value, ast.AST):
-                self.visit(value)
