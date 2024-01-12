@@ -123,8 +123,27 @@ code base is implemented in.
     - [ ] --ignore-definitions-if-decorated-with
     - [ ] --ignore-names-if-inherits-from
     - [ ] --ignore-names-if-decorated-with
+    - [ ] --ignore-bodies-of
+    - [ ] --ignore-bodies-if-decorated-with
+    - [ ] --ignore-bodies-if-inherits-from
+    - [ ] --ignore-definitions
+    - [ ] --ignore-definitions-if-inherits-from
+    - [ ] --ignore-definitions-if-decorated-with
+        - Question: would it be possible to ignore only certain types of checks for a body, e.g. only variable attributes of TypedDict and still check usage of methods and properties?
+        - What expression would allow this type of precission?
 - [ ] Distinguish between definitions with same name, but different files.
 - [ ] Repeated application of `deadcode` till the output stops changing.
-- [ ] Unreachable code detection and fixing.
+- [ ] Unreachable code detection and fixing: this should only be scoped for if statements and only limited to primitive variables.
 - [ ] `--fix --dry [filenames]` - only show whats about to change in the listed filenames.
 - [ ] Benchmarking performance with larger projects (time, CPU and memory consumption) in order to optimize.
+- [ ] `--fix` could accept a list of filenames as well (only those files would be changed, but the summary could would be full).
+    (This might be confusing, because filenames, which have to be considered are provided without any flag, --fix is expected to not accept arguments)
+- [ ] pre-commit-hook.
+- [ ] language server.
+- [ ] Use only two digits for error codes instead of 3. Two is plenty and it simplifies usage a bit
+- [ ] DC10: remove code after terminal statements like `raise`, `return`, `break`, `continue` and comes in the same scope.
+- [ ] Add `ignore` and `per-file-ignores` command line and pyproject.toml options, which allows to skip some rules.
+- [ ] Make sure that all rules are being skipped by `noqa` comment and all rules react to `noqa: rule_id` comments.
+- [ ] Include package names into code item scope (dot-separated path), e.g. "package1.package2.module.class.method.variable".
+- [ ] All options should be able to accept dot-separated path or a generic name, e.g. "marshmallow.Schema" vs "Schema",
+  documentation should cleary demonstrate the behaviour/example that "Schema" means "*.Schema".
