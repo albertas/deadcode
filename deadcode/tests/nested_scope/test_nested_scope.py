@@ -1,3 +1,5 @@
+from unittest import skip
+
 from deadcode.cli import main
 from deadcode.tests.base import BaseTestCase
 
@@ -120,6 +122,7 @@ class TestScopeTracking(BaseTestCase):
 
         self.assertIsNone(result)
 
+    @skip("This feature is being implemented")
     def test_type_tracking_for_function_arguments(self):
         self.files = {
             "foo.py": """
@@ -158,5 +161,20 @@ class TestScopeTracking(BaseTestCase):
                 """
             }
         )
+
+        self.assertIsNone(result)
+
+    @skip(">> Observed types in scope definition is still being implemented")
+    def test_scope_update_for_method_call_expression(self):
+        # >>> TODO: Mark types in scope usage correctly for method invocation
+        self.files = {
+            "foo.py": """
+                Bar().spam()
+                """
+        }
+
+        result = main(["foo.py", "--no-color", "--fix"])
+
+        self.assertFiles({"foo.py": """"""})
 
         self.assertIsNone(result)

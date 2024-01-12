@@ -52,6 +52,7 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
         "name_column",
         "message",
         "error_code",
+        "number_of_uses",
     )
 
     def __init__(
@@ -70,12 +71,14 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
         name_line: Optional[int] = None,
         name_column: Optional[int] = None,
         message: str = "",
+        number_of_uses: int = 0,
     ):
         self.name = name
         self.type_ = type_
         self.filename = filename
         self.scope = scope
         self.inherits_from = inherits_from
+        self.number_of_uses = number_of_uses
 
         if code_parts is None:
             self.code_parts = []

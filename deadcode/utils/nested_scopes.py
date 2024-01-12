@@ -31,7 +31,7 @@ class NestedScope:
                 current_scope[scope_part] = {}  # Could use None if type cannot have scope
             current_scope = current_scope[scope_part]
 
-        # > TODO: leef should be replaced. Is it replaced with new code item?
+        # > TODO: leaf should be replaced. Is it replaced with new code item?
         current_scope[code_item] = {}
 
     def get(self, name: str, scope: str) -> Optional[Union[CodeItem, str]]:
@@ -60,3 +60,24 @@ class NestedScope:
                 return current_scope_keys[current_scope_keys.index(name)]
 
         return None
+
+    def mark_as_used(self, name: str, scope: str) -> None:
+        # >TODO: This method does not work, when methods are being invoked.
+        # The scope is global, name is method name, but the instance and
+        # class names are not being taken into account.
+
+        # Solution: parsing of a method invocation should be handled differently.
+        # More precicely. The parsing should be in the right order.
+
+        # Next step to solve this issue:
+        # > Investigate how usage statement is being handled and what can be done about it.
+        # Write tests for Class and instance creations.
+
+        # In this place I should get a list of names, which are being used in the invocation.
+
+        # if name == "spam":
+        #     breakpoint()
+
+        code_item = self.get(name, scope)
+        if isinstance(code_item, CodeItem):
+            code_item.number_of_uses += 1
