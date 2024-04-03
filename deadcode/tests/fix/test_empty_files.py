@@ -16,7 +16,7 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
         unused_names = main(["foo.py", "--no-color", "--fix"])
         self.assertEqual(
             unused_names,
-            ("foo.py DC011 Empty file\n\n" "Removed 1 unused code item!"),
+            ("foo.py DC11 Empty file\n\n" "Removed 1 unused code item!"),
         )
 
         self.assertFiles({}, removed=["foo.py"])
@@ -30,7 +30,7 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
         unused_names = main(["bar/foo.py", "--no-color", "--fix"])
         self.assertEqual(
             unused_names,
-            ("bar/foo.py DC011 Empty file\n\n" "Removed 1 unused code item!"),
+            ("bar/foo.py DC11 Empty file\n\n" "Removed 1 unused code item!"),
         )
 
         self.assertFiles({}, removed=["bar/foo.py"])

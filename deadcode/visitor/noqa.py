@@ -16,21 +16,21 @@ NOQA_REGEXP = re.compile(
 
 NOQA_CODE_MAP = {
     # flake8 F401: module imported but unused.
-    "F401": "DC007",
+    "F401": "DC07",
     # flake8 F841: local variable is assigned to but never used.
-    "F841": "DC001",
-    "DC001": "DC001",
-    "DC002": "DC002",
-    "DC003": "DC003",
-    "DC004": "DC004",
-    "DC005": "DC005",
-    "DC006": "DC006",
-    "DC007": "DC007",
-    "DC008": "DC008",
-    "DC009": "DC009",
-    "DC011": "DC011",
-    "DC012": "DC012",
-    "DC013": "DC013",
+    "F841": "DC01",
+    "DC01": "DC01",
+    "DC02": "DC02",
+    "DC03": "DC03",
+    "DC04": "DC04",
+    "DC05": "DC05",
+    "DC06": "DC06",
+    "DC07": "DC07",
+    "DC08": "DC08",
+    "DC09": "DC09",
+    "DC11": "DC11",
+    "DC12": "DC12",
+    "DC13": "DC13",
 }
 
 

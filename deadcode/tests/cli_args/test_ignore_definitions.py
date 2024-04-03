@@ -55,7 +55,7 @@ class TestIgnoreDefinitionsByPattern(BaseTestCase):
 
         self.assertEqual(
             unused_names,
-            ("foo.py:10:0: DC003 Class `AnotherUnusedClass` is never used\n\nRemoved 1 unused code item!"),
+            ("foo.py:10:0: DC03 Class `AnotherUnusedClass` is never used\n\nRemoved 1 unused code item!"),
         )
 
         self.assertFiles(

@@ -56,27 +56,25 @@ definition - whole class or function definition expression including its name an
 ## Rules
 | Code   | Name               | Message        |
 |--------|--------------------|----------------|
-| DC001  | unused-variable    | Variable `{name}` is never used
-| DC002  | unused-function    | Function `{name}` is never used
-| DC003  | unused-class       | Class `{name}` is never used
-| DC004  | unused-method      | Method `{name}` is never used
-| DC005  | unused-attribute   | Attribute `{name}` is never used
-| DC006  | unused-name        | Name `{name}` is never used
-| DC007  | unused-import      | Import `{name}` is never used
-| DC008  | unused-property    | Property `{name}` is never used
-| DC009* | unreachable-code   | Unreachable `else` block
-| DC011  | empty-file         | Empty file
-| DC012* | commented-out-code | Commented out code
-| DC013* | ignore-expression  | *This error code can ony be used in `# noqa: DC013` comments (no errors will be reported for expression which begins in current line)*
-
-`*` - are not yet implemented rules.
+| DC01  | unused-variable    | Variable `{name}` is never used
+| DC02  | unused-function    | Function `{name}` is never used
+| DC03  | unused-class       | Class `{name}` is never used
+| DC04  | unused-method      | Method `{name}` is never used
+| DC05  | unused-attribute   | Attribute `{name}` is never used
+| DC06  | unused-name        | Name `{name}` is never used
+| DC07  | unused-import      | Import `{name}` is never used
+| DC08  | unused-property    | Property `{name}` is never used
+| DC09  | unreachable-code   | Unreachable conditional statement block
+| DC11  | empty-file         | Empty Python file
+| DC12  | commented-out-code | Commented out code
+| DC13  | ignore-expression  | Dont show any findings for expression, which starts on current line (this error code can only be used in `# noqa: DC13` comments)
 
 ## Ignoring checks with noqa comments
 Inline `# noqa` comments can be used to ignore `deadcode` checks.
-E.g. unused `Foo` class wont be detected/fixed because `# noqa: DC003` comment is used:
+E.g. unused `Foo` class wont be detected/fixed because `# noqa: DC03` comment is used:
 
 ```python
-class Foo:  # noqa: DC003
+class Foo:  # noqa: DC03
     pass
 ```
 
@@ -106,10 +104,10 @@ code base is implemented in.
 
 ## Feature requests
 - [x] Replace `.*` with only `*` in regexp matching.
-- [x] Add unused class method detection DC004 check.
+- [x] Add unused class method detection DC04 check.
 - [x] Add `--fix` option to automatically remove detected dead code occourencies
 - [x] Add a check for empty python files.
-- [x] Split error codes into DC001, DC002, DC003 for variables, functions, class.
+- [x] Split error codes into DC01, DC02, DC03 for variables, functions, class.
     - [x] Should have different codes for ignoring name and ignoring whole definition (reserved DCxx0 - ignore name, DCxx1 - ignore definition).
     - [ ] Allow to disable each check separately using:
         - [ ] inline comment.
@@ -147,3 +145,4 @@ code base is implemented in.
 - [ ] Include package names into code item scope (dot-separated path), e.g. "package1.package2.module.class.method.variable".
 - [ ] All options should be able to accept dot-separated path or a generic name, e.g. "marshmallow.Schema" vs "Schema",
   documentation should cleary demonstrate the behaviour/example that "Schema" means "*.Schema".
+- [ ] Redefinition of an existing name makes previous name unreachable, unless it is assigned somehow.

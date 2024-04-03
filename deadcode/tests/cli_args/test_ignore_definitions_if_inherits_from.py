@@ -52,8 +52,8 @@ class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
 
         self.assertEqual(
             output,
-            "foo.py:15:0: DC003 Class `AnotherUnusedClass` is never used\n"
-            "foo.py:16:4: DC001 Variable `another_unused_attribute` is never used\n"
+            "foo.py:15:0: DC03 Class `AnotherUnusedClass` is never used\n"
+            "foo.py:16:4: DC01 Variable `another_unused_attribute` is never used\n"
             "\n"
             "Removed 2 unused code items!",
         )
@@ -118,8 +118,8 @@ class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
 
         self.assertEqual(
             output,
-            "foo.py:15:0: DC003 Class `AnotherUnusedClass` is never used\n"
-            "foo.py:16:4: DC001 Variable `another_unused_attribute` is never used\n"
+            "foo.py:15:0: DC03 Class `AnotherUnusedClass` is never used\n"
+            "foo.py:16:4: DC01 Variable `another_unused_attribute` is never used\n"
             "\n"
             "Removed 2 unused code items!",
         )

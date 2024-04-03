@@ -8,7 +8,7 @@ class TestNoqaComments(BaseTestCase):
     def test_unused_class_is_unchanged_if_noqa_comment_is_provided(self):
         self.files = {
             "foo.py": """
-                class MyTest:  # noqa: DC003
+                class MyTest:  # noqa: DC03
                     pass
                 """
         }
@@ -18,7 +18,7 @@ class TestNoqaComments(BaseTestCase):
         self.assertFiles(
             {
                 "foo.py": """
-                class MyTest:  # noqa: DC003
+                class MyTest:  # noqa: DC03
                     pass
                 """
             }
@@ -48,7 +48,7 @@ class TestNoqaComments(BaseTestCase):
     def test_unused_variable(self):
         self.files = {
             "foo.py": """
-                unused_variable = "Hello"  # noqa: DC001
+                unused_variable = "Hello"  # noqa: DC01
                     pass
                 """
         }
@@ -59,7 +59,7 @@ class TestNoqaComments(BaseTestCase):
         self.assertFiles(
             {
                 "foo.py": """
-                unused_variable = "Hello"  # noqa: DC001
+                unused_variable = "Hello"  # noqa: DC01
                     pass
                 """
             }
@@ -68,7 +68,7 @@ class TestNoqaComments(BaseTestCase):
     def test_unused_variable_but_wrong_noqa_specified(self):
         self.files = {
             "foo.py": """
-                unused_variable = "Hello"  # noqa: DC002
+                unused_variable = "Hello"  # noqa: DC02
                 """
         }
 
@@ -77,13 +77,13 @@ class TestNoqaComments(BaseTestCase):
         self.assertFiles({})
         self.assertEqual(
             unused_names,
-            ("foo.py:1:0: DC001 Variable `unused_variable` is never used\n\n" "Removed 1 unused code item!"),
+            ("foo.py:1:0: DC01 Variable `unused_variable` is never used\n\n" "Removed 1 unused code item!"),
         )
 
     def test_unused_function(self):
         self.files = {
             "foo.py": """
-                def unused_function():  # noqa: DC002
+                def unused_function():  # noqa: DC02
                     pass
                 """
         }
@@ -94,7 +94,7 @@ class TestNoqaComments(BaseTestCase):
         self.assertFiles(
             {
                 "foo.py": """
-                def unused_function():  # noqa: DC002
+                def unused_function():  # noqa: DC02
                     pass
                 """
             }
@@ -104,7 +104,7 @@ class TestNoqaComments(BaseTestCase):
         self.files = {
             "foo.py": """
                 class MyTest:
-                    def unused_method(self):  # noqa: DC004
+                    def unused_method(self):  # noqa: DC04
                         pass
 
                 instance = MyTest()
@@ -118,7 +118,7 @@ class TestNoqaComments(BaseTestCase):
             {
                 "foo.py": """
                 class MyTest:
-                    def unused_method(self):  # noqa: DC004
+                    def unused_method(self):  # noqa: DC04
                         pass
 
                 instance = MyTest()
@@ -131,11 +131,11 @@ class TestNoqaComments(BaseTestCase):
 
     @skip
     def test_unused_attribute(self):
-        # TODO: DC005 does not work.
+        # TODO: DC05 does not work.
         self.files = {
             "foo.py": """
                 class MyTest:
-                    unused_attribute = 123  # noqa: DC005
+                    unused_attribute = 123  # noqa: DC05
 
                 instance = MyTest()
                 print(instance)
@@ -148,7 +148,7 @@ class TestNoqaComments(BaseTestCase):
             {
                 "foo.py": """
                 class MyTest:
-                    unused_attribute = 123  # noqa: DC005
+                    unused_attribute = 123  # noqa: DC05
 
                 instance = MyTest()
                 print(instance)
@@ -160,11 +160,11 @@ class TestNoqaComments(BaseTestCase):
 
     @skip
     def test_unused_name(self):
-        # TODO: DC006 does not work.
+        # TODO: DC06 does not work.
         self.files = {
             "foo.py": """
                 class MyTest:
-                    unused_attribute = 123  # noqa: DC006
+                    unused_attribute = 123  # noqa: DC06
 
                 instance = MyTest()
                 print(instance)
@@ -177,7 +177,7 @@ class TestNoqaComments(BaseTestCase):
             {
                 "foo.py": """
                 class MyTest:
-                    unused_attribute = 123  # noqa: DC006
+                    unused_attribute = 123  # noqa: DC06
 
                 instance = MyTest()
                 print(instance)
@@ -190,7 +190,7 @@ class TestNoqaComments(BaseTestCase):
     def test_unused_import(self):
         self.files = {
             "foo.py": """
-                from typing import Optional  # noqa: DC007
+                from typing import Optional  # noqa: DC07
                 """
         }
 
@@ -199,7 +199,7 @@ class TestNoqaComments(BaseTestCase):
         self.assertFiles(
             {
                 "foo.py": """
-                from typing import Optional  # noqa: DC007
+                from typing import Optional  # noqa: DC07
                 """
             }
         )
@@ -212,7 +212,7 @@ class TestNoqaComments(BaseTestCase):
             "foo.py": """
                 class Foo:
                     @property
-                    def bar(self):  # noqa: DC008
+                    def bar(self):  # noqa: DC08
                         return None
                 """
         }
@@ -224,7 +224,7 @@ class TestNoqaComments(BaseTestCase):
                 "foo.py": """
                 class Foo:
                     @property
-                    def bar(self):  # noqa: DC008
+                    def bar(self):  # noqa: DC08
                         return None
                 """
             }
@@ -240,7 +240,7 @@ class TestNoqaComments(BaseTestCase):
             "foo.py": """
                 if True:
                     pass
-                else:  # noqa: DC009
+                else:  # noqa: DC09
                     print("Hello world")
                 """
         }
@@ -252,7 +252,7 @@ class TestNoqaComments(BaseTestCase):
                 "foo.py": """
                 if True:
                     pass
-                else:  # noqa: DC009
+                else:  # noqa: DC09
                     print("Hello world")
                 """
             }
@@ -264,7 +264,7 @@ class TestNoqaComments(BaseTestCase):
         # TODO: this test passes only because comment is treated as non empty file content
         self.files = {
             "foo.py": """
-                # noqa: DC011
+                # noqa: DC11
                 """
         }
 
@@ -273,7 +273,7 @@ class TestNoqaComments(BaseTestCase):
         self.assertFiles(
             {
                 "foo.py": """
-                # noqa: DC011
+                # noqa: DC11
                 """
             }
         )
@@ -284,7 +284,7 @@ class TestNoqaComments(BaseTestCase):
         # TODO: this test only passes because commented-out-code check is not yet implemented
         self.files = {
             "foo.py": """
-                # print("Hello world")  # noqa: DC012
+                # print("Hello world")  # noqa: DC12
                 """
         }
 
@@ -293,7 +293,7 @@ class TestNoqaComments(BaseTestCase):
         self.assertFiles(
             {
                 "foo.py": """
-                # print("Hello world")  # noqa: DC012
+                # print("Hello world")  # noqa: DC12
                 """
             }
         )
@@ -304,7 +304,7 @@ class TestNoqaComments(BaseTestCase):
     def test_ignore_expression(self):
         self.files = {
             "foo.py": """
-                class Foo:  # noqa: DC013
+                class Foo:  # noqa: DC13
                     this_attiribute_is_unused = True
 
                     def this_method_is_not_used_as_well(self):
@@ -317,7 +317,7 @@ class TestNoqaComments(BaseTestCase):
         self.assertFiles(
             {
                 "foo.py": """
-                class Foo:  # noqa: DC013
+                class Foo:  # noqa: DC13
                     this_attiribute_is_unused = True
 
                     def this_method_is_not_used_as_well(self):

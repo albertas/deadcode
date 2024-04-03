@@ -107,11 +107,11 @@ class TestVerboseOutput(BaseTestCase):
         self.assertEqual(
             unused_names,
             (
-                "tests/files/variables.py:1:0: \x1b[91mDC001\x1b[0m Variable "
+                "tests/files/variables.py:1:0: \x1b[91mDC01\x1b[0m Variable "
                 "`\x1b[1munused_global_variable\x1b[0m` is never used\n"
-                "tests/files/variables.py:2:0: \x1b[91mDC001\x1b[0m Variable "
+                "tests/files/variables.py:2:0: \x1b[91mDC01\x1b[0m Variable "
                 "`\x1b[1mANOTHER_GLOBAL_VARIABLE\x1b[0m` is never used\n"
-                "tests/files/variables.py:3:0: \x1b[91mDC001\x1b[0m Variable "
+                "tests/files/variables.py:3:0: \x1b[91mDC01\x1b[0m Variable "
                 "`\x1b[1mthird_global_varialbe3\x1b[0m` is never used"
             ),
         )
@@ -130,8 +130,8 @@ class TestVerboseOutput(BaseTestCase):
         self.assertEqual(
             unused_names,
             (
-                "tests/files/variables.py:1:0: DC001 Variable `unused_global_variable` is never used\n"
-                "tests/files/variables.py:2:0: DC001 Variable `ANOTHER_GLOBAL_VARIABLE` is never used\n"
-                "tests/files/variables.py:3:0: DC001 Variable `third_global_varialbe3` is never used"
+                "tests/files/variables.py:1:0: DC01 Variable `unused_global_variable` is never used\n"
+                "tests/files/variables.py:2:0: DC01 Variable `ANOTHER_GLOBAL_VARIABLE` is never used\n"
+                "tests/files/variables.py:3:0: DC01 Variable `third_global_varialbe3` is never used"
             ),
         )

@@ -21,18 +21,18 @@ PYTEST_METHOD_NAMES = {
 }
 
 ERROR_CODES = {
-    "variable": "DC001",
-    "function": "DC002",
-    "class": "DC003",
-    "method": "DC004",
-    "attribute": "DC005",
-    "name": "DC006",
-    "import": "DC007",
-    "property": "DC008",
-    "unreachable_code": "DC009",
-    "empty_file": "DC011",
-    "commented_out_code": "DC012",
-    "ignore_expression": "DC013",
+    "variable": "DC01",
+    "function": "DC02",
+    "class": "DC03",
+    "method": "DC04",
+    "attribute": "DC05",
+    "name": "DC06",
+    "import": "DC07",
+    "property": "DC08",
+    "unreachable_code": "DC09",
+    "empty_file": "DC11",
+    "commented_out_code": "DC12",
+    "ignore_expression": "DC13",
 }
 
 

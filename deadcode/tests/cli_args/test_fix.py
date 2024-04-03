@@ -19,7 +19,7 @@ class TestFixCliOption(BaseTestCase):
         self.assertEqual(
             unused_names,
             (
-                "ignore_names_by_pattern.py:1:0: DC003 Class `UnusedClass` is never used\n\n"
+                "ignore_names_by_pattern.py:1:0: DC03 Class `UnusedClass` is never used\n\n"
                 "Removed 1 unused code item!"
             ),
         )
@@ -45,7 +45,7 @@ class TestFixCliOption(BaseTestCase):
         unused_names = main(["ignore_names_by_pattern.py", "--no-color", "--fix"])
         self.assertEqual(
             unused_names,
-            ("ignore_names_by_pattern.py:1:0: DC002 Function `foo` is never used\n\n" "Removed 1 unused code item!"),
+            ("ignore_names_by_pattern.py:1:0: DC02 Function `foo` is never used\n\n" "Removed 1 unused code item!"),
         )
 
         self.assertFiles(
@@ -74,7 +74,7 @@ class TestFixCliOption(BaseTestCase):
         unused_names = main(["ignore_names_by_pattern.py", "--no-color", "--fix"])
         self.assertEqual(
             unused_names,
-            ("ignore_names_by_pattern.py:3:0: DC002 Function `foo` is never used\n\n" "Removed 1 unused code item!"),
+            ("ignore_names_by_pattern.py:3:0: DC02 Function `foo` is never used\n\n" "Removed 1 unused code item!"),
         )
 
         self.assertFiles(
@@ -107,8 +107,8 @@ class TestFixCliOption(BaseTestCase):
         self.assertEqual(
             unused_names,
             (
-                "ignore_names_by_pattern.py:3:0: DC001 Variable `unused_variable` is never used\n"
-                "ignore_names_by_pattern.py:5:0: DC002 Function `unused_function` is never used\n\n"
+                "ignore_names_by_pattern.py:3:0: DC01 Variable `unused_variable` is never used\n"
+                "ignore_names_by_pattern.py:5:0: DC02 Function `unused_function` is never used\n\n"
                 "Removed 2 unused code items!"
             ),
         )
