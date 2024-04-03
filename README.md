@@ -56,18 +56,19 @@ definition - whole class or function definition expression including its name an
 ## Rules
 | Code   | Name               | Message        |
 |--------|--------------------|----------------|
-| DC01  | unused-variable    | Variable `{name}` is never used
-| DC02  | unused-function    | Function `{name}` is never used
-| DC03  | unused-class       | Class `{name}` is never used
-| DC04  | unused-method      | Method `{name}` is never used
-| DC05  | unused-attribute   | Attribute `{name}` is never used
-| DC06  | unused-name        | Name `{name}` is never used
-| DC07  | unused-import      | Import `{name}` is never used
-| DC08  | unused-property    | Property `{name}` is never used
-| DC09  | unreachable-code   | Unreachable conditional statement block
-| DC11  | empty-file         | Empty Python file
-| DC12  | commented-out-code | Commented out code
-| DC13  | ignore-expression  | Dont show any findings for expression, which starts on current line (this error code can only be used in `# noqa: DC13` comments)
+| DC01  | unused-variable      | Variable `{name}` is never used
+| DC02  | unused-function      | Function `{name}` is never used
+| DC03  | unused-class         | Class `{name}` is never used
+| DC04  | unused-method        | Method `{name}` is never used
+| DC05  | unused-attribute     | Attribute `{name}` is never used
+| DC06  | unused-name          | Name `{name}` is never used
+| DC07  | unused-import        | Import `{name}` is never used
+| DC08  | unused-property      | Property `{name}` is never used
+| DC09  | unreachable-if-block | Unreachable conditional statement block
+| DC11  | empty-file           | Empty Python file
+| DC12  | commented-out-code   | Commented out code
+| DC13  | unreachable-code     | Code after terminal statement, e.g. `return`, `raise`, `continue`, `break`
+| DC    | ignore-expression    | Do not show any findings for an expression, which starts on current line (this code can only be used in `# noqa: DC` comments)
 
 ## Ignoring checks with noqa comments
 Inline `# noqa` comments can be used to ignore `deadcode` checks.

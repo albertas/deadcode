@@ -16,7 +16,7 @@ class TestScopeTracking(BaseTestCase):
         unused_names = main(["foo.py", "--no-color", "--fix"])
         self.assertEqual(
             unused_names,
-            ("foo.py:1:0: DC003 Class `Foo` is never used\n\n" "Removed 1 unused code item!"),
+            ("foo.py:1:0: DC03 Class `Foo` is never used\n\n" "Removed 1 unused code item!"),
         )
 
         self.assertFiles({})
