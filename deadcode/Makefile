@@ -7,7 +7,7 @@ publish: ../venv
 	cd .. && make publish
 
 test: ../venv
-	../venv/bin/pytest $(PYTEST_ME_PLEASE)
+	../venv/bin/pytest -vv $(PYTEST_ME_PLEASE)
 
 ruff: ../venv
 	../venv/bin/ruff .
