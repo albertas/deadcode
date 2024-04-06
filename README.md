@@ -31,6 +31,7 @@ ignore-names-in-files = ["migrations"]
 | Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Meaning  |
 |-------------------------------------------|------|----------------------------------------------------------------------|
 |`--fix`                                    | -    | Automatically remove detected unused code expressions from the code base. |
+|`--dry`                                    | - or list | Show changes which would be made in files. Shows changes for provided filenames or shows all changes if no filename is specified. |
 |`--exclude`                                | list | Filenames (or path expressions), which will be completely skipped without being analysed. |
 |`--ignore-names`                           | list | Removes provided list of names from the output. Regexp expressions to match multiple names can also be provided, e.g. `*Mixin` will match all classes ending with `Mixin`. |
 |`--ignore-names-in-files`                  | list | Ignores unused names in files, which filenames match provided path expressions. |

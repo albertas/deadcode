@@ -33,13 +33,13 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
         action="store_true",
         default=False,
     )
-
     parser.add_argument(
-        "-v",
-        "--verbose",
-        help="Shows logs useful for debuging",
-        action="store_true",
-        default=False,
+        "--dry",
+        help="Show changes which would be made in files with --fix option.",
+        nargs="*",
+        action="append",
+        default=[["__all_files__"]],
+        type=str,
     )
     parser.add_argument(
         "--exclude",
@@ -160,21 +160,31 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
         default=[],
         type=str,
     )
+
     parser.add_argument(
         "--no-color",
         help="Turn off colors in the output",
         action="store_true",
         default=False,
     )
+
     parser.add_argument(
         "--quiet",
         help="Does not output anything. Makefile still fails with exit code 1 if unused names are found.",
         action="store_true",
         default=False,
     )
+
     parser.add_argument(
         "--count",
         help="Provides the count of the detected unused names instead of printing them all out.",
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        help="Shows logs useful for debuging",
         action="store_true",
         default=False,
     )
@@ -189,6 +199,14 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
     for key, item in parse_pyproject_toml().items():
         if key in parsed_args:
             parsed_args[key].extend(item)
+
+    # Do not fix if dry option is provided:
+    if len(parsed_args["dry"]) > 1 or "--dry" not in args:
+        parsed_args["dry"].remove("__all_files__")
+
+    # Do not fix if dry option is provided:
+    if parsed_args["dry"]:
+        parsed_args["fix"] = False
 
     return Args(**parsed_args)
 
