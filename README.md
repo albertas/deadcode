@@ -1,6 +1,6 @@
 [![Deadcode Logo](https://raw.githubusercontent.com/albertas/deadcode/main/docs/_static/deadcode-logo-readme.png)](https://deadcode.readthedocs.io/en/stable/)
 
-<h2 align="center">Detect and Fix Unused Python Code</h2>
+<h2 align="center">Find and Fix Unused Python Code</h2>
 
 <p align="center">
 <a href="https://github.com/albertas/deadcode/blob/main/LICENSE"><img alt="License: AGPLv3" src="https://raw.githubusercontent.com/albertas/deadcode/main/docs/_static/AGPLv3-license.svg"></a>
@@ -15,11 +15,22 @@ pip install deadcode
 ```
 
 ## Usage
+To see unused code findings:
 ```shell
 deadcode .
 ```
 
-Or with command line options:
+To see suggested fixes:
+```shell
+deadcode . --fix --dry
+```
+
+To fix:
+```shell
+deadcode . --fix
+```
+
+Tune out some of the false positives, e.g.:
 ```
 deadcode . --exclude=venv,tests --ignore-names=BaseTestCase,*Mixin --ignore-names-in-files=migrations
 ```
