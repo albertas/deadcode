@@ -13,8 +13,8 @@ Pathname = str  # Can contain wildewards
 @dataclass
 class Args:
     fix: bool = False
-    dry: bool = False
     verbose: bool = False
+    dry: Iterable[Pathname] = ()
     paths: Iterable[Pathname] = ()
     exclude: Iterable[Pathname] = ()
     ignore_definitions: Iterable[Pathname] = ()

@@ -66,7 +66,6 @@ known_third_party = ["deadcode"]
 ignore_names = [
     "ERROR_CODES",
     "fix",
-    "dry",
     "fix_indent",
     "ignore_definitions_if_decorated_with",
     "ignore_if_decorated_with",

@@ -1,6 +1,6 @@
 from collections import defaultdict
 from difflib import unified_diff
-from typing import Iterable, Optional
+from typing import Iterable
 import os
 
 from deadcode.actions.merge_overlaping_file_parts import merge_overlaping_file_parts
@@ -10,7 +10,8 @@ from deadcode.visitor.code_item import CodeItem
 from deadcode.utils.flatten_lists import flatten_list
 from deadcode.visitor.ignore import _match
 
-def fix_or_show_unused_code(unused_items: Iterable[CodeItem], args: Args) -> Optional[str]:
+
+def fix_or_show_unused_code(unused_items: Iterable[CodeItem], args: Args) -> str:
     # Reading and writing should be patched in this file.
 
     # Group unused_names by filenames
@@ -36,11 +37,11 @@ def fix_or_show_unused_code(unused_items: Iterable[CodeItem], args: Args) -> Opt
         updated_file_content_lines = remove_file_parts_from_content(file_content_lines, unused_file_parts)
         updated_file_content = "".join(updated_file_content_lines)
         if updated_file_content.strip():
-            if args.dry and ('__all_files__' in args.dry or _match(filename, args.dry)):
+            if args.dry and ("__all_files__" in args.dry or _match(filename, args.dry)):
                 with open(filename, "r") as f:
                     diff = unified_diff(f.readlines(), updated_file_content_lines, fromfile=filename, tofile=filename)
                     # TODO: consider printing result instantly to save memory
-                    result.append(''.join(diff))
+                    result.append("".join(diff))
 
             elif args.fix:
                 with open(filename, "w") as f:
@@ -51,6 +52,7 @@ def fix_or_show_unused_code(unused_items: Iterable[CodeItem], args: Args) -> Opt
 
     if result:
         return "\n".join(result)
+    return ""
 
     # TODO: update this one: solution is to use read and write operations.
     #
