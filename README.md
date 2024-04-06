@@ -25,7 +25,7 @@ To see suggested fixes for all files:
 deadcode . --fix --dry
 ```
 
-To see suggested fixes for only `foo.py` file:
+To see suggested fixes only for `foo.py` file:
 ```shell
 deadcode . --fix --dry foo.py
 ```

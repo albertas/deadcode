@@ -31,6 +31,19 @@ NOQA_CODE_MAP = {
     "DC11": "DC11",
     "DC12": "DC12",
     "DC13": "DC13",
+    # For backward compatibility
+    "DC001": "DC01",
+    "DC002": "DC02",
+    "DC003": "DC03",
+    "DC004": "DC04",
+    "DC005": "DC05",
+    "DC006": "DC06",
+    "DC007": "DC07",
+    "DC008": "DC08",
+    "DC009": "DC09",
+    "DC011": "DC11",
+    "DC012": "DC12",
+    "DC013": "DC13",
 }
 
 
