@@ -1,7 +1,13 @@
-# deadcode
-`deadcode` allows to detect and fix unused Python code. It implements `DCXXX`
-static code linting rules for detecting unused code such as
-variables, functions and classes.
+[![Deadcode Logo](https://raw.githubusercontent.com/albertas/deadcode/main/docs/_static/deadcode-logo-readme.png)](https://deadcode.readthedocs.io/en/stable/)
+
+<h2 align="center">Detect and Fix Unused Python Code</h2>
+
+<p align="center">
+<a href="https://github.com/albertas/deadcode/blob/main/LICENSE"><img alt="License: AGPL3" src="https://deadcode.readthedocs.io/en/stable/_static/license.svg"></a>
+<a href="https://pypi.org/project/deadcode/"><img alt="PyPI" src="https://img.shields.io/pypi/v/deadcode"></a>
+<a href="https://pepy.tech/project/deadcode"><img alt="Downloads" src="https://static.pepy.tech/badge/deadcode"></a>
+</p>
+
 
 ## Installation
 ```shell
