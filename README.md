@@ -20,9 +20,14 @@ To see unused code findings:
 deadcode .
 ```
 
-To see suggested fixes:
+To see suggested fixes for all files:
 ```shell
 deadcode . --fix --dry
+```
+
+To see suggested fixes for only `foo.py` file:
+```shell
+deadcode . --fix --dry foo.py
 ```
 
 To fix:

@@ -8,6 +8,7 @@ from deadcode.actions.remove_file_parts_from_content import remove_file_parts_fr
 from deadcode.data_types import Args
 from deadcode.visitor.code_item import CodeItem
 from deadcode.utils.flatten_lists import flatten_list
+from deadcode.utils.add_colors_to_diff import add_colors_to_diff
 from deadcode.visitor.ignore import _match
 
 
@@ -41,7 +42,11 @@ def fix_or_show_unused_code(unused_items: Iterable[CodeItem], args: Args) -> str
                 with open(filename, "r") as f:
                     diff = unified_diff(f.readlines(), updated_file_content_lines, fromfile=filename, tofile=filename)
                     # TODO: consider printing result instantly to save memory
-                    result.append("".join(diff))
+                    diff_str = "".join(diff)
+                    if args.no_color:
+                        result.append(diff_str)
+                    else:
+                        result.append(add_colors_to_diff(diff_str))
 
             elif args.fix:
                 with open(filename, "w") as f:
