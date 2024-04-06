@@ -200,7 +200,7 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
         if key in parsed_args:
             parsed_args[key].extend(item)
 
-    # Do not fix if dry option is provided:
+    # Show changes for only provided files instead of all
     if len(parsed_args["dry"]) > 1 or "--dry" not in args:
         parsed_args["dry"].remove("__all_files__")
 

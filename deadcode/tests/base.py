@@ -43,10 +43,10 @@ class BaseTestCase(TestCase):
         self.read_file_mock = self.patch("deadcode.visitor.dead_code_visitor.open")
         self.read_file_mock.side_effect = self._read_file_side_effect
 
-        self.fix_file_mock = self.patch("deadcode.actions.fix_unused_code.open")
+        self.fix_file_mock = self.patch("deadcode.actions.fix_or_show_unused_code.open")
         self.fix_file_mock.side_effect = self._read_file_side_effect
 
-        self.os_remove = self.patch("deadcode.actions.fix_unused_code.os.remove")
+        self.os_remove = self.patch("deadcode.actions.fix_or_show_unused_code.os.remove")
 
         self.args = Args()
 

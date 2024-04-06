@@ -1,14 +1,16 @@
 from collections import defaultdict
-from typing import Iterable
+from difflib import unified_diff
+from typing import Iterable, Optional
 import os
 
 from deadcode.actions.merge_overlaping_file_parts import merge_overlaping_file_parts
 from deadcode.actions.remove_file_parts_from_content import remove_file_parts_from_content
+from deadcode.data_types import Args
 from deadcode.visitor.code_item import CodeItem
 from deadcode.utils.flatten_lists import flatten_list
+from deadcode.visitor.ignore import _match
 
-
-def fix_unused_code(unused_items: Iterable[CodeItem]) -> None:
+def fix_or_show_unused_code(unused_items: Iterable[CodeItem], args: Args) -> Optional[str]:
     # Reading and writing should be patched in this file.
 
     # Group unused_names by filenames
@@ -21,6 +23,8 @@ def fix_unused_code(unused_items: Iterable[CodeItem]) -> None:
     for unused_item in unused_items:
         filename_to_unused_items[str(unused_item.filename)].append(unused_item)
 
+    result = []
+
     for filename, unused_items in filename_to_unused_items.items():
         file_parts = flatten_list([item.code_parts for item in unused_items])
 
@@ -32,11 +36,21 @@ def fix_unused_code(unused_items: Iterable[CodeItem]) -> None:
         updated_file_content_lines = remove_file_parts_from_content(file_content_lines, unused_file_parts)
         updated_file_content = "".join(updated_file_content_lines)
         if updated_file_content.strip():
-            with open(filename, "w") as f:
-                # TODO: is there a method writelines?
-                f.write(updated_file_content)
+            if args.dry and ('__all_files__' in args.dry or _match(filename, args.dry)):
+                with open(filename, "r") as f:
+                    diff = unified_diff(f.readlines(), updated_file_content_lines, fromfile=filename, tofile=filename)
+                    # TODO: consider printing result instantly to save memory
+                    result.append(''.join(diff))
+
+            elif args.fix:
+                with open(filename, "w") as f:
+                    # TODO: is there a method writelines?
+                    f.write(updated_file_content)
         else:
             os.remove(filename)
+
+    if result:
+        return "\n".join(result)
 
     # TODO: update this one: solution is to use read and write operations.
     #
