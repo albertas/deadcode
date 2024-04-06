@@ -3,7 +3,7 @@
 <h2 align="center">Detect and Fix Unused Python Code</h2>
 
 <p align="center">
-<a href="https://github.com/albertas/deadcode/blob/main/LICENSE"><img alt="License: AGPL3" src="https://deadcode.readthedocs.io/en/stable/_static/license.svg"></a>
+<a href="https://github.com/albertas/deadcode/blob/main/LICENSE"><img alt="License: AGPLv3" src="https://raw.githubusercontent.com/albertas/deadcode/main/docs/_static/AGPLv3-license.svg"></a>
 <a href="https://pypi.org/project/deadcode/"><img alt="PyPI" src="https://img.shields.io/pypi/v/deadcode"></a>
 <a href="https://pepy.tech/project/deadcode"><img alt="Downloads" src="https://static.pepy.tech/badge/deadcode"></a>
 </p>
