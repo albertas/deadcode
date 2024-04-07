@@ -81,6 +81,9 @@ ignore_names = [
     "show",
     "visit_*",
 ]
+ignore_names_in_files = [
+    "deadcode/utils/base_test_case.py"
+]
 
 exclude = ["tests"]
 

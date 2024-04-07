@@ -1,5 +1,5 @@
 from deadcode.actions.merge_overlaping_file_parts import merge_overlaping_file_parts, does_overlap, merge_parts
-from deadcode.tests.base import BaseTestCase
+from deadcode.utils.base_test_case import BaseTestCase
 
 
 class TestMergeOverlapingFileParts(BaseTestCase):

@@ -5,7 +5,7 @@ These tests should contain:
     - tests for parsing variable usage from abstract syntax tree.
 """
 
-from deadcode.tests.base import BaseTestCase
+from deadcode.utils.base_test_case import BaseTestCase
 
 
 class VariableParsingTests(BaseTestCase):

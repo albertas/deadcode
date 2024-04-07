@@ -3,7 +3,7 @@ These tests should test command line value conversion into internal Args instanc
 """
 
 from deadcode.actions.parse_arguments import parse_arguments
-from deadcode.tests.base import BaseTestCase
+from deadcode.utils.base_test_case import BaseTestCase
 
 
 class CommandLineArgParsingTests(BaseTestCase):

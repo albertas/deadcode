@@ -1,32 +1,32 @@
 from deadcode.actions.find_python_filenames import find_python_filenames
-from deadcode.tests.base import BaseTestCase
+from deadcode.utils.base_test_case import BaseTestCase
 
 
 class TestFindPythonFilenames(BaseTestCase):
     def test_file_detection(self):
-        self.args.paths = ["./cli.py"]
+        self.args.paths = ["deadcode/cli.py"]
         filenames = find_python_filenames(args=self.args)
-        self.assertListEqual(filenames, ["cli.py"])
+        self.assertListEqual(filenames, ["deadcode/cli.py"])
 
     def test_exclude_directories(self):
-        self.args.paths = ["."]
+        self.args.paths = ["deadcode/."]
         filenames = find_python_filenames(args=self.args)
-        self.assertTrue(any(f.startswith("tests") for f in filenames))
-        self.assertTrue(any(f.startswith("utils") for f in filenames))
+        self.assertTrue(any(f.startswith("deadcode/cli.py") for f in filenames))
+        self.assertTrue(any(f.startswith("deadcode/utils") for f in filenames))
 
-        self.args.exclude = ["tests", "utils"]
+        self.args.exclude = ["deadcode/utils", "deadcode/cli.py"]
         filenames = find_python_filenames(args=self.args)
-        self.assertFalse(any(f.startswith("tests") for f in filenames))
-        self.assertFalse(any(f.startswith("utils") for f in filenames))
+        self.assertFalse(any(f.startswith("deadcode/cli.py") for f in filenames))
+        self.assertFalse(any(f.startswith("deadcode/utils") for f in filenames))
 
     def test_exclude_files(self):
-        self.args.paths = ["."]
+        self.args.paths = ["deadcode"]
         filenames = find_python_filenames(args=self.args)
-        self.assertTrue("cli.py" in filenames)
+        self.assertTrue("deadcode/cli.py" in filenames)
 
-        self.args.exclude = ["cli.py"]
+        self.args.exclude = ["deadcode/cli.py"]
         filenames = find_python_filenames(args=self.args)
-        self.assertFalse("cli.py" in filenames)
+        self.assertFalse("deadcode/cli.py" in filenames)
 
     def test_provided_path_does_not_exist(self):
         self.args.paths = ["path_does_not_exist"]

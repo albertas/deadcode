@@ -5,7 +5,7 @@ Test unused assignment expression detection and removal.
 from unittest import skip
 
 from deadcode.cli import main
-from deadcode.tests.base import BaseTestCase
+from deadcode.utils.base_test_case import BaseTestCase
 
 
 class TestAssignmentExpressionRemoval(BaseTestCase):
