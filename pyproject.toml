@@ -17,17 +17,29 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "tomli==2.0.1"
+    "tomli>=2.0.1"
+]
+
+[project.optional-dependencies]
+test = [
+    "hatch",
+    "ruff",
+    "mypy",
+    "pip-audit",
+    "deadcode",
+    "pytest",
+    "pytest-cov",
 ]
 
 [project.scripts]
 deadcode = "deadcode.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/albertas/deadcode"
-Documentation = "https://deadcode.readthedocs.io/"
+homepage = "https://github.com/albertas/deadcode"
+documentation = "https://deadcode.readthedocs.io/"
 
 [build-system]
 requires = ["hatchling"]
@@ -45,9 +57,29 @@ exclude = ["tests/**"]
 [tool.ruff]  # https://beta.ruff.rs/docs/settings/
 line-length = 120
 
+[tool.ruff.format]
+quote-style = "single"
+docstring-code-format = true
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = "single"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "D203",    # one blank line before class
+    "D213",    # multi line summary second line
+    "COM812",  # missing trailing comma
+    "ISC001",  # single line implicit string concatenation
+    "ANN101",  # deprecated requirement to annotate self
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "D"] # allow assert and no docs in tests
+
 
 [tool.mypy]
-exclude = ["build", "dist", "venv", "tests"]
+exclude = ["build", "dist", ".venv"]
 python_version = "3.8"
 strict = true
 pretty = true

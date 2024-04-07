@@ -1,36 +1,49 @@
-.PHONY: check publish test ruff fix mypy black deadcode
+.PHONY: compile publish check fix lint fixlint format mypy deadcode audit test
 
-ifndef VERBOSE
-  MAKEFLAGS += --no-print-directory
-endif
+check: test lint mypy audit deadcode
+fix: format fixlint
 
-check: test ruff mypy black deadcode
+.venv:
+	pip install uv
+	uv venv -p 3.8 .venv
+	uv pip sync requirements-dev.txt
+	uv pip install -e .[test]
 
-venv:
-	python3.8 -m venv venv
-	venv/bin/pip install --upgrade pip
-	venv/bin/pip install -r requirements-dev.txt --use-pep517
-	venv/bin/pip install -e .
 
-publish: venv
+publish: .venv
 	rm -fr dist/*
-	venv/bin/hatch build
-	venv/bin/hatch publish
+	.venv/bin/hatch build
+	.venv/bin/hatch -v publish
 
-test: venv
-	venv/bin/pytest -vv $(PYTEST_ME_PLEASE)
+test: .venv
+	.venv/bin/pytest -vv $(PYTEST_ME_PLEASE)
 
-ruff: venv
-	venv/bin/ruff check deadcode tests
+lint: .venv
+	.venv/bin/ruff check deadcode tests
 
-fix: venv
-	venv/bin/ruff deadcode tests --fix
+fix: .venv
+	.venv/bin/ruff deadcode tests --fix
 
-mypy: venv
-	venv/bin/mypy deadcode
+mypy: .venv
+	.venv/bin/mypy deadcode
 
-black: venv
-	venv/bin/black deadcode tests
+deadcode: .venv
+	.venv/bin/deadcode deadcode tests -v
 
-deadcode: venv
-	venv/bin/deadcode deadcode tests -v
+fixlint: .venv
+	.venv/bin/ruff check --fix deadcode tests --unsafe-fixes
+	.venv/bin/deadcode deadcode tests --fix
+
+format: .venv
+	.venv/bin/ruff format deadcode tests
+
+audit: .venv
+	.venv/bin/pip-audit
+
+sync: .venv
+	uv pip sync requirements-dev.txt
+	uv pip install -e .[test]
+
+compile:
+	uv pip compile -U -q pyproject.toml -o requirements.txt
+	uv pip compile -U -q --all-extras pyproject.toml -o requirements-dev.txt
