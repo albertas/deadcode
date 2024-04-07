@@ -9,28 +9,28 @@ from deadcode.utils.base_test_case import BaseTestCase
 class TestAssignmentExpressionRemoval(BaseTestCase):
     def test_file_removal(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 """
         }
 
-        unused_names = main(["foo.py", "--no-color", "--fix"])
+        unused_names = main(['foo.py', '--no-color', '--fix'])
         self.assertEqual(
             unused_names,
-            ("foo.py DC11 Empty file\n\n" "Removed 1 unused code item!"),
+            ('foo.py DC11 Empty file\n\n' 'Removed 1 unused code item!'),
         )
 
-        self.assertFiles({}, removed=["foo.py"])
+        self.assertFiles({}, removed=['foo.py'])
 
     def test_file_removal_from_subpath(self):
         self.files = {
-            "bar/foo.py": """
+            'bar/foo.py': """
                 """
         }
 
-        unused_names = main(["bar/foo.py", "--no-color", "--fix"])
+        unused_names = main(['bar/foo.py', '--no-color', '--fix'])
         self.assertEqual(
             unused_names,
-            ("bar/foo.py DC11 Empty file\n\n" "Removed 1 unused code item!"),
+            ('bar/foo.py DC11 Empty file\n\n' 'Removed 1 unused code item!'),
         )
 
-        self.assertFiles({}, removed=["bar/foo.py"])
+        self.assertFiles({}, removed=['bar/foo.py'])

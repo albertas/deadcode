@@ -9,7 +9,7 @@ from deadcode.utils.base_test_case import BaseTestCase
 class TestUnusedMethodRemoval(BaseTestCase):
     def test_method(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class MyTest:
                     def some_method(self):
                         pass
@@ -19,11 +19,11 @@ class TestUnusedMethodRemoval(BaseTestCase):
                 """
         }
 
-        main(["foo.py", "--no-color", "--fix"])
+        main(['foo.py', '--no-color', '--fix'])
 
         self.assertFiles(
             {
-                "foo.py": """
+                'foo.py': """
             class MyTest:
                 pass
 
@@ -35,12 +35,12 @@ class TestUnusedMethodRemoval(BaseTestCase):
 
     def test_method_at_the_end_of_file(self):
         self.files = {
-            "bar.py": """
+            'bar.py': """
                 class MyTest:
                     def some_method(self):
                         pass
                 """,
-            "foo.py": """
+            'foo.py': """
                 from foo import MyTest
 
                 instance = MyTest()
@@ -48,15 +48,15 @@ class TestUnusedMethodRemoval(BaseTestCase):
                 """,
         }
 
-        main(["foo.py", "--no-color", "--fix"])
+        main(['foo.py', '--no-color', '--fix'])
 
         self.assertFiles(
             {
-                "bar.py": """
+                'bar.py': """
             class MyTest:
                 pass
             """,
-                "foo.py": """
+                'foo.py': """
                 from foo import MyTest
 
                 instance = MyTest()

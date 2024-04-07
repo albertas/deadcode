@@ -6,14 +6,14 @@ from deadcode.utils.fix_indent import fix_indent
 class TestDryCliOption(BaseTestCase):
     def test_unused_class_was_reported_to_be_removed(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class UnusedClass:
                     pass
 
                 print("Dont change this file")"""
         }
 
-        unused_names = main("foo.py --no-color --fix --dry".split())
+        unused_names = main('foo.py --no-color --fix --dry'.split())
         self.assertEqual(
             unused_names,
             (
@@ -35,7 +35,7 @@ class TestDryCliOption(BaseTestCase):
 
         self.assertFiles(
             {
-                "foo.py": """
+                'foo.py': """
                     class UnusedClass:
                         pass
 
@@ -45,14 +45,14 @@ class TestDryCliOption(BaseTestCase):
 
     def test_file_is_not_modified_if_fix_option_is_used_with_dry(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class UnusedClass:
                     pass
 
                 print("Dont change this file")"""
         }
 
-        unused_names = main(["ignore_names_by_pattern.py", "--no-color", "--fix", "--dry"])
+        unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--fix', '--dry'])
         self.assertEqual(
             unused_names,
             (
@@ -74,7 +74,7 @@ class TestDryCliOption(BaseTestCase):
 
         self.assertFiles(
             {
-                "foo.py": """
+                'foo.py': """
                     class UnusedClass:
                         pass
 
@@ -84,19 +84,19 @@ class TestDryCliOption(BaseTestCase):
 
     def test_all_files_are_reported_if_no_filenames_are_provided_for_dry_option(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class UnusedClass:
                     pass
 
                 print("Dont change this file")""",
-            "bar.py": """
+            'bar.py': """
                 def unused_function():
                     pass
 
                 print("Dont change this file")""",
         }
 
-        unused_names = main(["ignore_names_by_pattern.py", "--no-color", "--dry"])
+        unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--dry'])
         self.assertEqual(
             unused_names,
             fix_indent(
@@ -125,12 +125,12 @@ class TestDryCliOption(BaseTestCase):
 
         self.assertFiles(
             {
-                "foo.py": """
+                'foo.py': """
                 class UnusedClass:
                     pass
 
                 print("Dont change this file")""",
-                "bar.py": """
+                'bar.py': """
                 def unused_function():
                     pass
 
@@ -140,19 +140,19 @@ class TestDryCliOption(BaseTestCase):
 
     def test_only_provided_filenames_to_dry_option_are_reported(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class UnusedClass:
                     pass
 
                 print("Dont change this file")""",
-            "bar.py": """
+            'bar.py': """
                 def unused_function():
                     pass
 
                 print("Dont change this file")""",
         }
 
-        unused_names = main(["ignore_names_by_pattern.py", "--no-color", "--dry", "foo.py"])
+        unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--dry', 'foo.py'])
         self.assertEqual(
             unused_names,
             fix_indent(
@@ -173,12 +173,12 @@ class TestDryCliOption(BaseTestCase):
 
         self.assertFiles(
             {
-                "foo.py": """
+                'foo.py': """
                 class UnusedClass:
                     pass
 
                 print("Dont change this file")""",
-                "bar.py": """
+                'bar.py': """
                 def unused_function():
                     pass
 
@@ -188,22 +188,22 @@ class TestDryCliOption(BaseTestCase):
 
     def test_no_diff_is_shown_if_dry_option_filenames_are_incorrect(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class UnusedClass:
                     pass
 
                 print("Dont change this file")"""
         }
 
-        unused_names = main("foo.py --no-color --fix --dry fooo.py".split())
+        unused_names = main('foo.py --no-color --fix --dry fooo.py'.split())
         self.assertEqual(
             unused_names,
-            "foo.py:1:0: DC03 Class `UnusedClass` is never used",
+            'foo.py:1:0: DC03 Class `UnusedClass` is never used',
         )
 
         self.assertFiles(
             {
-                "foo.py": """
+                'foo.py': """
                     class UnusedClass:
                         pass
 
@@ -213,14 +213,14 @@ class TestDryCliOption(BaseTestCase):
 
     def test_pattern_usage_for_filenames_provided_to_dry_option(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class UnusedClass:
                     pass
 
                 print("Dont change this file")"""
         }
 
-        unused_names = main(["ignore_names_by_pattern.py", "--no-color", "--fix", "--dry", "f*.py"])
+        unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--fix', '--dry', 'f*.py'])
         self.assertEqual(
             unused_names,
             (
@@ -242,7 +242,7 @@ class TestDryCliOption(BaseTestCase):
 
         self.assertFiles(
             {
-                "foo.py": """
+                'foo.py': """
                     class UnusedClass:
                         pass
 
@@ -252,12 +252,12 @@ class TestDryCliOption(BaseTestCase):
 
     def test_coloring_of_a_diff(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class UnusedClass:
                     pass
 
                 print("Dont change this file")""",
-            "bar.py": """
+            'bar.py': """
                 def unused_function():
                     pass
 
@@ -267,7 +267,7 @@ class TestDryCliOption(BaseTestCase):
                 print("Dont change this file")""",
         }
 
-        unused_names = main(["ignore_names_by_pattern.py", "--dry"])
+        unused_names = main(['ignore_names_by_pattern.py', '--dry'])
         self.assertEqual(
             unused_names,
             fix_indent(
@@ -301,12 +301,12 @@ class TestDryCliOption(BaseTestCase):
 
         self.assertFiles(
             {
-                "foo.py": """
+                'foo.py': """
                 class UnusedClass:
                     pass
 
                 print("Dont change this file")""",
-                "bar.py": """
+                'bar.py': """
                 def unused_function():
                     pass
 

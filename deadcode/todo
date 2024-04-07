@@ -1,0 +1,163 @@
+
+
+## TODO: handle the reverse walking of method calls in a proper way:
+# Should I build a scope or something?
+#
+# Lets inspect on what happens in visit method.
+
+It seems that Attribute node has to handled only after its nested nodes were handled.
+But are there cases, when its not an attribute and I still want to have it handled firstly?
+    When functions are chained?
+
+
+    Yes, we have to handle the nested definitions first for every exrpession.
+
+    Now I have to merge those: visit and generic visit methods.
+        Make sure that all tests are passing and make the needed refactoring.
+
+
+
+
+
+Module(
+    body=[
+        Expr(
+            value=Call(
+                func=Attribute(
+                    value=Call(
+                        func=Name(id='Bar', ctx=Load()),
+                        args=[],
+                        keywords=[]),
+                    attr='spam',
+                    ctx=Load()),
+                args=[],
+                keywords=[]))],
+    type_ignores=[])
+
+
+Expr(
+    value=Call(
+        func=Attribute(
+            value=Call(
+                func=Name(id='Bar', ctx=Load()),
+                args=[],
+                keywords=[]),
+            attr='spam',
+            ctx=Load()),
+        args=[],
+        keywords=[]))
+
+
+Call(
+    func=Attribute(
+        value=Call(
+            func=Name(id='Bar', ctx=Load()),
+            args=[],
+            keywords=[]),
+        attr='spam',
+        ctx=Load()),
+    args=[],
+    keywords=[])
+
+
+Attribute(
+    value=Call(
+        func=Name(id='Bar', ctx=Load()),
+        args=[],
+        keywords=[]),
+    attr='spam',
+    ctx=Load())
+
+
+
+########################################################
+#
+#
+# TODO: Have to customly parse Call node. So that usage types could be resolved.
+Expr(
+    value=Call(
+        func=Attribute(
+            value=Call(
+                func=Name(id='Bar', ctx=Load()),
+                args=[],
+                keywords=[]),
+            attr='spam',
+            ctx=Load()),
+        args=[],
+        keywords=[]))
+
+
+# The issue is that this is being handled using recursive.
+    # I should build the type on the go.
+
+# Should add custom implementation of an Attribute.
+
+
+Call(
+    func=Attribute(
+        value=Call(
+            func=Name(id='Bar', ctx=Load()),
+            args=[],
+            keywords=[]),
+        attr='spam',
+        ctx=Load()),
+    args=[],
+    keywords=[])
+
+Attribute(
+    value=Call(
+        func=Name(id='Bar', ctx=Load()),
+        args=[],
+        keywords=[]),
+    attr='spam',
+    ctx=Load())
+
+
+Call(
+    func=Name(id='Bar', ctx=Load()),
+    args=[],
+    keywords=[])
+
+##########################################################################################
+# TODO: Usages should be counted on the CodeItem, it should be found using proper scope. #
+# Variable passing to other scopes should also be covered. ###############################
+############################################################
+#
+# Whats the smallest step which could be made further?
+#   + Lets define a test, where the context is provided and its passed to a function.
+#   > Lets track variable types on their usages.
+
+
+
+######################
+# Major achievements #
+######################
+# Three major ways to improve my code:
+# [+] 1. Class hierarchy tracking + types in scope tracking.
+# [>] 2. Accurate usage detection without overlapping names.
+# [ ] 3. Assignment operator handling in the visitor. 
+#
+#
+##################
+
+# noqa support
+    > Add basic test.
+
+
+
+
+
+Dig deeper:
+    https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+
+# It started happening suddenly.
+
+visitor/utils.py:5: error: Skipping analyzing "deadcode.constants": module is installed, but missing library stubs or py.typed marker  [import]
+    from deadcode.constants import UnusedCodeType
+
+
+## TODO: Lets create an issue in MyPy.
+The issue was that my home directory contained __init__.py file.
+
+
+

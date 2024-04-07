@@ -10,7 +10,7 @@ def this_one_is_used():
 this_one_is_used()
 
 
-def another_unused_function(arg1: str = "", arg2: str = "Hello") -> None:
+def another_unused_function(arg1: str = '', arg2: str = 'Hello') -> None:
     def this_is_unused_closure():
         pass
 

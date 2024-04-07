@@ -16,11 +16,11 @@ def _get_last_child_with_lineno(node: ast.AST) -> Optional[ast.AST]:
     list of nodes, we return the last one.
 
     """
-    ignored_fields = {"ctx", "decorator_list", "names", "returns"}
+    ignored_fields = {'ctx', 'decorator_list', 'names', 'returns'}
     fields = node._fields
     # The fields of ast.Call are in the wrong order.
     if isinstance(node, ast.Call):
-        fields = ("func", "args", "starargs", "keywords", "kwargs")
+        fields = ('func', 'args', 'starargs', 'keywords', 'kwargs')
     for name in reversed(fields):
         if name in ignored_fields:
             continue
@@ -76,7 +76,7 @@ def get_first_line_number(node: ast.AST) -> int:
     also don't need it's decorators), we return the lineno of the first
     decorator, if there are any.
     """
-    if decorators := getattr(node, "decorator_list", []):
+    if decorators := getattr(node, 'decorator_list', []):
         lineno: int = decorators[0].lineno
         return lineno
     return node.lineno

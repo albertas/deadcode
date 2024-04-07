@@ -42,17 +42,17 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
     """
 
     __slots__ = (
-        "name",
-        "type_",
-        "filename",
-        "code_parts",
-        "scope",
-        "inherits_from",
-        "name_line",
-        "name_column",
-        "message",
-        "error_code",
-        "number_of_uses",
+        'name',
+        'type_',
+        'filename',
+        'code_parts',
+        'scope',
+        'inherits_from',
+        'name_line',
+        'name_column',
+        'message',
+        'error_code',
+        'number_of_uses',
     )
 
     def __init__(
@@ -70,7 +70,7 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
         inherits_from: Optional[List[str]] = None,
         name_line: Optional[int] = None,
         name_column: Optional[int] = None,
-        message: str = "",
+        message: str = '',
         number_of_uses: int = 0,
     ):
         self.name = name
@@ -101,15 +101,15 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
 
     @property
     def scoped_name(self) -> str:
-        return f"{self.scope}.{self.name}"
+        return f'{self.scope}.{self.name}'
 
     @property
     def filename_with_position(self) -> str:
         filename_with_position = str(self.filename)
         if self.name_line is not None:
-            filename_with_position += f":{self.name_line}"
+            filename_with_position += f':{self.name_line}'
             if self.name_column is not None:
-                filename_with_position += f":{self.name_column}:"
+                filename_with_position += f':{self.name_column}:'
         return filename_with_position
 
     # @property

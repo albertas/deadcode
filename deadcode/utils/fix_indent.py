@@ -8,7 +8,7 @@ def fix_indent(doc: str) -> Optional[str]:
     Implemented based on inspect.cleandoc by keeping trailing lines.
     """
     try:
-        lines = doc.expandtabs().split("\n")
+        lines = doc.expandtabs().split('\n')
     except UnicodeError:
         return None
     else:
@@ -33,4 +33,4 @@ def fix_indent(doc: str) -> Optional[str]:
         ## Remove any leading blank lines.
         while lines and not lines[0]:
             lines.pop(0)
-        return "\n".join(lines)
+        return '\n'.join(lines)

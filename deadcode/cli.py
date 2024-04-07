@@ -24,12 +24,12 @@ def main(
         file_diff = fix_or_show_unused_code(unused_names, args=args)
 
     if (error_message := get_unused_names_error_message(unused_names, args=args)) is not None:
-        return error_message + ("\n\n" + file_diff if file_diff else "")
+        return error_message + ('\n\n' + file_diff if file_diff else '')
 
     if not args.count and not args.quiet:
-        print("\033[1mWell done!\033[0m ✨ 🚀 ✨")
+        print('\033[1mWell done!\033[0m ✨ 🚀 ✨')
     return None
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

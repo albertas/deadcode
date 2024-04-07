@@ -7,7 +7,7 @@ from deadcode.utils.base_test_case import BaseTestCase
 class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
     def test_ignore_class_definition_if_inherits_from_base_class(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class Base:
                     pass
 
@@ -28,12 +28,12 @@ class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
         }
 
         output = main(
-            ["ignore_names_by_pattern.py", "--no-color", "--ignore-definitions-if-inherits-from=Base", "--fix"]
+            ['ignore_names_by_pattern.py', '--no-color', '--ignore-definitions-if-inherits-from=Base', '--fix']
         )
 
         self.assertFiles(
             {
-                "foo.py": """
+                'foo.py': """
                 class Base:
                     pass
 
@@ -52,10 +52,10 @@ class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
 
         self.assertEqual(
             output,
-            "foo.py:15:0: DC03 Class `AnotherUnusedClass` is never used\n"
-            "foo.py:16:4: DC01 Variable `another_unused_attribute` is never used\n"
-            "\n"
-            "Removed 2 unused code items!",
+            'foo.py:15:0: DC03 Class `AnotherUnusedClass` is never used\n'
+            'foo.py:16:4: DC01 Variable `another_unused_attribute` is never used\n'
+            '\n'
+            'Removed 2 unused code items!',
         )
 
     @skip
@@ -65,7 +65,7 @@ class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
         # inherited classes would be considered, but whole inheritance tree would be considered.
 
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class Base:
                     pass
 
@@ -90,12 +90,12 @@ class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
         }
 
         output = main(
-            ["ignore_names_by_pattern.py", "--no-color", "--ignore-definitions-if-inherits-from=Base", "--fix"]
+            ['ignore_names_by_pattern.py', '--no-color', '--ignore-definitions-if-inherits-from=Base', '--fix']
         )
 
         self.assertFiles(
             {
-                "foo.py": """
+                'foo.py': """
                 class Base:
                     pass
 
@@ -118,8 +118,8 @@ class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
 
         self.assertEqual(
             output,
-            "foo.py:15:0: DC03 Class `AnotherUnusedClass` is never used\n"
-            "foo.py:16:4: DC01 Variable `another_unused_attribute` is never used\n"
-            "\n"
-            "Removed 2 unused code items!",
+            'foo.py:15:0: DC03 Class `AnotherUnusedClass` is never used\n'
+            'foo.py:16:4: DC01 Variable `another_unused_attribute` is never used\n'
+            '\n'
+            'Removed 2 unused code items!',
         )

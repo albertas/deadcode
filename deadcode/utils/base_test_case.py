@@ -30,23 +30,23 @@ class BaseTestCase(TestCase):
 
         if file_content := fix_indent(self.files[mock.filename]):
             mock.__enter__().read.return_value = file_content
-            mock.__enter__().readlines.return_value = [f"{line}\n" for line in file_content.split("\n")]
+            mock.__enter__().readlines.return_value = [f'{line}\n' for line in file_content.split('\n')]
             mock.__enter__().write.side_effect = cache_file_content
         return mock
 
     def setUp(self) -> None:
         self.updated_files: Dict[str, str] = {}
 
-        self.find_python_filenames_mock = self.patch("deadcode.cli.find_python_filenames")
+        self.find_python_filenames_mock = self.patch('deadcode.cli.find_python_filenames')
         self.find_python_filenames_mock.side_effect = self._get_filenames
 
-        self.read_file_mock = self.patch("deadcode.visitor.dead_code_visitor.open")
+        self.read_file_mock = self.patch('deadcode.visitor.dead_code_visitor.open')
         self.read_file_mock.side_effect = self._read_file_side_effect
 
-        self.fix_file_mock = self.patch("deadcode.actions.fix_or_show_unused_code.open")
+        self.fix_file_mock = self.patch('deadcode.actions.fix_or_show_unused_code.open')
         self.fix_file_mock.side_effect = self._read_file_side_effect
 
-        self.os_remove = self.patch("deadcode.actions.fix_or_show_unused_code.os.remove")
+        self.os_remove = self.patch('deadcode.actions.fix_or_show_unused_code.os.remove')
 
         self.args = Args()
 
@@ -73,7 +73,7 @@ class BaseTestCase(TestCase):
         for filename, content in expected_files.items():
             self.assertEqual(
                 fix_indent(content),
-                fix_indent(self.updated_files.get(filename) or unchanged_files.get(filename) or ""),
+                fix_indent(self.updated_files.get(filename) or unchanged_files.get(filename) or ''),
             )
 
     def assertUpdatedFiles(self, expected_updated_files: Dict[str, str]) -> None:

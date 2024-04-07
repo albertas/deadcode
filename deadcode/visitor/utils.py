@@ -59,7 +59,7 @@ def get_decorator_name(decorator: Union[ast.Call, ast.Attribute]) -> str:
         parts.append(decorator.attr)
         decorator = decorator.value  # type: ignore
     parts.append(decorator.id)  # type: ignore
-    return "@" + ".".join(reversed(parts))
+    return '@' + '.'.join(reversed(parts))
 
 
 class LoggingList(list):  # type: ignore

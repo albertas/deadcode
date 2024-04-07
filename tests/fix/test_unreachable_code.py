@@ -5,7 +5,7 @@ from deadcode.utils.base_test_case import BaseTestCase
 class TestUnreachableCodeIsNotRemoved(BaseTestCase):
     def test_else_is_not_changed_when_condition_is_true(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 if True:
                     print("Main block")
                 else:
@@ -13,12 +13,12 @@ class TestUnreachableCodeIsNotRemoved(BaseTestCase):
                 """
         }
 
-        result = main(["foo.py", "--no-color", "--fix"])
+        result = main(['foo.py', '--no-color', '--fix'])
         self.assertIsNone(result)
 
         self.assertFiles(
             {
-                "foo.py": """
+                'foo.py': """
                 if True:
                     print("Main block")
                 else:
@@ -29,7 +29,7 @@ class TestUnreachableCodeIsNotRemoved(BaseTestCase):
 
     def test_else_is_not_changed_when_condition_is_false(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 if False:
                     print("Main block")
                 else:
@@ -37,12 +37,12 @@ class TestUnreachableCodeIsNotRemoved(BaseTestCase):
                 """
         }
 
-        result = main(["foo.py", "--no-color", "--fix"])
+        result = main(['foo.py', '--no-color', '--fix'])
         self.assertIsNone(result)
 
         self.assertFiles(
             {
-                "foo.py": """
+                'foo.py': """
                 if False:
                     print("Main block")
                 else:
@@ -53,7 +53,7 @@ class TestUnreachableCodeIsNotRemoved(BaseTestCase):
 
     def test_while_is_not_changed_when_condition_is_true(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 while True:
                     print("Main block")
                 else:
@@ -61,12 +61,12 @@ class TestUnreachableCodeIsNotRemoved(BaseTestCase):
                 """
         }
 
-        result = main(["foo.py", "--no-color", "--fix"])
+        result = main(['foo.py', '--no-color', '--fix'])
         self.assertIsNone(result)
 
         self.assertFiles(
             {
-                "foo.py": """
+                'foo.py': """
                 while True:
                     print("Main block")
                 else:
@@ -77,7 +77,7 @@ class TestUnreachableCodeIsNotRemoved(BaseTestCase):
 
     def test_while_is_not_changed_when_condition_is_false(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 while False:
                     print("Main block")
                 else:
@@ -85,12 +85,12 @@ class TestUnreachableCodeIsNotRemoved(BaseTestCase):
                 """
         }
 
-        result = main(["foo.py", "--no-color", "--fix"])
+        result = main(['foo.py', '--no-color', '--fix'])
         self.assertIsNone(result)
 
         self.assertFiles(
             {
-                "foo.py": """
+                'foo.py': """
                 while False:
                     print("Main block")
                 else:

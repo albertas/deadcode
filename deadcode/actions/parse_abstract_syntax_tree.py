@@ -9,5 +9,5 @@ def parse_abstract_syntax_tree(file_content: FileContent, args: Args, filename: 
         return ast.parse(file_content, filename=filename, type_comments=True)
     except:  # noqa: E722
         if not args.count and not args.quiet:
-            print(f"Error: Failed to parse {filename} file, ignoring it.")
+            print(f'Error: Failed to parse {filename} file, ignoring it.')
         return ast.Module()

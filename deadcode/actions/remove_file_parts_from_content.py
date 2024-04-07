@@ -3,7 +3,7 @@ from typing import List, Optional, TypeVar
 
 from deadcode.data_types import Part
 
-T = TypeVar("T")
+T = TypeVar('T')
 
 
 def list_get(list_: List[T], index: int) -> Optional[T]:
@@ -13,7 +13,7 @@ def list_get(list_: List[T], index: int) -> Optional[T]:
 
 
 def ends_with_semicolon(line: str) -> bool:
-    return line.strip().endswith(":")
+    return line.strip().endswith(':')
 
 
 def indentation_is_not_childs(previous_line: str, current_line: str) -> bool:
@@ -21,11 +21,11 @@ def indentation_is_not_childs(previous_line: str, current_line: str) -> bool:
 
 
 def get_indentation(line: str) -> str:
-    return str(re.findall("^\s*", line)[0])
+    return str(re.findall('^\s*', line)[0])
 
 
 def remove_as_from_end(line: str) -> str:
-    if not (line_rstrip := line.rstrip()).endswith("as"):
+    if not (line_rstrip := line.rstrip()).endswith('as'):
         return line
 
     # Is there white spaces before as
@@ -42,10 +42,10 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
     # TODO: iterate by line and crop that line if needed.
     unused_part_index = 0
 
-    previous_non_removed_line = ""
+    previous_non_removed_line = ''
     was_block_removed = False
     next_line_after_removed_block = None
-    indentation_of_first_removed_line = ""
+    indentation_of_first_removed_line = ''
     empty_lines_in_a_row_list: List[str] = []
     empty_lines_before_removed_block_list: List[str] = []
 
@@ -63,7 +63,7 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
             indentation_of_first_removed_line = get_indentation(line)
 
             if from_line == to_line:
-                if (line[:from_col] + line[to_col:]).strip().startswith("="):
+                if (line[:from_col] + line[to_col:]).strip().startswith('='):
                     line = line[:from_col]
                 else:
                     line = remove_as_from_end(line[:from_col]) + line[to_col:]
@@ -80,7 +80,7 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
             else:
                 line = line[:from_col]
 
-            if line.strip() and not line.startswith("#"):
+            if line.strip() and not line.startswith('#'):
                 previous_non_removed_line = line
                 updated_content_lines.append(line)
 
@@ -89,7 +89,7 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
             line = line[to_col:]
             unused_part_index += 1
             # TODO: Add tests for case, when comments are added at the start or end of the removed block
-            if line.strip() and not line.startswith("#"):
+            if line.strip() and not line.startswith('#'):
                 updated_content_lines.append(line)
 
             empty_lines_before_removed_block_list, empty_lines_in_a_row_list = (
@@ -118,7 +118,7 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
                     if indentation_is_not_childs(
                         previous_line=previous_non_removed_line, current_line=next_line_after_removed_block
                     ):
-                        updated_content_lines.append(f"{indentation_of_first_removed_line}pass\n")
+                        updated_content_lines.append(f'{indentation_of_first_removed_line}pass\n')
 
                     # Add empty lines
                     if indentation_is_not_childs(
@@ -144,6 +144,6 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
 
     if was_block_removed:
         if ends_with_semicolon(previous_non_removed_line):
-            updated_content_lines.append(f"{indentation_of_first_removed_line}pass\n")
+            updated_content_lines.append(f'{indentation_of_first_removed_line}pass\n')
 
     return updated_content_lines

@@ -1,6 +1,6 @@
 from typing import List, Optional, TypeVar
 
-T = TypeVar("T")
+T = TypeVar('T')
 
 
 def flatten_lists_of_comma_separated_values(
@@ -9,7 +9,7 @@ def flatten_lists_of_comma_separated_values(
     """Concatenates lists into one list."""
     if not list_of_comma_separated_values:
         return []
-    return flatten_list([v.split(",") for v in flatten_list(list_of_comma_separated_values)])
+    return flatten_list([v.split(',') for v in flatten_list(list_of_comma_separated_values)])
 
 
 def flatten_list(list_of_lists: Optional[List[List[T]]]) -> List[T]:

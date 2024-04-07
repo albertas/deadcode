@@ -23,7 +23,7 @@ class NestedScope:
         if code_item.scope is None:
             return None
 
-        scope_parts = code_item.scope.split(".")
+        scope_parts = code_item.scope.split('.')
 
         current_scope = self._scopes
         for scope_part in scope_parts:
@@ -47,7 +47,7 @@ class NestedScope:
         # Create a stack of scopes begining from nearest and following with parent one
         scopes: List[Dict[Union[CodeItem, str], Dict[Any, Any]]] = []
         next_scope = self._scopes
-        for scope_part in scope.split("."):
+        for scope_part in scope.split('.'):
             if scope_part not in next_scope:
                 return None
             next_scope = next_scope[scope_part]

@@ -1,6 +1,7 @@
 """
 Test class def.
 """
+
 from unittest import skip
 
 from deadcode.cli import main
@@ -12,7 +13,7 @@ class TestVariableScopeTracking(BaseTestCase):
     def test_same_variable_name_is_used_for_two_different_classes(self):
         """Usage of the class methods should be tracked properly."""
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class Foo:
                     def foo(self):
                         pass
@@ -30,14 +31,14 @@ class TestVariableScopeTracking(BaseTestCase):
                 """
         }
 
-        main(["foo.py", "--no-color", "--fix"])
+        main(['foo.py', '--no-color', '--fix'])
 
         self.assertFiles({})
 
     def test_instance_is_being_passed_into_a_function(self):
         """Usage of the class methods should be tracked properly."""
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class Foo:
                     def foo(self):
                         pass
@@ -49,13 +50,13 @@ class TestVariableScopeTracking(BaseTestCase):
                 """
         }
 
-        main(["foo.py", "--no-color", "--fix"])
+        main(['foo.py', '--no-color', '--fix'])
 
         self.assertFiles({})
 
     def test_instance_is_being_passed_into_a_function_using_args(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class Foo:
                     def foo(self):
                         pass
@@ -68,13 +69,13 @@ class TestVariableScopeTracking(BaseTestCase):
                 """
         }
 
-        main(["foo.py", "--no-color", "--fix"])
+        main(['foo.py', '--no-color', '--fix'])
 
         self.assertFiles({})
 
     def test_instance_is_being_passed_into_a_function_using_kwargs(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class Foo:
                     def foo(self):
                         pass
@@ -87,13 +88,13 @@ class TestVariableScopeTracking(BaseTestCase):
                 """
         }
 
-        main(["foo.py", "--no-color", "--fix"])
+        main(['foo.py', '--no-color', '--fix'])
 
         self.assertFiles({})
 
     def test_instance_is_being_passed_into_a_method_using_kwargs(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class Foo:
                     def foo(self):
                         pass
@@ -107,13 +108,13 @@ class TestVariableScopeTracking(BaseTestCase):
                 """
         }
 
-        main(["foo.py", "--no-color", "--fix"])
+        main(['foo.py', '--no-color', '--fix'])
 
         self.assertFiles({})
 
     def test_instance_is_being_passed_into_a_class_method_using_kwargs(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class Foo:
                     def foo(self):
                         pass
@@ -128,13 +129,13 @@ class TestVariableScopeTracking(BaseTestCase):
                 """
         }
 
-        main(["foo.py", "--no-color", "--fix"])
+        main(['foo.py', '--no-color', '--fix'])
 
         self.assertFiles({})
 
     def test_instance_is_being_passed_into_a_static_method_using_kwargs(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class Foo:
                     def foo(self):
                         pass
@@ -149,47 +150,47 @@ class TestVariableScopeTracking(BaseTestCase):
                 """
         }
 
-        main(["foo.py", "--no-color", "--fix"])
+        main(['foo.py', '--no-color', '--fix'])
 
         self.assertFiles({})
 
     def test_instance_is_being_imported(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class Foo:
                     def foo(self):
                         pass
                 """,
-            "bar.py": """
+            'bar.py': """
                 from foo import Foo
                 print(Foo().foo())
                 """,
         }
 
-        main(["foo.py", "--no-color", "--fix"])
+        main(['foo.py', '--no-color', '--fix'])
 
         self.assertFiles({})
 
     def test_instance_is_being_imported_with_renaming(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class Foo:
                     def foo(self):
                         pass
                 """,
-            "bar.py": """
+            'bar.py': """
                 from foo import Foo as Bar
                 print(Bar().foo())
                 """,
         }
 
-        main(["foo.py", "--no-color", "--fix"])
+        main(['foo.py', '--no-color', '--fix'])
 
         self.assertFiles({})
 
     def test_variable_renaming(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class Foo:
                     def foo(self):
                         pass
@@ -200,13 +201,13 @@ class TestVariableScopeTracking(BaseTestCase):
                 """
         }
 
-        main(["foo.py", "--no-color", "--fix"])
+        main(['foo.py', '--no-color', '--fix'])
 
         self.assertFiles({})
 
     def test_variable_renaming_using_expansion_from_a_list(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class Foo:
                     def foo(self):
                         pass
@@ -217,13 +218,13 @@ class TestVariableScopeTracking(BaseTestCase):
                 """,
         }
 
-        main(["foo.py", "--no-color", "--fix"])
+        main(['foo.py', '--no-color', '--fix'])
 
         self.assertFiles({})
 
     def test_function_arguments_are_being_passed_using_partial_instead_of_direct_call(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class Foo:
                     def foo(self):
                         pass
@@ -238,6 +239,6 @@ class TestVariableScopeTracking(BaseTestCase):
                 """
         }
 
-        main(["foo.py", "--no-color", "--fix"])
+        main(['foo.py', '--no-color', '--fix'])
 
         self.assertFiles({})

@@ -51,17 +51,17 @@ class DeadCodeVisitor(ast.NodeVisitor):
         # verbose = args.verbose
         self.verbose = verbose
 
-        self.defined_attrs: List[CodeItem] = LoggingList("attribute", verbose)
-        self.defined_classes: List[CodeItem] = LoggingList("class", verbose)
-        self.defined_funcs: List[CodeItem] = LoggingList("function", verbose)
-        self.defined_imports: List[CodeItem] = LoggingList("import", verbose)
-        self.defined_methods: List[CodeItem] = LoggingList("method", verbose)
-        self.defined_props: List[CodeItem] = LoggingList("property", verbose)
-        self.defined_vars: List[CodeItem] = LoggingList("variable", verbose)
-        self.unused_file: List[CodeItem] = LoggingList("unused_file", verbose)
-        self.unreachable_code: List[CodeItem] = LoggingList("unreachable_code", verbose)
+        self.defined_attrs: List[CodeItem] = LoggingList('attribute', verbose)
+        self.defined_classes: List[CodeItem] = LoggingList('class', verbose)
+        self.defined_funcs: List[CodeItem] = LoggingList('function', verbose)
+        self.defined_imports: List[CodeItem] = LoggingList('import', verbose)
+        self.defined_methods: List[CodeItem] = LoggingList('method', verbose)
+        self.defined_props: List[CodeItem] = LoggingList('property', verbose)
+        self.defined_vars: List[CodeItem] = LoggingList('variable', verbose)
+        self.unused_file: List[CodeItem] = LoggingList('unused_file', verbose)
+        self.unreachable_code: List[CodeItem] = LoggingList('unreachable_code', verbose)
 
-        self.used_names: Set[str] = LoggingSet("name", self.verbose)
+        self.used_names: Set[str] = LoggingSet('name', self.verbose)
 
         self.filename = Path()
         self.code: List[str] = []
@@ -78,7 +78,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
     @property
     def scope(self) -> str:
-        return ".".join(self.scope_parts)
+        return '.'.join(self.scope_parts)
 
     def add_used_name(self, name: str, scope: Optional[str] = None) -> None:
         # TODO: Usage should be tracked on CodeItem.
@@ -98,7 +98,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
                 self.scope_parts = [module_name]
 
                 file_content = f.read()
-                if file_content.strip() or (filename.startswith("__") and filename.endswith("__.py")):
+                if file_content.strip() or (filename.startswith('__') and filename.endswith('__.py')):
                     self.noqa_lines = noqa.parse_noqa(file_content)
 
                     node = parse_abstract_syntax_tree(file_content, args=self.args, filename=file_path)
@@ -108,9 +108,9 @@ class DeadCodeVisitor(ast.NodeVisitor):
                     self.unused_file.append(
                         CodeItem(
                             name=filename,
-                            type_="unused_file",
+                            type_='unused_file',
                             filename=Path(file_path),
-                            message="Empty file",
+                            message='Empty file',
                         )
                     )
 
@@ -168,7 +168,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
                 print(*args, file=file)
             except UnicodeEncodeError:
                 # Some terminals can't print Unicode symbols.
-                x = " ".join(map(str, args))
+                x = ' '.join(map(str, args))
                 print(x.encode(), file=file)
 
     def _add_aliases(self, node: Union[ast.Import, ast.ImportFrom]) -> None:
@@ -182,7 +182,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
         for name_and_alias in node.names:
             # Store only top-level module name ("os.path" -> "os").
             # We can't easily detect when "os.path" is used.
-            name = name_and_alias.name.partition(".")[0]
+            name = name_and_alias.name.partition('.')[0]
             alias = name_and_alias.asname
             self._define(
                 self.defined_imports,
@@ -200,32 +200,32 @@ class DeadCodeVisitor(ast.NodeVisitor):
                 name,
                 node,
                 last_node=node.body if isinstance(node, ast.IfExp) else node.body[-1],
-                message=f"Unsatisfiable `{name}` condition",
+                message=f'Unsatisfiable `{name}` condition',
             )
         elif utils.condition_is_always_true(node.test):
             else_body = node.orelse
-            if name == "ternary":
+            if name == 'ternary':
                 self._define(
                     self.unreachable_code,
                     name,
                     else_body,  # type: ignore
-                    message="Unreachable `else` expression",
+                    message='Unreachable `else` expression',
                 )
             elif else_body:
                 self._define(
                     self.unreachable_code,
-                    "else",
+                    'else',
                     else_body[0],  # type: ignore
                     last_node=else_body[-1],  # type: ignore
-                    message="Unreachable `else` block",
+                    message='Unreachable `else` block',
                 )
-            elif name == "if":
+            elif name == 'if':
                 # Redundant if-condition without else block.
                 self._define(
                     self.unreachable_code,
                     name,
                     node,
-                    message="Redundant `if` condition",
+                    message='Redundant `if` condition',
                 )
 
     def _define(
@@ -234,14 +234,14 @@ class DeadCodeVisitor(ast.NodeVisitor):
         name: str,
         first_node: ast.AST,
         last_node: Optional[ast.AST] = None,
-        message: str = "",
+        message: str = '',
         ignore: Optional[Callable[[Path, str], bool]] = None,
     ) -> None:
         # TODO: add support for ignore_definitions, ignore_definitions_if_inherits_from options
         self._log(
-            f"Options ignore_definitions, ignore_definitions_if_inherits_from not implemented yet. "
-            f"Got these values: ignore_definitions={self.args.ignore_definitions}, "
-            f"ignore_definitions_if_inherits_from={self.args.ignore_definitions_if_inherits_from}"
+            f'Options ignore_definitions, ignore_definitions_if_inherits_from not implemented yet. '
+            f'Got these values: ignore_definitions={self.args.ignore_definitions}, '
+            f'ignore_definitions_if_inherits_from={self.args.ignore_definitions_if_inherits_from}'
         )
 
         def ignored(lineno: int, type_: UnusedCodeType) -> bool:
@@ -259,7 +259,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
         last_lineno = lines.get_last_line_number(last_node)
 
-        inherits_from = getattr(first_node, "inherits_from", None)
+        inherits_from = getattr(first_node, 'inherits_from', None)
         code_item = CodeItem(
             name=name,
             type_=type_,
@@ -306,13 +306,13 @@ class DeadCodeVisitor(ast.NodeVisitor):
         "%(my_var)s" % locals()
         """
         if isinstance(node.left, ast.Str) and isinstance(node.op, ast.Mod) and self._is_locals_call(node.right):
-            self.used_names |= set(re.findall(r"%\((\w+)\)", node.left.s))
+            self.used_names |= set(re.findall(r'%\((\w+)\)', node.left.s))
 
     def visit_Call(self, node: ast.Call) -> None:
         # Count getattr/hasattr(x, "some_attr", ...) as usage of some_attr.
         if isinstance(node.func, ast.Name) and (
-            (node.func.id == "getattr" and 2 <= len(node.args) <= 3)
-            or (node.func.id == "hasattr" and len(node.args) == 2)
+            (node.func.id == 'getattr' and 2 <= len(node.args) <= 3)
+            or (node.func.id == 'hasattr' and len(node.args) == 2)
         ):
             attr_name_arg = node.args[1]
             if isinstance(attr_name_arg, ast.Str):
@@ -323,14 +323,14 @@ class DeadCodeVisitor(ast.NodeVisitor):
         if (
             isinstance(node.func, ast.Attribute)
             and isinstance(node.func.value, ast.Str)
-            and node.func.attr == "format"
+            and node.func.attr == 'format'
             and any(kw.arg is None and self._is_locals_call(kw.value) for kw in node.keywords)
         ):
             self._handle_new_format_string(node.func.value.s)
 
     def _handle_new_format_string(self, s: str) -> None:
         def is_identifier(name: str) -> bool:
-            return bool(re.match(r"[a-zA-Z_][a-zA-Z0-9_]*", name))
+            return bool(re.match(r'[a-zA-Z_][a-zA-Z0-9_]*', name))
 
         parser = string.Formatter()
         try:
@@ -342,7 +342,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
         for field_name in names:
             # Remove brackets and their contents: "a[0][b].c[d].e" -> "a.c.e",
             # then split the resulting string: "a.b.c" -> ["a", "b", "c"]
-            vars = re.sub(r"\[\w*\]", "", field_name).split(".")
+            vars = re.sub(r'\[\w*\]', '', field_name).split('.')
             for var in vars:
                 if is_identifier(var):
                     self.add_used_name(var)
@@ -353,7 +353,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
         return (
             isinstance(node, ast.Call)
             and isinstance(node.func, ast.Name)
-            and node.func.id == "locals"
+            and node.func.id == 'locals'
             and not node.args
             and not node.keywords
         )
@@ -361,15 +361,15 @@ class DeadCodeVisitor(ast.NodeVisitor):
     def get_inherits_from(self, node: ast.AST) -> Optional[List[str]]:
         """Returns a set of base classes from any level in inheritance tree."""
 
-        if not (bases_attr := getattr(node, "bases", None)):
+        if not (bases_attr := getattr(node, 'bases', None)):
             return None
 
-        bases = [base.id for base in bases_attr if getattr(base, "id", None)]
+        bases = [base.id for base in bases_attr if getattr(base, 'id', None)]
         inherits_from = bases[:]
 
         for base in bases:
             if base_code_item := self.scopes.get(name=base, scope=self.scope):
-                if base_inherits_from := getattr(base_code_item, "inherits_from", None):
+                if base_inherits_from := getattr(base_code_item, 'inherits_from', None):
                     inherits_from.extend(base_inherits_from)
 
         return inherits_from
@@ -387,33 +387,33 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
         first_arg = node.args.args[0].arg if node.args.args else None
 
-        if "@property" in decorator_names:
-            type_ = "property"
-        elif "@staticmethod" in decorator_names or "@classmethod" in decorator_names or first_arg == "self":
-            type_ = "method"
+        if '@property' in decorator_names:
+            type_ = 'property'
+        elif '@staticmethod' in decorator_names or '@classmethod' in decorator_names or first_arg == 'self':
+            type_ = 'method'
         else:
-            type_ = "function"
+            type_ = 'function'
 
         if any(_match(name, self.ignore_decorators) for name in decorator_names):
             self._log(f'Ignoring {type_} "{node.name}" (decorator whitelisted)')
-        elif type_ == "property":
+        elif type_ == 'property':
             self._define(self.defined_props, node.name, node)
-        elif type_ == "method":
+        elif type_ == 'method':
             self._define(self.defined_methods, node.name, node, ignore=_ignore_method)
         else:
             self._define(self.defined_funcs, node.name, node, ignore=_ignore_function)
 
     def visit_If(self, node: ast.If) -> None:
-        self._handle_conditional_node(node, "if")
+        self._handle_conditional_node(node, 'if')
 
     def visit_IfExp(self, node: ast.IfExp) -> None:
-        self._handle_conditional_node(node, "ternary")
+        self._handle_conditional_node(node, 'ternary')
 
     def visit_Import(self, node: ast.Import) -> None:
         self._add_aliases(node)
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
-        if node.module != "__future__":
+        if node.module != '__future__':
             self._add_aliases(node)
 
     def visit_Name(self, node: ast.Name) -> None:
@@ -430,7 +430,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
                     self.add_used_name(elt.s)
 
     def visit_While(self, node: ast.While) -> None:
-        self._handle_conditional_node(node, "while")
+        self._handle_conditional_node(node, 'while')
 
     # def visit_MatchClass(self, node: ast.MatchClass) -> None:  # type: ignore
     def visit_MatchClass(self, node) -> None:  # type: ignore
@@ -438,7 +438,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
             self.add_used_name(kwd_attr)
 
     def visit(self, node: ast.AST) -> None:
-        node_name = getattr(node, "name", None)
+        node_name = getattr(node, 'name', None)
 
         # > TODO: Expr scope has to be updated after visiting nested nodes.
         # Do I have to merge custom visits with visit method in order to achieve this?
@@ -454,18 +454,16 @@ class DeadCodeVisitor(ast.NodeVisitor):
         should_turn_off_ignore_new_definitions = False
         if (
             # Name is in ignore_definitions
-            node_name
-            and _match(node_name, self.args.ignore_definitions)
+            node_name and _match(node_name, self.args.ignore_definitions)
         ) or (
             # Class inherits from ignore_definitions_if_inherits_from
-            inherits_from
-            and _match_many(inherits_from, self.args.ignore_definitions_if_inherits_from)
+            inherits_from and _match_many(inherits_from, self.args.ignore_definitions_if_inherits_from)
         ):
             if not self.should_ignore_new_definitions:
                 self.should_ignore_new_definitions = True
                 should_turn_off_ignore_new_definitions = True
 
-        method_name = "visit_" + node.__class__.__name__
+        method_name = 'visit_' + node.__class__.__name__
         visitor = getattr(self, method_name, None)
 
         if visitor:
@@ -488,10 +486,10 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
         # There isn't a clean subset of node types that might have type
         # comments, so just check all of them.
-        type_comment = getattr(node, "type_comment", None)
+        type_comment = getattr(node, 'type_comment', None)
         if type_comment is not None:
-            mode = "func_type" if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) else "eval"
-            self.visit(ast.parse(type_comment, filename="<type_comment>", mode=mode))
+            mode = 'func_type' if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) else 'eval'
+            self.visit(ast.parse(type_comment, filename='<type_comment>', mode=mode))
 
         ###########
         # """Called if no explicit visitor function exists for a node."""

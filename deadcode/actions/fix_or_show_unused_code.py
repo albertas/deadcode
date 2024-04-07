@@ -36,28 +36,28 @@ def fix_or_show_unused_code(unused_items: Iterable[CodeItem], args: Args) -> str
             file_content_lines = f.readlines()
 
         updated_file_content_lines = remove_file_parts_from_content(file_content_lines, unused_file_parts)
-        updated_file_content = "".join(updated_file_content_lines)
+        updated_file_content = ''.join(updated_file_content_lines)
         if updated_file_content.strip():
-            if args.dry and ("__all_files__" in args.dry or _match(filename, args.dry)):
-                with open(filename, "r") as f:
+            if args.dry and ('__all_files__' in args.dry or _match(filename, args.dry)):
+                with open(filename, 'r') as f:
                     diff = unified_diff(f.readlines(), updated_file_content_lines, fromfile=filename, tofile=filename)
                     # TODO: consider printing result instantly to save memory
-                    diff_str = "".join(diff)
+                    diff_str = ''.join(diff)
                     if args.no_color:
                         result.append(diff_str)
                     else:
                         result.append(add_colors_to_diff(diff_str))
 
             elif args.fix:
-                with open(filename, "w") as f:
+                with open(filename, 'w') as f:
                     # TODO: is there a method writelines?
                     f.write(updated_file_content)
         else:
             os.remove(filename)
 
     if result:
-        return "\n".join(result)
-    return ""
+        return '\n'.join(result)
+    return ''
 
     # TODO: update this one: solution is to use read and write operations.
     #

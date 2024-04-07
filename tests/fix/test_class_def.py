@@ -1,6 +1,7 @@
 """
 Test class def.
 """
+
 from unittest import skip
 
 from deadcode.cli import main
@@ -10,48 +11,48 @@ from deadcode.utils.base_test_case import BaseTestCase
 class TestClassDefRemoval(BaseTestCase):
     def test_class_def__(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class MyTest:
                     pass
                 """
         }
 
-        main(["foo.py", "--no-color", "--fix"])
+        main(['foo.py', '--no-color', '--fix'])
 
         self.assertFiles({})
 
     def test_class_def_and_method_def(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class MyTest:
                     def some_method(self):
                         pass
                 """
         }
 
-        main(["foo.py", "--no-color", "--fix"])
+        main(['foo.py', '--no-color', '--fix'])
 
         self.assertFiles({})
 
     def test_class_def(self):
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class MyTest:
                     pass
                 """,
-            "bar.py": """
+            'bar.py': """
                 class MyTest:
                     pass
                 """,
         }
 
-        unused_names = main(["foo.py", "--no-color", "--fix"])
+        unused_names = main(['foo.py', '--no-color', '--fix'])
         self.assertEqual(
             unused_names,
             (
-                "bar.py:1:0: DC03 Class `MyTest` is never used\n"
-                "foo.py:1:0: DC03 Class `MyTest` is never used\n\n"
-                "Removed 2 unused code items!"
+                'bar.py:1:0: DC03 Class `MyTest` is never used\n'
+                'foo.py:1:0: DC03 Class `MyTest` is never used\n\n'
+                'Removed 2 unused code items!'
             ),
         )
 
@@ -62,15 +63,15 @@ class TestClassDefRemoval(BaseTestCase):
         # TODO: this use case has to be solved by using scopes
 
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class MyTest:
                     pass
                 """,
-            "bar.py": """
+            'bar.py': """
                 class MyTest:
                     pass
                 """,
-            "spam.py": """
+            'spam.py': """
                 from foo import MyTest
 
                 instance = MyTest()
@@ -78,10 +79,10 @@ class TestClassDefRemoval(BaseTestCase):
                 """,
         }
 
-        unused_names = main(["foo.py", "--no-color", "--fix"])
+        unused_names = main(['foo.py', '--no-color', '--fix'])
         self.assertEqual(
             unused_names,
-            ("bar.py:1:0: DC03 Class `MyTest` is never used\n\n" "Removed 2 unused code items!"),
+            ('bar.py:1:0: DC03 Class `MyTest` is never used\n\n' 'Removed 2 unused code items!'),
         )
 
         self.assertFiles({})
@@ -91,7 +92,7 @@ class TestClassDefRemoval(BaseTestCase):
         # TODO: this use case has to be solved by using scopes
 
         self.files = {
-            "foo.py": """
+            'foo.py': """
                 class Bar:
                     def foo(self):
                         pass
@@ -107,10 +108,10 @@ class TestClassDefRemoval(BaseTestCase):
                 """
         }
 
-        unused_names = main(["foo.py", "--no-color", "--fix"])
+        unused_names = main(['foo.py', '--no-color', '--fix'])
         self.assertEqual(
             unused_names,
-            ("foo.py:2:4: DC04 Method `foo` is never used\n\n" "Removed 1 unused code item!"),
+            ('foo.py:2:4: DC04 Method `foo` is never used\n\n' 'Removed 1 unused code item!'),
         )
 
         self.assertFiles({})
