@@ -48,7 +48,7 @@ ignore-names = ["BaseTestCase", "*Mixin"]
 ignore-names-in-files = ["migrations"]
 ```
 
-### Command line options
+## Command line options
 
 | Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Meaning  |
 |-------------------------------------------|------|----------------------------------------------------------------------|
@@ -156,13 +156,13 @@ code base is implemented in.
 - [ ] Distinguish between definitions with same name, but different files.
 - [ ] Repeated application of `deadcode` till the output stops changing.
 - [ ] Unreachable code detection and fixing: this should only be scoped for if statements and only limited to primitive variables.
-- [ ] `--fix --dry [filenames]` - only show whats about to change in the listed filenames.
+- [x] `--fix --dry [filenames]` - only show whats about to change in the listed filenames.
 - [ ] Benchmarking performance with larger projects (time, CPU and memory consumption) in order to optimize.
 - [ ] `--fix` could accept a list of filenames as well (only those files would be changed, but the summary could would be full).
     (This might be confusing, because filenames, which have to be considered are provided without any flag, --fix is expected to not accept arguments)
 - [ ] pre-commit-hook.
 - [ ] language server.
-- [ ] Use only two digits for error codes instead of 3. Two is plenty and it simplifies usage a bit
+- [x] Use only two digits for error codes instead of 3. Two is plenty and it simplifies usage a bit
 - [ ] DC10: remove code after terminal statements like `raise`, `return`, `break`, `continue` and comes in the same scope.
 - [ ] Add `ignore` and `per-file-ignores` command line and pyproject.toml options, which allows to skip some rules.
 - [ ] Make sure that all rules are being skipped by `noqa` comment and all rules react to `noqa: rule_id` comments.
@@ -170,3 +170,9 @@ code base is implemented in.
 - [ ] All options should be able to accept dot-separated path or a generic name, e.g. "marshmallow.Schema" vs "Schema",
   documentation should cleary demonstrate the behaviour/example that "Schema" means "*.Schema".
 - [ ] Redefinition of an existing name makes previous name unreachable, unless it is assigned somehow.
+- [ ] Check if file is still valid/parsable after automatic fixing, if not: halt the change and report error.
+
+## Release notes
+- v2.3.0:
+    - Add `--dry` option.
+    - Update error codes to use DCXX format instead of DCXXX.
