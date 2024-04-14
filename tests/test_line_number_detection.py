@@ -59,7 +59,7 @@ class DetectLineNumbersOfExpressionsTests(BaseTestCase):
         # Having
         self.files = {
             'variables.py': """
-                my_func = lambda x: x 
+                my_func = lambda x: x
                 """
         }
 
