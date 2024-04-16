@@ -46,6 +46,7 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
         'type_',
         'filename',
         'code_parts',
+        'expression_code_parts',
         'scope',
         'inherits_from',
         'name_line',
@@ -66,6 +67,7 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
         # first_column: int = 0,
         # last_column: Optional[int] = None,
         code_parts: Optional[List[Part]] = None,  # TODO: I should use a dataclass instead of a tuple for Part.
+        expression_code_parts: Optional[List[Part]] = None,
         scope: Optional[str] = None,
         inherits_from: Optional[List[str]] = None,
         name_line: Optional[int] = None,
@@ -84,6 +86,11 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
             self.code_parts = []
         else:
             self.code_parts = code_parts
+
+        if expression_code_parts is None:
+            self.expression_code_parts = []
+        else:
+            self.expression_code_parts = expression_code_parts
 
         # if first_lineno is not None:
         #     pass

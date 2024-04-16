@@ -173,6 +173,8 @@ code base is implemented in.
 - [ ] Check if file is still valid/parsable after automatic fixing, if not: halt the change and report error.
 
 ## Release notes
+- v2.3.1:
+    - Added support for automatic removal of imports.
 - v2.3.0:
     - Add `--dry` option.
     - Update error codes to use DCXX format instead of DCXXX.

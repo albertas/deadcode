@@ -34,6 +34,13 @@ def remove_as_from_end(line: str) -> str:
     return line
 
 
+def remove_comma_from_begining(line: str) -> str:
+    if not line.lstrip().startswith(','):
+        return line
+
+    return line.lstrip()[1:].lstrip()
+
+
 def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: List[Part]) -> List[str]:
     """ """
     # How should move through the lines of content?
@@ -63,10 +70,14 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
             indentation_of_first_removed_line = get_indentation(line)
 
             if from_line == to_line:
+                # TODO: this check is a workaround for an assignment expression.
+                # Clean-ups have to be applied based on removable expression type.
                 if (line[:from_col] + line[to_col:]).strip().startswith('='):
                     line = line[:from_col]
                 else:
-                    line = remove_as_from_end(line[:from_col]) + line[to_col:]
+                    # TODO: should apply `as` removal rule only for particular expression type only
+                    # as well as comma removal.
+                    line = remove_as_from_end(line[:from_col]) + remove_comma_from_begining(line[to_col:])
 
                 unused_part_index += 1
 
@@ -87,6 +98,12 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
         # Is it last line, from the block, which have to be ignored?
         elif current_lineno == to_line:
             line = line[to_col:]
+
+            # Remove trailing comma, if we have removed something.
+            # TODO: this should be applied only for specific expression types only.
+            if line.lstrip().startswith(","):
+                line = line.lstrip()[1:].lstrip()
+
             unused_part_index += 1
             # TODO: Add tests for case, when comments are added at the start or end of the removed block
             if line.strip() and not line.startswith('#'):
