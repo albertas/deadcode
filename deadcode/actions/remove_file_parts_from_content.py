@@ -101,7 +101,7 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
 
             # Remove trailing comma, if we have removed something.
             # TODO: this should be applied only for specific expression types only.
-            if line.lstrip().startswith(","):
+            if line.lstrip().startswith(','):
                 line = line.lstrip()[1:].lstrip()
 
             unused_part_index += 1

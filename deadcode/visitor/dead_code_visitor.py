@@ -188,7 +188,6 @@ class DeadCodeVisitor(ast.NodeVisitor):
                 self.defined_imports,
                 alias or name,
                 first_node=name_and_alias,
-                expression_node=node,
                 ignore=_ignore_import,
             )
             if alias is not None:
@@ -235,7 +234,6 @@ class DeadCodeVisitor(ast.NodeVisitor):
         name: str,
         first_node: ast.AST,
         last_node: Optional[ast.AST] = None,
-        expression_node: Optional[ast.AST] = None,
         message: str = '',
         ignore: Optional[Callable[[Path, str], bool]] = None,
     ) -> None:
@@ -273,19 +271,6 @@ class DeadCodeVisitor(ast.NodeVisitor):
             message=message,
             inherits_from=inherits_from,
         )
-
-        # TODO: Remaining import expressions has to be removed, when all imported
-        # names get removed. Pass whole import expression parts and evaluate if its still
-        # empty after making code adjustments.
-        # This feature is not yet implemented.
-        if expression_node:
-            expression_first_lineno = lines.get_first_line_number(expression_node)
-            expression_last_lineno = lines.get_last_line_number(expression_node)
-            code_item.expression_code_parts = [Part(
-                expression_first_lineno,
-                expression_last_lineno,
-                expression_node.col_offset,
-                expression_node.end_col_offset or 0)]
 
         self.scopes.add(code_item)
 
