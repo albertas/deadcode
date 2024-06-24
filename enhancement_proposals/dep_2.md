@@ -24,13 +24,53 @@ Various strategies exist, how it could be removed:
   so that the statement could once again be converted to AST to check its validity.
 - nothing could be remembered - on removal surrounding expression could be detected and validated.
 
-### Solution for incomplete imports
-Memorise the places of an original AST expression and evaluate its validity after applied changes.
-If the statement is no longer valid and it is import expression - remove it all together.
 
-The chosen approach will be easiest to implement and efficient.
+## Chosen solution
+AST node can be modified and rendered back as valid code.
+AST node should have methods BEFORE and AFTER handling its child nodes.
+
+Compare original code chunk with cleaned up one and remember parts to remove during AST parsing.
+
+After walking a node:
+  If node is only partially unused:
+    Modify the node, which is being walked.
+    Render the node.
+    Find the diff between original and modified nodes.
+    Save the unused parts: so that those get removed during rendering.
+
+During removal part no fixes should be applied, only removable code parts should be provided (no AST adjustmnets to make them valid).
+Currently implemented adjustments for import, context manager, pass for empty code blocks should be removed from the writing to file part.
+
+This examples demonstrates, how AST nodes can be fixed:
+```
+import ast
 
 
+def print_ast(node: ast.AST) -> None:
+    print(ast.dump(node, indent=4))  # type: ignore
+
+
+nodes = ast.parse("""
+from labas import (
+    foo as spam,
+    bar
+)
+""")
+
+# Apply code clean-up rules:
+nodes.body[0].names.pop()
+nodes.body[0].names.pop()
+
+# Show nodes after clean-up
+print("Fixed and cleaned up code, which can get merged")
+print_ast(nodes)
+
+# Show code after clean-up
+print("Fixed and cleaned up code, which can get merged")
+print(ast.unparse(nodes))
+```
+
+## Examples of code adjustments
 ### Empty code block
 Another case is when all expressions are being removed from a block, e.g.
 
