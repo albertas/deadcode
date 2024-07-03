@@ -174,7 +174,8 @@ code base is implemented in.
 
 ## Release notes
 - v2.3.1:
-    - Added support for automatic removal of imports.
+    - Started analysing files in bytes instead of trying to convert them into UTF-8 encoded strings.
+    - Improved automatic removal of unused imports.
 - v2.3.0:
     - Add `--dry` option.
     - Update error codes to use DCXX format instead of DCXXX.
