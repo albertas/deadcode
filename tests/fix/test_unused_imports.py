@@ -12,7 +12,7 @@ from deadcode.utils.fix_indent import fix_indent
 class TestAssignmentExpressionRemoval(BaseTestCase):
     def test_variable(self):
         self.files = {
-            'file2.py': """
+            'file2.py': b"""
                 from file1 import (
                     foo,
                     bar,
@@ -44,7 +44,7 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
         # TODO: empty imports statements should be removed as well.
         self.assertFiles(
             {
-                'file2.py': """
+                'file2.py': b"""
                     from file1 import (
                     )
                     from file1 import 

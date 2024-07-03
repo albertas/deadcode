@@ -5,7 +5,7 @@ from typing import Iterable, NamedTuple
 
 
 AbstractSyntaxTree = ast.Module  # Should be module instead of ast
-FileContent = str
+FileContent = bytes
 Filename = str  # Contains full path to existing file
 Pathname = str  # Can contain wildewards
 

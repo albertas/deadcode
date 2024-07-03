@@ -5,7 +5,7 @@ from deadcode.utils.base_test_case import BaseTestCase
 class IgnoreNamesByPatternTests(BaseTestCase):
     def test_ignore_names_matched_by_word_and_group_regexp_patterns(self):
         self.files = {
-            'ignore_names_by_pattern.py': """
+            'ignore_names_by_pattern.py': b"""
                 class MyModel:
                     pass
 
@@ -32,7 +32,7 @@ class IgnoreNamesByPatternTests(BaseTestCase):
         # TODO: Ignoring does not work as expected: wild cards have to be used.
 
         self.files = {
-            'ignore_names_by_pattern.py': """
+            'ignore_names_by_pattern.py': b"""
                 class MyModel:
                     pass
 
@@ -55,7 +55,7 @@ class IgnoreNamesByPatternTests(BaseTestCase):
 
     def test_ignore_names_matched_exactly(self):
         self.files = {
-            'ignore_names_by_pattern.py': """
+            'ignore_names_by_pattern.py': b"""
                 class MyModel:
                     pass
 

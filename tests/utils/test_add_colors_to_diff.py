@@ -7,7 +7,7 @@ from deadcode.utils.add_colors_to_diff import add_colors_to_diff
 class TestAddColorsToDiff(TestCase):
     def test_add_colors_to_diff(self):
         diff = fix_indent(
-            """\
+            b"""\
             --- foo.py
             +++ foo.py
             @@ -1,4 +1 @@
@@ -24,7 +24,7 @@ class TestAddColorsToDiff(TestCase):
         self.assertEqual(
             colorful_diff,
             fix_indent(
-                """\
+                b"""\
             \x1b[31m--- foo.py\x1b[0m
             \x1b[32m+++ foo.py\x1b[0m
             @@ -1,4 +1 @@

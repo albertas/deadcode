@@ -7,7 +7,7 @@ from deadcode.utils.base_test_case import BaseTestCase
 class TestFixCliOption(BaseTestCase):
     def test_unused_class_was_removed(self):
         self.files = {
-            'ignore_names_by_pattern.py': """
+            'ignore_names_by_pattern.py': b"""
                 class UnusedClass:
                     pass
 
@@ -26,7 +26,7 @@ class TestFixCliOption(BaseTestCase):
 
         self.assertFiles(
             {
-                'ignore_names_by_pattern.py': """
+                'ignore_names_by_pattern.py': b"""
             print("Keep the file")
         """
             }
@@ -34,7 +34,7 @@ class TestFixCliOption(BaseTestCase):
 
     def test_function_removal(self):
         self.files = {
-            'ignore_names_by_pattern.py': """
+            'ignore_names_by_pattern.py': b"""
                 def foo(bar: str = "Bar") -> str:
                     return 1 ** 2
 
@@ -50,7 +50,7 @@ class TestFixCliOption(BaseTestCase):
 
         self.assertFiles(
             {
-                'ignore_names_by_pattern.py': """
+                'ignore_names_by_pattern.py': b"""
                 print("Keep the file")
         """
             }
@@ -60,7 +60,7 @@ class TestFixCliOption(BaseTestCase):
 
     def test_function_removal_in_the_middle(self):
         self.files = {
-            'ignore_names_by_pattern.py': """
+            'ignore_names_by_pattern.py': b"""
                 used_variable = "one"
 
                 def foo(bar: str = "Bar") -> str:
@@ -79,7 +79,7 @@ class TestFixCliOption(BaseTestCase):
 
         self.assertFiles(
             {
-                'ignore_names_by_pattern.py': """
+                'ignore_names_by_pattern.py': b"""
                 used_variable = "one"
 
                 spam = "Spam"
@@ -90,7 +90,7 @@ class TestFixCliOption(BaseTestCase):
 
     def test_function_removal_of_several_items(self):
         self.files = {
-            'ignore_names_by_pattern.py': """
+            'ignore_names_by_pattern.py': b"""
                 used_variable = "one"
 
                 unused_variable = ""
@@ -115,7 +115,7 @@ class TestFixCliOption(BaseTestCase):
 
         self.assertFiles(
             {
-                'ignore_names_by_pattern.py': """
+                'ignore_names_by_pattern.py': b"""
                 used_variable = "one"
 
                 spam = "Spam"
@@ -126,7 +126,7 @@ class TestFixCliOption(BaseTestCase):
 
     def test_empty_lines_are_removed_properly_indented(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                     name = "World"
 
                     unused_variable = "This variable is unused"
@@ -168,7 +168,7 @@ class TestFixCliOption(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
                     name = "World"
 
                     def say_hello_world():
@@ -192,7 +192,7 @@ class TestFixCliOption(BaseTestCase):
 
     def test_empty_lines_are_removed_properly(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 NAME = "World"
 
                 UNUSED_VARIABLE = "This variable is unused"
@@ -228,7 +228,7 @@ class TestFixCliOption(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
                     NAME = "World"
 
                     def say_hello_world():
@@ -253,7 +253,7 @@ class TestFixCliOption(BaseTestCase):
 class TestAddPassForEmptyBlock(BaseTestCase):
     def test_empty_class_block(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
             class Example:
                 def unused_method(self):
                     print("Unused method")
@@ -267,7 +267,7 @@ class TestAddPassForEmptyBlock(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
             class Example:
                 pass
 
@@ -279,7 +279,7 @@ class TestAddPassForEmptyBlock(BaseTestCase):
 
     def test_empty_function_block(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
             def foo():
                 bar = 1
 
@@ -291,7 +291,7 @@ class TestAddPassForEmptyBlock(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
             def foo():
                 pass
 
@@ -302,7 +302,7 @@ class TestAddPassForEmptyBlock(BaseTestCase):
 
     def test_empty_if_main_block(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
             import sys
 
             if sys.argv[1:]:
@@ -315,7 +315,7 @@ class TestAddPassForEmptyBlock(BaseTestCase):
         # TODO: assertion still does not work, why there is a difference in the last line?
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
             import sys
 
             if sys.argv[1:]:
@@ -326,7 +326,7 @@ class TestAddPassForEmptyBlock(BaseTestCase):
 
     def test_empty_if_else_block(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
             if spam:
                 bar = 1
                 print(bar)
@@ -339,7 +339,7 @@ class TestAddPassForEmptyBlock(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
             if spam:
                 bar = 1
                 print(bar)
@@ -352,7 +352,7 @@ class TestAddPassForEmptyBlock(BaseTestCase):
     @skip
     def test_empty_if_statement_else_block(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
             if spam:
                 bar = 1
                 print(bar)
@@ -365,7 +365,7 @@ class TestAddPassForEmptyBlock(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
             if spam:
                 bar = 1
                 print(bar)
@@ -376,7 +376,7 @@ class TestAddPassForEmptyBlock(BaseTestCase):
     @skip
     def test_if_is_not_fixed_correctly_when_branch_is_unreachable(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
             if False:
                 bar = 1
                 print(bar)
@@ -389,7 +389,7 @@ class TestAddPassForEmptyBlock(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
             if True:
                 pass
             """
@@ -398,7 +398,7 @@ class TestAddPassForEmptyBlock(BaseTestCase):
 
     def test_empty_with_block(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
             with open("tmp.txt") as f:
                 unused = 1
             """
@@ -408,7 +408,7 @@ class TestAddPassForEmptyBlock(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
             with open("tmp.txt"):
                 pass
             """
@@ -425,7 +425,7 @@ class TestAddPassForEmptyBlock(BaseTestCase):
 class TestKeepCorrectNumberOfEmptyLinesAfterRemovalOfCodeBlock(BaseTestCase):
     def test_space_is_kept_after_whole_class_block_removal(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
             class Example:
                 def unused_method(self):
                     print("Unused method")
@@ -439,7 +439,7 @@ class TestKeepCorrectNumberOfEmptyLinesAfterRemovalOfCodeBlock(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
             class Example:
                 pass
 
@@ -451,7 +451,7 @@ class TestKeepCorrectNumberOfEmptyLinesAfterRemovalOfCodeBlock(BaseTestCase):
 
     def test_two_spaces_are_kept_after_whole_class_block_removal(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
             class Example:
                 def unused_method(self):
                     print("Unused method")
@@ -466,7 +466,7 @@ class TestKeepCorrectNumberOfEmptyLinesAfterRemovalOfCodeBlock(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
             class Example:
                 pass
 
@@ -479,7 +479,7 @@ class TestKeepCorrectNumberOfEmptyLinesAfterRemovalOfCodeBlock(BaseTestCase):
 
     def test_two_spaces_are_kept_after_one_method_removal(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
             class Example:
                 def unused_method(self):
                     print("Unused method")
@@ -497,7 +497,7 @@ class TestKeepCorrectNumberOfEmptyLinesAfterRemovalOfCodeBlock(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
             class Example:
                 def used_method(self):
                     print("Used method")
@@ -511,7 +511,7 @@ class TestKeepCorrectNumberOfEmptyLinesAfterRemovalOfCodeBlock(BaseTestCase):
 
     def test_assignment(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
             bar = 1
             print("Keep the file")
             """
@@ -521,7 +521,7 @@ class TestKeepCorrectNumberOfEmptyLinesAfterRemovalOfCodeBlock(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
             print("Keep the file")
         """
             }

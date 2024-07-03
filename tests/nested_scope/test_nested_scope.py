@@ -7,7 +7,7 @@ from deadcode.utils.base_test_case import BaseTestCase
 class TestScopeTracking(BaseTestCase):
     def test_class_should_be_in_scope(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 class Foo:
                     pass
                 """
@@ -23,7 +23,7 @@ class TestScopeTracking(BaseTestCase):
 
     def test_class_and_its_method_should_be_in_scope(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 class Foo:
                     def bar(self):
                         variable = 123
@@ -37,7 +37,7 @@ class TestScopeTracking(BaseTestCase):
 
     def test_name_is_overriden(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 class Foo:
                     pass
 
@@ -52,7 +52,7 @@ class TestScopeTracking(BaseTestCase):
 
     def test_multi_parent_inheritance_should_be_tracked(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 class Foo:
                     pass
 
@@ -69,7 +69,7 @@ class TestScopeTracking(BaseTestCase):
         result = main(['foo.py', '--no-color', '--fix', '--ignore-definitions-if-inherits-from=Foo'])
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
                 class Foo:
                     pass
 
@@ -88,7 +88,7 @@ class TestScopeTracking(BaseTestCase):
 
     def test_take_parent_scopes_into_consideration_when_searching_for_definition(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 class Foo:
                     pass
 
@@ -105,7 +105,7 @@ class TestScopeTracking(BaseTestCase):
         result = main(['foo.py', '--no-color', '--fix', '--ignore-definitions-if-inherits-from=Foo'])
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
                 class Foo:
                     pass
 
@@ -125,7 +125,7 @@ class TestScopeTracking(BaseTestCase):
     @skip('This feature is being implemented')
     def test_type_tracking_for_function_arguments(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 class Foo:
                     def bar(self):
                         pass
@@ -148,7 +148,7 @@ class TestScopeTracking(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
                 class Foo:
                     def bar(self):
                         pass
@@ -168,13 +168,13 @@ class TestScopeTracking(BaseTestCase):
     def test_scope_update_for_method_call_expression(self):
         # >>> TODO: Mark types in scope usage correctly for method invocation
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 Bar().spam()
                 """
         }
 
         result = main(['foo.py', '--no-color', '--fix'])
 
-        self.assertFiles({'foo.py': """"""})
+        self.assertFiles({'foo.py': b""""""})
 
         self.assertIsNone(result)

@@ -6,7 +6,7 @@ class TestCountOptionOutput(BaseTestCase):
     def test_count_several_classes(self):
         # Having
         self.files = {
-            'ignore_names_by_pattern.py': """
+            'ignore_names_by_pattern.py': b"""
                 class MyModel:
                     pass
 
@@ -30,7 +30,7 @@ class TestCountOptionOutput(BaseTestCase):
     def test_count_variables_function_and_class(self):
         # Having
         self.files = {
-            'ignore_names_by_pattern.py': """
+            'ignore_names_by_pattern.py': b"""
                 first_variable = 0
                 def this_is_a_function():
                     pass
@@ -51,7 +51,7 @@ class TestQuietOptionOutput(BaseTestCase):
     def test_count_several_classes(self):
         # Having
         self.files = {
-            'ignore_names_by_pattern.py': """
+            'ignore_names_by_pattern.py': b"""
                 class MyModel:
                     pass
 
@@ -75,7 +75,7 @@ class TestQuietOptionOutput(BaseTestCase):
     def test_count_variables_function_and_class(self):
         # Having
         self.files = {
-            'ignore_names_by_pattern.py': """
+            'ignore_names_by_pattern.py': b"""
                 first_variable = 0
                 def this_is_a_function():
                     pass
@@ -95,7 +95,7 @@ class TestQuietOptionOutput(BaseTestCase):
 class TestVerboseOutput(BaseTestCase):
     def test_colorful_output(self):
         self.files = {
-            'tests/files/variables.py': """
+            'tests/files/variables.py': b"""
                 unused_global_variable = True
                 ANOTHER_GLOBAL_VARIABLE = "This variable is unused"
                 third_global_varialbe3 = 12 * 25
@@ -118,7 +118,7 @@ class TestVerboseOutput(BaseTestCase):
 
     def test_no_color_option(self):
         self.files = {
-            'tests/files/variables.py': """
+            'tests/files/variables.py': b"""
                 unused_global_variable = True
                 ANOTHER_GLOBAL_VARIABLE = "This variable is unused"
                 third_global_varialbe3 = 12 * 25

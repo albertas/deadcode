@@ -9,7 +9,7 @@ from deadcode.utils.base_test_case import BaseTestCase
 class TestAssignmentExpressionRemoval(BaseTestCase):
     def test_file_removal(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 """
         }
 
@@ -23,7 +23,7 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
 
     def test_file_removal_from_subpath(self):
         self.files = {
-            'bar/foo.py': """
+            'bar/foo.py': b"""
                 """
         }
 

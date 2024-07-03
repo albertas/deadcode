@@ -8,7 +8,7 @@ from deadcode.data_types import Args
 
 
 class BaseTestCase(TestCase):
-    files: Dict[str, str] = {}
+    files: Dict[str, bytes] = {}
 
     maxDiff = None
 
@@ -24,18 +24,18 @@ class BaseTestCase(TestCase):
         mock = MagicMock()
         mock.filename = str(filename)
 
-        def cache_file_content(file_content: str) -> int:
+        def cache_file_content(file_content: bytes) -> int:
             self.updated_files[mock.filename] = file_content
             return len(file_content)
 
         if file_content := fix_indent(self.files[mock.filename]):
             mock.__enter__().read.return_value = file_content
-            mock.__enter__().readlines.return_value = [f'{line}\n' for line in file_content.split('\n')]
+            mock.__enter__().readlines.return_value = [line + b'\n' for line in file_content.split(b'\n')]
             mock.__enter__().write.side_effect = cache_file_content
         return mock
 
     def setUp(self) -> None:
-        self.updated_files: Dict[str, str] = {}
+        self.updated_files: Dict[str, bytes] = {}
 
         self.find_python_filenames_mock = self.patch('deadcode.cli.find_python_filenames')
         self.find_python_filenames_mock.side_effect = self._get_filenames
@@ -50,7 +50,7 @@ class BaseTestCase(TestCase):
 
         self.args = Args()
 
-    def assertFiles(self, files: Dict[str, str], removed: Optional[List[str]] = None) -> None:
+    def assertFiles(self, files: Dict[str, bytes], removed: Optional[List[str]] = None) -> None:
         expected_removed_files = removed
         expected_files = files
 
@@ -76,7 +76,7 @@ class BaseTestCase(TestCase):
                 fix_indent(self.updated_files.get(filename) or unchanged_files.get(filename) or ''),
             )
 
-    def assertUpdatedFiles(self, expected_updated_files: Dict[str, str]) -> None:
+    def assertUpdatedFiles(self, expected_updated_files: Dict[str, bytes]) -> None:
         """Checks if updated files match expected updated files."""
 
         self.assertListEqual(list(expected_updated_files.keys()), list(self.updated_files.keys()))

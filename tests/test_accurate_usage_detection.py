@@ -14,7 +14,7 @@ class TestAccurateUsageDetection(BaseTestCase):
         # When new type is defined: during import or definition: scope has to be updated.
 
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 class X:
                     def used_method(self):
                         pass
@@ -33,7 +33,7 @@ class TestAccurateUsageDetection(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
                     class X:
                         def used_method(self):
                             pass

@@ -6,7 +6,7 @@ class DetectLineNumbersOfExpressionsTests(BaseTestCase):
     def test_parse_variable_names_from_files(self):
         # Having
         self.files = {
-            'variables.py': """
+            'variables.py': b"""
                 foo = None
                 bar, spam, eggs = 1, 2, 3
             """
@@ -21,7 +21,7 @@ class DetectLineNumbersOfExpressionsTests(BaseTestCase):
     def test_parse_function_names_from_files(self):
         # Having
         self.files = {
-            'functions.py': """
+            'functions.py': b"""
                 def foo(an_arg: str):
                     return an_arg
                 """
@@ -36,7 +36,7 @@ class DetectLineNumbersOfExpressionsTests(BaseTestCase):
     def test_parse_class_names_from_files(self):
         # Having
         self.files = {
-            'classes.py': """
+            'classes.py': b"""
                 class Foo:
                     bar = None
                     spam = None
@@ -58,7 +58,7 @@ class DetectLineNumbersOfExpressionsTests(BaseTestCase):
     def test_parse_lambda_function_names_from_files(self):
         # Having
         self.files = {
-            'variables.py': """
+            'variables.py': b"""
                 my_func = lambda x: x
                 """
         }

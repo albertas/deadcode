@@ -5,7 +5,7 @@ from deadcode.utils.base_test_case import BaseTestCase
 class TestIgnoreDefinitionsByPattern(BaseTestCase):
     def test_ignore_class_definition(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 class UnusedClass:
                     unused_attribute = None
 
@@ -22,7 +22,7 @@ class TestIgnoreDefinitionsByPattern(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
                 class UnusedClass:
                     unused_attribute = None
 
@@ -37,7 +37,7 @@ class TestIgnoreDefinitionsByPattern(BaseTestCase):
 
     def test_ignore_class_definition_another_class_is_detected(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 class UnusedClass:
                     unused_attribute = None
 
@@ -60,7 +60,7 @@ class TestIgnoreDefinitionsByPattern(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
                 class UnusedClass:
                     unused_attribute = None
 
@@ -75,7 +75,7 @@ class TestIgnoreDefinitionsByPattern(BaseTestCase):
 
     def test_ignore_class_definition_matched_by_pattern(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 class UnusedClass:
                     unused_attribute = None
 
@@ -92,7 +92,7 @@ class TestIgnoreDefinitionsByPattern(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
                 class UnusedClass:
                     unused_attribute = None
 

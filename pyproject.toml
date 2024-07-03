@@ -144,6 +144,7 @@ ignore = [
     "UP015",
     "W293",
     "W605",
+    "UP",
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -153,6 +154,7 @@ ignore = [
     "ANN201",
     "D",
 ]
+"tests/fix/test_unused_imports.py" = ["F401", "W291"]
 
 
 [tool.mypy]

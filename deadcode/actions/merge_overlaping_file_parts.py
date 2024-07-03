@@ -10,9 +10,7 @@ def does_include(bigger_part: Part, smaller_part: Part) -> bool:
 
     ends_faster = (line_end_b < line_end_s) or ((line_end_b == line_end_b) and (col_end_b <= col_end_s))
 
-    if starts_later and ends_faster:
-        return True
-    return False
+    return bool(starts_later and ends_faster)
 
 
 def sort_parts(bigger_part: Part, smaller_part: Part) -> Tuple[Part, Part]:
@@ -34,10 +32,7 @@ def does_overlap(bigger_part: Part, smaller_part: Part) -> bool:
     line_start_s, line_end_s, col_start_s, col_end_s = smaller_part
 
     # ar pirmo pabaiga perlipa antro pradžia
-    if (line_end_b > line_start_s) or ((line_end_b == line_start_s) and (col_end_b > col_start_s)):
-        return True
-
-    return False
+    return bool((line_end_b > line_start_s) or ((line_end_b == line_start_s) and (col_end_b > col_start_s)))
 
 
 def merge_parts(p1: Part, p2: Part) -> Optional[Part]:

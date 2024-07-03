@@ -11,7 +11,7 @@ from deadcode.utils.base_test_case import BaseTestCase
 class TestClassDefRemoval(BaseTestCase):
     def test_class_def__(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 class MyTest:
                     pass
                 """
@@ -23,7 +23,7 @@ class TestClassDefRemoval(BaseTestCase):
 
     def test_class_def_and_method_def(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 class MyTest:
                     def some_method(self):
                         pass
@@ -36,11 +36,11 @@ class TestClassDefRemoval(BaseTestCase):
 
     def test_class_def(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 class MyTest:
                     pass
                 """,
-            'bar.py': """
+            'bar.py': b"""
                 class MyTest:
                     pass
                 """,
@@ -63,15 +63,15 @@ class TestClassDefRemoval(BaseTestCase):
         # TODO: this use case has to be solved by using scopes
 
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 class MyTest:
                     pass
                 """,
-            'bar.py': """
+            'bar.py': b"""
                 class MyTest:
                     pass
                 """,
-            'spam.py': """
+            'spam.py': b"""
                 from foo import MyTest
 
                 instance = MyTest()
@@ -92,7 +92,7 @@ class TestClassDefRemoval(BaseTestCase):
         # TODO: this use case has to be solved by using scopes
 
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 class Bar:
                     def foo(self):
                         pass

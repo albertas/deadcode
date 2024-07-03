@@ -73,7 +73,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
         # during recursive its parsing
         self.should_ignore_new_definitions = False
 
-        self.noqa_lines: Dict[str, Set[int]] = {}
+        self.noqa_lines: Dict[bytes, Set[int]] = {}
         self.scopes = NestedScope()
 
     @property
@@ -92,7 +92,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
     def visit_abstract_syntax_trees(self) -> None:
         for file_path in self.filenames:
-            with open(file_path) as f:
+            with open(file_path, 'rb') as f:
                 filename = os.path.basename(file_path)
                 module_name = os.path.splitext(filename)[0]
                 self.scope_parts = [module_name]
@@ -446,8 +446,6 @@ class DeadCodeVisitor(ast.NodeVisitor):
         #
         # I should write a unit test with only an exrepssion and check which methods are being called.
         # I should only handled that single expression handling properly.
-
-        # breakpoint()
 
         if inherits_from := self.get_inherits_from(node):
             node.inherits_from = inherits_from  # type: ignore

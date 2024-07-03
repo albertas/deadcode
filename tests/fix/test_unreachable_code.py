@@ -5,7 +5,7 @@ from deadcode.utils.base_test_case import BaseTestCase
 class TestUnreachableCodeIsNotRemoved(BaseTestCase):
     def test_else_is_not_changed_when_condition_is_true(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 if True:
                     print("Main block")
                 else:
@@ -18,7 +18,7 @@ class TestUnreachableCodeIsNotRemoved(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
                 if True:
                     print("Main block")
                 else:
@@ -29,7 +29,7 @@ class TestUnreachableCodeIsNotRemoved(BaseTestCase):
 
     def test_else_is_not_changed_when_condition_is_false(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 if False:
                     print("Main block")
                 else:
@@ -42,7 +42,7 @@ class TestUnreachableCodeIsNotRemoved(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
                 if False:
                     print("Main block")
                 else:
@@ -53,7 +53,7 @@ class TestUnreachableCodeIsNotRemoved(BaseTestCase):
 
     def test_while_is_not_changed_when_condition_is_true(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 while True:
                     print("Main block")
                 else:
@@ -66,7 +66,7 @@ class TestUnreachableCodeIsNotRemoved(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
                 while True:
                     print("Main block")
                 else:
@@ -77,7 +77,7 @@ class TestUnreachableCodeIsNotRemoved(BaseTestCase):
 
     def test_while_is_not_changed_when_condition_is_false(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 while False:
                     print("Main block")
                 else:
@@ -90,7 +90,7 @@ class TestUnreachableCodeIsNotRemoved(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
                 while False:
                     print("Main block")
                 else:

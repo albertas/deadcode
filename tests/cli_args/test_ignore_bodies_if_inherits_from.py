@@ -5,7 +5,7 @@ from deadcode.utils.base_test_case import BaseTestCase
 class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
     def test_ignore_class_definition_if_inherits_from_base_class(self):
         self.files = {
-            'foo.py': """
+            'foo.py': b"""
                 class Base:
                     pass
 
@@ -29,7 +29,7 @@ class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
 
         self.assertFiles(
             {
-                'foo.py': """
+                'foo.py': b"""
                 class Base:
                     pass
                 """

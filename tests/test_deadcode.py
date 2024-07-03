@@ -62,7 +62,7 @@ class DeadCodeIntegrationTests(TestCase):
 
 class DeadCodeTests(BaseTestCase):
     def test_invalid_python_file_found(self):
-        self.files = {'tests/files/invalid_file.py': """This is invalid python file content."""}
+        self.files = {'tests/files/invalid_file.py': b"""This is invalid python file content."""}
         unused_names = main(['tests/files/invalid_file.py', '--no-color'])
 
         self.assertEqual(unused_names, None)
