@@ -1,0 +1,9 @@
+# Config options described at: https://pre-commit.com/#creating-new-hooks
+- id: deadcode
+  name: deadcode
+  description: "Deadcode: find and fix unused Python code"
+  entry: deadcode
+  language: python
+  minimum_pre_commit_version: 2.9.2
+  require_serial: true
+  types: [python]
