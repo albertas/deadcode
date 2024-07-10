@@ -38,7 +38,7 @@ format: .venv
 	.venv/bin/ruff format deadcode tests
 
 audit: .venv
-	.venv/bin/pip-audit
+	.venv/bin/pip-audit --skip-editable
 
 sync: .venv
 	uv pip sync requirements-dev.txt
