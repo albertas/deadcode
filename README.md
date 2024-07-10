@@ -174,6 +174,8 @@ code base is implemented in.
 - [ ] Check if file is still valid/parsable after automatic fixing, if not: halt the change and report error.
 
 ## Release notes
+- v2.3.2:
+    - Add `pre-commit` hook support.
 - v2.3.1:
     - Started analysing files in bytes instead of trying to convert them into UTF-8 encoded strings.
     - Improved automatic removal of unused imports.
