@@ -8,7 +8,7 @@ boolean-py==4.0
     # via license-expression
 cachecontrol==0.14.0
     # via pip-audit
-certifi==2024.6.2
+certifi==2024.7.4
     # via
     #   httpcore
     #   httpx
@@ -25,12 +25,16 @@ coverage==7.5.4
     # via pytest-cov
 cryptography==42.0.8
     # via secretstorage
-cyclonedx-python-lib==7.4.1
+cyclonedx-python-lib==7.5.1
     # via pip-audit
 defusedxml==0.7.1
     # via py-serializable
 distlib==0.3.8
     # via virtualenv
+exceptiongroup==1.2.1
+    # via
+    #   anyio
+    #   pytest
 filelock==3.15.4
     # via
     #   cachecontrol
@@ -85,7 +89,7 @@ msgpack==1.0.8
 mypy==1.10.1
 mypy-extensions==1.0.0
     # via mypy
-packageurl-python==0.15.1
+packageurl-python==0.15.3
     # via cyclonedx-python-lib
 packaging==24.1
     # via
@@ -98,9 +102,9 @@ pathspec==0.12.1
     # via hatchling
 pexpect==4.9.0
     # via hatch
-pip==24.1.1
+pip==24.1.2
     # via pip-api
-pip-api==0.0.33
+pip-api==0.0.34
     # via pip-audit
 pip-audit==2.7.3
 pip-requirements-parser==32.0.1
@@ -115,7 +119,7 @@ pluggy==1.5.0
     #   pytest
 ptyprocess==0.7.0
     # via pexpect
-py-serializable==1.0.3
+py-serializable==1.1.0
     # via cyclonedx-python-lib
 pycparser==2.22
     # via cffi
@@ -134,7 +138,7 @@ rich==13.7.1
     # via
     #   hatch
     #   pip-audit
-ruff==0.5.0
+ruff==0.5.1
 secretstorage==3.3.3
     # via keyring
 shellingham==1.5.4
@@ -150,19 +154,26 @@ sortedcontainers==2.4.0
 toml==0.10.2
     # via pip-audit
 tomli==2.0.1
+    # via
+    #   coverage
+    #   hatchling
+    #   mypy
+    #   pytest
 tomli-w==1.0.0
     # via hatch
-tomlkit==0.12.5
+tomlkit==0.13.0
     # via hatch
 trove-classifiers==2024.7.2
     # via hatchling
 typing-extensions==4.12.2
-    # via mypy
+    # via
+    #   anyio
+    #   mypy
 urllib3==2.2.2
     # via requests
 userpath==1.9.2
     # via hatch
-uv==0.2.21
+uv==0.2.24
     # via hatch
 virtualenv==20.26.3
     # via hatch
