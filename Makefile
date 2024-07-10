@@ -5,7 +5,7 @@ fix: format fixlint
 
 .venv:
 	pip install uv
-	uv venv -p 3.8 .venv
+	uv venv -p 3.10 .venv
 	uv pip sync requirements-dev.txt
 	uv pip install -e .[test]
 
