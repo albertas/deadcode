@@ -195,8 +195,7 @@ ignore_names = [
 ignore_names_in_files = [
     "deadcode/utils/base_test_case.py"
 ]
-
-exclude = ["tests"]
+exclude = ["tests*"]
 
 [tool.black]
 max_line_length = 120
