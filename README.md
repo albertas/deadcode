@@ -176,6 +176,7 @@ code base is implemented in.
 ## Release notes
 - v2.3.2:
     - Add `pre-commit` hook support.
+    - Drop support for Python 3.8 and 3.9 versions, since their ast implementation is lacking features.
 - v2.3.1:
     - Started analysing files in bytes instead of trying to convert them into UTF-8 encoded strings.
     - Improved automatic removal of unused imports.
