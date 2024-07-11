@@ -3,9 +3,10 @@
 <h2 align="center">Find and Fix Unused Python Code</h2>
 
 <p align="center">
-<a href="https://github.com/albertas/deadcode/blob/main/LICENSE"><img alt="License: AGPLv3" src="https://raw.githubusercontent.com/albertas/deadcode/main/docs/_static/AGPLv3-license.svg"></a>
+<a href="https://github.com/pre-commit/pre-commit"><img src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit" alt="pre-commit" style="max-width:100%;"></a>
 <a href="https://pypi.org/project/deadcode/"><img alt="PyPI" src="https://img.shields.io/pypi/v/deadcode"></a>
 <a href="https://pepy.tech/project/deadcode"><img alt="Downloads" src="https://static.pepy.tech/badge/deadcode"></a>
+<a href="https://github.com/albertas/deadcode/blob/main/LICENSE"><img alt="License: AGPLv3" src="https://raw.githubusercontent.com/albertas/deadcode/main/docs/_static/AGPLv3-license.svg"></a>
 </p>
 
 
@@ -71,9 +72,9 @@ ignore-names-in-files = ["migrations"]
 
 
 ##### Glossory
-name - variable, function or class name.
-body - code block which follows after `:` in function or class definition.
-definition - whole class or function definition expression including its name and body.
+- `name` - variable, function or class name.
+- `body` - code block which follows after `:` in function or class definition.
+- `definition` - whole class or function definition expression including its name and body.
 
 
 ## Rules
@@ -173,6 +174,9 @@ code base is implemented in.
 - [ ] Check if file is still valid/parsable after automatic fixing, if not: halt the change and report error.
 
 ## Release notes
+- v2.3.2:
+    - Add `pre-commit` hook support.
+    - Drop support for Python 3.8 and 3.9 versions, since their ast implementation is lacking features.
 - v2.3.1:
     - Started analysing files in bytes instead of trying to convert them into UTF-8 encoded strings.
     - Improved automatic removal of unused imports.

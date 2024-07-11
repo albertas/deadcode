@@ -5,7 +5,7 @@ fix: format fixlint
 
 .venv:
 	pip install uv
-	uv venv -p 3.8 .venv
+	uv venv -p 3.10 .venv
 	uv pip sync requirements-dev.txt
 	uv pip install -e .[test]
 
@@ -22,7 +22,7 @@ lint: .venv
 	.venv/bin/ruff check deadcode tests
 
 fix: .venv
-	.venv/bin/ruff deadcode tests --fix
+	.venv/bin/ruff check deadcode tests --fix
 
 mypy: .venv
 	.venv/bin/mypy deadcode
@@ -38,7 +38,7 @@ format: .venv
 	.venv/bin/ruff format deadcode tests
 
 audit: .venv
-	.venv/bin/pip-audit
+	.venv/bin/pip-audit --skip-editable
 
 sync: .venv
 	uv pip sync requirements-dev.txt

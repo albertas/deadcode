@@ -38,7 +38,7 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                 file2.py:4:4: DC07 Import `xyz` is never used
                 file2.py:7:18: DC07 Import `foo` is never used
 
-                Removed 4 unused code items!""")
+                Removed 4 unused code items!"""),
         )
 
         # TODO: empty imports statements should be removed as well.

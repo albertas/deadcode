@@ -41,8 +41,13 @@ def fix_or_show_unused_code(unused_items: Iterable[CodeItem], args: Args) -> str
             if args.dry and ('__all_files__' in args.dry or _match(filename, args.dry)):
                 with open(filename, 'rb') as f:
                     filename_bytes = filename.encode()
-                    diff = diff_bytes(unified_diff, f.readlines(), updated_file_content_lines,
-                                      fromfile=filename_bytes, tofile=filename_bytes)
+                    diff = diff_bytes(
+                        unified_diff,
+                        f.readlines(),
+                        updated_file_content_lines,
+                        fromfile=filename_bytes,
+                        tofile=filename_bytes,
+                    )
                     # TODO: consider printing result instantly to save memory
                     result_chunk = b''.join(diff)
                     if args.no_color:
