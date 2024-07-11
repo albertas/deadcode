@@ -22,7 +22,7 @@ lint: .venv
 	.venv/bin/ruff check deadcode tests
 
 fix: .venv
-	.venv/bin/ruff deadcode tests --fix
+	.venv/bin/ruff check deadcode tests --fix
 
 mypy: .venv
 	.venv/bin/mypy deadcode

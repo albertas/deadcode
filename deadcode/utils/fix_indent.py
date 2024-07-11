@@ -3,6 +3,7 @@ from typing import Optional, TypeVar
 
 T = TypeVar('T')
 
+
 def fix_indent(doc: T) -> Optional[T]:
     """Finds indentation of a first line and removes it from all following lines.
 

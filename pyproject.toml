@@ -154,7 +154,6 @@ ignore = [
 ]
 "tests/fix/test_unused_imports.py" = ["F401", "W291"]
 
-
 [tool.mypy]
 exclude = ["build", "dist", ".venv"]
 python_version = "3.10"
@@ -164,12 +163,6 @@ color_output = true
 show_error_codes = true
 warn_return_any = true
 warn_unused_configs = true
-
-
-[tool.isort]
-profile = "black"
-multi_line_output = 3
-known_third_party = ["deadcode"]
 
 [tool.deadcode]
 ignore_names = [
@@ -194,12 +187,6 @@ ignore_names_in_files = [
     "deadcode/utils/base_test_case.py"
 ]
 exclude = ["tests"]
-
-[tool.black]
-max_line_length = 120
-line_length = 120
-target_version = ["py38"]
-
 
 [tool.pytest.ini_options]
 addopts = "--cov=. --no-cov-on-fail --cov-fail-under=88.0"
