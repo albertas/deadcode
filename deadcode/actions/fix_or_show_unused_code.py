@@ -38,7 +38,7 @@ def fix_or_show_unused_code(unused_items: Iterable[CodeItem], args: Args) -> str
         updated_file_content_lines = remove_file_parts_from_content(file_content_lines, unused_file_parts)
         updated_file_content = b''.join(updated_file_content_lines)
         if updated_file_content.strip():
-            if args.dry and ('__all_files__' in args.dry or _match(filename, args.dry)):
+            if args.dry and (not args.only or _match(filename, args.only)):
                 with open(filename, 'rb') as f:
                     filename_bytes = filename.encode()
                     diff = diff_bytes(

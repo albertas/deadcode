@@ -28,7 +28,7 @@ deadcode . --fix --dry
 
 To see suggested fixes only for `foo.py` file:
 ```shell
-deadcode . --fix --dry foo.py
+deadcode . --fix --dry --only foo.py
 ```
 
 To fix:
@@ -54,7 +54,8 @@ ignore-names-in-files = ["migrations"]
 | Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Meaning  |
 |-------------------------------------------|------|----------------------------------------------------------------------|
 |`--fix`                                    | -    | Automatically remove detected unused code expressions from the code base. |
-|`--dry`                                    | - or list | Show changes which would be made in files. Shows changes for provided filenames or shows all changes if no filename is specified. |
+|`--dry`                                    | -    | Show changes which would be made in files. |
+|`--only`                                   | list | Filenames (or path expressions), that will be reflected in the output and modified. |
 |`--exclude`                                | list | Filenames (or path expressions), which will be completely skipped without being analysed. |
 |`--ignore-names`                           | list | Removes provided list of names from the output. Regexp expressions to match multiple names can also be provided, e.g. `*Mixin` will match all classes ending with `Mixin`. |
 |`--ignore-names-in-files`                  | list | Ignores unused names in files, which filenames match provided path expressions. |
@@ -157,13 +158,11 @@ code base is implemented in.
 - [ ] Distinguish between definitions with same name, but different files.
 - [ ] Repeated application of `deadcode` till the output stops changing.
 - [ ] Unreachable code detection and fixing: this should only be scoped for if statements and only limited to primitive variables.
-- [x] `--fix --dry [filenames]` - only show whats about to change in the listed filenames.
 - [ ] Benchmarking performance with larger projects (time, CPU and memory consumption) in order to optimize.
 - [ ] `--fix` could accept a list of filenames as well (only those files would be changed, but the summary could would be full).
     (This might be confusing, because filenames, which have to be considered are provided without any flag, --fix is expected to not accept arguments)
 - [ ] pre-commit-hook.
 - [ ] language server.
-- [x] Use only two digits for error codes instead of 3. Two is plenty and it simplifies usage a bit
 - [ ] DC10: remove code after terminal statements like `raise`, `return`, `break`, `continue` and comes in the same scope.
 - [ ] Add `ignore` and `per-file-ignores` command line and pyproject.toml options, which allows to skip some rules.
 - [ ] Make sure that all rules are being skipped by `noqa` comment and all rules react to `noqa: rule_id` comments.
@@ -174,9 +173,12 @@ code base is implemented in.
 - [ ] Check if file is still valid/parsable after automatic fixing, if not: halt the change and report error.
 
 ## Release notes
+- v2.4.0:
+    - Add `--only` option that accepts filenames only which will be reflected in the output and modified.
+      This option can be used with `--fix` and `--fix --dry` options as well as for simple unused code detection without fixing.
 - v2.3.2:
     - Add `pre-commit` hook support.
-    - Drop support for Python 3.8 and 3.9 versions, since their ast implementation is lacking features.
+    - Drop support for Python 3.8 and 3.9 versions, since their `ast` implementation is lacking features.
 - v2.3.1:
     - Started analysing files in bytes instead of trying to convert them into UTF-8 encoded strings.
     - Improved automatic removal of unused imports.

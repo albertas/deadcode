@@ -81,33 +81,37 @@ class CommandLineArgParsingTests(BaseTestCase):
         options = '. --fix'
         args = parse_arguments(options.split())
         self.assertEqual(args.paths, ['.'])
-        self.assertEqual(args.dry, [])
+        self.assertEqual(args.dry, False)
         self.assertEqual(args.fix, True)
 
     def test_calling_with_dry(self):
         options = '. --dry --verbose'
         args = parse_arguments(options.split())
         self.assertEqual(args.paths, ['.'])
-        self.assertEqual(args.dry, ['__all_files__'])
+        self.assertEqual(args.dry, True)
+        self.assertEqual(args.only, [])
         self.assertEqual(args.verbose, True)
         self.assertEqual(args.fix, False)
 
     def test_calling_with_fix_and_dry(self):
         options = '. --dry --fix'
         args = parse_arguments(options.split())
-        self.assertEqual(args.dry, ['__all_files__'])
+        self.assertEqual(args.dry, True)
         self.assertEqual(args.fix, False)
+        self.assertEqual(args.only, [])
 
-    def test_calling_with_single_dry_filename(self):
-        options = '. --dry foo.py --fix'
+    def test_calling_with_dry_and_single_only_filename(self):
+        options = '. --dry --only foo.py --fix'
         args = parse_arguments(options.split())
         self.assertEqual(args.paths, ['.'])
-        self.assertEqual(args.dry, ['foo.py'])
+        self.assertEqual(args.dry, True)
+        self.assertEqual(args.only, ['foo.py'])
         self.assertEqual(args.fix, False)
 
     def test_calling_with_two_dry_filenames(self):
-        options = '. --fix --dry foo.py bar.py'
+        options = '. --fix --dry --only foo.py bar.py'
         args = parse_arguments(options.split())
         self.assertEqual(args.paths, ['.'])
-        self.assertEqual(args.dry, ['foo.py', 'bar.py'])
+        self.assertEqual(args.only, ['foo.py', 'bar.py'])
         self.assertEqual(args.fix, False)
+        self.assertEqual(args.dry, True)
