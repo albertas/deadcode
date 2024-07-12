@@ -14,7 +14,8 @@ Pathname = str  # Can contain wildewards
 class Args:
     fix: bool = False
     verbose: bool = False
-    dry: Iterable[Pathname] = ()
+    dry: bool = False
+    only: Iterable[Pathname] = ()
     paths: Iterable[Pathname] = ()
     exclude: Iterable[Pathname] = ()
     ignore_definitions: Iterable[Pathname] = ()

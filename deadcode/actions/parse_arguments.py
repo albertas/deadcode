@@ -36,9 +36,15 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
     parser.add_argument(
         '--dry',
         help='Show changes which would be made in files with --fix option.',
+        action='store_true',
+        default=False,
+    )
+    parser.add_argument(
+        '--only',
+        help='Filenames (or path expressions), that will be reflected in the output and modified.',
         nargs='*',
         action='append',
-        default=[['__all_files__']],
+        default=[],
         type=str,
     )
     parser.add_argument(
@@ -199,10 +205,6 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
     for key, item in parse_pyproject_toml().items():
         if key in parsed_args:
             parsed_args[key].extend(item)
-
-    # Show changes for only provided files instead of all
-    if len(parsed_args['dry']) > 1 or '--dry' not in args:
-        parsed_args['dry'].remove('__all_files__')
 
     # Do not fix if dry option is provided:
     if parsed_args['dry']:

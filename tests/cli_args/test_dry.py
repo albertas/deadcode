@@ -14,6 +14,7 @@ class TestDryCliOption(BaseTestCase):
         }
 
         unused_names = main('foo.py --no-color --fix --dry'.split())
+
         self.assertEqual(
             unused_names,
             (
@@ -152,12 +153,11 @@ class TestDryCliOption(BaseTestCase):
                 print("Dont change this file")""",
         }
 
-        unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--dry', 'foo.py'])
+        unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--dry', '--only', 'foo.py'])
         self.assertEqual(
             unused_names,
             fix_indent(
                 """\
-                bar.py:1:0: DC02 Function `unused_function` is never used
                 foo.py:1:0: DC03 Class `UnusedClass` is never used
 
                 --- foo.py
@@ -195,10 +195,10 @@ class TestDryCliOption(BaseTestCase):
                 print("Dont change this file")"""
         }
 
-        unused_names = main('foo.py --no-color --fix --dry fooo.py'.split())
+        unused_names = main('foo.py --no-color --fix --dry --only fooo.py'.split())
         self.assertEqual(
             unused_names,
-            'foo.py:1:0: DC03 Class `UnusedClass` is never used',
+            '',
         )
 
         self.assertFiles(
@@ -220,7 +220,7 @@ class TestDryCliOption(BaseTestCase):
                 print("Dont change this file")"""
         }
 
-        unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--fix', '--dry', 'f*.py'])
+        unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--fix', '--dry', '--only', 'f*.py'])
         self.assertEqual(
             unused_names,
             (
