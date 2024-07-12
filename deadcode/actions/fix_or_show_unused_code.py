@@ -38,27 +38,28 @@ def fix_or_show_unused_code(unused_items: Iterable[CodeItem], args: Args) -> str
         updated_file_content_lines = remove_file_parts_from_content(file_content_lines, unused_file_parts)
         updated_file_content = b''.join(updated_file_content_lines)
         if updated_file_content.strip():
-            if args.dry and (not args.only or _match(filename, args.only)):
-                with open(filename, 'rb') as f:
-                    filename_bytes = filename.encode()
-                    diff = diff_bytes(
-                        unified_diff,
-                        f.readlines(),
-                        updated_file_content_lines,
-                        fromfile=filename_bytes,
-                        tofile=filename_bytes,
-                    )
-                    # TODO: consider printing result instantly to save memory
-                    result_chunk = b''.join(diff)
-                    if args.no_color:
-                        result.append(result_chunk)
-                    else:
-                        result.append(add_colors_to_diff(result_chunk))
+            if not args.only or _match(filename, args.only):
+                if args.dry:
+                    with open(filename, 'rb') as f:
+                        filename_bytes = filename.encode()
+                        diff = diff_bytes(
+                            unified_diff,
+                            f.readlines(),
+                            updated_file_content_lines,
+                            fromfile=filename_bytes,
+                            tofile=filename_bytes,
+                        )
+                        # TODO: consider printing result instantly to save memory
+                        result_chunk = b''.join(diff)
+                        if args.no_color:
+                            result.append(result_chunk)
+                        else:
+                            result.append(add_colors_to_diff(result_chunk))
 
-            elif args.fix:
-                with open(filename, 'wb') as f:
-                    # TODO: is there a method writelines?
-                    f.write(updated_file_content)
+                elif args.fix:
+                    with open(filename, 'wb') as f:
+                        # TODO: is there a method writelines?
+                        f.write(updated_file_content)
         else:
             os.remove(filename)
 

@@ -171,6 +171,7 @@ code base is implemented in.
   documentation should cleary demonstrate the behaviour/example that "Schema" means "*.Schema".
 - [ ] Redefinition of an existing name makes previous name unreachable, unless it is assigned somehow.
 - [ ] Check if file is still valid/parsable after automatic fixing, if not: halt the change and report error.
+- [ ] Investigate ways of extracting and backporting Python3.10+ `ast` implementation to lower Python versions.
 
 ## Release notes
 - v2.4.0:
