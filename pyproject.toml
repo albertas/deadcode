@@ -33,7 +33,7 @@ test = [
 ]
 
 [project.scripts]
-deadcode = "deadcode.cli:main"
+deadcode = "deadcode.cli:print_main"
 
 [project.urls]
 homepage = "https://github.com/albertas/deadcode"

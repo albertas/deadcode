@@ -37,5 +37,10 @@ def main(
     return None
 
 
+def print_main() -> None:
+    if result := main():
+        print(result)
+
+
 if __name__ == '__main__':
-    main()
+    print_main()

@@ -174,6 +174,9 @@ code base is implemented in.
 - [ ] Investigate ways of extracting and backporting Python3.10+ `ast` implementation to lower Python versions.
 
 ## Release notes
+- v2.4.1:
+    - Add `--version` option to show `deadcode` version.
+    - Use stdout for `deadcode` output.
 - v2.4.0:
     - Add `--only` option that accepts filenames only which will be reflected in the output and modified.
       This option can be used with `--fix` and `--fix --dry` options as well as for simple unused code detection without fixing.
