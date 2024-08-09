@@ -17,7 +17,7 @@ publish: .venv
 	.venv/bin/hatch -v publish
 
 	git tag $(VERSION)
-	git push $(VERSION)
+	git push origin tag $(VERSION)
 
 test: .venv
 	.venv/bin/pytest -vv $(PYTEST_ME_PLEASE)
