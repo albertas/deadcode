@@ -9,11 +9,15 @@ fix: format fixlint
 	uv pip sync requirements-dev.txt
 	uv pip install -e .[test]
 
+VERSION := $(shell .venv/bin/deadcode --version);
 
 publish: .venv
 	rm -fr dist/*
 	.venv/bin/hatch build
 	.venv/bin/hatch -v publish
+
+	git tag $(VERSION)
+	git push $(VERSION)
 
 test: .venv
 	.venv/bin/pytest -vv $(PYTEST_ME_PLEASE)
