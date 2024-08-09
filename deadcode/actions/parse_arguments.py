@@ -194,6 +194,12 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
         action='store_true',
         default=False,
     )
+    parser.add_argument(
+        '--version',
+        help='Shows deadcode version',
+        action='store_true',
+        default=False,
+    )
 
     parsed_args = parser.parse_args(args).__dict__
 
