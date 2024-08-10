@@ -49,6 +49,19 @@ ignore-names = ["BaseTestCase", "*Mixin"]
 ignore-names-in-files = ["migrations"]
 ```
 
+## Pre-commit hook
+Create a `.pre-commit-config.yaml` file in the root of your project directory, if it doesn't exist, and add the following to the file:
+
+```
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: https://github.com/albertas/deadcode
+    rev: 2.4.1
+    hooks:
+      - id: deadcode
+```
+
 ## Command line options
 
 | Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Meaning  |
