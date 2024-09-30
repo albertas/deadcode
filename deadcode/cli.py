@@ -1,5 +1,7 @@
 from typing import List, Optional
 import sys
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 from deadcode import __version__
 from deadcode.actions.find_python_filenames import find_python_filenames
