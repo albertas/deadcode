@@ -1,4 +1,3 @@
-from typing import List, Optional, Tuple
 from deadcode.data_types import Part
 
 
@@ -13,7 +12,7 @@ def does_include(bigger_part: Part, smaller_part: Part) -> bool:
     return bool(starts_later and ends_faster)
 
 
-def sort_parts(bigger_part: Part, smaller_part: Part) -> Tuple[Part, Part]:
+def sort_parts(bigger_part: Part, smaller_part: Part) -> tuple[Part, Part]:
     """Returns code part which begins first following by another code part."""
     # TODO: Column should go first (tuple comparison would be possible)
     line_start_b, line_end_b, col_start_b, col_end_b = bigger_part
@@ -35,7 +34,7 @@ def does_overlap(bigger_part: Part, smaller_part: Part) -> bool:
     return bool((line_end_b > line_start_s) or ((line_end_b == line_start_s) and (col_end_b > col_start_s)))
 
 
-def merge_parts(p1: Part, p2: Part) -> Optional[Part]:
+def merge_parts(p1: Part, p2: Part) -> Part | None:
     p1, p2 = sort_parts(p1, p2)
 
     line_start1, line_end1, col_start1, col_end1 = p1
@@ -58,10 +57,10 @@ def merge_parts(p1: Part, p2: Part) -> Optional[Part]:
     return None
 
 
-def merge_overlaping_file_parts(overlaping_file_parts: List[Part]) -> List[Part]:
+def merge_overlaping_file_parts(overlaping_file_parts: list[Part]) -> list[Part]:
     # Make algorithm O(n^2) by checking every single part if overlaps
 
-    non_overlaping_file_parts: List[Part] = []
+    non_overlaping_file_parts: list[Part] = []
     for p1 in sorted(overlaping_file_parts):
         merged_part = None
         merged_with_index = None
