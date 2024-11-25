@@ -1,6 +1,5 @@
 from collections import defaultdict
 import re
-from typing import Dict, List, Set
 
 NOQA_REGEXP = re.compile(
     # Use the same regex as flake8 does.
@@ -47,12 +46,12 @@ NOQA_CODE_MAP = {
 }
 
 
-def _parse_error_codes(matches_dict: Dict[str, bytes]) -> List[bytes]:
+def _parse_error_codes(matches_dict: dict[str, bytes]) -> list[bytes]:
     # If no error code is specified, add the line to the "all" category.
     return [c.strip() for c in (matches_dict['codes'] or b'all').split(b',')]
 
 
-def parse_noqa(code: bytes) -> Dict[bytes, Set[int]]:
+def parse_noqa(code: bytes) -> dict[bytes, set[int]]:
     noqa_lines = defaultdict(set)
     for lineno, line in enumerate(code.split(b'\n'), start=1):
         match = NOQA_REGEXP.search(line)
@@ -63,6 +62,6 @@ def parse_noqa(code: bytes) -> Dict[bytes, Set[int]]:
     return noqa_lines
 
 
-def ignore_line(noqa_lines: Dict[bytes, Set[int]], lineno: int, error_code: bytes) -> bool:
+def ignore_line(noqa_lines: dict[bytes, set[int]], lineno: int, error_code: bytes) -> bool:
     """Check if the reported line is annotated with "# noqa"."""
     return lineno in noqa_lines[error_code] or lineno in noqa_lines[b'all']

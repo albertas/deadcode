@@ -13,8 +13,6 @@ certifi==2024.7.4
     #   httpcore
     #   httpx
     #   requests
-cffi==1.16.0
-    # via cryptography
 charset-normalizer==3.3.2
     # via requests
 click==8.1.7
@@ -23,8 +21,6 @@ click==8.1.7
     #   userpath
 coverage==7.5.4
     # via pytest-cov
-cryptography==42.0.8
-    # via secretstorage
 cyclonedx-python-lib==7.5.1
     # via pip-audit
 defusedxml==0.7.1
@@ -42,6 +38,7 @@ filelock==3.15.4
 h11==0.14.0
     # via httpcore
 hatch==1.12.0
+    # via deadcode (pyproject.toml)
 hatchling==1.25.0
     # via hatch
 html5lib==1.1
@@ -68,10 +65,6 @@ jaraco-context==5.3.0
     # via keyring
 jaraco-functools==4.0.1
     # via keyring
-jeepney==0.8.0
-    # via
-    #   keyring
-    #   secretstorage
 keyring==25.2.1
     # via hatch
 license-expression==30.3.0
@@ -87,6 +80,7 @@ more-itertools==10.3.0
 msgpack==1.0.8
     # via cachecontrol
 mypy==1.10.1
+    # via deadcode (pyproject.toml)
 mypy-extensions==1.0.0
     # via mypy
 packageurl-python==0.15.3
@@ -107,6 +101,7 @@ pip==24.1.2
 pip-api==0.0.34
     # via pip-audit
 pip-audit==2.7.3
+    # via deadcode (pyproject.toml)
 pip-requirements-parser==32.0.1
     # via pip-audit
 platformdirs==4.2.2
@@ -121,15 +116,16 @@ ptyprocess==0.7.0
     # via pexpect
 py-serializable==1.1.0
     # via cyclonedx-python-lib
-pycparser==2.22
-    # via cffi
 pygments==2.18.0
     # via rich
 pyparsing==3.1.2
     # via pip-requirements-parser
 pytest==8.2.2
-    # via pytest-cov
+    # via
+    #   deadcode (pyproject.toml)
+    #   pytest-cov
 pytest-cov==5.0.0
+    # via deadcode (pyproject.toml)
 requests==2.32.3
     # via
     #   cachecontrol
@@ -139,8 +135,7 @@ rich==13.7.1
     #   hatch
     #   pip-audit
 ruff==0.5.1
-secretstorage==3.3.3
-    # via keyring
+    # via deadcode (pyproject.toml)
 shellingham==1.5.4
     # via hatch
 six==1.16.0
@@ -155,6 +150,7 @@ toml==0.10.2
     # via pip-audit
 tomli==2.0.1
     # via
+    #   deadcode (pyproject.toml)
     #   coverage
     #   hatchling
     #   mypy

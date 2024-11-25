@@ -1,4 +1,4 @@
-from typing import Dict, Literal
+from typing import Literal
 
 
 UnusedCodeType = Literal[
@@ -33,7 +33,7 @@ UnusedCodeErrorCode = Literal[
 ]
 
 
-ERROR_TYPE_TO_ERROR_CODE: Dict[UnusedCodeType, UnusedCodeErrorCode] = {
+ERROR_TYPE_TO_ERROR_CODE: dict[UnusedCodeType, UnusedCodeErrorCode] = {
     'variable': 'DC01',
     'function': 'DC02',
     'class': 'DC03',

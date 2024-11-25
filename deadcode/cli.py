@@ -1,4 +1,3 @@
-from typing import List, Optional
 import sys
 
 from deadcode import __version__
@@ -12,9 +11,8 @@ from deadcode.actions.get_unused_names_error_message import (
 
 
 def main(
-    command_line_args: Optional[List[str]] = None,
-) -> Optional[str]:
-
+    command_line_args: list[str] | None = None,
+) -> str | None:
     if command_line_args and '--version' in command_line_args or '--version' in sys.argv:
         return __version__
 

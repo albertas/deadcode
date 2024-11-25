@@ -29,7 +29,6 @@
 
 
 from pathlib import Path
-from typing import List, Optional
 
 from deadcode.constants import UnusedCodeType, ERROR_TYPE_TO_ERROR_CODE
 
@@ -60,11 +59,11 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
         name: str,
         type_: UnusedCodeType,
         filename: Path,
-        code_parts: Optional[List[Part]] = None,  # TODO: I should use a dataclass instead of a tuple for Part.
-        scope: Optional[str] = None,
-        inherits_from: Optional[List[str]] = None,
-        name_line: Optional[int] = None,
-        name_column: Optional[int] = None,
+        code_parts: list[Part] | None = None,  # TODO: I should use a dataclass instead of a tuple for Part.
+        scope: str | None = None,
+        inherits_from: list[str] | None = None,
+        name_line: int | None = None,
+        name_column: int | None = None,
         message: str = '',
         number_of_uses: int = 0,
     ):

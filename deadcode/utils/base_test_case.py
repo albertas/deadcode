@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
@@ -8,7 +8,7 @@ from deadcode.data_types import Args
 
 
 class BaseTestCase(TestCase):
-    files: Dict[str, bytes] = {}
+    files: dict[str, bytes] = {}
 
     maxDiff = None
 
@@ -17,10 +17,10 @@ class BaseTestCase(TestCase):
         self.addCleanup(patcher.stop)
         return patcher.start()
 
-    def _get_filenames(self, *args: Any, **kwargs: Any) -> List[str]:
+    def _get_filenames(self, *args: Any, **kwargs: Any) -> list[str]:
         return list(self.files.keys())
 
-    def _read_file_side_effect(self, filename: Union[str, Path], *args: Any, **kwargs: Any) -> MagicMock:
+    def _read_file_side_effect(self, filename: str | Path, *args: Any, **kwargs: Any) -> MagicMock:
         mock = MagicMock()
         mock.filename = str(filename)
 
@@ -35,7 +35,7 @@ class BaseTestCase(TestCase):
         return mock
 
     def setUp(self) -> None:
-        self.updated_files: Dict[str, bytes] = {}
+        self.updated_files: dict[str, bytes] = {}
 
         self.find_python_filenames_mock = self.patch('deadcode.cli.find_python_filenames')
         self.find_python_filenames_mock.side_effect = self._get_filenames
@@ -50,7 +50,7 @@ class BaseTestCase(TestCase):
 
         self.args = Args()
 
-    def assertFiles(self, files: Dict[str, bytes], removed: Optional[List[str]] = None) -> None:
+    def assertFiles(self, files: dict[str, bytes], removed: list[str] | None = None) -> None:
         expected_removed_files = removed
         expected_files = files
 
@@ -76,7 +76,7 @@ class BaseTestCase(TestCase):
                 fix_indent(self.updated_files.get(filename) or unchanged_files.get(filename) or ''),
             )
 
-    def assertUpdatedFiles(self, expected_updated_files: Dict[str, bytes]) -> None:
+    def assertUpdatedFiles(self, expected_updated_files: dict[str, bytes]) -> None:
         """Checks if updated files match expected updated files."""
 
         self.assertListEqual(list(expected_updated_files.keys()), list(self.updated_files.keys()))
