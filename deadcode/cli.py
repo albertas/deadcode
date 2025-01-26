@@ -1,20 +1,19 @@
-from typing import List, Optional
 import sys
+from typing import List, Optional
 
 from deadcode import __version__
 from deadcode.actions.find_python_filenames import find_python_filenames
 from deadcode.actions.find_unused_names import find_unused_names
 from deadcode.actions.fix_or_show_unused_code import fix_or_show_unused_code
-from deadcode.actions.parse_arguments import parse_arguments
 from deadcode.actions.get_unused_names_error_message import (
     get_unused_names_error_message,
 )
+from deadcode.actions.parse_arguments import parse_arguments
 
 
 def main(
     command_line_args: Optional[List[str]] = None,
 ) -> Optional[str]:
-
     if command_line_args and '--version' in command_line_args or '--version' in sys.argv:
         return __version__
 
@@ -32,14 +31,15 @@ def main(
     if (error_message := get_unused_names_error_message(unused_names, args=args)) is not None:
         return error_message + ('\n\n' + file_diff if file_diff else '')
 
-    if not args.count and not args.quiet:
-        print('\033[1mWell done!\033[0m ✨ 🚀 ✨')
+    # if not args.count and not args.quiet:
+    #     print('\033[1mWell done!\033[0m ✨ 🚀 ✨')
     return None
 
 
 def print_main() -> None:
     if result := main():
         print(result)
+        sys.exit(1)
 
 
 if __name__ == '__main__':
