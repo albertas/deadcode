@@ -40,6 +40,7 @@ def main(
 def print_main() -> None:
     if result := main():
         print(result)
+        sys.exit(1)
 
 
 if __name__ == '__main__':
