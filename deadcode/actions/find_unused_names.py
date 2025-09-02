@@ -1,4 +1,4 @@
-from typing import List, Iterable
+from collections.abc import Iterable
 
 from deadcode.data_types import Args, Filename
 from deadcode.visitor.code_item import CodeItem
@@ -6,7 +6,7 @@ from deadcode.visitor.dead_code_visitor import DeadCodeVisitor
 
 
 def find_unused_names(
-    filenames: List[Filename],
+    filenames: list[Filename],
     args: Args,
 ) -> Iterable[CodeItem]:
     dead_code_visitor = DeadCodeVisitor(filenames, args)
