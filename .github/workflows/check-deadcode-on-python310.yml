@@ -3,11 +3,7 @@
 
 name: Checks deadcode package with Python3.10
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+on: [push, pull_request, workflow_dispatch]
 
 permissions:
   contents: read
