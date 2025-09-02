@@ -1,5 +1,6 @@
 from typing import List, Optional
 import sys
+import io
 
 from deadcode import __version__
 from deadcode.actions.find_python_filenames import find_python_filenames
@@ -10,11 +11,12 @@ from deadcode.actions.get_unused_names_error_message import (
     get_unused_names_error_message,
 )
 
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
 
 def main(
     command_line_args: Optional[List[str]] = None,
 ) -> Optional[str]:
-
     if command_line_args and '--version' in command_line_args or '--version' in sys.argv:
         return __version__
 
