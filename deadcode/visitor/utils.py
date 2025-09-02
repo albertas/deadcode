@@ -57,7 +57,7 @@ def get_decorator_name(decorator: ast.Call | ast.Attribute) -> str:
     while isinstance(decorator, ast.Attribute):
         parts.append(decorator.attr)
         decorator = decorator.value  # type: ignore
-    parts.append(decorator.id)  # type: ignore
+        parts.append(str(id(decorator)))  # type: ignore
     return '@' + '.'.join(reversed(parts))
 
 
