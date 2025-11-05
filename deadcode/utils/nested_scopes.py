@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from deadcode.visitor.code_item import CodeItem
 
@@ -15,7 +15,7 @@ class NestedScope:
     """
 
     def __init__(self) -> None:
-        self._scopes: Dict[Union[str, CodeItem], Any] = {}
+        self._scopes: dict[str | CodeItem, Any] = {}
 
     def add(self, code_item: CodeItem) -> None:
         """Adds code item to nested scope."""
@@ -34,7 +34,7 @@ class NestedScope:
         # > TODO: leaf should be replaced. Is it replaced with new code item?
         current_scope[code_item] = {}
 
-    def get(self, name: str, scope: str) -> Optional[Union[CodeItem, str]]:
+    def get(self, name: str, scope: str) -> CodeItem | str | None:
         """Returns CodeItem which matches scoped_name (e.g. package.class.method.variable)
         from the given scope or None if its not found."""
 
@@ -45,7 +45,7 @@ class NestedScope:
         #       projects.models, billing.models, auth.models: only one root scope called models would be registered.
 
         # Create a stack of scopes begining from nearest and following with parent one
-        scopes: List[Dict[Union[CodeItem, str], Dict[Any, Any]]] = []
+        scopes: list[dict[CodeItem | str, dict[Any, Any]]] = []
         next_scope = self._scopes
         for scope_part in scope.split('.'):
             if scope_part not in next_scope:
