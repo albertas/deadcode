@@ -102,8 +102,44 @@ class Foo:  # noqa: DC03
     pass
 ```
 
+## Development
+
+To develop Deadcode, clone the repository and use Just to manage the development workflow:
+
+### Setup
+
+```shell
+# Install dependencies and Deadcode in development mode
+just sync
+```
+
+This syncs pinned development dependencies from `requirements-dev.txt` and installs Deadcode as an editable package with test extras.
+
+### Running Checks
+
+All code quality checks (tests, linting, formatting, type checking, complexity) are managed via Just targets:
+
+```shell
+# Run all checks (tests + lint + format check + type check)
+just check
+
+# Run individual checks
+just test              # Run tests with coverage (parallel via pytest-xdist)
+just format            # Auto-format code with ruff
+just lint              # Check and auto-fix linting with ruff
+just typecheck         # Type check with mypy
+just check-complexity  # Report functions exceeding complexity limit
+
+# Check-only mode (no auto-fixes)
+just check-format      # Check formatting without changing files
+just check-lint        # Check linting without changing files
+just check-typecheck   # Check types without changing files
+```
+
+For details on each target, see [Development Documentation](docs/overview.md).
+
 ## Contributing
-- `make check` - runs unit tests and other checks using virtual environment.
+Use `just check` before submitting pull requests to ensure all checks pass. See [Development Documentation](docs/overview.md) for the full development workflow.
 
 ## Rationale
 [ruff](https://pypi.org/project/ruff/) and

@@ -31,6 +31,7 @@ test = [
     "deadcode",
     "pytest",
     "pytest-cov",
+    "pytest-xdist",
 ]
 
 [project.scripts]

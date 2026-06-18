@@ -14,7 +14,7 @@ phases:
       in:  review_findings.yml (from 8_review)
       out: code edits; flips review_findings.yml resolved:true (no artifact-dir file)
 code_quality_is_good: false
-heart_beat: 2026-06-18 23:31:35
+heart_beat: 2026-06-18 23:38:38
 lifecycles_in_progress:
-  - artifact_dir: T1-2026-06-18-cq-spec-write-a-codebase-specification-under-docs
-    heart_beat: 2026-06-18 23:31:35
+  - artifact_dir: T2-2026-06-18-cq-aliases-add-justfile-with-targets-to-run-tests
+    heart_beat: 2026-06-18 23:38:38

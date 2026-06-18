@@ -1,7 +1,7 @@
 # ToDo
 - [ ] Ensure code quality [cq:ensure]
   - [x] [T1] [cq:spec] Write a codebase specification under `docs/` describing the package goals, architecture and key code parts. Split docs/ into multiple files index.md should have project goal and documentation index.
-  - [ ] [cq:aliases] Add Justfile with targets to run tests, ruff format, ruff lint, typecheck, code complexity check and all these checks combined via `check` target. Also, add dev dependencies needed for these targets. Use a Justfile consistent with this project's, e.g.:
+  - [x] [T2] [cq:aliases] Add Justfile with targets to run tests, ruff format, ruff lint, typecheck, code complexity check and all these checks combined via `check` target. Also, add dev dependencies needed for these targets. Use a Justfile consistent with this project's, e.g.:
     ```
     test *args: sync
       uv run pytest -n "$(nproc --ignore=1)" {{args}}
