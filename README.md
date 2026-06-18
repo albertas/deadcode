@@ -173,6 +173,12 @@ code base is implemented in.
 - [ ] Check if file is still valid/parsable after automatic fixing, if not: halt the change and report error.
 
 ## Release notes
+- v2.4.0:
+    - Fixed automatic fixing of imports, assignment statements.
+    - Started using `ast.unparse()` in automatic code fixing.
+    - Dropped Python3.8 support, since it does not support `ast.unparse()` function, which is now used in automatic code fixing. 
+    - Added `--only` option, which now can be used with both `--fix` and `--dry` options.
+    - Removed a file list option for `--dry` option, please use `--only` flag instead.
 - v2.3.1:
     - Added support for automatic removal of imports.
 - v2.3.0:

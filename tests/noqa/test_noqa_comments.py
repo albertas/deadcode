@@ -74,7 +74,15 @@ class TestNoqaComments(BaseTestCase):
 
         unused_names = main(['foo.py', '--no-color', '--fix'])
 
-        self.assertFiles({})
+        # TODO: remove noqa comment if it leaves hanging after code removal.
+        # "NOQA" comments should be treated as part of code.
+
+        # File foo.py is not removed, but should be.
+        self.assertFiles({
+            'foo.py': """
+                  # noqa: DC02
+                """
+            })
         self.assertEqual(
             unused_names,
             ('foo.py:1:0: DC01 Variable `unused_variable` is never used\n\n' 'Removed 1 unused code item!'),

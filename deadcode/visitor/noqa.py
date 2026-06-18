@@ -54,7 +54,7 @@ def _parse_error_codes(matches_dict: Dict[str, str]) -> List[str]:
 
 def parse_noqa(code: str) -> Dict[str, Set[int]]:
     noqa_lines = defaultdict(set)
-    for lineno, line in enumerate(code.split('\n'), start=1):
+    for lineno, line in enumerate(code.splitlines(True), start=1):
         match = NOQA_REGEXP.search(line)
         if match:
             for error_code in _parse_error_codes(match.groupdict()):

@@ -30,7 +30,16 @@ class TestScopeTracking(BaseTestCase):
                 """
         }
 
-        main(['foo.py', '--no-color', '--fix'])
+        # TODO: >>> It seems that file was not removed, even though it should have been removed.
+        # pass was added to the file, why?
+        # The reason is that character associated to pass was removed and hence the pass had to be removed as well.
+        # I have to put character position with which the pass statement is associated with.
+        #
+
+        result = main(['foo.py', '--no-color', '--fix'])
+        print(self.updated_files)
+
+
         self.assertFiles({})
 
         # TODO: get nested scope for testing.

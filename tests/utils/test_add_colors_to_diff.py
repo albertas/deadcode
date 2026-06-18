@@ -20,19 +20,17 @@ class TestAddColorsToDiff(TestCase):
         )
 
         colorful_diff = add_colors_to_diff(diff)
-
-        self.assertEqual(
-            colorful_diff,
-            fix_indent(
-                """\
-            \x1b[31m--- foo.py\x1b[0m
-            \x1b[32m+++ foo.py\x1b[0m
-            @@ -1,4 +1 @@
-            \x1b[31m-class UnusedClass:\x1b[0m
-            \x1b[31m-    pass\x1b[0m
-            \x1b[31m-\x1b[0m
-            \x1b[31m-with open("tmp.txt") as f:\x1b[0m
-            \x1b[32m+with open("tmp.txt"):\x1b[0m
-                pass"""
-            ),
+        expected_diff = fix_indent(
+            """\
+            \x1b[31m--- foo.py
+            \x1b[0m\x1b[32m+++ foo.py
+            \x1b[0m@@ -1,4 +1 @@
+            \x1b[31m-class UnusedClass:
+            \x1b[0m\x1b[31m-    pass
+            \x1b[0m\x1b[31m-
+            \x1b[0m\x1b[31m-with open("tmp.txt") as f:
+            \x1b[0m\x1b[32m+with open("tmp.txt"):
+            \x1b[0m    pass"""
         )
+
+        self.assertEqual(colorful_diff, expected_diff)

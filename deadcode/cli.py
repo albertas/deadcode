@@ -17,11 +17,11 @@ def main(
     filenames = find_python_filenames(args=args)
 
     # TODO: rename unused_names to unused_code_items
-    unused_names = find_unused_names(filenames=filenames, args=args)
+    unused_names, additional_code_parts_to_remove = find_unused_names(filenames=filenames, args=args)
 
     file_diff = None
     if (args.fix or args.dry) and unused_names:
-        file_diff = fix_or_show_unused_code(unused_names, args=args)
+        file_diff = fix_or_show_unused_code(unused_names, additional_code_parts_to_remove, args=args)
 
     if (error_message := get_unused_names_error_message(unused_names, args=args)) is not None:
         return error_message + ('\n\n' + file_diff if file_diff else '')

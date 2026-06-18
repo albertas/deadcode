@@ -1,4 +1,5 @@
 import ast
+from difflib import SequenceMatcher
 from itertools import chain
 import os
 import re
@@ -7,10 +8,11 @@ import sys
 from logging import getLogger
 
 from pathlib import Path
+from collections import defaultdict
 
-from typing import Callable, Dict, List, Optional, Set, TextIO, Union, Iterable
+from typing import Callable, Dict, List, Optional, Set, TextIO, Union, Iterable, Tuple
 from deadcode.constants import UnusedCodeType
-from deadcode.data_types import Args, Part
+from deadcode.data_types import Args, Part, Filename
 from deadcode.visitor.code_item import CodeItem
 from deadcode.visitor.utils import LoggingList, LoggingSet
 from deadcode.visitor import utils
@@ -37,7 +39,7 @@ from deadcode.visitor.ignore import (
 logger = getLogger()
 
 
-class DeadCodeVisitor(ast.NodeVisitor):
+class FindUnusedCodeVisitor(ast.NodeVisitor):
     """Finds dead code."""
 
     def __init__(self, filenames: List[str], args: Args) -> None:
@@ -76,6 +78,9 @@ class DeadCodeVisitor(ast.NodeVisitor):
         self.noqa_lines: Dict[str, Set[int]] = {}
         self.scopes = NestedScope()
 
+        # TODO: CodePart has to contain filename, because these code parts are for different files.
+        self.additional_code_parts_to_remove: dict[Filename, list[Part]] = defaultdict(list)
+
     @property
     def scope(self) -> str:
         return '.'.join(self.scope_parts)
@@ -91,6 +96,8 @@ class DeadCodeVisitor(ast.NodeVisitor):
         self.scopes.mark_as_used(name, self.scope)
 
     def visit_abstract_syntax_trees(self) -> None:
+        # TODO: rename this method to reflect that it is used to find unused code Items in all the files.
+
         for file_path in self.filenames:
             with open(file_path) as f:
                 filename = os.path.basename(file_path)
@@ -103,6 +110,37 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
                     node = parse_abstract_syntax_tree(file_content, args=self.args, filename=file_path)
                     self.filename = Path(file_path)
+
+                    # TODO: apply fixing step, only when visiting of all files is finished.
+
+                    # The only bug detected was that current solutions tries to apply changes, when not all files were analysed yet.
+                    #
+                    # Still strictly separate detection and fixing.
+                    # Fixing should be done by reading a file once again, parsing its AST, making inline modification changes as anticipated now.
+                    #
+                    # Comparison for exact code items will be adjused in the future.
+
+
+                    # Lets create AST only one time?
+                        # Altering AST might be hard: you cannot just modify it.
+
+                    # This means that every single modification will have to be made using AST? I dont want to do it.
+
+
+                    # All file contents and ASTs will be cached.
+                    # Or shoudl I read the files two times and recreate the ATSs?
+                        # This way deadcode could handle unlimited number of files.
+
+
+                    # They will be walked over and compared. 
+
+                    # File content used to be discarded for efficiency.
+                    # Should the files be read once again? Are they read two times now?
+                    # Lets cache all the file in memory: for efficiency.
+                    # I can modifie
+                    self.file_content_lines = file_content.splitlines(True)
+
+                    # Detect unused code items
                     self.visit(node)
                 else:
                     self.unused_file.append(
@@ -189,7 +227,12 @@ class DeadCodeVisitor(ast.NodeVisitor):
                 alias or name,
                 first_node=name_and_alias,
                 ignore=_ignore_import,
+                expression_node=node,
             )
+
+            # TODO: it is a workaround, because association between name and alias is not stored anywhere.
+            # Should use a mechanism to preserve alias and name association and mark original name as
+            # used only when alias is being marked as used. Full path of code item should be used in such cases.
             if alias is not None:
                 self.add_used_name(name_and_alias.name)
 
@@ -236,7 +279,10 @@ class DeadCodeVisitor(ast.NodeVisitor):
         last_node: Optional[ast.AST] = None,
         message: str = '',
         ignore: Optional[Callable[[Path, str], bool]] = None,
+        expression_node: Optional[ast.AST] = None
     ) -> None:
+
+
         # TODO: add support for ignore_definitions, ignore_definitions_if_inherits_from options
         self._log(
             f'Options ignore_definitions, ignore_definitions_if_inherits_from not implemented yet. '
@@ -276,6 +322,8 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
         if ignored(first_lineno, type_=type_):
             self._log(f'Ignoring {type_} "{name}"')
+            # TODO: investigate the best way to ignore names.
+            self.add_used_name(name)
         else:
             collection.append(code_item)
 
@@ -412,10 +460,27 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
     def visit_Import(self, node: ast.Import) -> None:
         self._add_aliases(node)
+                
+    # TODO: investigate if usage of an import with aliased name is marked as used properly.
+    #       when item is imported, it should not be marked as used: these code items should be linked instead.
+    def visit_Import_after_visiting_child_nodes(self, node: ast.Import) -> None:
+        pass
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
         if node.module != '__future__':
             self._add_aliases(node)
+
+    # def visit_ImportFrom_after_visiting_child_nodes(self, node: ast.Import) -> None:
+    #     # TODO: there is no way to know if code items were used or not at this point.
+    #     # AST should be walked two times: first to detect which code items are unused.
+    #     # Second is to adjust unused code item fixing (AST has to be modified and reconstructed back).
+    #
+    #     # > How to get code items, which were detected for this specific node?
+    #
+    #     # Remove unused code items
+    #     # Check if import statement is valid
+    #     # Fix import statement if needed (clean it)
+    #     # Mark correct parts to be removed after fixing.
 
     def visit_Name(self, node: ast.Name) -> None:
         if isinstance(node.ctx, (ast.Load, ast.Del)) and node.id not in IGNORED_VARIABLE_NAMES:
@@ -447,8 +512,6 @@ class DeadCodeVisitor(ast.NodeVisitor):
         # I should write a unit test with only an exrepssion and check which methods are being called.
         # I should only handled that single expression handling properly.
 
-        # breakpoint()
-
         if inherits_from := self.get_inherits_from(node):
             node.inherits_from = inherits_from  # type: ignore
 
@@ -464,9 +527,10 @@ class DeadCodeVisitor(ast.NodeVisitor):
                 self.should_ignore_new_definitions = True
                 should_turn_off_ignore_new_definitions = True
 
+        # Visit node before visiting all its children
         method_name = 'visit_' + node.__class__.__name__
         visitor = getattr(self, method_name, None)
-
+        
         if visitor:
             visitor(node)
 
@@ -492,7 +556,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
             mode = 'func_type' if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) else 'eval'
             self.visit(ast.parse(type_comment, filename='<type_comment>', mode=mode))
 
-        ###########
+        # Visit node children nodes:
         # """Called if no explicit visitor function exists for a node."""
         # TODO: for assignment statements unused_code unit should be whole assignment statement instead of a name itself
         # Note: Node is None if file is empty, contains only a docstring, a comment or has a SyntaxError.
@@ -505,6 +569,14 @@ class DeadCodeVisitor(ast.NodeVisitor):
                             self.visit(item)
                 elif isinstance(value, ast.AST):
                     self.visit(value)
+
+
+        # Visit node after visiting children.
+        visit_method_name = 'visit_' + node.__class__.__name__ + '_after_visiting_child_nodes'
+        visit_method = getattr(self, visit_method_name, None)
+        if visit_method:
+            visit_method(node)
+
 
         # TODO: use decorator for this code chunk
         if should_turn_off_ignore_new_definitions:

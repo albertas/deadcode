@@ -1,0 +1,572 @@
+
+# What to do next?
+    - Merge my changes with already made changes.
+        - to fix deadcode.
+    - Should somehow report that this Python versions is no-longer supported.
+    - Create a [Draft] Pull Request with my changes with ast  fix.
+    - Add filtering out change.
+    - Add namespace detection change.
+    - Pick another feature to implement.
+
+
+
+    # Filtering strategy should go there.
+
+
+
+
+    Context manager:
+        as - not removed.
+        tests/cli_args/test_fix.py:169:
+
+    Pass not added:
+        tests/fix/test_method_def.py:24:
+        tests/cli_args/test_fix.py:467:
+        tests/cli_args/test_fix.py:440:
+        tests/cli_args/test_fix.py:268:
+
+    Empty line added, but not needed:
+        tests/cli_args/test_fix.py:498:
+        tests/cli_args/test_fix.py:116:
+        tests/cli_args/test_fix.py:169:
+        tests/cli_args/test_fix.py:229:
+
+    
+    Fixing is applied when not all files were analysed:
+        tests/fix/test_method_def.py:53:
+
+    # Also fixing should be moved to another place.
+
+
+Long term goal is to:
+    Adding Pass an indentation fixing is too hard for me. Should move this logic to AST tree modification.
+    # Should try rerendering the tree with minimal modifications to source tree.
+        # This means, that AST modification have to be applied.  Routing.
+
+    Should also add preservation of comments.
+
+
+
+
+
+AST fixing - is a nice refactoring in order to put into place, I have to:
+    # Do I have to implement not only remove, but also replace strategy?
+
+    0. Multiline removal of original, fixed code comparison should work.
+
+    1. Visitor has to work again, when all unused parts are detected.
+
+    2. All types of nodes have to have node adjustment turned-on (I have to register these three edge cases)
+        # TODO: >>>>: Lets ensure that as is removed, comma is removed and assignment cleanup is resolved properly.
+        # Removing the workarounds for now.
+
+    3. Import removal - when statement is no longer valid: 
+        Could make it automatic: AST parting exception.
+
+        In case Invalid syntax: remove whole expression.
+            # Potentially edge cases are important.
+
+    4. Multiline removal - could also have modifications on the same line.
+        # Not sure how possible is that.
+
+    5. Maybe add more tests with code samples?
+
+
+
+
+
+
+
+# The --only option implementation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # Detect failure reasons:
+        # pass is not put where it supposed to be.
+
+
+    
+
+
+    # The issue is that used_names are not registered.
+    # Because those names are ignore that way.
+        # Ignore names: not in used
+        # Register those names as used.
+
+
+
+    # What should I do with unneeded noqa comment?
+    # Should detect these comments as part of code.
+        # Lets add noqa removal -
+
+
+
+    # Add fix for assignment operations.
+
+    #>>> Investigate why it is not removed, when it is detected as unused.
+    # So that import is actually not used.
+        #>  (what can I do about it)?
+
+
+
+
+    # If there are characters in the begining of the block removal.
+        Then do not mark this as block was removed.
+        # Should add a flag: 
+
+
+
+
+
+
+
+
+
+    [2024-07-08]
+    # Figure out where the line 5 goes?
+
+
+    7 [(0, 'from spam import (\n'),          
+    6  (1, '    foo as foo_alias,\n'), 
+    5  (2, '    bar as bar_alias,\n'),                       
+    4  (3, '    eggs as eggs_alias,\n'),                                                                                                                 
+    3  (4, ')\n'),                          
+    2  (5, '\n'),                                                                                                                                        
+    1  (6, 'print(bar_alias)\n')]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # Lets fix all the tests one by one.
+        # Empty line is not preserved after removing a block.
+
+
+    # Why the last line is now messed up and the asserts do not work?
+        # >>
+
+
+
+    # Fix_indent now messes up empty lines,
+    # And comparison do not work anymore.
+        # Question is: what to do next?
+        # Fix fix_indent: write a test for it as well.
+
+
+
+
+
+
+
+    # Investigate, where do the empty lines go?
+        # Did I mess up the writing algorithm?
+
+
+
+
+
+
+
+    # Add a test for merge parts method:
+           Part(line_start=1, line_end=3, col_start=17, col_end=4)
+           Part(line_start=2, line_end=2, col_start=4, col_end=20)
+           Part(line_start=3, line_end=5, col_start=20, col_end=2)
+           Part(line_start=4, line_end=4, col_start=4, col_end=22)
+
+           Part(line_start=1, line_end=3, col_start=17, col_end=4) 
+           Part(line_start=4, line_end=4, col_start=4, col_end=22) 
+
+
+
+
+
+
+    > This is what is used during removal:
+        [Part(line_start=1, line_end=3, col_start=17, col_end=4), Part(line_start=4, line_end=4, col_start=4, col_end=22)]
+
+        Lets print actual parts, which I get.
+        [Part(line_start=1, line_end=3, col_start=17, col_end=4), Part(line_start=3, line_end=5, col_start=20, col_end=2)]
+
+
+    # Fix this bug for.
+        # Before part merging and after: see what is happening.
+
+
+    # The parts get.
+
+
+
+
+
+[2024-07-06] For 2.4.0 version:
+So it seems that coordinates provided are incorrect.
+    > Lets once again confirm, that unused file code parts are provided correctly.
+
+    > Could write a test for the newly created method.
+
+
+# Merging of code parts is not working properly:
+
+
+
+
+
+AST fixing - is a nice refactoring in order to put into place, I have to:
+
+    # Do I have to implement not only remove, but also replace strategy?
+
+
+    0. Multiline removal of original, fixed code comparison should work.
+
+    1. Visitor has to work again, when all unused parts are detected.
+
+    2. All types of nodes have to have node adjustment turned-on (I have to register these three edge cases)
+        # TODO: >>>>: Lets ensure that as is removed, comma is removed and assignment cleanup is resolved properly.
+        # Removing the workarounds for now.
+
+    3. Import removal - when statement is no longer valid: 
+        Could make it automatic: AST parting exception.
+
+        In case Invalid syntax: remove whole expression.
+            # Potentially edge cases are important.
+
+    4. Multiline removal - could also have modifications on the same line.
+        # Not sure how possible is that.
+
+    5. Maybe add more tests with code samples?
+
+
+
+# The --only option implementation.
+
+
+
+# Python 3.8 dropping.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Old notes:
+
+Tomorrow: Make transcript of my talk. Just to be able to practice it.
+
+
+This is what I have to do next:
+
+
+
+Lets build a utility, which has a diff:
+    original_code = "from file1 import foo, eggs, bar as spam"
+    fixed_code = "from file1 import eggs"
+
+Find a diff ignoring white spaces and brackets:
+
+
+Find character positions, which have to be removed: and create a CodeItem with those parts. 
+
+
+
+
+
+
+
+
+
+    Lets finish the import and assignment fix.
+        > 
+
+    Make a list of books with categories and review all the recommendations.
+        > 
+
+
+
+    # What can I tell?
+
+
+
+
+
+
+what can I tell you about my new keyboard?
+Well its still working and it is not so loud.
+Key click road has reduced, but I would not say that its worse. It still works quite well.
+Yes, this is my new keyboard feeling and I guess its ok, I am quite fine with how it works.
+
+
+
+    Make a list of books with categories and review all the recommendations.
+        > 
+
+
+So it works!
+Great job!
+
+
+
+
+
+
+
+
+
+
+
+######################################
+
+from difflib import ndiff, SequenceMatcher
+
+
+def get_chars_to_remove(original_code, fixed_code):
+    """Return list of character positions, which have to be removed from the original code to get the first one.
+    So that this could be applied with Code part removal algorithm.
+    """
+    # Find a diff ignoring white spaces and brackets:
+    # Find character positions, which have to be removed: and create a CodeItem with those parts. 
+    #
+    # TODO: This strategy could be applied for all the partially removable code items.
+    #   Without reformatting the subnodes (code block)
+
+    s = SequenceMatcher(None, original_code, fixed_code)
+
+    for tag, i1, i2, j1, j2 in s.get_opcodes():
+
+        print('{:7}   a[{}:{}] --> b[{}:{}] {!r:>8} --> {!r}'.format(
+            tag, i1, i2, j1, j2, original_code[i1:i2], fixed_code[j1:j2]))
+    # diff = ndiff()
+
+    # breakpoint()
+    # return 
+
+
+original_code = "from file1 import foo, eggs, bar as spam"
+fixed_code = "from file1 import eggs"
+
+print(get_chars_to_remove(original_code, fixed_code))
+
+
+
+
+
+
+
+#### TODO: use SequenceMatcher for CodeParts.
+## Idea: should introduce all modifiers to CodePart method.
+## So that It would be possible to apply any modifications to the source file.
+#### Question is: is it possible to use SequenceMathcher to store these changes and is it possible to apply
+#### Overlapping changes to the source string.
+## Lets create a Proof of Concept for it.
+
+
+
+
+
+
+
+[2024-06-24]
+
+Run import test. 
+
+
+
+For import node make sure that these methods are being called:
+
+After walking a node:
+  If node is only partially unused:
+    Modify the node, which is being walked.
+    Render the node.
+    Find the diff between original and modified nodes.
+    Save the unused parts: so that those get removed during rendering.
+
+
+
+
+
+
+
+
+[2024-06-24]
+    Old remarks:
+
+    # TODO: this method should be simplified by splitting into multiple helper functions with defined interface.
+    #
+    # Lets define a protocol.
+    #   >> What protocol parts could be extracted?
+    #
+    #   >> Code rendering is now made in inline, but I should make in chunks.
+    #       # Iterate character by character and remember the original altered expression.
+    #       # Render the chunk only after the expression ended.
+    #       # How should I track possitions of expressions?
+    #
+    #
+    #   Lets try adding expression part detection without on top of this code block.
+    #
+    # Is file parts necesseary here?  Cose those are merged code pieces.
+    # How this method should work, when those file pieces are available?
+    #
+
+
+    # Go through characters and mark, when they are in particular code item.
+    # Problem is that code items are overlapping - a piece of code might belong to several expressions.
+
+
+    # When a character is entered: could retrieve 
+
+    # This writing to file should be like AST reading as well.
+    #  How could it be implemented:  r
+
+    # How could retrieval of code items be implemented?
+
+    # Protocol is clear:
+    #  after finding each code item in a file, we should save their coordinates.
+    #  When cleaning up the file, we should identify those code items and apply fixing for them.
+    #
+    #  If I got unused code parts here?
+    #   what should I do?
+    #
+    # Lets find something interesting.
+    #
+    # Semantic analysis should be applied here as well, based on AST node type.
+    # How could it be done: receive file content and unused code items, which have whole item elements.
+    #
+    # Yea that seems right, but how to implement it properly?
+    
+    #   I should know what expressions are being rendered.
+    #       But expressions are not by line.
+    #
+    # Could just simple flags be used instead? Like import has started, import has eneded?
+    #   it would do the job, but 
+
+
+    # Could rendered AST be dumpped to a file?
+        # Like I have parsed a file and what else?
+
+
+    # How should new interface look like?
+
+
+    # How AST awareness could be preserved during dumping of code?
+
+    # How should move through the lines of content?
+[2024-06-24]
+
+
+
+
+So this is the function, which imagine of:
+
+    # Code has to be understandable.
+
+    def fix_cleaned_code(original, cleaned):
+        """
+        This method gets original and cleaned expressions
+        the cleaned expression can be invalid, but it.
+        """
+
+        Based on expression type the method could be cleaned differently.
+        # This method should encompass all the fixes for all the possible expressions.
+        # This method should be tested with unit tests.
+
+        pass
+
+
+
+# So can I pull it off?
+    # The method is 
+
+
+
+
+
+
+
+
+
+
+
+
+[2024-06-20]
+##########################################################################
+
+
+
+> Make sure tests works.
+
+
+PEP for fixing code items after its clean up should be written.
+    > What can I do:
+
+
+
+
+Make it work. Start with registered issues.
+    > Make imports work.
+
+
+
+Run it on Django project. To see if I find something useful.
+
+
+Expression should be: 
+    Whole expression should be tracked.
+    Issue is to track back the 
+
+
+
+

@@ -1,0 +1,1115 @@
+.venv/bin/pytest -vv 
+============================= test session starts ==============================
+platform linux -- Python 3.8.10, pytest-8.1.1, pluggy-1.4.0 -- /home/niekas/tools/deadcode/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/niekas/tools/deadcode
+configfile: pyproject.toml
+plugins: anyio-4.3.0, cov-5.0.0
+collecting ... collected 130 items
+
+modernpackage/tests/test_main.py::TestMain::test_main_success PASSED     [  0%]
+tests/actions/test_find_python_filenames.py::TestFindPythonFilenames::test_exclude_directories PASSED [  1%]
+tests/actions/test_find_python_filenames.py::TestFindPythonFilenames::test_exclude_files PASSED [  2%]
+tests/actions/test_find_python_filenames.py::TestFindPythonFilenames::test_file_detection PASSED [  3%]
+tests/actions/test_find_python_filenames.py::TestFindPythonFilenames::test_provided_path_does_not_exist PASSED [  3%]
+tests/actions/test_merge_overlaping_file_parts.py::TestMergeOverlapingFileParts::test_no_overlaping_parts PASSED [  4%]
+tests/actions/test_merge_overlaping_file_parts.py::TestMergeOverlapingFileParts::test_overlaping_lines PASSED [  5%]
+tests/actions/test_merge_overlaping_file_parts.py::TestDoesOverlap::test_does_overlap PASSED [  6%]
+tests/actions/test_merge_overlaping_file_parts.py::TestMergeParts::test_merge_parts PASSED [  6%]
+tests/cli_args/test_dry.py::TestDryCliOption::test_all_files_are_reported_if_no_filenames_are_provided_for_dry_option PASSED [  7%]
+tests/cli_args/test_dry.py::TestDryCliOption::test_coloring_of_a_diff PASSED [  8%]
+tests/cli_args/test_dry.py::TestDryCliOption::test_file_is_not_modified_if_fix_option_is_used_with_dry PASSED [  9%]
+tests/cli_args/test_dry.py::TestDryCliOption::test_no_diff_is_shown_if_dry_option_filenames_are_incorrect PASSED [ 10%]
+tests/cli_args/test_dry.py::TestDryCliOption::test_only_provided_filenames_to_dry_option_are_reported PASSED [ 10%]
+tests/cli_args/test_dry.py::TestDryCliOption::test_pattern_usage_for_filenames_provided_to_dry_option PASSED [ 11%]
+tests/cli_args/test_dry.py::TestDryCliOption::test_unused_class_was_reported_to_be_removed PASSED [ 12%]
+tests/cli_args/test_exclude.py::TestExcludeCliArgUnit::test_exclude_directories PASSED [ 13%]
+tests/cli_args/test_exclude.py::TestExcludeCliArgUnit::test_exclude_files PASSED [ 13%]
+tests/cli_args/test_fix.py::TestFixCliOption::test_empty_lines_are_removed_properly PASSED [ 14%]
+tests/cli_args/test_fix.py::TestFixCliOption::test_empty_lines_are_removed_properly_indented PASSED [ 15%]
+tests/cli_args/test_fix.py::TestFixCliOption::test_function_removal PASSED [ 16%]
+tests/cli_args/test_fix.py::TestFixCliOption::test_function_removal_in_the_middle PASSED [ 16%]
+tests/cli_args/test_fix.py::TestFixCliOption::test_function_removal_of_several_items PASSED [ 17%]
+tests/cli_args/test_fix.py::TestFixCliOption::test_unused_class_was_removed PASSED [ 18%]
+tests/cli_args/test_fix.py::TestAddPassForEmptyBlock::test_empty_block_is_at_the_end_of_file PASSED [ 19%]
+tests/cli_args/test_fix.py::TestAddPassForEmptyBlock::test_empty_class_block PASSED [ 20%]
+tests/cli_args/test_fix.py::TestAddPassForEmptyBlock::test_empty_function_block PASSED [ 20%]
+tests/cli_args/test_fix.py::TestAddPassForEmptyBlock::test_empty_if_else_block PASSED [ 21%]
+tests/cli_args/test_fix.py::TestAddPassForEmptyBlock::test_empty_if_main_block PASSED [ 22%]
+tests/cli_args/test_fix.py::TestAddPassForEmptyBlock::test_empty_if_statement_else_block SKIPPED [ 23%]
+tests/cli_args/test_fix.py::TestAddPassForEmptyBlock::test_empty_with_block PASSED [ 23%]
+tests/cli_args/test_fix.py::TestAddPassForEmptyBlock::test_if_is_not_fixed_correctly_when_branch_is_unreachable SKIPPED [ 24%]
+tests/cli_args/test_fix.py::TestAddPassForEmptyBlock::test_some_code_follows_empty_block PASSED [ 25%]
+tests/cli_args/test_fix.py::TestKeepCorrectNumberOfEmptyLinesAfterRemovalOfCodeBlock::test_assignment PASSED [ 26%]
+tests/cli_args/test_fix.py::TestKeepCorrectNumberOfEmptyLinesAfterRemovalOfCodeBlock::test_space_is_kept_after_whole_class_block_removal PASSED [ 26%]
+tests/cli_args/test_fix.py::TestKeepCorrectNumberOfEmptyLinesAfterRemovalOfCodeBlock::test_two_spaces_are_kept_after_one_method_removal PASSED [ 27%]
+tests/cli_args/test_fix.py::TestKeepCorrectNumberOfEmptyLinesAfterRemovalOfCodeBlock::test_two_spaces_are_kept_after_whole_class_block_removal PASSED [ 28%]
+tests/cli_args/test_ignore_bodies_if_inherits_from.py::TestIgnoreDefinitionIfInheritsFrom::test_ignore_class_definition_if_inherits_from_base_class PASSED [ 29%]
+tests/cli_args/test_ignore_definitions.py::TestIgnoreDefinitionsByPattern::test_ignore_class_definition PASSED [ 30%]
+tests/cli_args/test_ignore_definitions.py::TestIgnoreDefinitionsByPattern::test_ignore_class_definition_another_class_is_detected PASSED [ 30%]
+tests/cli_args/test_ignore_definitions.py::TestIgnoreDefinitionsByPattern::test_ignore_class_definition_matched_by_pattern PASSED [ 31%]
+tests/cli_args/test_ignore_definitions_if_inherits_from.py::TestIgnoreDefinitionIfInheritsFrom::test_ignore_class_definition_if_inherits_from_base_class PASSED [ 32%]
+tests/cli_args/test_ignore_definitions_if_inherits_from.py::TestIgnoreDefinitionIfInheritsFrom::test_ignore_class_definition_if_inherits_from_multiple_classes SKIPPED [ 33%]
+tests/cli_args/test_ignore_names.py::IgnoreNamesByPatternTests::test_ignore_names_matched_by_dot_regexp_pattern PASSED [ 33%]
+tests/cli_args/test_ignore_names.py::IgnoreNamesByPatternTests::test_ignore_names_matched_by_word_and_group_regexp_patterns PASSED [ 34%]
+tests/cli_args/test_ignore_names.py::IgnoreNamesByPatternTests::test_ignore_names_matched_exactly PASSED [ 35%]
+tests/cli_args/test_parsing.py::CommandLineArgParsingTests::test_calling_with_dry PASSED [ 36%]
+tests/cli_args/test_parsing.py::CommandLineArgParsingTests::test_calling_with_exclude PASSED [ 36%]
+tests/cli_args/test_parsing.py::CommandLineArgParsingTests::test_calling_with_fix PASSED [ 37%]
+tests/cli_args/test_parsing.py::CommandLineArgParsingTests::test_calling_with_fix_and_dry PASSED [ 38%]
+tests/cli_args/test_parsing.py::CommandLineArgParsingTests::test_calling_with_no_color_option PASSED [ 39%]
+tests/cli_args/test_parsing.py::CommandLineArgParsingTests::test_calling_with_one_paths_argument PASSED [ 40%]
+tests/cli_args/test_parsing.py::CommandLineArgParsingTests::test_calling_with_several_exclude_options PASSED [ 40%]
+tests/cli_args/test_parsing.py::CommandLineArgParsingTests::test_calling_with_several_paths_argument PASSED [ 41%]
+tests/cli_args/test_parsing.py::CommandLineArgParsingTests::test_calling_with_single_dry_filename PASSED [ 42%]
+tests/cli_args/test_parsing.py::CommandLineArgParsingTests::test_calling_with_two_dry_filenames PASSED [ 43%]
+tests/cli_args/test_parsing.py::CommandLineArgParsingTests::test_ignore_names_and_ignore_files_command_line_argument_parsing PASSED [ 43%]
+tests/cli_args/test_parsing.py::CommandLineArgParsingTests::test_verbose_flag_is_on_using_long_name PASSED [ 44%]
+tests/cli_args/test_parsing.py::CommandLineArgParsingTests::test_verbose_flag_is_on_using_short_name PASSED [ 45%]
+tests/code_item/test_code_item.py::TestCodeItem::test_code_item_comparison_with_a_string PASSED [ 46%]
+tests/code_item/test_code_item.py::TestCodeItem::test_code_item_retrieval_from_dictionary_by_its_name PASSED [ 46%]
+tests/fix/test_assign.py::TestAssignmentExpressionRemoval::test_all_unused_variables_in_multiple_inline_assignment SKIPPED [ 47%]
+tests/fix/test_assign.py::TestAssignmentExpressionRemoval::test_multiple_unused_variables_in_multiple_inline_assignment SKIPPED [ 48%]
+tests/fix/test_assign.py::TestAssignmentExpressionRemoval::test_unused_variable_in_multiple_inline_assignment_end SKIPPED [ 49%]
+tests/fix/test_assign.py::TestAssignmentExpressionRemoval::test_unused_variable_in_multiple_inline_assignment_middle SKIPPED [ 50%]
+tests/fix/test_assign.py::TestAssignmentExpressionRemoval::test_unused_variable_in_multiple_inline_assignment_start SKIPPED [ 50%]
+tests/fix/test_assign.py::TestAssignmentExpressionRemoval::test_variable PASSED [ 51%]
+tests/fix/test_assign.py::TestAssignmentExpressionRemoval::test_variable_with_type_hint SKIPPED [ 52%]
+tests/fix/test_class_def.py::TestClassDefRemoval::test_class_def PASSED  [ 53%]
+tests/fix/test_class_def.py::TestClassDefRemoval::test_class_def__ PASSED [ 53%]
+tests/fix/test_class_def.py::TestClassDefRemoval::test_class_def_and_method_def PASSED [ 54%]
+tests/fix/test_class_def.py::TestClassDefRemoval::test_definition_imported_from_other_file SKIPPED [ 55%]
+tests/fix/test_class_def.py::TestClassDefRemoval::test_methods_with_the_same_name SKIPPED [ 56%]
+tests/fix/test_empty_files.py::TestAssignmentExpressionRemoval::test_file_removal PASSED [ 56%]
+tests/fix/test_empty_files.py::TestAssignmentExpressionRemoval::test_file_removal_from_subpath PASSED [ 57%]
+tests/fix/test_method_def.py::TestUnusedMethodRemoval::test_method PASSED [ 58%]
+tests/fix/test_method_def.py::TestUnusedMethodRemoval::test_method_at_the_end_of_file PASSED [ 59%]
+tests/fix/test_unreachable_code.py::TestUnreachableCodeIsNotRemoved::test_else_is_not_changed_when_condition_is_false PASSED [ 60%]
+tests/fix/test_unreachable_code.py::TestUnreachableCodeIsNotRemoved::test_else_is_not_changed_when_condition_is_true PASSED [ 60%]
+tests/fix/test_unreachable_code.py::TestUnreachableCodeIsNotRemoved::test_while_is_not_changed_when_condition_is_false PASSED [ 61%]
+tests/fix/test_unreachable_code.py::TestUnreachableCodeIsNotRemoved::test_while_is_not_changed_when_condition_is_true PASSED [ 62%]
+tests/nested_scope/test_nested_scope.py::TestScopeTracking::test_class_and_its_method_should_be_in_scope PASSED [ 63%]
+tests/nested_scope/test_nested_scope.py::TestScopeTracking::test_class_should_be_in_scope PASSED [ 63%]
+tests/nested_scope/test_nested_scope.py::TestScopeTracking::test_multi_parent_inheritance_should_be_tracked PASSED [ 64%]
+tests/nested_scope/test_nested_scope.py::TestScopeTracking::test_name_is_overriden PASSED [ 65%]
+tests/nested_scope/test_nested_scope.py::TestScopeTracking::test_scope_update_for_method_call_expression SKIPPED [ 66%]
+tests/nested_scope/test_nested_scope.py::TestScopeTracking::test_take_parent_scopes_into_consideration_when_searching_for_definition PASSED [ 66%]
+tests/nested_scope/test_nested_scope.py::TestScopeTracking::test_type_tracking_for_function_arguments SKIPPED [ 67%]
+tests/noqa/test_noqa_comments.py::TestNoqaComments::test_commented_out_code PASSED [ 68%]
+tests/noqa/test_noqa_comments.py::TestNoqaComments::test_empty_file PASSED [ 69%]
+tests/noqa/test_noqa_comments.py::TestNoqaComments::test_ignore_expression SKIPPED [ 70%]
+tests/noqa/test_noqa_comments.py::TestNoqaComments::test_noqa_all PASSED [ 70%]
+tests/noqa/test_noqa_comments.py::TestNoqaComments::test_unreachable_code SKIPPED [ 71%]
+tests/noqa/test_noqa_comments.py::TestNoqaComments::test_unused_attribute SKIPPED [ 72%]
+tests/noqa/test_noqa_comments.py::TestNoqaComments::test_unused_class_is_unchanged_if_noqa_comment_is_provided PASSED [ 73%]
+tests/noqa/test_noqa_comments.py::TestNoqaComments::test_unused_function PASSED [ 73%]
+tests/noqa/test_noqa_comments.py::TestNoqaComments::test_unused_import PASSED [ 74%]
+tests/noqa/test_noqa_comments.py::TestNoqaComments::test_unused_method PASSED [ 75%]
+tests/noqa/test_noqa_comments.py::TestNoqaComments::test_unused_name SKIPPED [ 76%]
+tests/noqa/test_noqa_comments.py::TestNoqaComments::test_unused_property SKIPPED [ 76%]
+tests/noqa/test_noqa_comments.py::TestNoqaComments::test_unused_variable PASSED [ 77%]
+tests/noqa/test_noqa_comments.py::TestNoqaComments::test_unused_variable_but_wrong_noqa_specified PASSED [ 78%]
+tests/test_deadcode.py::DeadCodeIntegrationTests::test_run_dead_code_finder_with_a_subprocess_in_a_right_directory_main PASSED [ 79%]
+tests/test_deadcode.py::DeadCodeIntegrationTests::test_unused_class_name_found PASSED [ 80%]
+tests/test_deadcode.py::DeadCodeIntegrationTests::test_unused_function_name_found PASSED [ 80%]
+tests/test_deadcode.py::DeadCodeIntegrationTests::test_unused_variable_name_found_successfully PASSED [ 81%]
+tests/test_deadcode.py::DeadCodeTests::test_invalid_python_file_found PASSED [ 82%]
+tests/test_imports.py::RelativeImportTests::test_exclude_option PASSED   [ 83%]
+tests/test_imports.py::RelativeImportTests::test_file_contains_syntax_error PASSED [ 83%]
+tests/test_imports.py::RelativeImportTests::test_ignore_names_in_files_option PASSED [ 84%]
+tests/test_imports.py::RelativeImportTests::test_ignore_variable_names_in_comments PASSED [ 85%]
+tests/test_imports.py::RelativeImportTests::test_ignore_variable_names_in_strings PASSED [ 86%]
+tests/test_imports.py::RelativeImportTests::test_module_imported_and_var_from_it_is_used PASSED [ 86%]
+tests/test_imports.py::RelativeImportTests::test_module_imported_with_alias_and_var_from_it_is_used PASSED [ 87%]
+tests/test_imports.py::RelativeImportTests::test_relative_module_imports PASSED [ 88%]
+tests/test_imports.py::RelativeImportTests::test_unused_names_found_in_subdirectories PASSED [ 89%]
+tests/test_imports.py::RelativeImportTests::test_variable_is_imported_as_an_alias_but_unused PASSED [ 90%]
+tests/test_imports.py::RelativeImportTests::test_variable_is_used_if_its_imported_as_a_different_name PASSED [ 90%]
+tests/test_line_number_detection.py::DetectLineNumbersOfExpressionsTests::test_parse_class_names_from_files PASSED [ 91%]
+tests/test_line_number_detection.py::DetectLineNumbersOfExpressionsTests::test_parse_function_names_from_files PASSED [ 92%]
+tests/test_line_number_detection.py::DetectLineNumbersOfExpressionsTests::test_parse_lambda_function_names_from_files PASSED [ 93%]
+tests/test_line_number_detection.py::DetectLineNumbersOfExpressionsTests::test_parse_variable_names_from_files PASSED [ 93%]
+tests/test_output.py::TestCountOptionOutput::test_count_several_classes PASSED [ 94%]
+tests/test_output.py::TestCountOptionOutput::test_count_variables_function_and_class PASSED [ 95%]
+tests/test_output.py::TestQuietOptionOutput::test_count_several_classes PASSED [ 96%]
+tests/test_output.py::TestQuietOptionOutput::test_count_variables_function_and_class PASSED [ 96%]
+tests/test_output.py::TestVerboseOutput::test_colorful_output PASSED     [ 97%]
+tests/test_output.py::TestVerboseOutput::test_no_color_option PASSED     [ 98%]
+tests/utils/test_add_colors_to_diff.py::TestAddColorsToDiff::test_add_colors_to_diff PASSED [ 99%]
+tests/utils/test_fix_indent.py::TestCleandoc::test_indentation_is_not_removed_from_second_line PASSED [100%]
+
+---------- coverage: platform linux, python 3.8.10-final-0 -----------
+Name                                                         Stmts   Miss  Cover
+--------------------------------------------------------------------------------
+call_arg_map_to_parameters_poc.py                                8      8     0%
+deadcode/__init__.py                                             0      0   100%
+deadcode/actions/__init__.py                                     0      0   100%
+deadcode/actions/find_python_filenames.py                       25      4    84%
+deadcode/actions/find_unused_names.py                            9      0   100%
+deadcode/actions/fix_or_show_unused_code.py                     38      0   100%
+deadcode/actions/get_unused_names_error_message.py              24      0   100%
+deadcode/actions/merge_overlaping_file_parts.py                 57      2    96%
+deadcode/actions/parse_abstract_syntax_tree.py                   9      0   100%
+deadcode/actions/parse_arguments.py                             54      3    94%
+deadcode/actions/remove_file_parts_from_content.py              83      3    96%
+deadcode/cli.py                                                 20      1    95%
+deadcode/constants.py                                            4      0   100%
+deadcode/data_types.py                                          34      0   100%
+deadcode/utils/__init__.py                                       0      0   100%
+deadcode/utils/add_colors_to_diff.py                            10      0   100%
+deadcode/utils/base_test_case.py                                50      3    94%
+deadcode/utils/fix_indent.py                                    21      2    90%
+deadcode/utils/flatten_lists.py                                 10      1    90%
+deadcode/utils/nested_scopes.py                                 32      1    97%
+deadcode/utils/print_ast.py                                      3      1    67%
+deadcode/visitor/__init__.py                                     0      0   100%
+deadcode/visitor/code_item.py                                   41      3    93%
+deadcode/visitor/dead_code_visitor.py                          269     47    83%
+deadcode/visitor/ignore.py                                      35      0   100%
+deadcode/visitor/lines.py                                       34      4    88%
+deadcode/visitor/noqa.py                                        18      0   100%
+deadcode/visitor/utils.py                                       48     15    69%
+modernpackage/modernpackage/__init__.py                          0      0   100%
+modernpackage/modernpackage/main.py                              2      0   100%
+modernpackage/tests/__init__.py                                  0      0   100%
+modernpackage/tests/test_main.py                                 4      0   100%
+tests/actions/test_find_python_filenames.py                     28      0   100%
+tests/actions/test_merge_overlaping_file_parts.py               31      0   100%
+tests/cli_args/test_count.py                                     0      0   100%
+tests/cli_args/test_dry.py                                      39      0   100%
+tests/cli_args/test_exclude.py                                  19      0   100%
+tests/cli_args/test_fix.py                                      84      6    93%
+tests/cli_args/test_ignore_bodies_if_inherits_from.py            8      0   100%
+tests/cli_args/test_ignore_definitions.py                       18      0   100%
+tests/cli_args/test_ignore_definitions_if_inherits_from.py      15      4    73%
+tests/cli_args/test_ignore_names.py                             15      0   100%
+tests/cli_args/test_ignore_names_in_files.py                     0      0   100%
+tests/cli_args/test_no_color.py                                  0      0   100%
+tests/cli_args/test_parsing.py                                  86      0   100%
+tests/cli_args/test_quiet.py                                     0      0   100%
+tests/cli_args/test_verbose.py                                   0      0   100%
+tests/code_item/test_code_item.py                               12      0   100%
+tests/fix/test_assign.py                                        30      9    70%
+tests/fix/test_class_def.py                                     29      8    72%
+tests/fix/test_empty_files.py                                   13      0   100%
+tests/fix/test_method_def.py                                    11      0   100%
+tests/fix/test_scope.py                                         53     36    32%
+tests/fix/test_unreachable_code.py                              23      0   100%
+tests/nested_scope/test_nested_scope.py                         39      8    79%
+tests/noqa/test_noqa_comments.py                                79     20    75%
+tests/test_accurate_usage_detection.py                          10      4    60%
+tests/test_deadcode.py                                          21      0   100%
+tests/test_imports.py                                           44      0   100%
+tests/test_line_number_detection.py                             19      0   100%
+tests/test_output.py                                            29      0   100%
+tests/test_variable_parsing_from_ast_dump.py                     3      0   100%
+tests/utils/test_add_colors_to_diff.py                           8      0   100%
+tests/utils/test_fix_indent.py                                   7      0   100%
+--------------------------------------------------------------------------------
+TOTAL                                                         1715    193    89%
+
+Required test coverage of 88.0% reached. Total coverage: 88.75%
+
+======================= 112 passed, 18 skipped in 1.60s ========================
+.venv/bin/ruff check deadcode tests
+deadcode/__init__.py:1:1: D104 Missing docstring in public package
+deadcode/actions/__init__.py:1:1: D104 Missing docstring in public package
+deadcode/actions/find_python_filenames.py:1:1: D100 Missing docstring in public module
+deadcode/actions/find_python_filenames.py:1:1: I001 [*] Import block is un-sorted or un-formatted
+deadcode/actions/find_python_filenames.py:11:5: D103 Missing docstring in public function
+deadcode/actions/find_python_filenames.py:11:42: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/actions/find_python_filenames.py:13:12: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/actions/find_python_filenames.py:19:29: G004 Logging statement uses f-string
+deadcode/actions/find_python_filenames.py:25:22: C411 Unnecessary `list` call (remove the outer call to `list()`)
+deadcode/actions/find_python_filenames.py:27:15: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/actions/find_python_filenames.py:27:15: TD003 Missing issue link on the line following this TODO
+deadcode/actions/find_python_filenames.py:27:15: FIX002 Line contains TODO, consider resolving the issue
+deadcode/actions/find_python_filenames.py:29:26: G004 Logging statement uses f-string
+deadcode/actions/find_python_filenames.py:33:21: G004 Logging statement uses f-string
+deadcode/actions/find_python_filenames.py:42:3: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/actions/find_python_filenames.py:42:3: TD003 Missing issue link on the line following this TODO
+deadcode/actions/find_python_filenames.py:42:3: FIX002 Line contains TODO, consider resolving the issue
+deadcode/actions/find_python_filenames.py:46:5: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/actions/find_python_filenames.py:46:5: TD003 Missing issue link on the line following this TODO
+deadcode/actions/find_python_filenames.py:46:5: FIX002 Line contains TODO, consider resolving the issue
+deadcode/actions/find_unused_names.py:1:1: D100 Missing docstring in public module
+deadcode/actions/find_unused_names.py:1:1: I001 [*] Import block is un-sorted or un-formatted
+deadcode/actions/find_unused_names.py:8:5: D103 Missing docstring in public function
+deadcode/actions/find_unused_names.py:9:16: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/actions/find_unused_names.py:15:12: RET504 Unnecessary assignment to `unused_code_items` before `return` statement
+deadcode/actions/fix_or_show_unused_code.py:1:1: D100 Missing docstring in public module
+deadcode/actions/fix_or_show_unused_code.py:1:1: I001 [*] Import block is un-sorted or un-formatted
+deadcode/actions/fix_or_show_unused_code.py:15:5: D103 Missing docstring in public function
+deadcode/actions/fix_or_show_unused_code.py:22:7: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/actions/fix_or_show_unused_code.py:22:7: TD003 Missing issue link on the line following this TODO
+deadcode/actions/fix_or_show_unused_code.py:22:7: FIX002 Line contains TODO, consider resolving the issue
+deadcode/actions/fix_or_show_unused_code.py:35:14: PTH123 `open()` should be replaced by `Path.open()`
+deadcode/actions/fix_or_show_unused_code.py:42:22: UP015 [*] Unnecessary open mode parameters
+deadcode/actions/fix_or_show_unused_code.py:42:22: PTH123 `open()` should be replaced by `Path.open()`
+deadcode/actions/fix_or_show_unused_code.py:44:23: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/actions/fix_or_show_unused_code.py:44:23: TD003 Missing issue link on the line following this TODO
+deadcode/actions/fix_or_show_unused_code.py:44:23: FIX002 Line contains TODO, consider resolving the issue
+deadcode/actions/fix_or_show_unused_code.py:52:22: PTH123 `open()` should be replaced by `Path.open()`
+deadcode/actions/fix_or_show_unused_code.py:53:23: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/actions/fix_or_show_unused_code.py:53:23: TD003 Missing issue link on the line following this TODO
+deadcode/actions/fix_or_show_unused_code.py:53:23: FIX002 Line contains TODO, consider resolving the issue
+deadcode/actions/fix_or_show_unused_code.py:56:13: PTH107 `os.remove()` should be replaced by `Path.unlink()`
+deadcode/actions/fix_or_show_unused_code.py:62:7: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/actions/fix_or_show_unused_code.py:62:7: TD003 Missing issue link on the line following this TODO
+deadcode/actions/fix_or_show_unused_code.py:62:7: FIX002 Line contains TODO, consider resolving the issue
+deadcode/actions/get_unused_names_error_message.py:1:1: D100 Missing docstring in public module
+deadcode/actions/get_unused_names_error_message.py:7:5: D103 Missing docstring in public function
+deadcode/actions/get_unused_names_error_message.py:7:85: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/actions/merge_overlaping_file_parts.py:1:1: D100 Missing docstring in public module
+deadcode/actions/merge_overlaping_file_parts.py:1:1: I001 [*] Import block is un-sorted or un-formatted
+deadcode/actions/merge_overlaping_file_parts.py:5:5: D103 Missing docstring in public function
+deadcode/actions/merge_overlaping_file_parts.py:11:50: PLR0124 Name compared with itself, consider replacing `line_end_b == line_end_b`
+deadcode/actions/merge_overlaping_file_parts.py:18:58: FA100 Missing `from __future__ import annotations`, but uses `typing.Tuple`
+deadcode/actions/merge_overlaping_file_parts.py:19:5: D401 First line of docstring should be in imperative mood: "Returns code part which begins first following by another code part."
+deadcode/actions/merge_overlaping_file_parts.py:20:7: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/actions/merge_overlaping_file_parts.py:20:7: TD003 Missing issue link on the line following this TODO
+deadcode/actions/merge_overlaping_file_parts.py:20:7: FIX002 Line contains TODO, consider resolving the issue
+deadcode/actions/merge_overlaping_file_parts.py:30:5: D103 Missing docstring in public function
+deadcode/actions/merge_overlaping_file_parts.py:43:5: D103 Missing docstring in public function
+deadcode/actions/merge_overlaping_file_parts.py:43:40: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/actions/merge_overlaping_file_parts.py:66:5: D103 Missing docstring in public function
+deadcode/actions/merge_overlaping_file_parts.py:66:56: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/actions/merge_overlaping_file_parts.py:66:71: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/actions/merge_overlaping_file_parts.py:69:32: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/actions/parse_abstract_syntax_tree.py:1:1: I001 [*] Import block is un-sorted or un-formatted
+deadcode/actions/parse_abstract_syntax_tree.py:1:1: D100 Missing docstring in public module
+deadcode/actions/parse_abstract_syntax_tree.py:7:5: D400 First line should end with a period
+deadcode/actions/parse_abstract_syntax_tree.py:7:5: D415 First line should end with a period, question mark, or exclamation point
+deadcode/actions/parse_abstract_syntax_tree.py:12:13: T201 `print` found
+deadcode/actions/parse_arguments.py:1:1: D100 Missing docstring in public module
+deadcode/actions/parse_arguments.py:1:1: I001 [*] Import block is un-sorted or un-formatted
+deadcode/actions/parse_arguments.py:15:27: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/actions/parse_arguments.py:15:36: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/actions/parse_arguments.py:16:5: D202 [*] No blank lines allowed after function docstring (found 1)
+deadcode/actions/parse_arguments.py:16:5: D401 First line of docstring should be in imperative mood: "Parses arguments (execution options) for deadcode tool."
+deadcode/actions/parse_arguments.py:214:31: FA100 Missing `from __future__ import annotations`, but uses `typing.Dict`
+deadcode/actions/parse_arguments.py:221:12: PTH113 `os.path.isfile()` should be replaced by `Path.is_file()`
+deadcode/actions/parse_arguments.py:224:10: PTH123 `open()` should be replaced by `Path.open()`
+deadcode/actions/parse_arguments.py:227:13: FA100 Missing `from __future__ import annotations`, but uses `typing.Dict`
+deadcode/actions/parse_arguments.py:229:12: RET504 Unnecessary assignment to `config` before `return` statement
+deadcode/actions/remove_file_parts_from_content.py:1:1: D100 Missing docstring in public module
+deadcode/actions/remove_file_parts_from_content.py:9:5: D103 Missing docstring in public function
+deadcode/actions/remove_file_parts_from_content.py:9:21: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/actions/remove_file_parts_from_content.py:9:45: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/actions/remove_file_parts_from_content.py:15:5: D103 Missing docstring in public function
+deadcode/actions/remove_file_parts_from_content.py:19:5: D103 Missing docstring in public function
+deadcode/actions/remove_file_parts_from_content.py:23:5: D103 Missing docstring in public function
+deadcode/actions/remove_file_parts_from_content.py:24:29: W605 [*] Invalid escape sequence: `\s`
+deadcode/actions/remove_file_parts_from_content.py:27:5: D103 Missing docstring in public function
+deadcode/actions/remove_file_parts_from_content.py:37:5: C901 `remove_file_parts_from_content` is too complex (18 > 10)
+deadcode/actions/remove_file_parts_from_content.py:37:5: PLR0912 Too many branches (23 > 12)
+deadcode/actions/remove_file_parts_from_content.py:37:5: PLR0915 Too many statements (67 > 50)
+deadcode/actions/remove_file_parts_from_content.py:37:51: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/actions/remove_file_parts_from_content.py:37:81: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/actions/remove_file_parts_from_content.py:37:96: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/actions/remove_file_parts_from_content.py:38:5: D419 Docstring is empty
+deadcode/actions/remove_file_parts_from_content.py:42:7: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/actions/remove_file_parts_from_content.py:42:7: TD003 Missing issue link on the line following this TODO
+deadcode/actions/remove_file_parts_from_content.py:42:7: FIX002 Line contains TODO, consider resolving the issue
+deadcode/actions/remove_file_parts_from_content.py:49:32: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/actions/remove_file_parts_from_content.py:50:44: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/actions/remove_file_parts_from_content.py:62:9: RET507 Unnecessary `elif` after `continue` statement
+deadcode/actions/remove_file_parts_from_content.py:67:21: PLW2901 `for` loop variable `line` overwritten by assignment target
+deadcode/actions/remove_file_parts_from_content.py:69:21: PLW2901 `for` loop variable `line` overwritten by assignment target
+deadcode/actions/remove_file_parts_from_content.py:81:17: PLW2901 `for` loop variable `line` overwritten by assignment target
+deadcode/actions/remove_file_parts_from_content.py:89:13: PLW2901 `for` loop variable `line` overwritten by assignment target
+deadcode/actions/remove_file_parts_from_content.py:91:15: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/actions/remove_file_parts_from_content.py:91:15: TD003 Missing issue link on the line following this TODO
+deadcode/actions/remove_file_parts_from_content.py:91:15: FIX002 Line contains TODO, consider resolving the issue
+deadcode/actions/remove_file_parts_from_content.py:108:17: ERA001 Found commented-out code
+deadcode/actions/remove_file_parts_from_content.py:109:13: RET507 Unnecessary `elif` after `continue` statement
+deadcode/actions/remove_file_parts_from_content.py:145:5: SIM102 Use a single `if` statement instead of nested `if` statements
+deadcode/cli.py:1:1: D100 Missing docstring in public module
+deadcode/cli.py:1:1: I001 [*] Import block is un-sorted or un-formatted
+deadcode/cli.py:12:5: D103 Missing docstring in public function
+deadcode/cli.py:13:24: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/cli.py:13:33: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/cli.py:14:6: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/cli.py:19:7: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/cli.py:19:7: TD003 Missing issue link on the line following this TODO
+deadcode/cli.py:19:7: FIX002 Line contains TODO, consider resolving the issue
+deadcode/cli.py:30:9: T201 `print` found
+deadcode/constants.py:1:1: D100 Missing docstring in public module
+deadcode/constants.py:1:1: I001 [*] Import block is un-sorted or un-formatted
+deadcode/constants.py:36:27: FA100 Missing `from __future__ import annotations`, but uses `typing.Dict`
+deadcode/data_types.py:1:1: D100 Missing docstring in public module
+deadcode/data_types.py:1:1: I001 [*] Import block is un-sorted or un-formatted
+deadcode/data_types.py:14:7: D101 Missing docstring in public class
+deadcode/data_types.py:38:5: D400 First line should end with a period
+deadcode/data_types.py:38:5: D415 First line should end with a period, question mark, or exclamation point
+deadcode/utils/__init__.py:1:1: D104 Missing docstring in public package
+deadcode/utils/add_colors_to_diff.py:1:1: D100 Missing docstring in public module
+deadcode/utils/add_colors_to_diff.py:1:5: D103 Missing docstring in public function
+deadcode/utils/base_test_case.py:1:1: D100 Missing docstring in public module
+deadcode/utils/base_test_case.py:1:1: I001 [*] Import block is un-sorted or un-formatted
+deadcode/utils/base_test_case.py:10:7: D101 Missing docstring in public class
+deadcode/utils/base_test_case.py:11:12: FA100 Missing `from __future__ import annotations`, but uses `typing.Dict`
+deadcode/utils/base_test_case.py:11:29: RUF012 Mutable class attributes should be annotated with `typing.ClassVar`
+deadcode/utils/base_test_case.py:15:9: D102 Missing docstring in public method
+deadcode/utils/base_test_case.py:20:31: ARG002 Unused method argument: `args`
+deadcode/utils/base_test_case.py:20:37: ANN401 Dynamically typed expressions (typing.Any) are disallowed in `*args`
+deadcode/utils/base_test_case.py:20:44: ARG002 Unused method argument: `kwargs`
+deadcode/utils/base_test_case.py:20:52: ANN401 Dynamically typed expressions (typing.Any) are disallowed in `**kwargs`
+deadcode/utils/base_test_case.py:20:60: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/utils/base_test_case.py:23:48: FA100 Missing `from __future__ import annotations`, but uses `typing.Union`
+deadcode/utils/base_test_case.py:23:67: ARG002 Unused method argument: `args`
+deadcode/utils/base_test_case.py:23:73: ANN401 Dynamically typed expressions (typing.Any) are disallowed in `*args`
+deadcode/utils/base_test_case.py:23:80: ARG002 Unused method argument: `kwargs`
+deadcode/utils/base_test_case.py:23:88: ANN401 Dynamically typed expressions (typing.Any) are disallowed in `**kwargs`
+deadcode/utils/base_test_case.py:37:9: D102 Missing docstring in public method
+deadcode/utils/base_test_case.py:38:29: FA100 Missing `from __future__ import annotations`, but uses `typing.Dict`
+deadcode/utils/base_test_case.py:53:9: N802 Function name `assertFiles` should be lowercase
+deadcode/utils/base_test_case.py:53:9: D102 Missing docstring in public method
+deadcode/utils/base_test_case.py:53:34: FA100 Missing `from __future__ import annotations`, but uses `typing.Dict`
+deadcode/utils/base_test_case.py:53:59: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/utils/base_test_case.py:53:68: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/utils/base_test_case.py:60:13: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+deadcode/utils/base_test_case.py:68:9: PT009 Use a regular `assert` instead of unittest-style `assertListEqual`
+deadcode/utils/base_test_case.py:74:13: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+deadcode/utils/base_test_case.py:79:9: N802 Function name `assertUpdatedFiles` should be lowercase
+deadcode/utils/base_test_case.py:79:58: FA100 Missing `from __future__ import annotations`, but uses `typing.Dict`
+deadcode/utils/base_test_case.py:80:9: D202 [*] No blank lines allowed after function docstring (found 1)
+deadcode/utils/base_test_case.py:80:9: D401 First line of docstring should be in imperative mood: "Checks if updated files match expected updated files."
+deadcode/utils/base_test_case.py:82:9: PT009 Use a regular `assert` instead of unittest-style `assertListEqual`
+deadcode/utils/base_test_case.py:85:13: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+deadcode/utils/fix_indent.py:1:1: D100 Missing docstring in public module
+deadcode/utils/fix_indent.py:5:29: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/utils/fix_indent.py:6:5: D401 First line of docstring should be in imperative mood: "Finds indentation of a first line and removes it from all following lines."
+deadcode/utils/fix_indent.py:31:9: ERA001 Found commented-out code
+deadcode/utils/flatten_lists.py:1:1: D100 Missing docstring in public module
+deadcode/utils/flatten_lists.py:7:37: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/utils/flatten_lists.py:7:46: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/utils/flatten_lists.py:7:51: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/utils/flatten_lists.py:8:6: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/utils/flatten_lists.py:15:33: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/utils/flatten_lists.py:15:42: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/utils/flatten_lists.py:15:47: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/utils/flatten_lists.py:15:61: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/utils/nested_scopes.py:1:1: D100 Missing docstring in public module
+deadcode/utils/nested_scopes.py:7:5: D404 First word of the docstring should not be "This"
+deadcode/utils/nested_scopes.py:17:9: D107 Missing docstring in `__init__`
+deadcode/utils/nested_scopes.py:18:23: FA100 Missing `from __future__ import annotations`, but uses `typing.Dict`
+deadcode/utils/nested_scopes.py:18:28: FA100 Missing `from __future__ import annotations`, but uses `typing.Union`
+deadcode/utils/nested_scopes.py:21:9: D202 [*] No blank lines allowed after function docstring (found 1)
+deadcode/utils/nested_scopes.py:21:9: D401 First line of docstring should be in imperative mood: "Adds code item to nested scope."
+deadcode/utils/nested_scopes.py:24:13: RET501 [*] Do not explicitly `return None` in function if it is the only possible return value
+deadcode/utils/nested_scopes.py:37:45: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/utils/nested_scopes.py:37:54: FA100 Missing `from __future__ import annotations`, but uses `typing.Union`
+deadcode/utils/nested_scopes.py:38:9: D202 [*] No blank lines allowed after function docstring (found 1)
+deadcode/utils/nested_scopes.py:38:9: D205 1 blank line required between summary line and description
+deadcode/utils/nested_scopes.py:38:9: D209 [*] Multi-line docstring closing quotes should be on a separate line
+deadcode/utils/nested_scopes.py:38:9: D401 First line of docstring should be in imperative mood: "Returns CodeItem which matches scoped_name (e.g. package.class.method.variable)"
+deadcode/utils/nested_scopes.py:41:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/utils/nested_scopes.py:41:11: TD003 Missing issue link on the line following this TODO
+deadcode/utils/nested_scopes.py:41:11: FIX002 Line contains TODO, consider resolving the issue
+deadcode/utils/nested_scopes.py:48:17: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/utils/nested_scopes.py:48:22: FA100 Missing `from __future__ import annotations`, but uses `typing.Dict`
+deadcode/utils/nested_scopes.py:48:27: FA100 Missing `from __future__ import annotations`, but uses `typing.Union`
+deadcode/utils/nested_scopes.py:48:49: FA100 Missing `from __future__ import annotations`, but uses `typing.Dict`
+deadcode/utils/nested_scopes.py:64:9: D102 Missing docstring in public method
+deadcode/utils/nested_scopes.py:79:9: ERA001 Found commented-out code
+deadcode/utils/print_ast.py:1:1: D100 Missing docstring in public module
+deadcode/utils/print_ast.py:4:5: D103 Missing docstring in public function
+deadcode/utils/print_ast.py:5:5: T201 `print` found
+deadcode/utils/print_ast.py:5:38: PGH003 Use specific rule codes when ignoring type issues
+deadcode/visitor/__init__.py:1:1: D104 Missing docstring in public package
+deadcode/visitor/code_item.py:1:1: D100 Missing docstring in public module
+deadcode/visitor/code_item.py:1:3: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/visitor/code_item.py:1:3: TD003 Missing issue link on the line following this TODO
+deadcode/visitor/code_item.py:1:3: FIX002 Line contains TODO, consider resolving the issue
+deadcode/visitor/code_item.py:4:3: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/visitor/code_item.py:4:3: TD003 Missing issue link on the line following this TODO
+deadcode/visitor/code_item.py:4:3: FIX002 Line contains TODO, consider resolving the issue
+deadcode/visitor/code_item.py:5:1: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:6:1: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:7:1: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:8:1: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:9:1: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:10:1: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:11:1: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:12:1: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:13:1: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:14:1: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:19:1: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:20:1: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:21:1: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:22:1: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:23:1: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:24:1: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:25:1: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:26:1: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:27:1: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:28:1: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:31:1: I001 [*] Import block is un-sorted or un-formatted
+deadcode/visitor/code_item.py:39:20: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/visitor/code_item.py:39:20: TD003 Missing issue link on the line following this TODO
+deadcode/visitor/code_item.py:39:20: FIX002 Line contains TODO, consider resolving the issue
+deadcode/visitor/code_item.py:40:5: D200 One-line docstring should fit on one line
+deadcode/visitor/code_item.py:40:5: D212 [*] Multi-line docstring summary should start at the first line
+deadcode/visitor/code_item.py:58:9: PLR0913 Too many arguments in function definition (11 > 5)
+deadcode/visitor/code_item.py:58:9: ANN204 Missing return type annotation for special method `__init__`
+deadcode/visitor/code_item.py:58:9: D107 Missing docstring in `__init__`
+deadcode/visitor/code_item.py:64:9: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:65:9: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:66:9: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:67:9: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:68:21: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/visitor/code_item.py:68:30: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/visitor/code_item.py:68:53: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/visitor/code_item.py:68:53: TD003 Missing issue link on the line following this TODO
+deadcode/visitor/code_item.py:68:53: FIX002 Line contains TODO, consider resolving the issue
+deadcode/visitor/code_item.py:69:16: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/visitor/code_item.py:70:24: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/visitor/code_item.py:70:33: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/visitor/code_item.py:71:20: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/visitor/code_item.py:72:22: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/visitor/code_item.py:91:9: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:92:9: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:93:9: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:94:9: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:103:9: D102 Missing docstring in public method
+deadcode/visitor/code_item.py:107:9: D102 Missing docstring in public method
+deadcode/visitor/code_item.py:117:5: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:118:5: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:121:5: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:124:5: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:127:5: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:130:5: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:132:5: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:134:5: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:135:5: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:136:5: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:138:5: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:139:5: ERA001 Found commented-out code
+deadcode/visitor/code_item.py:141:9: D105 Missing docstring in magic method
+deadcode/visitor/code_item.py:144:9: D105 Missing docstring in magic method
+deadcode/visitor/code_item.py:152:9: D105 Missing docstring in magic method
+deadcode/visitor/dead_code_visitor.py:1:1: D100 Missing docstring in public module
+deadcode/visitor/dead_code_visitor.py:1:1: I001 [*] Import block is un-sorted or un-formatted
+deadcode/visitor/dead_code_visitor.py:43:9: D107 Missing docstring in `__init__`
+deadcode/visitor/dead_code_visitor.py:43:35: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/visitor/dead_code_visitor.py:48:33: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/visitor/dead_code_visitor.py:51:9: ERA001 Found commented-out code
+deadcode/visitor/dead_code_visitor.py:54:29: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/visitor/dead_code_visitor.py:55:31: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/visitor/dead_code_visitor.py:56:29: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/visitor/dead_code_visitor.py:57:31: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/visitor/dead_code_visitor.py:58:31: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/visitor/dead_code_visitor.py:59:29: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/visitor/dead_code_visitor.py:60:28: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/visitor/dead_code_visitor.py:61:27: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/visitor/dead_code_visitor.py:62:32: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/visitor/dead_code_visitor.py:64:26: FA100 Missing `from __future__ import annotations`, but uses `typing.Set`
+deadcode/visitor/dead_code_visitor.py:67:20: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/visitor/dead_code_visitor.py:70:27: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/visitor/dead_code_visitor.py:76:26: FA100 Missing `from __future__ import annotations`, but uses `typing.Dict`
+deadcode/visitor/dead_code_visitor.py:76:36: FA100 Missing `from __future__ import annotations`, but uses `typing.Set`
+deadcode/visitor/dead_code_visitor.py:80:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:83:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:83:40: ARG002 Unused method argument: `scope`
+deadcode/visitor/dead_code_visitor.py:83:47: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/visitor/dead_code_visitor.py:84:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/visitor/dead_code_visitor.py:84:11: TD003 Missing issue link on the line following this TODO
+deadcode/visitor/dead_code_visitor.py:84:11: FIX002 Line contains TODO, consider resolving the issue
+deadcode/visitor/dead_code_visitor.py:86:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/visitor/dead_code_visitor.py:86:11: TD003 Missing issue link on the line following this TODO
+deadcode/visitor/dead_code_visitor.py:86:11: FIX002 Line contains TODO, consider resolving the issue
+deadcode/visitor/dead_code_visitor.py:88:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/visitor/dead_code_visitor.py:88:11: TD003 Missing issue link on the line following this TODO
+deadcode/visitor/dead_code_visitor.py:88:11: FIX002 Line contains TODO, consider resolving the issue
+deadcode/visitor/dead_code_visitor.py:93:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:95:18: PTH123 `open()` should be replaced by `Path.open()`
+deadcode/visitor/dead_code_visitor.py:96:28: PTH119 `os.path.basename()` should be replaced by `Path.name`
+deadcode/visitor/dead_code_visitor.py:97:31: PTH122 `os.path.splitext()` should be replaced by `Path.suffix`, `Path.stem`, and `Path.parent`
+deadcode/visitor/dead_code_visitor.py:118:9: D200 One-line docstring should fit on one line
+deadcode/visitor/dead_code_visitor.py:118:9: D202 [*] No blank lines allowed after function docstring (found 1)
+deadcode/visitor/dead_code_visitor.py:118:9: D212 [*] Multi-line docstring summary should start at the first line
+deadcode/visitor/dead_code_visitor.py:130:13: ERA001 Found commented-out code
+deadcode/visitor/dead_code_visitor.py:130:41: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/visitor/dead_code_visitor.py:130:41: TD003 Missing issue link on the line following this TODO
+deadcode/visitor/dead_code_visitor.py:130:41: FIX002 Line contains TODO, consider resolving the issue
+deadcode/visitor/dead_code_visitor.py:137:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:141:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:145:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:149:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:153:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:157:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:161:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:164:20: ANN002 Missing type annotation for `*args`
+deadcode/visitor/dead_code_visitor.py:164:33: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/visitor/dead_code_visitor.py:164:89: PGH003 Use specific rule codes when ignoring type issues
+deadcode/visitor/dead_code_visitor.py:174:34: FA100 Missing `from __future__ import annotations`, but uses `typing.Union`
+deadcode/visitor/dead_code_visitor.py:175:9: D205 1 blank line required between summary line and description
+deadcode/visitor/dead_code_visitor.py:175:9: D212 [*] Multi-line docstring summary should start at the first line
+deadcode/visitor/dead_code_visitor.py:179:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/visitor/dead_code_visitor.py:179:11: TD003 Missing issue link on the line following this TODO
+deadcode/visitor/dead_code_visitor.py:179:11: FIX002 Line contains TODO, consider resolving the issue
+deadcode/visitor/dead_code_visitor.py:181:9: S101 Use of `assert` detected
+deadcode/visitor/dead_code_visitor.py:196:46: FA100 Missing `from __future__ import annotations`, but uses `typing.Union`
+deadcode/visitor/dead_code_visitor.py:211:33: PGH003 Use specific rule codes when ignoring type issues
+deadcode/visitor/dead_code_visitor.py:218:36: PGH003 Use specific rule codes when ignoring type issues
+deadcode/visitor/dead_code_visitor.py:219:47: PGH003 Use specific rule codes when ignoring type issues
+deadcode/visitor/dead_code_visitor.py:231:9: PLR0913 Too many arguments in function definition (7 > 5)
+deadcode/visitor/dead_code_visitor.py:233:21: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/visitor/dead_code_visitor.py:236:20: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/visitor/dead_code_visitor.py:238:17: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/visitor/dead_code_visitor.py:240:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/visitor/dead_code_visitor.py:240:11: TD003 Missing issue link on the line following this TODO
+deadcode/visitor/dead_code_visitor.py:240:11: FIX002 Line contains TODO, consider resolving the issue
+deadcode/visitor/dead_code_visitor.py:257:51: PGH003 Use specific rule codes when ignoring type issues
+deadcode/visitor/dead_code_visitor.py:269:44: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/visitor/dead_code_visitor.py:269:44: TD003 Missing issue link on the line following this TODO
+deadcode/visitor/dead_code_visitor.py:269:44: FIX002 Line contains TODO, consider resolving the issue
+deadcode/visitor/dead_code_visitor.py:270:50: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/visitor/dead_code_visitor.py:270:50: TD003 Missing issue link on the line following this TODO
+deadcode/visitor/dead_code_visitor.py:270:50: FIX002 Line contains TODO, consider resolving the issue
+deadcode/visitor/dead_code_visitor.py:291:5: ERA001 Found commented-out code
+deadcode/visitor/dead_code_visitor.py:293:9: N802 Function name `visit_AsyncFunctionDef` should be lowercase
+deadcode/visitor/dead_code_visitor.py:293:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:296:9: N802 Function name `visit_Attribute` should be lowercase
+deadcode/visitor/dead_code_visitor.py:296:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:302:9: N802 Function name `visit_BinOp` should be lowercase
+deadcode/visitor/dead_code_visitor.py:303:9: D212 [*] Multi-line docstring summary should start at the first line
+deadcode/visitor/dead_code_visitor.py:303:9: D400 First line should end with a period
+deadcode/visitor/dead_code_visitor.py:303:9: D415 First line should end with a period, question mark, or exclamation point
+deadcode/visitor/dead_code_visitor.py:311:9: N802 Function name `visit_Call` should be lowercase
+deadcode/visitor/dead_code_visitor.py:311:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:314:44: PLR2004 Magic value used in comparison, consider replacing `2` with a constant variable
+deadcode/visitor/dead_code_visitor.py:314:67: PLR2004 Magic value used in comparison, consider replacing `3` with a constant variable
+deadcode/visitor/dead_code_visitor.py:315:65: PLR2004 Magic value used in comparison, consider replacing `2` with a constant variable
+deadcode/visitor/dead_code_visitor.py:322:9: ERA001 Found commented-out code
+deadcode/visitor/dead_code_visitor.py:345:13: A001 Variable `vars` is shadowing a Python builtin
+deadcode/visitor/dead_code_visitor.py:361:51: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/visitor/dead_code_visitor.py:361:60: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/visitor/dead_code_visitor.py:362:9: D202 [*] No blank lines allowed after function docstring (found 1)
+deadcode/visitor/dead_code_visitor.py:362:9: D401 First line of docstring should be in imperative mood: "Returns a set of base classes from any level in inheritance tree."
+deadcode/visitor/dead_code_visitor.py:371:13: SIM102 Use a single `if` statement instead of nested `if` statements
+deadcode/visitor/dead_code_visitor.py:377:9: N802 Function name `visit_ClassDef` should be lowercase
+deadcode/visitor/dead_code_visitor.py:377:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:379:86: PGH003 Use specific rule codes when ignoring type issues
+deadcode/visitor/dead_code_visitor.py:385:9: N802 Function name `visit_FunctionDef` should be lowercase
+deadcode/visitor/dead_code_visitor.py:385:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:385:39: FA100 Missing `from __future__ import annotations`, but uses `typing.Union`
+deadcode/visitor/dead_code_visitor.py:386:103: PGH003 Use specific rule codes when ignoring type issues
+deadcode/visitor/dead_code_visitor.py:406:9: N802 Function name `visit_If` should be lowercase
+deadcode/visitor/dead_code_visitor.py:406:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:409:9: N802 Function name `visit_IfExp` should be lowercase
+deadcode/visitor/dead_code_visitor.py:409:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:412:9: N802 Function name `visit_Import` should be lowercase
+deadcode/visitor/dead_code_visitor.py:412:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:415:9: N802 Function name `visit_ImportFrom` should be lowercase
+deadcode/visitor/dead_code_visitor.py:415:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:419:9: N802 Function name `visit_Name` should be lowercase
+deadcode/visitor/dead_code_visitor.py:419:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:425:9: N802 Function name `visit_Assign` should be lowercase
+deadcode/visitor/dead_code_visitor.py:425:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:427:13: S101 Use of `assert` detected
+deadcode/visitor/dead_code_visitor.py:432:9: N802 Function name `visit_While` should be lowercase
+deadcode/visitor/dead_code_visitor.py:432:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:435:66: PGH003 Use specific rule codes when ignoring type issues
+deadcode/visitor/dead_code_visitor.py:436:9: N802 Function name `visit_MatchClass` should be lowercase
+deadcode/visitor/dead_code_visitor.py:436:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:436:32: ANN001 Missing type annotation for function argument `node`
+deadcode/visitor/dead_code_visitor.py:436:48: PGH003 Use specific rule codes when ignoring type issues
+deadcode/visitor/dead_code_visitor.py:440:9: C901 `visit` is too complex (18 > 10)
+deadcode/visitor/dead_code_visitor.py:440:9: PLR0912 Too many branches (18 > 12)
+deadcode/visitor/dead_code_visitor.py:440:9: D102 Missing docstring in public method
+deadcode/visitor/dead_code_visitor.py:449:9: ERA001 Found commented-out code
+deadcode/visitor/dead_code_visitor.py:452:49: PGH003 Use specific rule codes when ignoring type issues
+deadcode/visitor/dead_code_visitor.py:455:9: SIM102 Use a single `if` statement instead of nested `if` statements
+deadcode/visitor/dead_code_visitor.py:472:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/visitor/dead_code_visitor.py:472:11: TD003 Missing issue link on the line following this TODO
+deadcode/visitor/dead_code_visitor.py:472:11: FIX002 Line contains TODO, consider resolving the issue
+deadcode/visitor/dead_code_visitor.py:474:9: SIM114 [*] Combine `if` branches using logical `or` operator
+deadcode/visitor/dead_code_visitor.py:482:9: SIM102 Use a single `if` statement instead of nested `if` statements
+deadcode/visitor/dead_code_visitor.py:496:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/visitor/dead_code_visitor.py:496:11: TD003 Missing issue link on the line following this TODO
+deadcode/visitor/dead_code_visitor.py:496:11: FIX002 Line contains TODO, consider resolving the issue
+deadcode/visitor/dead_code_visitor.py:508:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/visitor/dead_code_visitor.py:508:11: TD003 Missing issue link on the line following this TODO
+deadcode/visitor/dead_code_visitor.py:508:11: FIX002 Line contains TODO, consider resolving the issue
+deadcode/visitor/dead_code_visitor.py:512:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+deadcode/visitor/dead_code_visitor.py:512:11: TD003 Missing issue link on the line following this TODO
+deadcode/visitor/dead_code_visitor.py:512:11: FIX002 Line contains TODO, consider resolving the issue
+deadcode/visitor/dead_code_visitor.py:516:42: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/visitor/dead_code_visitor.py:517:9: D200 One-line docstring should fit on one line
+deadcode/visitor/dead_code_visitor.py:517:9: D212 [*] Multi-line docstring summary should start at the first line
+deadcode/visitor/dead_code_visitor.py:534:17: RET501 [*] Do not explicitly `return None` in function if it is the only possible return value
+deadcode/visitor/ignore.py:1:1: D100 Missing docstring in public module
+deadcode/visitor/ignore.py:1:1: I001 [*] Import block is un-sorted or un-formatted
+deadcode/visitor/ignore.py:39:70: FA100 Missing `from __future__ import annotations`, but uses `typing.Set`
+deadcode/visitor/ignore.py:49:18: FA100 Missing `from __future__ import annotations`, but uses `typing.Union`
+deadcode/visitor/ignore.py:49:61: FBT001 Boolean-typed positional argument in function definition
+deadcode/visitor/ignore.py:49:61: FBT002 Boolean default positional argument in function definition
+deadcode/visitor/ignore.py:54:24: FA100 Missing `from __future__ import annotations`, but uses `typing.Union`
+deadcode/visitor/ignore.py:54:87: FBT001 Boolean-typed positional argument in function definition
+deadcode/visitor/ignore.py:54:87: FBT002 Boolean default positional argument in function definition
+deadcode/visitor/ignore.py:67:5: S101 Use of `assert` detected
+deadcode/visitor/ignore.py:78:5: D205 1 blank line required between summary line and description
+deadcode/visitor/ignore.py:78:5: D212 [*] Multi-line docstring summary should start at the first line
+deadcode/visitor/ignore.py:96:22: ARG001 Unused function argument: `filename`
+deadcode/visitor/ignore.py:97:5: D205 1 blank line required between summary line and description
+deadcode/visitor/ignore.py:97:5: D212 [*] Multi-line docstring summary should start at the first line
+deadcode/visitor/lines.py:1:1: D100 Missing docstring in public module
+deadcode/visitor/lines.py:5:51: FA100 Missing `from __future__ import annotations`, but uses `typing.Optional`
+deadcode/visitor/lines.py:6:5: D205 1 blank line required between summary line and description
+deadcode/visitor/lines.py:6:5: D212 [*] Multi-line docstring summary should start at the first line
+deadcode/visitor/lines.py:29:25: FA100 Missing `from __future__ import annotations`, but uses `typing.Union`
+deadcode/visitor/lines.py:29:40: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/visitor/lines.py:36:9: RET505 Unnecessary `elif` after `return` statement
+deadcode/visitor/lines.py:61:9: RET505 Unnecessary `else` after `return` statement
+deadcode/visitor/lines.py:62:13: SIM105 Use `contextlib.suppress(AttributeError)` instead of `try`-`except`-`pass`
+deadcode/visitor/lines.py:70:5: D205 1 blank line required between summary line and description
+deadcode/visitor/lines.py:70:5: D212 [*] Multi-line docstring summary should start at the first line
+deadcode/visitor/noqa.py:1:1: D100 Missing docstring in public module
+deadcode/visitor/noqa.py:1:1: I001 [*] Import block is un-sorted or un-formatted
+deadcode/visitor/noqa.py:10:8: RUF100 [*] Unused `noqa` directive (unknown: `E123`)
+deadcode/visitor/noqa.py:11:8: RUF100 [*] Unused `noqa` directive (unknown: `E123`, `W451`, `F921`)
+deadcode/visitor/noqa.py:12:8: RUF100 [*] Unused `noqa` directive (unknown: `E123`, `W451`, `F921`)
+deadcode/visitor/noqa.py:50:38: FA100 Missing `from __future__ import annotations`, but uses `typing.Dict`
+deadcode/visitor/noqa.py:50:57: FA100 Missing `from __future__ import annotations`, but uses `typing.List`
+deadcode/visitor/noqa.py:55:5: D103 Missing docstring in public function
+deadcode/visitor/noqa.py:55:30: FA100 Missing `from __future__ import annotations`, but uses `typing.Dict`
+deadcode/visitor/noqa.py:55:40: FA100 Missing `from __future__ import annotations`, but uses `typing.Set`
+deadcode/visitor/noqa.py:61:17: PLW2901 `for` loop variable `error_code` overwritten by assignment target
+deadcode/visitor/noqa.py:66:29: FA100 Missing `from __future__ import annotations`, but uses `typing.Dict`
+deadcode/visitor/noqa.py:66:39: FA100 Missing `from __future__ import annotations`, but uses `typing.Set`
+deadcode/visitor/utils.py:1:1: D100 Missing docstring in public module
+deadcode/visitor/utils.py:1:1: I001 [*] Import block is un-sorted or un-formatted
+deadcode/visitor/utils.py:8:31: FBT001 Boolean-typed positional argument in function definition
+deadcode/visitor/utils.py:9:5: D212 [*] Multi-line docstring summary should start at the first line
+deadcode/visitor/utils.py:23:60: PD011 Use `.to_numpy()` instead of `.values`
+deadcode/visitor/utils.py:26:9: RET505 Unnecessary `else` after `return` statement
+deadcode/visitor/utils.py:33:13: TRY300 Consider moving this statement to an `else` block
+deadcode/visitor/utils.py:38:5: D103 Missing docstring in public function
+deadcode/visitor/utils.py:39:38: FBT003 Boolean positional value in function call
+deadcode/visitor/utils.py:42:5: D103 Missing docstring in public function
+deadcode/visitor/utils.py:43:34: FBT003 Boolean positional value in function call
+deadcode/visitor/utils.py:47:1: ERA001 Found commented-out code
+deadcode/visitor/utils.py:48:1: ERA001 Found commented-out code
+deadcode/visitor/utils.py:49:1: ERA001 Found commented-out code
+deadcode/visitor/utils.py:51:1: ERA001 Found commented-out code
+deadcode/visitor/utils.py:54:5: D103 Missing docstring in public function
+deadcode/visitor/utils.py:54:35: FA100 Missing `from __future__ import annotations`, but uses `typing.Union`
+deadcode/visitor/utils.py:56:37: PGH003 Use specific rule codes when ignoring type issues
+deadcode/visitor/utils.py:60:38: PGH003 Use specific rule codes when ignoring type issues
+deadcode/visitor/utils.py:61:33: PGH003 Use specific rule codes when ignoring type issues
+deadcode/visitor/utils.py:65:7: D101 Missing docstring in public class
+deadcode/visitor/utils.py:65:27: PGH003 Use specific rule codes when ignoring type issues
+deadcode/visitor/utils.py:66:9: D107 Missing docstring in `__init__`
+deadcode/visitor/utils.py:66:47: FBT001 Boolean-typed positional argument in function definition
+deadcode/visitor/utils.py:69:9: PLE0101 Explicit return in `__init__`
+deadcode/visitor/utils.py:71:9: D102 Missing docstring in public method
+deadcode/visitor/utils.py:73:13: T201 `print` found
+deadcode/visitor/utils.py:77:7: D101 Missing docstring in public class
+deadcode/visitor/utils.py:77:25: PGH003 Use specific rule codes when ignoring type issues
+deadcode/visitor/utils.py:78:9: D107 Missing docstring in `__init__`
+deadcode/visitor/utils.py:78:47: FBT001 Boolean-typed positional argument in function definition
+deadcode/visitor/utils.py:81:9: PLE0101 Explicit return in `__init__`
+deadcode/visitor/utils.py:83:9: D102 Missing docstring in public method
+deadcode/visitor/utils.py:85:13: T201 `print` found
+tests/actions/test_find_python_filenames.py:1:1: INP001 File `tests/actions/test_find_python_filenames.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/actions/test_find_python_filenames.py:6:9: ANN201 Missing return type annotation for public function `test_file_detection`
+tests/actions/test_find_python_filenames.py:9:9: PT009 Use a regular `assert` instead of unittest-style `assertListEqual`
+tests/actions/test_find_python_filenames.py:11:9: ANN201 Missing return type annotation for public function `test_exclude_directories`
+tests/actions/test_find_python_filenames.py:14:9: PT009 Use a regular `assert` instead of unittest-style `assertTrue`
+tests/actions/test_find_python_filenames.py:15:9: PT009 Use a regular `assert` instead of unittest-style `assertTrue`
+tests/actions/test_find_python_filenames.py:19:9: PT009 Use a regular `assert` instead of unittest-style `assertFalse`
+tests/actions/test_find_python_filenames.py:20:9: PT009 Use a regular `assert` instead of unittest-style `assertFalse`
+tests/actions/test_find_python_filenames.py:22:9: ANN201 Missing return type annotation for public function `test_exclude_files`
+tests/actions/test_find_python_filenames.py:25:9: PT009 Use a regular `assert` instead of unittest-style `assertTrue`
+tests/actions/test_find_python_filenames.py:29:9: PT009 Use a regular `assert` instead of unittest-style `assertFalse`
+tests/actions/test_find_python_filenames.py:31:9: ANN201 Missing return type annotation for public function `test_provided_path_does_not_exist`
+tests/actions/test_find_python_filenames.py:36:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/actions/test_merge_overlaping_file_parts.py:1:1: INP001 File `tests/actions/test_merge_overlaping_file_parts.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/actions/test_merge_overlaping_file_parts.py:1:1: I001 [*] Import block is un-sorted or un-formatted
+tests/actions/test_merge_overlaping_file_parts.py:6:9: ANN201 Missing return type annotation for public function `test_no_overlaping_parts`
+tests/actions/test_merge_overlaping_file_parts.py:14:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/actions/test_merge_overlaping_file_parts.py:16:9: ANN201 Missing return type annotation for public function `test_overlaping_lines`
+tests/actions/test_merge_overlaping_file_parts.py:26:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/actions/test_merge_overlaping_file_parts.py:30:9: ANN201 Missing return type annotation for public function `test_does_overlap`
+tests/actions/test_merge_overlaping_file_parts.py:32:9: PT009 Use a regular `assert` instead of unittest-style `assertTrue`
+tests/actions/test_merge_overlaping_file_parts.py:33:9: PT009 Use a regular `assert` instead of unittest-style `assertTrue`
+tests/actions/test_merge_overlaping_file_parts.py:36:9: PT009 Use a regular `assert` instead of unittest-style `assertTrue`
+tests/actions/test_merge_overlaping_file_parts.py:37:9: PT009 Use a regular `assert` instead of unittest-style `assertTrue`
+tests/actions/test_merge_overlaping_file_parts.py:40:9: PT009 Use a regular `assert` instead of unittest-style `assertTrue`
+tests/actions/test_merge_overlaping_file_parts.py:43:9: PT009 Use a regular `assert` instead of unittest-style `assertFalse`
+tests/actions/test_merge_overlaping_file_parts.py:44:9: PT009 Use a regular `assert` instead of unittest-style `assertFalse`
+tests/actions/test_merge_overlaping_file_parts.py:48:9: ANN201 Missing return type annotation for public function `test_merge_parts`
+tests/actions/test_merge_overlaping_file_parts.py:50:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/actions/test_merge_overlaping_file_parts.py:51:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/actions/test_merge_overlaping_file_parts.py:54:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/actions/test_merge_overlaping_file_parts.py:55:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/actions/test_merge_overlaping_file_parts.py:58:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/actions/test_merge_overlaping_file_parts.py:61:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/actions/test_merge_overlaping_file_parts.py:62:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_count.py:1:1: INP001 File `tests/cli_args/test_count.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/cli_args/test_dry.py:1:1: INP001 File `tests/cli_args/test_dry.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/cli_args/test_dry.py:7:9: ANN201 Missing return type annotation for public function `test_unused_class_was_reported_to_be_removed`
+tests/cli_args/test_dry.py:17:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_dry.py:46:9: ANN201 Missing return type annotation for public function `test_file_is_not_modified_if_fix_option_is_used_with_dry`
+tests/cli_args/test_dry.py:56:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_dry.py:85:9: ANN201 Missing return type annotation for public function `test_all_files_are_reported_if_no_filenames_are_provided_for_dry_option`
+tests/cli_args/test_dry.py:100:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_dry.py:141:9: ANN201 Missing return type annotation for public function `test_only_provided_filenames_to_dry_option_are_reported`
+tests/cli_args/test_dry.py:156:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_dry.py:189:9: ANN201 Missing return type annotation for public function `test_no_diff_is_shown_if_dry_option_filenames_are_incorrect`
+tests/cli_args/test_dry.py:199:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_dry.py:214:9: ANN201 Missing return type annotation for public function `test_pattern_usage_for_filenames_provided_to_dry_option`
+tests/cli_args/test_dry.py:224:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_dry.py:253:9: ANN201 Missing return type annotation for public function `test_coloring_of_a_diff`
+tests/cli_args/test_dry.py:271:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_dry.py:288:1: W293 Blank line contains whitespace
+tests/cli_args/test_exclude.py:1:1: INP001 File `tests/cli_args/test_exclude.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/cli_args/test_exclude.py:1:1: I001 [*] Import block is un-sorted or un-formatted
+tests/cli_args/test_exclude.py:6:9: ANN201 Missing return type annotation for public function `test_exclude_directories`
+tests/cli_args/test_exclude.py:9:9: PT009 Use a regular `assert` instead of unittest-style `assertTrue`
+tests/cli_args/test_exclude.py:10:9: PT009 Use a regular `assert` instead of unittest-style `assertTrue`
+tests/cli_args/test_exclude.py:14:9: PT009 Use a regular `assert` instead of unittest-style `assertFalse`
+tests/cli_args/test_exclude.py:15:9: PT009 Use a regular `assert` instead of unittest-style `assertFalse`
+tests/cli_args/test_exclude.py:17:9: ANN201 Missing return type annotation for public function `test_exclude_files`
+tests/cli_args/test_exclude.py:20:9: PT009 Use a regular `assert` instead of unittest-style `assertTrue`
+tests/cli_args/test_exclude.py:24:9: PT009 Use a regular `assert` instead of unittest-style `assertFalse`
+tests/cli_args/test_fix.py:1:1: INP001 File `tests/cli_args/test_fix.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/cli_args/test_fix.py:8:9: ANN201 Missing return type annotation for public function `test_unused_class_was_removed`
+tests/cli_args/test_fix.py:19:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_fix.py:35:9: ANN201 Missing return type annotation for public function `test_function_removal`
+tests/cli_args/test_fix.py:46:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_fix.py:59:7: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+tests/cli_args/test_fix.py:59:7: TD003 Missing issue link on the line following this TODO
+tests/cli_args/test_fix.py:59:7: FIX002 Line contains TODO, consider resolving the issue
+tests/cli_args/test_fix.py:61:9: ANN201 Missing return type annotation for public function `test_function_removal_in_the_middle`
+tests/cli_args/test_fix.py:75:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_fix.py:91:9: ANN201 Missing return type annotation for public function `test_function_removal_of_several_items`
+tests/cli_args/test_fix.py:107:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_fix.py:127:9: ANN201 Missing return type annotation for public function `test_empty_lines_are_removed_properly_indented`
+tests/cli_args/test_fix.py:193:9: ANN201 Missing return type annotation for public function `test_empty_lines_are_removed_properly`
+tests/cli_args/test_fix.py:254:9: ANN201 Missing return type annotation for public function `test_empty_class_block`
+tests/cli_args/test_fix.py:280:9: ANN201 Missing return type annotation for public function `test_empty_function_block`
+tests/cli_args/test_fix.py:303:9: ANN201 Missing return type annotation for public function `test_empty_if_main_block`
+tests/cli_args/test_fix.py:315:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+tests/cli_args/test_fix.py:315:11: TD003 Missing issue link on the line following this TODO
+tests/cli_args/test_fix.py:315:11: FIX002 Line contains TODO, consider resolving the issue
+tests/cli_args/test_fix.py:327:9: ANN201 Missing return type annotation for public function `test_empty_if_else_block`
+tests/cli_args/test_fix.py:353:9: ANN201 Missing return type annotation for public function `test_empty_if_statement_else_block`
+tests/cli_args/test_fix.py:377:9: ANN201 Missing return type annotation for public function `test_if_is_not_fixed_correctly_when_branch_is_unreachable`
+tests/cli_args/test_fix.py:399:9: ANN201 Missing return type annotation for public function `test_empty_with_block`
+tests/cli_args/test_fix.py:418:9: ANN201 Missing return type annotation for public function `test_empty_block_is_at_the_end_of_file`
+tests/cli_args/test_fix.py:421:9: ANN201 Missing return type annotation for public function `test_some_code_follows_empty_block`
+tests/cli_args/test_fix.py:426:9: ANN201 Missing return type annotation for public function `test_space_is_kept_after_whole_class_block_removal`
+tests/cli_args/test_fix.py:452:9: ANN201 Missing return type annotation for public function `test_two_spaces_are_kept_after_whole_class_block_removal`
+tests/cli_args/test_fix.py:480:9: ANN201 Missing return type annotation for public function `test_two_spaces_are_kept_after_one_method_removal`
+tests/cli_args/test_fix.py:512:9: ANN201 Missing return type annotation for public function `test_assignment`
+tests/cli_args/test_ignore_bodies_if_inherits_from.py:1:1: INP001 File `tests/cli_args/test_ignore_bodies_if_inherits_from.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/cli_args/test_ignore_bodies_if_inherits_from.py:6:9: ANN201 Missing return type annotation for public function `test_ignore_class_definition_if_inherits_from_base_class`
+tests/cli_args/test_ignore_bodies_if_inherits_from.py:39:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_ignore_definitions.py:1:1: INP001 File `tests/cli_args/test_ignore_definitions.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/cli_args/test_ignore_definitions.py:6:9: ANN201 Missing return type annotation for public function `test_ignore_class_definition`
+tests/cli_args/test_ignore_definitions.py:21:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_ignore_definitions.py:38:9: ANN201 Missing return type annotation for public function `test_ignore_class_definition_another_class_is_detected`
+tests/cli_args/test_ignore_definitions.py:56:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_ignore_definitions.py:76:9: ANN201 Missing return type annotation for public function `test_ignore_class_definition_matched_by_pattern`
+tests/cli_args/test_ignore_definitions.py:91:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_ignore_definitions_if_inherits_from.py:1:1: INP001 File `tests/cli_args/test_ignore_definitions_if_inherits_from.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/cli_args/test_ignore_definitions_if_inherits_from.py:8:9: ANN201 Missing return type annotation for public function `test_ignore_class_definition_if_inherits_from_base_class`
+tests/cli_args/test_ignore_definitions_if_inherits_from.py:53:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_ignore_definitions_if_inherits_from.py:62:9: ANN201 Missing return type annotation for public function `test_ignore_class_definition_if_inherits_from_multiple_classes`
+tests/cli_args/test_ignore_definitions_if_inherits_from.py:63:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+tests/cli_args/test_ignore_definitions_if_inherits_from.py:63:11: TD005 Missing issue description after `TODO`
+tests/cli_args/test_ignore_definitions_if_inherits_from.py:63:11: TD003 Missing issue link on the line following this TODO
+tests/cli_args/test_ignore_definitions_if_inherits_from.py:63:11: FIX002 Line contains TODO, consider resolving the issue
+tests/cli_args/test_ignore_definitions_if_inherits_from.py:119:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_ignore_names.py:1:1: INP001 File `tests/cli_args/test_ignore_names.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/cli_args/test_ignore_names.py:6:9: ANN201 Missing return type annotation for public function `test_ignore_names_matched_by_word_and_group_regexp_patterns`
+tests/cli_args/test_ignore_names.py:22:9: ERA001 Found commented-out code
+tests/cli_args/test_ignore_names.py:25:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_ignore_names.py:30:9: ANN201 Missing return type annotation for public function `test_ignore_names_matched_by_dot_regexp_pattern`
+tests/cli_args/test_ignore_names.py:31:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+tests/cli_args/test_ignore_names.py:31:11: TD003 Missing issue link on the line following this TODO
+tests/cli_args/test_ignore_names.py:31:11: FIX002 Line contains TODO, consider resolving the issue
+tests/cli_args/test_ignore_names.py:32:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+tests/cli_args/test_ignore_names.py:32:11: TD003 Missing issue link on the line following this TODO
+tests/cli_args/test_ignore_names.py:32:11: FIX002 Line contains TODO, consider resolving the issue
+tests/cli_args/test_ignore_names.py:51:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_ignore_names.py:56:9: ANN201 Missing return type annotation for public function `test_ignore_names_matched_exactly`
+tests/cli_args/test_ignore_names.py:76:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_ignore_names_in_files.py:1:1: INP001 File `tests/cli_args/test_ignore_names_in_files.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/cli_args/test_no_color.py:1:1: INP001 File `tests/cli_args/test_no_color.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/cli_args/test_parsing.py:1:1: INP001 File `tests/cli_args/test_parsing.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/cli_args/test_parsing.py:10:9: ANN201 Missing return type annotation for public function `setUp`
+tests/cli_args/test_parsing.py:22:9: ANN201 Missing return type annotation for public function `test_calling_with_one_paths_argument`
+tests/cli_args/test_parsing.py:25:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:26:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:27:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:28:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:30:9: ANN201 Missing return type annotation for public function `test_calling_with_several_paths_argument`
+tests/cli_args/test_parsing.py:33:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:34:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:35:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:36:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:38:9: ANN201 Missing return type annotation for public function `test_calling_with_exclude`
+tests/cli_args/test_parsing.py:41:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:42:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:43:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:44:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:46:9: ANN201 Missing return type annotation for public function `test_calling_with_several_exclude_options`
+tests/cli_args/test_parsing.py:49:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:50:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:51:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:52:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:54:9: ANN201 Missing return type annotation for public function `test_calling_with_no_color_option`
+tests/cli_args/test_parsing.py:57:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:58:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:60:9: ANN201 Missing return type annotation for public function `test_ignore_names_and_ignore_files_command_line_argument_parsing`
+tests/cli_args/test_parsing.py:63:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:64:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:65:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:66:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:68:9: ANN201 Missing return type annotation for public function `test_verbose_flag_is_on_using_long_name`
+tests/cli_args/test_parsing.py:71:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:72:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:74:9: ANN201 Missing return type annotation for public function `test_verbose_flag_is_on_using_short_name`
+tests/cli_args/test_parsing.py:77:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:78:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:80:9: ANN201 Missing return type annotation for public function `test_calling_with_fix`
+tests/cli_args/test_parsing.py:83:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:84:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:85:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:87:9: ANN201 Missing return type annotation for public function `test_calling_with_dry`
+tests/cli_args/test_parsing.py:90:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:91:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:92:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:93:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:95:9: ANN201 Missing return type annotation for public function `test_calling_with_fix_and_dry`
+tests/cli_args/test_parsing.py:98:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:99:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:101:9: ANN201 Missing return type annotation for public function `test_calling_with_single_dry_filename`
+tests/cli_args/test_parsing.py:104:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:105:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:106:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:108:9: ANN201 Missing return type annotation for public function `test_calling_with_two_dry_filenames`
+tests/cli_args/test_parsing.py:111:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:112:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_parsing.py:113:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/cli_args/test_quiet.py:1:1: INP001 File `tests/cli_args/test_quiet.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/cli_args/test_verbose.py:1:1: INP001 File `tests/cli_args/test_verbose.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/code_item/test_code_item.py:1:1: INP001 File `tests/code_item/test_code_item.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/code_item/test_code_item.py:8:9: ANN201 Missing return type annotation for public function `test_code_item_comparison_with_a_string`
+tests/code_item/test_code_item.py:10:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/code_item/test_code_item.py:12:9: ANN201 Missing return type annotation for public function `test_code_item_retrieval_from_dictionary_by_its_name`
+tests/code_item/test_code_item.py:16:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/files/classes.py:1:1: INP001 File `tests/files/classes.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/files/classes.py:1:19: UP004 [*] Class `UnusedClass` inherits from `object`
+tests/files/classes.py:10:1: T201 `print` found
+tests/files/classes.py:14:9: ANN204 Missing return type annotation for special method `__init__`
+tests/files/functions.py:1:1: INP001 File `tests/files/functions.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/files/functions.py:1:5: ANN201 Missing return type annotation for public function `unused_function`
+tests/files/functions.py:2:8: PLR0133 Two constants compared in a comparison, consider replacing `2 > 1`
+tests/files/functions.py:6:5: ANN201 Missing return type annotation for public function `this_one_is_used`
+tests/files/functions.py:14:9: ANN202 Missing return type annotation for private function `this_is_unused_closure`
+tests/files/functions.py:17:5: T201 `print` found
+tests/files/subdir/one_more_file.py:1:1: INP001 File `tests/files/subdir/one_more_file.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/files/subdir/one_more_file.py:1:5: ANN201 Missing return type annotation for public function `another_unused_function`
+tests/files/variables.py:1:1: INP001 File `tests/files/variables.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/files/variables.py:8:1: T201 `print` found
+tests/fix/test_assign.py:1:1: INP001 File `tests/fix/test_assign.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/fix/test_assign.py:12:9: ANN201 Missing return type annotation for public function `test_variable`
+tests/fix/test_assign.py:21:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/fix/test_assign.py:35:9: ANN201 Missing return type annotation for public function `test_variable_with_type_hint`
+tests/fix/test_assign.py:43:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/fix/test_assign.py:51:9: ANN201 Missing return type annotation for public function `test_unused_variable_in_multiple_inline_assignment_start`
+tests/fix/test_assign.py:60:9: ANN201 Missing return type annotation for public function `test_unused_variable_in_multiple_inline_assignment_end`
+tests/fix/test_assign.py:69:9: ANN201 Missing return type annotation for public function `test_unused_variable_in_multiple_inline_assignment_middle`
+tests/fix/test_assign.py:78:9: ANN201 Missing return type annotation for public function `test_multiple_unused_variables_in_multiple_inline_assignment`
+tests/fix/test_assign.py:87:9: ANN201 Missing return type annotation for public function `test_all_unused_variables_in_multiple_inline_assignment`
+tests/fix/test_class_def.py:1:1: INP001 File `tests/fix/test_class_def.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/fix/test_class_def.py:12:9: ANN201 Missing return type annotation for public function `test_class_def__`
+tests/fix/test_class_def.py:24:9: ANN201 Missing return type annotation for public function `test_class_def_and_method_def`
+tests/fix/test_class_def.py:37:9: ANN201 Missing return type annotation for public function `test_class_def`
+tests/fix/test_class_def.py:50:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/fix/test_class_def.py:62:9: ANN201 Missing return type annotation for public function `test_definition_imported_from_other_file`
+tests/fix/test_class_def.py:63:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+tests/fix/test_class_def.py:63:11: TD003 Missing issue link on the line following this TODO
+tests/fix/test_class_def.py:63:11: FIX002 Line contains TODO, consider resolving the issue
+tests/fix/test_class_def.py:83:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/fix/test_class_def.py:91:9: ANN201 Missing return type annotation for public function `test_methods_with_the_same_name`
+tests/fix/test_class_def.py:92:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+tests/fix/test_class_def.py:92:11: TD003 Missing issue link on the line following this TODO
+tests/fix/test_class_def.py:92:11: FIX002 Line contains TODO, consider resolving the issue
+tests/fix/test_class_def.py:112:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/fix/test_empty_files.py:1:1: INP001 File `tests/fix/test_empty_files.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/fix/test_empty_files.py:10:9: ANN201 Missing return type annotation for public function `test_file_removal`
+tests/fix/test_empty_files.py:17:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/fix/test_empty_files.py:24:9: ANN201 Missing return type annotation for public function `test_file_removal_from_subpath`
+tests/fix/test_empty_files.py:31:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/fix/test_method_def.py:1:1: INP001 File `tests/fix/test_method_def.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/fix/test_method_def.py:10:9: ANN201 Missing return type annotation for public function `test_method`
+tests/fix/test_method_def.py:36:9: ANN201 Missing return type annotation for public function `test_method_at_the_end_of_file`
+tests/fix/test_scope.py:1:1: INP001 File `tests/fix/test_scope.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/fix/test_scope.py:13:9: ANN201 Missing return type annotation for public function `test_same_variable_name_is_used_for_two_different_classes`
+tests/fix/test_scope.py:38:9: ANN201 Missing return type annotation for public function `test_instance_is_being_passed_into_a_function`
+tests/fix/test_scope.py:57:9: ANN201 Missing return type annotation for public function `test_instance_is_being_passed_into_a_function_using_args`
+tests/fix/test_scope.py:76:9: ANN201 Missing return type annotation for public function `test_instance_is_being_passed_into_a_function_using_kwargs`
+tests/fix/test_scope.py:95:9: ANN201 Missing return type annotation for public function `test_instance_is_being_passed_into_a_method_using_kwargs`
+tests/fix/test_scope.py:115:9: ANN201 Missing return type annotation for public function `test_instance_is_being_passed_into_a_class_method_using_kwargs`
+tests/fix/test_scope.py:136:9: ANN201 Missing return type annotation for public function `test_instance_is_being_passed_into_a_static_method_using_kwargs`
+tests/fix/test_scope.py:157:9: ANN201 Missing return type annotation for public function `test_instance_is_being_imported`
+tests/fix/test_scope.py:174:9: ANN201 Missing return type annotation for public function `test_instance_is_being_imported_with_renaming`
+tests/fix/test_scope.py:191:9: ANN201 Missing return type annotation for public function `test_variable_renaming`
+tests/fix/test_scope.py:208:9: ANN201 Missing return type annotation for public function `test_variable_renaming_using_expansion_from_a_list`
+tests/fix/test_scope.py:225:9: ANN201 Missing return type annotation for public function `test_function_arguments_are_being_passed_using_partial_instead_of_direct_call`
+tests/fix/test_unreachable_code.py:1:1: INP001 File `tests/fix/test_unreachable_code.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/fix/test_unreachable_code.py:6:9: ANN201 Missing return type annotation for public function `test_else_is_not_changed_when_condition_is_true`
+tests/fix/test_unreachable_code.py:17:9: PT009 Use a regular `assert` instead of unittest-style `assertIsNone`
+tests/fix/test_unreachable_code.py:30:9: ANN201 Missing return type annotation for public function `test_else_is_not_changed_when_condition_is_false`
+tests/fix/test_unreachable_code.py:41:9: PT009 Use a regular `assert` instead of unittest-style `assertIsNone`
+tests/fix/test_unreachable_code.py:54:9: ANN201 Missing return type annotation for public function `test_while_is_not_changed_when_condition_is_true`
+tests/fix/test_unreachable_code.py:65:9: PT009 Use a regular `assert` instead of unittest-style `assertIsNone`
+tests/fix/test_unreachable_code.py:78:9: ANN201 Missing return type annotation for public function `test_while_is_not_changed_when_condition_is_false`
+tests/fix/test_unreachable_code.py:89:9: PT009 Use a regular `assert` instead of unittest-style `assertIsNone`
+tests/nested_scope/test_nested_scope.py:1:1: INP001 File `tests/nested_scope/test_nested_scope.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/nested_scope/test_nested_scope.py:8:9: ANN201 Missing return type annotation for public function `test_class_should_be_in_scope`
+tests/nested_scope/test_nested_scope.py:17:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/nested_scope/test_nested_scope.py:24:9: ANN201 Missing return type annotation for public function `test_class_and_its_method_should_be_in_scope`
+tests/nested_scope/test_nested_scope.py:36:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+tests/nested_scope/test_nested_scope.py:36:11: TD003 Missing issue link on the line following this TODO
+tests/nested_scope/test_nested_scope.py:36:11: FIX002 Line contains TODO, consider resolving the issue
+tests/nested_scope/test_nested_scope.py:38:9: ANN201 Missing return type annotation for public function `test_name_is_overriden`
+tests/nested_scope/test_nested_scope.py:53:9: ANN201 Missing return type annotation for public function `test_multi_parent_inheritance_should_be_tracked`
+tests/nested_scope/test_nested_scope.py:87:9: PT009 Use a regular `assert` instead of unittest-style `assertIsNone`
+tests/nested_scope/test_nested_scope.py:89:9: ANN201 Missing return type annotation for public function `test_take_parent_scopes_into_consideration_when_searching_for_definition`
+tests/nested_scope/test_nested_scope.py:123:9: PT009 Use a regular `assert` instead of unittest-style `assertIsNone`
+tests/nested_scope/test_nested_scope.py:126:9: ANN201 Missing return type annotation for public function `test_type_tracking_for_function_arguments`
+tests/nested_scope/test_nested_scope.py:146:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+tests/nested_scope/test_nested_scope.py:146:11: TD003 Missing issue link on the line following this TODO
+tests/nested_scope/test_nested_scope.py:146:11: FIX002 Line contains TODO, consider resolving the issue
+tests/nested_scope/test_nested_scope.py:165:9: PT009 Use a regular `assert` instead of unittest-style `assertIsNone`
+tests/nested_scope/test_nested_scope.py:168:9: ANN201 Missing return type annotation for public function `test_scope_update_for_method_call_expression`
+tests/nested_scope/test_nested_scope.py:180:9: PT009 Use a regular `assert` instead of unittest-style `assertIsNone`
+tests/noqa/test_noqa_comments.py:1:1: INP001 File `tests/noqa/test_noqa_comments.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/noqa/test_noqa_comments.py:8:9: ANN201 Missing return type annotation for public function `test_unused_class_is_unchanged_if_noqa_comment_is_provided`
+tests/noqa/test_noqa_comments.py:27:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/noqa/test_noqa_comments.py:29:9: ANN201 Missing return type annotation for public function `test_noqa_all`
+tests/noqa/test_noqa_comments.py:46:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/noqa/test_noqa_comments.py:48:9: ANN201 Missing return type annotation for public function `test_unused_variable`
+tests/noqa/test_noqa_comments.py:57:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/noqa/test_noqa_comments.py:68:9: ANN201 Missing return type annotation for public function `test_unused_variable_but_wrong_noqa_specified`
+tests/noqa/test_noqa_comments.py:78:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/noqa/test_noqa_comments.py:83:9: ANN201 Missing return type annotation for public function `test_unused_function`
+tests/noqa/test_noqa_comments.py:92:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/noqa/test_noqa_comments.py:103:9: ANN201 Missing return type annotation for public function `test_unused_method`
+tests/noqa/test_noqa_comments.py:130:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/noqa/test_noqa_comments.py:133:9: ANN201 Missing return type annotation for public function `test_unused_attribute`
+tests/noqa/test_noqa_comments.py:134:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+tests/noqa/test_noqa_comments.py:134:11: TD003 Missing issue link on the line following this TODO
+tests/noqa/test_noqa_comments.py:134:11: FIX002 Line contains TODO, consider resolving the issue
+tests/noqa/test_noqa_comments.py:159:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/noqa/test_noqa_comments.py:162:9: ANN201 Missing return type annotation for public function `test_unused_name`
+tests/noqa/test_noqa_comments.py:163:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+tests/noqa/test_noqa_comments.py:163:11: TD003 Missing issue link on the line following this TODO
+tests/noqa/test_noqa_comments.py:163:11: FIX002 Line contains TODO, consider resolving the issue
+tests/noqa/test_noqa_comments.py:188:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/noqa/test_noqa_comments.py:190:9: ANN201 Missing return type annotation for public function `test_unused_import`
+tests/noqa/test_noqa_comments.py:207:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/noqa/test_noqa_comments.py:210:9: ANN201 Missing return type annotation for public function `test_unused_property`
+tests/noqa/test_noqa_comments.py:233:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/noqa/test_noqa_comments.py:236:9: ANN201 Missing return type annotation for public function `test_unreachable_code`
+tests/noqa/test_noqa_comments.py:237:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+tests/noqa/test_noqa_comments.py:237:11: TD003 Missing issue link on the line following this TODO
+tests/noqa/test_noqa_comments.py:237:11: FIX002 Line contains TODO, consider resolving the issue
+tests/noqa/test_noqa_comments.py:261:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/noqa/test_noqa_comments.py:263:9: ANN201 Missing return type annotation for public function `test_empty_file`
+tests/noqa/test_noqa_comments.py:264:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+tests/noqa/test_noqa_comments.py:264:11: TD003 Missing issue link on the line following this TODO
+tests/noqa/test_noqa_comments.py:264:11: FIX002 Line contains TODO, consider resolving the issue
+tests/noqa/test_noqa_comments.py:281:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/noqa/test_noqa_comments.py:283:9: ANN201 Missing return type annotation for public function `test_commented_out_code`
+tests/noqa/test_noqa_comments.py:284:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+tests/noqa/test_noqa_comments.py:284:11: TD003 Missing issue link on the line following this TODO
+tests/noqa/test_noqa_comments.py:284:11: FIX002 Line contains TODO, consider resolving the issue
+tests/noqa/test_noqa_comments.py:301:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/noqa/test_noqa_comments.py:304:9: ANN201 Missing return type annotation for public function `test_ignore_expression`
+tests/noqa/test_noqa_comments.py:329:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/test_accurate_usage_detection.py:1:1: INP001 File `tests/test_accurate_usage_detection.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/test_accurate_usage_detection.py:9:9: ANN201 Missing return type annotation for public function `test_function_call_with_one_argument`
+tests/test_accurate_usage_detection.py:10:12: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+tests/test_accurate_usage_detection.py:10:12: TD005 Missing issue description after `TODO`
+tests/test_accurate_usage_detection.py:10:12: TD003 Missing issue link on the line following this TODO
+tests/test_accurate_usage_detection.py:10:12: FIX002 Line contains TODO, consider resolving the issue
+tests/test_accurate_usage_detection.py:32:9: PT009 Use a regular `assert` instead of unittest-style `assertIsNone`
+tests/test_deadcode.py:1:1: INP001 File `tests/test_deadcode.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/test_deadcode.py:8:9: ANN201 Missing return type annotation for public function `test_unused_variable_name_found_successfully`
+tests/test_deadcode.py:11:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/test_deadcode.py:20:9: ANN201 Missing return type annotation for public function `test_unused_function_name_found`
+tests/test_deadcode.py:23:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/test_deadcode.py:32:9: ANN201 Missing return type annotation for public function `test_unused_class_name_found`
+tests/test_deadcode.py:35:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+tests/test_deadcode.py:35:11: TD003 Missing issue link on the line following this TODO
+tests/test_deadcode.py:35:11: FIX002 Line contains TODO, consider resolving the issue
+tests/test_deadcode.py:37:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/test_deadcode.py:45:9: ANN201 Missing return type annotation for public function `test_run_dead_code_finder_with_a_subprocess_in_a_right_directory_main`
+tests/test_deadcode.py:53:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/test_deadcode.py:64:9: ANN201 Missing return type annotation for public function `test_invalid_python_file_found`
+tests/test_deadcode.py:68:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/test_imports.py:1:1: INP001 File `tests/test_imports.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/test_imports.py:6:9: ANN201 Missing return type annotation for public function `test_variable_is_imported_as_an_alias_but_unused`
+tests/test_imports.py:15:9: ANN201 Missing return type annotation for public function `test_variable_is_used_if_its_imported_as_a_different_name`
+tests/test_imports.py:26:9: ANN201 Missing return type annotation for public function `test_module_imported_and_var_from_it_is_used`
+tests/test_imports.py:34:9: ERA001 Found commented-out code
+tests/test_imports.py:37:9: ANN201 Missing return type annotation for public function `test_module_imported_with_alias_and_var_from_it_is_used`
+tests/test_imports.py:47:9: ANN201 Missing return type annotation for public function `test_relative_module_imports`
+tests/test_imports.py:48:11: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+tests/test_imports.py:48:11: FIX002 Line contains TODO, consider resolving the issue
+tests/test_imports.py:59:9: ANN201 Missing return type annotation for public function `test_file_contains_syntax_error`
+tests/test_imports.py:69:9: ANN201 Missing return type annotation for public function `test_ignore_variable_names_in_comments`
+tests/test_imports.py:80:9: ANN201 Missing return type annotation for public function `test_ignore_variable_names_in_strings`
+tests/test_imports.py:93:7: TD002 Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+tests/test_imports.py:93:7: TD005 Missing issue description after `TODO`
+tests/test_imports.py:93:7: TD003 Missing issue link on the line following this TODO
+tests/test_imports.py:93:7: FIX002 Line contains TODO, consider resolving the issue
+tests/test_imports.py:94:9: ANN201 Missing return type annotation for public function `test_unused_names_found_in_subdirectories`
+tests/test_imports.py:97:9: ANN201 Missing return type annotation for public function `test_exclude_option`
+tests/test_imports.py:100:9: ANN201 Missing return type annotation for public function `test_ignore_names_in_files_option`
+tests/test_line_number_detection.py:1:1: INP001 File `tests/test_line_number_detection.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/test_line_number_detection.py:6:9: ANN201 Missing return type annotation for public function `test_parse_variable_names_from_files`
+tests/test_line_number_detection.py:19:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/test_line_number_detection.py:21:9: ANN201 Missing return type annotation for public function `test_parse_function_names_from_files`
+tests/test_line_number_detection.py:34:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/test_line_number_detection.py:36:9: ANN201 Missing return type annotation for public function `test_parse_class_names_from_files`
+tests/test_line_number_detection.py:56:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/test_line_number_detection.py:58:9: ANN201 Missing return type annotation for public function `test_parse_lambda_function_names_from_files`
+tests/test_line_number_detection.py:62:38: W291 Trailing whitespace
+tests/test_line_number_detection.py:70:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/test_line_number_detection.py:76:5: ERA001 Found commented-out code
+tests/test_line_number_detection.py:77:5: ERA001 Found commented-out code
+tests/test_line_number_detection.py:91:5: ERA001 Found commented-out code
+tests/test_line_number_detection.py:94:5: ERA001 Found commented-out code
+tests/test_line_number_detection.py:97:5: ERA001 Found commented-out code
+tests/test_output.py:1:1: INP001 File `tests/test_output.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/test_output.py:6:9: ANN201 Missing return type annotation for public function `test_count_several_classes`
+tests/test_output.py:28:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/test_output.py:30:9: ANN201 Missing return type annotation for public function `test_count_variables_function_and_class`
+tests/test_output.py:47:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/test_output.py:51:9: ANN201 Missing return type annotation for public function `test_count_several_classes`
+tests/test_output.py:73:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/test_output.py:75:9: ANN201 Missing return type annotation for public function `test_count_variables_function_and_class`
+tests/test_output.py:92:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/test_output.py:96:9: ANN201 Missing return type annotation for public function `test_colorful_output`
+tests/test_output.py:107:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/test_output.py:119:9: ANN201 Missing return type annotation for public function `test_no_color_option`
+tests/test_output.py:130:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/test_variable_parsing_from_ast_dump.py:1:1: INP001 File `tests/test_variable_parsing_from_ast_dump.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/utils/test_add_colors_to_diff.py:1:1: INP001 File `tests/utils/test_add_colors_to_diff.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/utils/test_add_colors_to_diff.py:1:1: I001 [*] Import block is un-sorted or un-formatted
+tests/utils/test_add_colors_to_diff.py:8:9: ANN201 Missing return type annotation for public function `test_add_colors_to_diff`
+tests/utils/test_add_colors_to_diff.py:24:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+tests/utils/test_fix_indent.py:1:1: INP001 File `tests/utils/test_fix_indent.py` is part of an implicit namespace package. Add an `__init__.py`.
+tests/utils/test_fix_indent.py:7:9: ANN201 Missing return type annotation for public function `test_indentation_is_not_removed_from_second_line`
+tests/utils/test_fix_indent.py:10:9: PT009 Use a regular `assert` instead of unittest-style `assertEqual`
+Found 899 errors.
+[*] 44 fixable with the `--fix` option (312 hidden fixes can be enabled with the `--unsafe-fixes` option).

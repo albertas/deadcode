@@ -1,0 +1,198 @@
+
+Another interesting observation: how to split a class into two:
+    copy paste the class, rename it and clean up the unused code.
+
+
+
+[2024-07-28]
+1:
+Hello, today i am going to present a new tool, which I am still developing.
+called deadcode.
+It is a tool for finding and fixing unused Python code.
+
+2:
+My presentation consists out of four parts.
+Firstly i will present current state of dead code detection using existing tools.
+Secondly I will provide a set of features of deadcode package.
+Thirdly I will show how to use it.
+And Finally I will compare two different strategies of finding unused code.
+
+3:
+Lets begin with defining what dead code is, because there are a lot of different definitions.
+
+4:
+For me deadcode is unused and no longer needed code which should have been removed but it was not.
+This dead, unutilised code still remains in the code base.
+
+5:
+Such unused code creates technical debt, because
+- it consumes cognitive capacity, since you have to unserstand dead code sometimes.
+- it has to be maintained, when a Python version is upgraded, you have to update all the code base including the unsued one.
+- it might increase security risks,
+    in case unsed code brought in outdated dependency with security vulnerabilities. 
+
+Unused code consumes time, money and increases security risks.
+
+It is like evil agents from the movie Matrix, who are waiting to cause you trouble.
+We definitely want to get rid of it.
+
+6:
+I would like to share a short story with you.
+Once I have bumped into a Pull request, which contained a useful feature, but it also
+contained an unused class. 
+Initially the author wanted to use it, but decided not to. But he forgot to remove it.
+
+I was surprised that this unused class slipped into the pull request undetected,
+because we were using the bleeding ednge linters like Ruff with all the rules enabled.
+This made me curios and led me to an investigation.
+
+7:
+I have reviewed all rules implemented by Ruff and there are more than seven hundred of them.
+I found out that there are only several rules for unused code, that is for unused imports,
+unused local variables and arguments.
+This is only a tiny fraction of unused code, which appear in a code base.
+
+8:
+I have searched for other tools and I found the most popular one: called vulture.
+> it is an old, mature and capable package for finding dead code.
+ 
+9:
+I tried using it, but I have bumped into couple of issues.
+- the main one was that vulture has reported a lot of false positives.
+When an attribute is added to a schema, TypedDict or a class Meta:
+    this attribute has to be added to Vulture configuration as well.
+There are too few options to tune the behavior.
+This adds a huge overhead of using this package.
+
+In addition you have to remove those findings manually yourself.
+
+10:
+11:
+I have tried searching ways to improve the vulture package, but 
+came to a conclusion that too significant refactoring would be needed.
+And I have decide to create a new package instead of improving existing one.
+
+deadcode is implemented in Python, but it might get reimplemented in Rust and eventually
+integrated into Ruff, if it gets recognised. 
+
+
+12:
+Deadcode has three main advantages over vulture.
+Firstly, it provides a wide range of options to tune the behavior.
+Secondly, it supports slightly more unused code types.
+Thirdly, it provides automatic fixing capability.
+
+13:
+Lets get into details of these three advantages.
+
+I have identified three terms, which can be used to ignoring code:
+    these are name, body and definition.
+    Now it is possible to ignore part of or whole definition instead of a single name.
+
+14:
+In addition it is possible to ignore code based on
+inheritance, decorators used or naming patterns.
+
+In this example we are ignoring class Meta and bodies of dataclasses, TypedDicts.
+With this short configuration we are able to tune out most of the False positives.
+
+15:
+Deadcode supports thirteen types of checks, which can be ignored per line or per file.
+One of these rules is empty python file detection.
+Files with dunder naming are ignored by default.
+
+16:
+deadcode package provides a --fix flag, which can be used to automatically remove the findings.
+it also provides a dry flag, which shows a diff of the changes instead of modifying the files.
+If the file becomes empty after the clean up - the file gets removed, unless it uses dunder naming.
+
+17:
+lets see how to use it.
+
+18:
+The usage is pretty strait forward.
+You have to install the package using pip install deadcode command.
+
+And run it using cli by providing a list of python files that have to be checked.
+
+Unused code items will be reported.
+
+
+You can see a lot of unused code items, which are highlighed in purple, in this code example.
+
+All of these unused items are reported in the output.
+
+19:
+If we run a deadcode command with a fix flag, then all of these items get removed.
+The output is almost the same as before, but it now contains additional line,
+stating that 7 unused code items were removed.
+
+
+20:
+it is important to highlight that you have to tune out the false positives before
+running outmatic fixing.
+It is possible to do it by reviewing the changes using a dry option.
+It is also possible to see a diff of a single file by providing its name to dry option.
+
+
+21:
+    The final part of my presentation is about different strategies of detecting unused code.
+
+22:
+    Unused code detection is a complex task.
+    Both Vulture and Deadcode uses abstract syntax tree to parse and analyse Python code.
+    However, Abstract Syntax Tree does not provide information about association of
+    a definition and its useage.
+    This meta information has to be somehow constructed.
+
+23:
+    The strategy used by vulture executes three steps.
+    First it finds all defined names.
+    Second it finds all used names.
+    Third it reports the difference between these two sets.
+
+The result will be empty set, nothing will be reported.
+
+24:
+Lets complicate this example a little bit by adding additional class name Bar.
+with a signle method spam.
+As we can see two different classes have the same method, but only Foo.spam() method is used.
+
+In the first step vulture will find:
+    three defined names: Foo, spam an Bar.
+In the second step the same used names will be found:
+    Foo, spam and Bar
+And nothing will be reported, even though Bar.spam method is not used.
+This is because a namespace of a code item is not taken into account.
+
+
+25:
+    Now lets consider the same example with a different strategy,
+    when the namespace is being taken into account.
+
+    In the first step, Foo.spam() and Bar.spam() methods will be detected as separate definitions.
+    For the second step, only Foo.spam() usage will be detected.
+    As a result Bar.spam() will be reported as unused.
+
+    Sometimes it is hard or not possible to construct the namespace of a used code item.
+    In such cases deadcode will fallback to the previous strategy comparing names
+    without their namespaces.
+
+26:
+    This more precice code detection strategy has a nice side effect, which allows to 
+    prune Python code tree to keeping only what is needed. 
+
+    This allows to reduce the size of Python code bundle,
+    which might be useful when size matters.
+
+    For example when python code has to be served in the browser.
+
+
+Lets draw a conclusion here.
+
+27:
+    that deadcode package prevents technical debt from appearing out of unused code
+    And I hope it will be useful for you.
+
+28
+    Thank you very much for your attention.

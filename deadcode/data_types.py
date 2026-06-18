@@ -36,8 +36,14 @@ class Args:
 
 class Part(NamedTuple):
     """Code file part"""
-
+    # Code fragment to remove.
     line_start: int
     line_end: int
     col_start: int
     col_end: int
+
+    # Optionally code to insert in place of removed fragment.
+    insert_code: str | None = None
+
+    # Inserts `insert_code` if character at [line, col] is not removed.
+    insert_code_if_character_is_not_removed: tuple[int, int] | None = None

@@ -117,7 +117,6 @@ class TestFixCliOption(BaseTestCase):
             {
                 'ignore_names_by_pattern.py': """
                 used_variable = "one"
-
                 spam = "Spam"
                 print(spam, used_variable)
                 """
@@ -166,6 +165,7 @@ class TestFixCliOption(BaseTestCase):
 
         main(['ignore_names_by_pattern.py', '--no-color', '--fix'])
 
+        # GOAL: make this method work with multiline code diffs.
         self.assertFiles(
             {
                 'foo.py': """
@@ -289,12 +289,12 @@ class TestAddPassForEmptyBlock(BaseTestCase):
 
         main(['.', '--fix'])
 
+        # TODO: line removal could be more intelligent
         self.assertFiles(
             {
                 'foo.py': """
             def foo():
                 pass
-
             foo()
             """
             }
@@ -495,6 +495,12 @@ class TestKeepCorrectNumberOfEmptyLinesAfterRemovalOfCodeBlock(BaseTestCase):
 
         main(['.', '--fix'])
 
+        # So actually a method was removed, but its empty line was not removed.
+        # Lets investigate why this empty line was preserved.
+        #
+        # Ideally this empty line should be checked after removal of unused code item.
+        #
+        #
         self.assertFiles(
             {
                 'foo.py': """

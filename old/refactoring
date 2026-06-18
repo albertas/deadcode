@@ -1,0 +1,51 @@
+
+Files open:
+
+deadcode/actions/remove_file_parts 326
+tests/cli_args/test_fix.py 504
+
+test unused imports.py 92
+    test_method_at_the_end_of_file_and_class_does_not_have_overlapping_parts_with_its_method
+
+
+deadcode/actions/merge_overlaping_file_parts.py:93
+
+
+vi deadcode/actions/merge_overlaping_file_parts.py:90
+    merge_overlapint_file_parts 91
+
+
+deadcode/visitor/fix_unused_code_visitor.py:305
+    fix_unused_code_visitor.py 302
+
+
+tests/nested_scope/test_nested_scope.py:24:
+    test_nested_scope.py 24
+
+
+
+
+
+
+
+
+
+
+FAILED tests/cli_args/test_dry.py::TestDryCliOption::test_all_files_are_reported_if_no_filenames_are_provided_for_dry_option - AssertionError: 'bar.[138 chars],4 +1,2 @@\n-def unused_function():\n-    pass[139 chars]le")' != 'bar.[138 chars],4 +1 @@\n-def unused_function():\n-    pass\n[141 chars]")\n'
+FAILED tests/cli_args/test_dry.py::TestDryCliOption::test_coloring_of_a_diff - AssertionError: 'bar.[265 chars]r.py\n\x1b[0m\x1b[32m+++ bar.py\n\x1b[0m@@ -1,[394 chars]le")' != 'bar.[265 chars]r.py\x1b[0m\n\x1b[32m+++ bar.py\x1b[0m\n@@ -1,[424 chars]")\n'
+FAILED tests/cli_args/test_dry.py::TestDryCliOption::test_file_is_not_modified_if_fix_option_is_used_with_dry - AssertionError: 'foo.[79 chars],4 +1,2 @@\n-class UnusedClass:\n-    pass\n \[28 chars]le")' != 'foo.[79 chars],4 +1 @@\n-class UnusedClass:\n-    pass\n-\n [28 chars]")\n'
+FAILED tests/cli_args/test_dry.py::TestDryCliOption::test_only_provided_filenames_to_dry_option_are_reported - AssertionError: 'bar.[138 chars],4 +1,2 @@\n-class UnusedClass:\n-    pass\n \[28 chars]le")' != 'bar.[138 chars],4 +1 @@\n-class UnusedClass:\n-    pass\n-\n [28 chars]")\n'
+FAILED tests/cli_args/test_dry.py::TestDryCliOption::test_pattern_usage_for_filenames_provided_to_dry_option - AssertionError: 'foo.[79 chars],4 +1,2 @@\n-class UnusedClass:\n-    pass\n \[28 chars]le")' != 'foo.[79 chars],4 +1 @@\n-class UnusedClass:\n-    pass\n-\n [28 chars]")\n'
+FAILED tests/cli_args/test_dry.py::TestDryCliOption::test_unused_class_was_reported_to_be_removed - AssertionError: 'foo.[98 chars]UnusedClass:\n-    pass\n \n print("Dont change this file")' != 'foo.[98 chars]UnusedClass:\n-    pass\n \n print("Dont change this file")\n '
+
+FAILED tests/cli_args/test_fix.py::TestFixCliOption::test_empty_lines_are_removed_properly - AssertionError: 'NAME[136 chars] pass\n\n\ninstance = Example()\nprint(instance.foo())\n' != 'NAME[136 chars] pass\n\n\n\n\n\ninstance = Example()\nprint(instance.foo())\n'
+FAILED tests/cli_args/test_fix.py::TestFixCliOption::test_empty_lines_are_removed_properly_indented - AssertionError: 'name[104 chars]le:\n    def foo(self):\n        with open("ex[98 chars]))\n' != 'name[104 chars]le:\n\n\n\n\n    def foo(self):\n        with [110 chars]))\n'
+FAILED tests/cli_args/test_fix.py::TestFixCliOption::test_function_removal_of_several_items - AssertionError: 'used_variable = "one"\n\nspam = "Spam"\nprint(spam, used_variable)\n' != 'used_variable = "one"\n\n\nspam = "Spam"\nprint(spam, used_variable)\n'
+
+FAILED tests/cli_args/test_fix.py::TestAddPassForEmptyBlock::test_empty_with_block - AssertionError: 'with open("tmp.txt"):\n    pass\n' != 'with open("tmp.txt") as :\n    pass\n'
+FAILED tests/cli_args/test_fix.py::TestKeepCorrectNumberOfEmptyLinesAfterRemovalOfCodeBlock::test_two_spaces_are_kept_after_one_method_removal - AssertionError: 'class Example:\n    def used_method(self):\n        print[68 chars]))\n' != 'class Example:\n\n    def used_method(self):\n        pri[70 chars]))\n'
+
+
+
+    It seems that empty line is missing.
+
