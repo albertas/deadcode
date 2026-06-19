@@ -107,7 +107,7 @@ The codebase is fully type-checked in strict mode: visitor methods use concrete 
 just check-complexity
 ```
 
-Runs `ruff check --select C901` to report McCabe complexity violations (complexity > 10, per `pyproject.toml`). This check is part of the gating `just check` pipeline.
+Runs `ruff check --select C901` to report McCabe complexity violations (complexity > 8, per `pyproject.toml`). This check is part of the gating `just check` pipeline. All functions must have a cyclomatic complexity of 8 or less.
 
 ## Comprehensive Check Pipeline
 
@@ -119,7 +119,7 @@ Runs all checks in order and fails on any error:
 
 1. `check-format` — Ensures code is formatted
 2. `check-lint` — Ensures lint passes
-3. `check-complexity` — Ensures no function complexity > 10
+3. `check-complexity` — Ensures no function complexity > 8
 4. `check-typecheck` — Ensures type check passes
 5. `test` — Runs full test suite with coverage
 

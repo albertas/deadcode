@@ -1,6 +1,27 @@
 import sys
 
 
+def _find_common_margin(lines: list[str]) -> int:
+    """Minimum indentation across non-blank lines; sys.maxsize if none found."""
+    margin = sys.maxsize
+    for line in lines:
+        content = len(line.lstrip())
+        if content:
+            indent = len(line) - content
+            margin = min(margin, indent)
+    return margin
+
+
+def _strip_margin(lines: list[str], margin: int) -> None:
+    """De-indent lines[1:] in place, preserving non-space prefix characters."""
+    for i in range(1, len(lines)):
+        prefix = lines[i][:margin]
+        if prefix_without_spaces := prefix.rstrip(' '):
+            lines[i] = prefix_without_spaces + lines[i][margin:]
+        else:
+            lines[i] = lines[i][margin:]
+
+
 def fix_indent(doc: str) -> str | None:
     """Finds indentation of a first line and removes it from all following lines.
 
@@ -13,24 +34,11 @@ def fix_indent(doc: str) -> str | None:
     else:
         # TODO: this method also removed empty lines, which makes exact asserting checking hard.
 
-        # Find minimum indentation of any non-blank lines after first line.
-        margin = sys.maxsize
-        for line in lines[0:]:
-            content = len(line.lstrip())
-            if content:
-                indent = len(line) - content
-                margin = min(margin, indent)
-        # Remove indentation.
+        margin = _find_common_margin(lines)
         if lines:
             lines[0] = lines[0].lstrip()
         if margin < sys.maxsize:
-            for i in range(1, len(lines)):
-                # Strip only spaces from the prefix
-                prefix = lines[i][:margin]
-                if prefix_without_spaces := prefix.rstrip(' '):
-                    lines[i] = prefix_without_spaces + lines[i][margin:]
-                else:
-                    lines[i] = lines[i][margin:]
+            _strip_margin(lines, margin)
 
         ## Do not remove trailing lines
         # while lines and not lines[-1]:

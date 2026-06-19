@@ -82,6 +82,10 @@ The codebase is fully annotated in strict mypy mode. Key invariants:
 - String constant detection uses `isinstance(node, ast.Constant) and isinstance(node.value, str)` (not deprecated `ast.Str`)
 - Position attributes (`lineno`, `col_offset`, `end_lineno`, `end_col_offset`) are accessed via `typing.cast` where the static type cannot be narrowed
 
+## Code Quality & Complexity
+
+All functions in the codebase are designed to stay below a **McCabe cyclomatic complexity limit of 8**. This is enforced via `[tool.ruff.lint.mccabe]` in `pyproject.toml` and checked by `just check-complexity`. Complex functions are broken into smaller helper functions within the same module to maintain readability and testability. This applies to all modules in `deadcode/` and is verified as part of the gating `just check` pipeline.
+
 ## Module Organization
 
 The codebase is factored into three main subsystems:

@@ -27,7 +27,7 @@
   - [x] [T6] [cq:ruff-format] Audit `ruff format` is clean across the codebase. Run `just check-format`.
   - [x] [T7] [cq:ruff-lint] Audit `ruff check` is clean across the codebase. Enable most of ruff linting checks. Run `just check-lint`.
   - [x] [T8] [cq:typecheck] Audit `mypy app/` passes. Add type hints in the code where possible. Run `just check-typecheck`.
-  - [ ] [cq:complexity] Audit cyclomatic complexity stays <= 8 across `app/` and `tests/`. Run `just check-complexity`.
+  - [x] [T9] [cq:complexity] Audit cyclomatic complexity stays <= 8 across `app/` and `tests/`. Run `just check-complexity`.
   - [ ] [cq:check] Ensure that just check command exist, it combines all the checks from Justfile and this `check` target passes.
   - [ ] [cq:pythonversion] Ensure that latest stable python version is used.
   - [ ] [cq:versions] Ensure that latest dependency versions are used.

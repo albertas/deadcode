@@ -515,6 +515,67 @@ class FindUnusedCodeVisitor(ast.NodeVisitor):
         for kwd_attr in node.kwd_attrs:
             self.add_used_name(kwd_attr)
 
+    def _apply_ignore_definitions(self, node_name: str | None, inherits_from: list[str] | None) -> bool:
+        """Activate should_ignore_new_definitions for name/inheritance matches.
+
+        Returns True iff this call turned the flag on (i.e. the caller owns turning
+        it back off in teardown).
+        """
+        if (node_name and _match(node_name, self.args.ignore_definitions)) or (
+            inherits_from and _match_many(inherits_from, self.args.ignore_definitions_if_inherits_from)
+        ):
+            if not self.should_ignore_new_definitions:
+                self.should_ignore_new_definitions = True
+                return True
+        return False
+
+    def _apply_ignore_bodies(self, inherits_from: list[str] | None) -> bool:
+        """Activate should_ignore_new_definitions for ignore_bodies_if_inherits_from."""
+        if inherits_from and _match_many(inherits_from, self.args.ignore_bodies_if_inherits_from):
+            if not self.should_ignore_new_definitions:
+                self.should_ignore_new_definitions = True
+                return True
+        return False
+
+    def _dispatch_pre_visit(self, node: ast.AST) -> None:
+        visitor = getattr(self, 'visit_' + node.__class__.__name__, None)
+        if visitor:
+            visitor(node)
+
+    def _maybe_push_scope(self, node: ast.AST) -> bool:
+        """Push class/function name onto scope_parts; return whether a scope was pushed."""
+        if isinstance(node, ast.ClassDef):
+            self.scope_parts.append(node.name)
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            self.scope_parts.append(node.name)
+        else:
+            return False
+        return True
+
+    def _visit_type_comment(self, node: ast.AST) -> None:
+        type_comment = getattr(node, 'type_comment', None)
+        if type_comment is not None:
+            mode = 'func_type' if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) else 'eval'
+            self.visit(ast.parse(type_comment, filename='<type_comment>', mode=mode))
+
+    def _visit_children(self, node: ast.AST) -> None:
+        """Replaces generic_visit: traverse child nodes, handling list fields for unreachable code."""
+        if not node:
+            return
+        for _, value in ast.iter_fields(node):
+            if isinstance(value, list):
+                self._handle_ast_list(value)
+                for item in value:
+                    if isinstance(item, ast.AST):
+                        self.visit(item)
+            elif isinstance(value, ast.AST):
+                self.visit(value)
+
+    def _dispatch_post_visit(self, node: ast.AST) -> None:
+        visit_method = getattr(self, 'visit_' + node.__class__.__name__ + '_after_visiting_child_nodes', None)
+        if visit_method:
+            visit_method(node)
+
     def visit(self, node: ast.AST) -> None:
         node_name = getattr(node, 'name', None)
 
@@ -524,75 +585,26 @@ class FindUnusedCodeVisitor(ast.NodeVisitor):
         # I should write a unit test with only an exrepssion and check which methods are being called.
         # I should only handled that single expression handling properly.
 
-        if inherits_from := self.get_inherits_from(node):
+        inherits_from = self.get_inherits_from(node)
+        if inherits_from:
             node.inherits_from = inherits_from  # type: ignore
 
-        should_turn_off_ignore_new_definitions = False
-        if (
-            # Name is in ignore_definitions
-            node_name and _match(node_name, self.args.ignore_definitions)
-        ) or (
-            # Class inherits from ignore_definitions_if_inherits_from
-            inherits_from and _match_many(inherits_from, self.args.ignore_definitions_if_inherits_from)
-        ):
-            if not self.should_ignore_new_definitions:
-                self.should_ignore_new_definitions = True
-                should_turn_off_ignore_new_definitions = True
+        should_turn_off_ignore_new_definitions = self._apply_ignore_definitions(node_name, inherits_from)
 
-        # Visit node before visiting all its children
-        method_name = 'visit_' + node.__class__.__name__
-        visitor = getattr(self, method_name, None)
+        self._dispatch_pre_visit(node)
 
-        if visitor:
-            visitor(node)
+        was_scope_increased = self._maybe_push_scope(node)
 
-        # TODO: use decorator for this code chunk
-        was_scope_increased = True
-        if isinstance(node, ast.ClassDef):
-            self.scope_parts.append(node.name)
-        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            self.scope_parts.append(node.name)
-        else:
-            was_scope_increased = False
+        should_turn_off_ignore_new_definitions = (
+            self._apply_ignore_bodies(inherits_from) or should_turn_off_ignore_new_definitions
+        )
 
-        # Class inherits from ignore_bodies_if_inherits_from
-        if inherits_from and _match_many(inherits_from, self.args.ignore_bodies_if_inherits_from):
-            if not self.should_ignore_new_definitions:
-                self.should_ignore_new_definitions = True
-                should_turn_off_ignore_new_definitions = True
+        self._visit_type_comment(node)
+        self._visit_children(node)
+        self._dispatch_post_visit(node)
 
-        # There isn't a clean subset of node types that might have type
-        # comments, so just check all of them.
-        type_comment = getattr(node, 'type_comment', None)
-        if type_comment is not None:
-            mode = 'func_type' if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) else 'eval'
-            self.visit(ast.parse(type_comment, filename='<type_comment>', mode=mode))
-
-        # Visit node children nodes:
-        # """Called if no explicit visitor function exists for a node."""
-        # TODO: for assignment statements unused_code unit should be whole assignment statement instead of a name itself
-        # Note: Node is None if file is empty, contains only a docstring, a comment or has a SyntaxError.
-        if node:
-            for _, value in ast.iter_fields(node):
-                if isinstance(value, list):
-                    self._handle_ast_list(value)
-                    for item in value:
-                        if isinstance(item, ast.AST):
-                            self.visit(item)
-                elif isinstance(value, ast.AST):
-                    self.visit(value)
-
-        # Visit node after visiting children.
-        visit_method_name = 'visit_' + node.__class__.__name__ + '_after_visiting_child_nodes'
-        visit_method = getattr(self, visit_method_name, None)
-        if visit_method:
-            visit_method(node)
-
-        # TODO: use decorator for this code chunk
         if should_turn_off_ignore_new_definitions:
             self.should_ignore_new_definitions = False
-
-        # TODO: use decorator for this code chunk
         if was_scope_increased:
             self.scope_parts.pop()
 

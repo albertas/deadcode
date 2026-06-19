@@ -1,5 +1,5 @@
 code_quality_is_good: false
-heart_beat: 2026-06-19 11:03:32
+heart_beat: 2026-06-19 11:53:45
 # [~] = conditional / out-of-sequence phase (event-driven, not a linear 1..9 step).
 phases:
   - [x] 1_question
@@ -16,5 +16,5 @@ phases:
       in:  review_findings.yml (from 8_review)
       out: code edits; flips review_findings.yml resolved:true (no artifact-dir file)
 lifecycles_in_progress:
-  - artifact_dir: T8-2026-06-19-cq-typecheck-audit-mypy-app-passes-add-type-hints
-    heart_beat: 2026-06-19 11:03:32
+  - artifact_dir: T9-2026-06-19-cq-complexity-audit-cyclomatic-complexity-stays-8
+    heart_beat: 2026-06-19 11:53:45

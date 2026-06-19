@@ -128,7 +128,7 @@ just test              # Run tests with coverage (parallel via pytest-xdist on a
 just format            # Auto-format code with ruff
 just lint              # Check and auto-fix linting with ruff
 just typecheck         # Type check with mypy
-just check-complexity  # Report functions exceeding complexity limit
+just check-complexity  # Report functions exceeding complexity limit (max 8)
 
 # Check-only mode (no auto-fixes)
 just check-format      # Check formatting without changing files
@@ -175,7 +175,7 @@ Use `just check` before submitting pull requests to ensure all checks pass:
 - All tests pass with 95.0% coverage
 - Code is ruff-clean (zero lint errors, zero warnings)
 - Type checking passes with mypy in strict mode (zero type errors)
-- Complexity limits are respected
+- Complexity limits are respected (maximum McCabe complexity of 8 per function)
 
 See [Development Documentation](docs/overview.md) for the full development workflow.
 
