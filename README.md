@@ -124,7 +124,7 @@ All code quality checks (tests, linting, formatting, type checking, complexity) 
 just check
 
 # Run individual checks
-just test              # Run tests with coverage (parallel via pytest-xdist)
+just test              # Run tests with coverage (parallel via pytest-xdist on all-but-one cores)
 just format            # Auto-format code with ruff
 just lint              # Check and auto-fix linting with ruff
 just typecheck         # Type check with mypy
@@ -135,6 +135,18 @@ just check-format      # Check formatting without changing files
 just check-lint        # Check linting without changing files
 just check-typecheck   # Check types without changing files
 ```
+
+### Test Determinism
+
+All tests pass regardless of the current working directory, `PYTHONHASHSEED`, and xdist worker count. This is achieved through:
+
+- **Sorted directory walk** — file discovery order is deterministic across filesystems
+- **Config mocking** — unit tests are isolated from the repo's real `pyproject.toml` settings
+- **Isolated file systems** — FS-bypass unit tests use temporary directories instead of cwd-relative literals
+- **Root anchoring** — integration tests anchor to the repo root via `chdir` with cleanup handlers
+- **Parallel runners** — both `make test` and `just test` run parallel tests on all-but-one CPU cores
+
+For details, see [Testing & Tooling](docs/testing-and-tooling.md).
 
 ### Test Coverage
 

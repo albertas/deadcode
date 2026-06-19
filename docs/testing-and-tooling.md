@@ -1,6 +1,6 @@
 # Testing & Tooling
 
-This document describes the test suite layout, the `BaseTestCase` helper class, and the build/test/check tooling used in Deadcode. See [index.md](index.md) for the full guide.
+This document describes the test suite layout, the `BaseTestCase` helper class, deterministic testing practices, and the build/test/check tooling used in Deadcode. See [index.md](index.md) for the full guide.
 
 ## Test Suite Organization
 
@@ -61,8 +61,47 @@ Tests define a `files: Dict[str, str]` class attribute mapping filenames to Pyth
 Some tests bypass the mock layer:
 
 - `tests/code_item/test_code_item.py:7` — tests the `CodeItem` class directly
-- `tests/test_deadcode.py:7` — integration tests using the real filesystem
+- `tests/test_deadcode.py` — integration tests using the real filesystem (see Deterministic Testing section below for cwd anchoring)
 - `tests/utils/*` — plain `TestCase` tests for utility functions (no mocking needed)
+
+## Deterministic Testing
+
+Tests are designed to pass regardless of the current working directory, `PYTHONHASHSEED`, and xdist worker count. This enables reliable parallel execution and test reproducibility across environments.
+
+### Directory Walk Determinism
+
+The file discovery walk in `find_python_filenames` (`deadcode/actions/find_python_filenames.py:25`) is sorted to ensure stable discovery order across different filesystems and Python hash seeds. The walk uses a LIFO stack, so appended entries determine discovery order. Sorting the `path.glob('*')` results makes this order deterministic, while the final output is still sorted by filename/line in the visitor layer.
+
+### Config Discovery Mocking
+
+`BaseTestCase.setUp` mocks `parse_pyproject_toml` to return an empty dict by default, removing the hidden coupling to the repo's real `[tool.deadcode]` configuration block. This ensures unit tests that call `main()` are not silently affected by the project's own config settings.
+
+```python
+self.parse_pyproject_toml_mock = self.patch('deadcode.actions.parse_arguments.parse_pyproject_toml')
+self.parse_pyproject_toml_mock.return_value = {}
+```
+
+### File System-Bypass Unit Tests
+
+Unit tests that directly import `find_python_filenames` (rather than using the `deadcode.cli` mock) now build controlled directory trees in `tempfile.TemporaryDirectory()` within `setUp`. This preserves behavioral coverage (file detection, directory recursion, exclude rules, missing-path errors, verbose logs) while remaining cwd-independent:
+
+- `tests/actions/test_find_python_filenames.py` — uses a temp tree with `pkg/`, `pkg/utils/`, and sample files
+- `tests/cli_args/test_exclude.py` — uses a temp tree to test exclude-by-file and exclude-by-directory logic
+
+### End-to-End Test Anchoring
+
+Integration tests (`DeadCodeIntegrationTests` and `CliEntrypointTests` in `tests/test_deadcode.py`) read real files under `tests/files/` and `deadcode/`, but anchor to the repo root via `chdir` in `setUp`:
+
+```python
+REPO_ROOT = Path(__file__).parents[1]  # repo root
+
+def setUp(self):
+    self._prev_cwd = os.getcwd()
+    os.chdir(REPO_ROOT)
+    self.addCleanup(os.chdir, self._prev_cwd)
+```
+
+This allows them to pass from any cwd and survive concurrent xdist workers, each of which restores the previous cwd after the test via the cleanup handler.
 
 ## Build and Check Commands
 
@@ -72,7 +111,7 @@ The project uses a `Makefile` and a `Justfile` for automation. All common tasks 
 
 See `pyproject.toml` for numeric configuration (line-length, coverage targets, etc.) — do not copy these into prose.
 
-- **`test`** (`Makefile:18-19`) — runs `pytest -vv` with optional `PYTEST_ME_PLEASE` filter
+- **`test`** (`Makefile:18-19`) — runs `pytest -n "$(nproc --ignore=1)" -vv` with optional `PYTEST_ME_PLEASE` filter (parallel on all-but-one cores via xdist)
 - **`lint`** (`Makefile:21-22`) — runs `ruff check deadcode tests`
 - **`format`** (`Makefile:37-38`) — runs `ruff format deadcode tests`
 - **`mypy`** (`Makefile:27-28`) — runs type-checking on `deadcode/`
@@ -81,9 +120,17 @@ See `pyproject.toml` for numeric configuration (line-length, coverage targets, e
 - **`check`** (`Makefile:3`) — runs all of the above: `test lint mypy audit deadcode`
 - **`fix`** (`Makefile:4`) — runs `format` and `fixlint` (applies automatic fixes)
 
-### Justfile Recipe
+### Justfile Recipes
 
-The `Justfile` contains a single `lifecycle` recipe that runs `uv pip sync` and installs the package in editable mode, used for dependency management.
+The `Justfile` provides these key recipes:
+
+- **`test`** — runs `uv run pytest -n "$(nproc --ignore=1)"` (parallel on all-but-one cores via xdist, matching the Makefile)
+- **`sync`** — syncs dependencies and installs the package in editable mode
+- **`format`**, **`lint`**, **`typecheck`**, **`check-*`** — individual check targets
+- **`check`** — runs all checks (format, lint, complexity, typecheck, test) in sequence
+- **`lifecycle`** — orchestrates workflow tasks via the `lifecycle` command
+
+Both `Makefile` and `Justfile` test targets run parallel tests on all-but-one CPU cores via pytest-xdist, ensuring consistent execution across both runners.
 
 ## Configuration Files
 

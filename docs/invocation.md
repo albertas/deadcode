@@ -24,21 +24,30 @@ All other targets depend on `sync`, so it runs automatically if needed.
 just test
 ```
 
-Runs pytest with parallel execution (using all but one CPU core via `nproc --ignore=1`) and coverage measurement. Coverage report is printed and the run fails if coverage drops below 88%.
+Runs pytest via xdist with:
+- **Parallel execution** on all-but-one CPU cores via `nproc --ignore=1`
+- **Coverage measurement** with reports and enforced 95.0% threshold
+- **Deterministic execution** — tests pass regardless of cwd, `PYTHONHASHSEED`, or worker count
 
 ### Run specific tests
 
 ```bash
 just test tests/path/to/test_file.py
-```
-
-### Run tests with custom pytest args
-
-```bash
 just test -- -k "test_name" -vv
 ```
 
 Coverage and parallel execution still apply. Pass `-- <args>` to forward arguments to pytest.
+
+### Running Tests from Any Directory
+
+All tests are designed to be deterministic and can be run from any working directory:
+
+```bash
+cd /tmp && uv run pytest /path/to/deadcode/tests
+cd /tmp && PYTHONHASHSEED=random uv run pytest -p xdist -n auto /path/to/deadcode/tests
+```
+
+Both commands succeed, confirming deterministic behavior across different environments.
 
 ## Code Quality Checks
 
@@ -148,6 +157,14 @@ uv run deadcode . --ignore-names="BaseTestCase,*Mixin"
 
 For all options, see [cli-and-configuration.md](cli-and-configuration.md) or run `uv run deadcode --help`.
 
-## Makefile (Legacy)
+## Makefile Test Target
 
-A `Makefile` exists for backwards compatibility. The Just targets mirror the Makefile commands. Use Just targets instead of Make.
+The `Makefile` test target (`make test`) runs pytest with the same parallel execution as the Just target:
+
+```bash
+make test
+```
+
+Runs pytest with parallel execution on all-but-one CPU cores via `nproc --ignore=1`, matching the `just test` runner. Both runners are now unified, so `make test` and `just test` produce identical execution behavior.
+
+Legacy Makefile targets for other checks (lint, format, typecheck, audit, deadcode) are available but the Just targets are preferred for development work.

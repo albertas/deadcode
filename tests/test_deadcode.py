@@ -1,12 +1,21 @@
+import os
 import runpy
 import sys
+from pathlib import Path
 from unittest import TestCase, mock
 
 from deadcode.cli import main
 from deadcode.utils.base_test_case import BaseTestCase
 
+REPO_ROOT = Path(__file__).parents[1]
+
 
 class DeadCodeIntegrationTests(TestCase):
+    def setUp(self):
+        self._prev_cwd = os.getcwd()
+        os.chdir(REPO_ROOT)
+        self.addCleanup(os.chdir, self._prev_cwd)
+
     def test_unused_variable_name_found_successfully(self):
         unused_names = main(['tests/files/variables.py', '--no-color'])
 
@@ -71,6 +80,11 @@ class DeadCodeTests(BaseTestCase):
 
 
 class CliEntrypointTests(TestCase):
+    def setUp(self):
+        self._prev_cwd = os.getcwd()
+        os.chdir(REPO_ROOT)
+        self.addCleanup(os.chdir, self._prev_cwd)
+
     def test_module_runs_as_script(self):
         argv = ['deadcode', 'deadcode/data_types.py', '--no-color', '--quiet']
         with mock.patch.object(sys, 'argv', argv):

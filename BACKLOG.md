@@ -23,7 +23,7 @@
     ```
   - [x] [T3] [cq:tests] Ensure existing tests pass. Fix the tests if they are failing.
   - [x] [T4] [cq:coverage] Add test-coverage measurement and reach >= 95% coverage.
-  - [ ] [cq:reliabletests] Ensure that tests are deterministic and fast. Use pytest-xdist to run them (with max - 1 cores available). Tests should be mocked and not rely on external API endpoints (to save time on latency), unless these tests are end-to-end.
+  - [x] [T5] [cq:reliabletests] Ensure that tests are deterministic and fast. Use pytest-xdist to run them (with max - 1 cores available). Tests should be mocked and not rely on external API endpoints (to save time on latency), unless these tests are end-to-end.
   - [ ] [cq:ruff-format] Audit `ruff format` is clean across the codebase. Run `just check-format`.
   - [ ] [cq:ruff-lint] Audit `ruff check` is clean across the codebase. Enable most of ruff linting checks. Run `just check-lint`.
   - [ ] [cq:typecheck] Audit `mypy app/` passes. Add type hints in the code where possible. Run `just check-typecheck`.
@@ -31,6 +31,9 @@
   - [ ] [cq:check] Ensure that just check command exist, it combines all the checks from Justfile and this `check` target passes.
   - [ ] [cq:pythonversion] Ensure that latest stable python version is used.
   - [ ] [cq:versions] Ensure that latest dependency versions are used.
+- [ ] Document testing conventions in docs directory.
+- [ ] Check implementation for correctness. Add additional unit tests cases to check implementation correctness. Update the code to fix all the test cases.
+- [ ] Add more test cases targeting python versions 3.11, 3.12, 3.13, 3.14, (3.15 if available?). Make code base implementation compatible with these python versions.
 
 # Vision
 - [ ] Document testing conventions.

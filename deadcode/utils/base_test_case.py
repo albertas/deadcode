@@ -51,6 +51,9 @@ class BaseTestCase(TestCase):
 
         self.os_remove = self.patch('deadcode.actions.fix_or_show_unused_code.os.remove')
 
+        self.parse_pyproject_toml_mock = self.patch('deadcode.actions.parse_arguments.parse_pyproject_toml')
+        self.parse_pyproject_toml_mock.return_value = {}
+
         self.args = Args()
 
     def assertFiles(self, files: Dict[str, str], removed: Optional[List[str]] = None) -> None:

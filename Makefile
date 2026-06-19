@@ -16,7 +16,7 @@ publish: .venv
 	.venv/bin/hatch -v publish
 
 test: .venv
-	.venv/bin/pytest -vv $(PYTEST_ME_PLEASE)
+	.venv/bin/pytest -n "$(shell nproc --ignore=1)" -vv $(PYTEST_ME_PLEASE)
 
 lint: .venv
 	.venv/bin/ruff check deadcode tests
