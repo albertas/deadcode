@@ -500,12 +500,21 @@ class FindUnusedCodeVisitor(ast.NodeVisitor):
         elif isinstance(node.ctx, (ast.Param, ast.Store)):
             self._define_variable(node.id, node)
 
-    def visit_Assign(self, node: ast.Assign) -> None:
+    def _mark_all_exports_used(self, node: ast.Assign | ast.AugAssign | ast.AnnAssign) -> None:
         if _assigns_special_variable__all__(node):
             assert isinstance(node.value, (ast.List, ast.Tuple))
             for elt in node.value.elts:
                 if isinstance(elt, ast.Constant) and isinstance(elt.value, str):
                     self.add_used_name(elt.value)
+
+    def visit_Assign(self, node: ast.Assign) -> None:
+        self._mark_all_exports_used(node)
+
+    def visit_AugAssign(self, node: ast.AugAssign) -> None:
+        self._mark_all_exports_used(node)
+
+    def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
+        self._mark_all_exports_used(node)
 
     def visit_While(self, node: ast.While) -> None:
         self._handle_conditional_node(node, 'while')

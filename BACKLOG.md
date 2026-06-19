@@ -1,5 +1,4 @@
 # ToDo
-- [ ] Check implementation for correctness. Add additional unit tests cases to check implementation correctness. Update the code to fix all the test cases.
 - [ ] Add more test cases targeting python versions 3.11, 3.12, 3.13, 3.14, (3.15 if available?). Make code base implementation compatible with these python versions.
 
 # Vision
@@ -10,6 +9,7 @@
 - [ ] Generate fastapi, django test suits.
 
 # Done
+- [x] [T14] Check implementation for correctness. Add additional unit tests cases to check implementation correctness. Update the code to fix all the test cases.
 - [x] [T13] Document testing conventions in docs directory.
 - [x] Ensure code quality [cq:ensure]
   - [x] [T1] [cq:spec] Write a codebase specification under `docs/` describing the package goals, architecture and key code parts. Split docs/ into multiple files index.md should have project goal and documentation index.

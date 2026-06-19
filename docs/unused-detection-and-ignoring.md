@@ -44,6 +44,7 @@ Independent of `args`, the visitor applies built-in ignore rules:
 - **Test functions/methods** — functions starting with `test_` or pytest setup/teardown methods are ignored in test files (`:86-87`, `:91-93`)
 - **Special variables** — underscore-prefixed variables, dunder names, and `self`/`object` are ignored (`:96-105`, `:9`)
 - **Star imports and `__init__.py` imports** — these are ignored as they are conventionally re-exported (`:77-83`)
+- **`__all__` exports** — names listed in `__all__` (via any of three assignment forms: `__all__ = [...]`, `__all__ += [...]`, `__all__: ... = [...]`) are marked used, as they are explicitly exported (see [Visitor layer](visitor-layer.md) for details)
 
 ## Known Gaps: Inert Ignore Options
 
@@ -67,8 +68,8 @@ The full filtering pipeline is:
 1. **Visitor phase**: For each definition, the visitor checks if it matches `ignore_names` patterns → `add_used_name()` if matched
 2. **Visitor phase**: Checks if file matches `ignore_names_in_files` → all defs in file marked used
 3. **Visitor phase**: Checks inheritance-based gates in `visit()` dispatcher → definitions marked used if conditions met
-4. **Visitor phase**: Applies built-in predicates (test classes, test functions, special variables) → `add_used_name()` if matched
-5. **Noqa phase**: Checks for `# noqa: DCxx` comments on definition lines → `add_used_name()` if matched (`visitor/noqa.py` and `find_unused_code_visitor.py:299`)
+4. **Visitor phase**: Applies built-in predicates (test classes, test functions, special variables, `__all__` exports) → `add_used_name()` if matched
+5. **Noqa phase**: Checks for `# noqa` comments on definition lines (supporting `#noqa`, `# noqa`, `#  noqa`, and specific codes like `# noqa: dc07` or `# noqa: DC07`) → `add_used_name()` if matched (`visitor/noqa.py` and `find_unused_code_visitor.py:299`)
 6. **Post-visitor**: `_get_unused_items()` compares all defined names against `used_names` → final unused set
 
 Any item that reaches step 6 with its name not in `used_names` is reported as unused.

@@ -210,3 +210,16 @@ class TestMergeBranches(BaseTestCase):
     def test_merge_picks_second_insert_code_at_same_start(self):
         # same start, p1 insert falsy -> insert_code = p2's
         assert merge_parts((2, 7, 0, 6, None, None), (2, 7, 0, 6, 'pass', None)) == (2, 7, 0, 6, 'pass', None)
+
+    def test_does_include_false_when_bigger_ends_on_a_later_line(self):
+        # bigger ends on line 10, smaller on line 5: bigger cannot contain smaller,
+        # even though bigger's end column (2) <= smaller's end column (6).
+        # The buggy `line_end_b == line_end_b` made this wrongly return True.
+        bigger = (1, 10, 0, 2, None, None)
+        smaller = (1, 5, 0, 6, None, None)
+        assert does_include(bigger, smaller) is False
+
+    def test_does_include_true_for_genuine_same_line_containment(self):
+        # Same end line; bigger (col 0-2) ends before smaller (col 0-6), so bigger is inside smaller.
+        # Both bigger's col_end (2) <= smaller's col_end (6) and same end line → genuine containment.
+        assert does_include((1, 1, 0, 2, None, None), (1, 1, 0, 6, None, None)) is True

@@ -337,3 +337,42 @@ class TestNoqaComments(BaseTestCase):
         )
 
         self.assertEqual(unused_names, None)
+
+    def test_noqa_without_space_is_honored(self):
+        self.files = {
+            'foo.py': """
+                unused_variable = "Hello"  #noqa
+                """
+        }
+        unused_names = main(['foo.py', '--no-color', '--fix'])
+        self.assertEqual(unused_names, None)
+
+    def test_noqa_with_extra_space_is_honored(self):
+        self.files = {
+            'foo.py': """
+                unused_variable = "Hello"  #  noqa
+                """
+        }
+        unused_names = main(['foo.py', '--no-color', '--fix'])
+        self.assertEqual(unused_names, None)
+
+    def test_noqa_lowercase_code_is_honored(self):
+        self.files = {
+            'foo.py': """
+                import os  # noqa: dc07
+                """
+        }
+        unused_names = main(['foo.py', '--no-color', '--fix'])
+        self.assertEqual(unused_names, None)
+
+    def test_type_ignore_comment_does_not_suppress(self):
+        self.files = {
+            'foo.py': """
+                unused_variable = "Hello"  # type: ignore
+                """
+        }
+        unused_names = main(['foo.py', '--no-color', '--fix'])
+        self.assertEqual(
+            unused_names,
+            'foo.py:1:0: DC01 Variable `unused_variable` is never used\n\nRemoved 1 unused code item!',
+        )

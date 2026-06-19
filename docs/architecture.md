@@ -82,9 +82,14 @@ The codebase is fully annotated in strict mypy mode. Key invariants:
 - String constant detection uses `isinstance(node, ast.Constant) and isinstance(node.value, str)` (not deprecated `ast.Str`)
 - Position attributes (`lineno`, `col_offset`, `end_lineno`, `end_col_offset`) are accessed via `typing.cast` where the static type cannot be narrowed
 
-## Code Quality & Complexity
+## Code Quality & Correctness
 
 All functions in the codebase are designed to stay below a **McCabe cyclomatic complexity limit of 8**. This is enforced via `[tool.ruff.lint.mccabe]` in `pyproject.toml` and checked by `just check-complexity`. Complex functions are broken into smaller helper functions within the same module to maintain readability and testability. This applies to all modules in `deadcode/` and is verified as part of the gating `just check` pipeline.
+
+**Correctness**: The pipeline has been audited for defects in three areas:
+- **Part merging** — the `does_include()` function correctly identifies when one code part genuinely contains another using both line and column comparisons, ensuring multi-part edits are merged without dropping regions
+- **Noqa comment matching** — flake8-compatible noqa detection supports all whitespace patterns (`#noqa`, `# noqa`, `#  noqa`, etc.) and normalizes codes to uppercase for reliable map lookups, eliminating false negatives from whitespace or case variations
+- **Module export detection** — all three forms of `__all__` assignment are recognized (`__all__ = [...]`, `__all__ += [...]`, `__all__: ... = [...]`), ensuring names listed in `__all__` are never falsely reported as unused
 
 ## Module Organization
 

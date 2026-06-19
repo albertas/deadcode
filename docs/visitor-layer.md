@@ -57,7 +57,10 @@ Key visit methods that call `add_used_name()` use correctly-typed AST node param
 - **`visit_Attribute(node: ast.Attribute)` Load** — attribute access (e.g., `obj.attr`)
 - **`visit_Call(node: ast.Call)`** — special handling for `getattr(obj, name)`, `hasattr(obj, name)`, and `str.format(**locals())`; for string arguments, checks with `isinstance(node, ast.Constant) and isinstance(node.value, str)` to extract the name from the string
 - **`visit_BinOp(node: ast.BinOp)`** — special handling for `"%(name)s" % locals()` patterns; string matching via `isinstance(node.left, ast.Constant) and isinstance(node.left.value, str)` (not the deprecated `ast.Str` / `.s` API)
-- **`visit_Assign(node: ast.Assign)`** — if assigning to `__all__`, all string constants in the list are marked used via `isinstance(elt, ast.Constant) and isinstance(elt.value, str)` checks
+- **`visit_Assign(node: ast.Assign)`, `visit_AugAssign(node: ast.AugAssign)`, `visit_AnnAssign(node: ast.AnnAssign)`** — if assigning to `__all__`, all string constants in the list/value are marked used via `isinstance(elt, ast.Constant) and isinstance(elt.value, str)` checks. This supports all three forms:
+  - `__all__ = ['exported_name']` (plain assignment)
+  - `__all__ += ['exported_name']` (augmented assignment)
+  - `__all__: list = ['exported_name']` (annotated assignment)
 - **`visit_MatchClass(node)`** — pattern matching with classes marks class names used (kept untyped per pre-existing design)
 
 ## Scope Tracking
@@ -68,13 +71,21 @@ Internally, scope is backed by `NestedScope` (`utils/nested_scopes.py:6`), which
 
 ## Noqa Comments
 
-`noqa.parse_noqa(file_content_lines)` (`visitor/noqa.py:5-15, :55-63`) extracts flake8-style `# noqa: DC01, DC07` comments using a regex pattern (`NOQA_REGEXP`). Codes are normalized via `NOQA_CODE_MAP` (`noqa.py:17-47`), mapping legacy codes like `F401` (unused import) to `DC07`:
+`noqa.parse_noqa(file_content_lines)` (`visitor/noqa.py:54-62`) extracts flake8-style noqa comments, supporting all whitespace patterns:
+
+- `#noqa` (no space)
+- `# noqa` (one space, traditional)
+- `#  noqa` (multiple spaces)
+- `# noqa: DC01, DC07` (with specific codes)
+
+The regex pattern (`NOQA_REGEXP`, `noqa.py:4-14`) matches `#\s*noqa` (hash followed by optional whitespace) followed by optional codes. Codes can be in any case (lowercase, uppercase, or mixed like `dc07` or `DC01`), and are normalized to uppercase before lookup via `NOQA_CODE_MAP` (`noqa.py:16-46`):
 
 - `F401` → `DC07` (unused-import)
 - `F841` → `DC01` (unused-variable)
+- `dc07` → `DC07` (lowercase codes are uppercased before map lookup)
 - bare `# noqa` → `'all'` (ignore all checks on this line)
 
-`ignore_line(line_number, error_code)` (`noqa.py:66-68`) checks whether a given line has a noqa directive for a code, and is invoked in `_define()` (`find_unused_code_visitor.py:299`). If the item matches an ignore rule, it is added to `used_names` (treated as used, removing it from the unused output).
+`ignore_line(line_number, error_code)` (`noqa.py:65-67`) checks whether a given line has a noqa directive for a code, and is invoked in `_define()` (`find_unused_code_visitor.py:299`). If the item matches an ignore rule, it is added to `used_names` (treated as used, removing it from the unused output).
 
 The `ERROR_CODES` dict in `ignore.py:23-36` maps error names to codes for cross-referencing noqa directives and warnings.
 

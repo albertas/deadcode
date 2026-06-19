@@ -63,11 +63,12 @@ def _is_test_file(filename: Path) -> bool:
     )
 
 
-def _assigns_special_variable__all__(node: ast.Assign) -> bool:
-    assert isinstance(node, ast.Assign)
-    return isinstance(node.value, (ast.List, ast.Tuple)) and any(
-        target.id == '__all__' for target in node.targets if isinstance(target, ast.Name)
-    )
+def _assigns_special_variable__all__(node: ast.Assign | ast.AugAssign | ast.AnnAssign) -> bool:
+    assert isinstance(node, (ast.Assign, ast.AugAssign, ast.AnnAssign))
+    if not isinstance(node.value, (ast.List, ast.Tuple)):
+        return False
+    targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+    return any(target.id == '__all__' for target in targets if isinstance(target, ast.Name))
 
 
 def _ignore_class(filename: Path, class_name: str) -> bool:

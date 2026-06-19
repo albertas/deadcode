@@ -34,7 +34,14 @@ Merges overlapping code removal regions:
 
 Returns a list of non-overlapping `Part`s ready for removal.
 
-**Observed bug**: The `does_include` function (`merge_overlaping_file_parts.py:5-15`) has a copy-paste error at `merge_overlaping_file_parts.py:11`: `(line_end_b == line_end_b)` should be `(line_end_b == line_end_s)`. This checks whether the bigger part's end line equals itself (always true) rather than comparing it to the smaller part's end. Despite this, the function still works in practice because the overlap check is correct, but the logic is incorrect.
+### Containment Check
+
+The `does_include(bigger_part, smaller_part) -> bool` function correctly checks whether the bigger part genuinely contains the smaller part on both the line and column axes. It compares start positions and end positions:
+- If the bigger part starts after the smaller part or on the same line but to the right, it cannot contain it
+- If the bigger part ends before the smaller part ends, it cannot contain it
+- Otherwise, the bigger part contains the smaller part
+
+This ensures that multi-part edits are merged correctly without dropping removal regions.
 
 ## Fragment Removal and Insertion
 

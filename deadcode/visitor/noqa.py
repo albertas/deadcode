@@ -9,7 +9,7 @@ NOQA_REGEXP = re.compile(
     # `noqa: E123`
     # `noqa: E123,W451,F921`
     # `NoQA: E123,W451,F921`
-    r'# noqa(?::[\s]?(?P<codes>([A-Z]+[0-9]+(?:[,\s]+)?)+))?',
+    r'#\s*noqa(?::[\s]?(?P<codes>([A-Z]+[0-9]+(?:[,\s]+)?)+))?',
     re.IGNORECASE,
 )
 
@@ -57,7 +57,8 @@ def parse_noqa(code: str) -> dict[str, set[int]]:
         match = NOQA_REGEXP.search(line)
         if match:
             for error_code in _parse_error_codes(match.groupdict()):
-                error_code = NOQA_CODE_MAP.get(error_code, error_code)
+                if error_code != 'all':
+                    error_code = NOQA_CODE_MAP.get(error_code.upper(), error_code.upper())
                 noqa_lines[error_code].add(lineno)
     return noqa_lines
 

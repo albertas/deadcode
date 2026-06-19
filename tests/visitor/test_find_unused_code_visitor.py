@@ -50,6 +50,33 @@ class TestVisitorPathsViaMain(BaseTestCase):
         self._run('def f():\n    return\n    dead = 1\n')  # lines 599-607
 
 
+class TestDunderAllAugAndAnnAssign(BaseTestCase):
+    def test_name_exported_via_all_augassign_is_used(self):
+        self.files = {
+            'foo.py': """
+                def used_via_all():
+                    pass
+
+                __all__ = []
+                __all__ += ['used_via_all']
+                """
+        }
+        unused_names = main(['foo.py', '--no-color'])
+        self.assertEqual(unused_names, None)
+
+    def test_name_exported_via_all_annassign_is_used(self):
+        self.files = {
+            'foo.py': """
+                def used_via_all():
+                    pass
+
+                __all__: list[str] = ['used_via_all']
+                """
+        }
+        unused_names = main(['foo.py', '--no-color'])
+        self.assertEqual(unused_names, None)
+
+
 def _visitor():
     return FindUnusedCodeVisitor(filenames=[], args=Args())
 

@@ -7,7 +7,7 @@ def does_include(bigger_part: Part, smaller_part: Part) -> bool:
 
     starts_later = (line_start_b > line_start_s) or ((line_start_b == line_start_s) and (col_start_b >= col_start_s))
 
-    ends_faster = (line_end_b < line_end_s) or ((line_end_b == line_end_b) and (col_end_b <= col_end_s))
+    ends_faster = (line_end_b < line_end_s) or ((line_end_b == line_end_s) and (col_end_b <= col_end_s))
 
     return bool(starts_later and ends_faster)
 
