@@ -83,6 +83,8 @@ just check-lint
 
 Reports linting issues without auto-fixing. Part of the comprehensive `just check` pipeline.
 
+The codebase is kept **ruff-clean**: `just check-lint` exits 0 with zero output when the tree is in compliance. Ruff runs with `select = ["ALL"]` and actively enforces ~85% of ruff's rules; the remaining 15% are deliberate policy ignores for docstrings, test utilities, print-based CLI output, and complexity management. All ignore entries are tied to active project policies, not past violations.
+
 ### Type checking
 
 ```bash

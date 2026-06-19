@@ -1,25 +1,22 @@
-from typing import List, Optional, Tuple
 from deadcode.data_types import Part
 
 
 def does_include(bigger_part: Part, smaller_part: Part) -> bool:
-    line_start_b, line_end_b, col_start_b, col_end_b, insert_code_b, _insert_condition_b = bigger_part
-    line_start_s, line_end_s, col_start_s, col_end_s, insert_code_s, _insert_condition_s = smaller_part
+    line_start_b, line_end_b, col_start_b, col_end_b, _insert_code_b, _insert_condition_b = bigger_part
+    line_start_s, line_end_s, col_start_s, col_end_s, _insert_code_s, _insert_condition_s = smaller_part
 
     starts_later = (line_start_b > line_start_s) or ((line_start_b == line_start_s) and (col_start_b >= col_start_s))
 
     ends_faster = (line_end_b < line_end_s) or ((line_end_b == line_end_b) and (col_end_b <= col_end_s))
 
-    if starts_later and ends_faster:
-        return True
-    return False
+    return bool(starts_later and ends_faster)
 
 
-def sort_parts(bigger_part: Part, smaller_part: Part) -> Tuple[Part, Part]:
+def sort_parts(bigger_part: Part, smaller_part: Part) -> tuple[Part, Part]:
     """Returns code part which begins first following by another code part."""
     # TODO: Column should go first (tuple comparison would be possible)
-    line_start_b, line_end_b, col_start_b, col_end_b, insert_code_b, _insert_condition_b = bigger_part
-    line_start_s, line_end_s, col_start_s, col_end_s, insert_code_s, _insert_condition_s = smaller_part
+    line_start_b, _line_end_b, col_start_b, _col_end_b, _insert_code_b, _insert_condition_b = bigger_part
+    line_start_s, _line_end_s, col_start_s, _col_end_s, _insert_code_s, _insert_condition_s = smaller_part
 
     # Pirmo pradžios eilutė ir stulpelis yra pirmiau.
     if (line_start_s < line_start_b) or ((line_start_s == line_start_b) and (col_start_s < col_start_b)):
@@ -31,17 +28,14 @@ def does_overlap(bigger_part: Part, smaller_part: Part) -> bool:
     # TODO: those are not bigger/smaller - start first, start second
     bigger_part, smaller_part = sort_parts(bigger_part, smaller_part)
 
-    line_start_b, line_end_b, col_start_b, col_end_b, insert_code_b, _insert_condition_b = bigger_part
-    line_start_s, line_end_s, col_start_s, col_end_s, insert_code_s, _insert_condition_s = smaller_part
+    _line_start_b, line_end_b, _col_start_b, col_end_b, _insert_code_b, _insert_condition_b = bigger_part
+    line_start_s, _line_end_s, col_start_s, _col_end_s, _insert_code_s, _insert_condition_s = smaller_part
 
     # ar pirmo pabaiga perlipa antro pradžia
-    if (line_end_b > line_start_s) or ((line_end_b == line_start_s) and (col_end_b > col_start_s)):
-        return True
-
-    return False
+    return bool((line_end_b > line_start_s) or ((line_end_b == line_start_s) and (col_end_b > col_start_s)))
 
 
-def merge_parts(p1: Part, p2: Part) -> Optional[Part]:
+def merge_parts(p1: Part, p2: Part) -> Part | None:
     """Merge code parts that have to be removed"""
     p1, p2 = sort_parts(p1, p2)
 
@@ -92,10 +86,10 @@ def merge_parts(p1: Part, p2: Part) -> Optional[Part]:
     return None
 
 
-def merge_overlaping_file_parts(overlaping_file_parts: List[Part]) -> List[Part]:
+def merge_overlaping_file_parts(overlaping_file_parts: list[Part]) -> list[Part]:
     # Make algorithm O(n^2) by checking every single part if overlaps
 
-    non_overlaping_file_parts: List[Part] = []
+    non_overlaping_file_parts: list[Part] = []
 
     # NOTE: Sorting by beginning and size (starting first and larger go first):
     sorted_overlaping_file_parts = sorted(overlaping_file_parts, key=lambda x: (x[0], x[2], -x[1], -x[3]))

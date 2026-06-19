@@ -13,7 +13,7 @@ class TestDryCliOption(BaseTestCase):
                 print("Dont change this file")"""
         }
 
-        unused_names = main('foo.py --no-color --fix --dry'.split())
+        unused_names = main(['foo.py', '--no-color', '--fix', '--dry'])
         self.assertEqual(
             unused_names,
             fix_indent("""\
@@ -182,7 +182,7 @@ class TestDryCliOption(BaseTestCase):
                 print("Dont change this file")"""
         }
 
-        unused_names = main('foo.py --no-color --fix --dry fooo.py'.split())
+        unused_names = main(['foo.py', '--no-color', '--fix', '--dry', 'fooo.py'])
         self.assertEqual(
             unused_names,
             'foo.py:1:0: DC03 Class `UnusedClass` is never used',

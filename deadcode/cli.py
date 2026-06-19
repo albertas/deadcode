@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from deadcode.actions.find_python_filenames import find_python_filenames
 from deadcode.actions.find_unused_names import find_unused_names
 from deadcode.actions.fix_or_show_unused_code import fix_or_show_unused_code
@@ -10,8 +8,8 @@ from deadcode.actions.get_unused_names_error_message import (
 
 
 def main(
-    command_line_args: Optional[List[str]] = None,
-) -> Optional[str]:
+    command_line_args: list[str] | None = None,
+) -> str | None:
     args = parse_arguments(command_line_args)
 
     filenames = find_python_filenames(args=args)

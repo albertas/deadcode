@@ -1,6 +1,6 @@
 from collections import defaultdict
 from difflib import unified_diff
-from typing import Iterable, List, Tuple, Dict
+from collections.abc import Iterable
 import os
 
 from deadcode.actions.merge_overlaping_file_parts import merge_overlaping_file_parts
@@ -14,7 +14,7 @@ from deadcode.visitor.ignore import _match
 
 def fix_or_show_unused_code(
     unused_items: Iterable[CodeItem],
-    additional_code_parts_to_remove: Dict[Filename, List[Tuple[int, int, int, int]]],
+    additional_code_parts_to_remove: dict[Filename, list[tuple[int, int, int, int]]],
     args: Args,
 ) -> str:
     # Reading and writing should be patched in this file.
@@ -31,8 +31,8 @@ def fix_or_show_unused_code(
 
     result = []
 
-    for filename, unused_items in filename_to_unused_items.items():
-        file_parts = flatten_list([item.code_parts for item in unused_items])
+    for filename, file_unused_items in filename_to_unused_items.items():
+        file_parts = flatten_list([item.code_parts for item in file_unused_items])
         if additional_code_parts_to_remove and additional_code_parts_to_remove.get(str(filename)):
             file_parts.extend(additional_code_parts_to_remove[str(filename)])
 

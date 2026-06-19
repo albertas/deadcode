@@ -1,12 +1,12 @@
 import re
-from typing import List, Optional, TypeVar, Tuple
+from typing import TypeVar
 
 from deadcode.data_types import Part
 
 T = TypeVar('T')
 
 
-def list_get(list_: List[T], index: int) -> Optional[T]:
+def list_get(list_: list[T], index: int) -> T | None:
     if len(list_) > index:
         return list_[index]
     return None
@@ -42,8 +42,8 @@ def remove_comma_from_begining(line: str) -> str:
 
 
 def get_code_parts_for_the_same_line(
-    code_parts: List[Tuple[int, int, int, int]], index: int
-) -> List[Tuple[int, int, int, int]]:
+    code_parts: list[tuple[int, int, int, int]], index: int
+) -> list[tuple[int, int, int, int]]:
     """Code parts that start on the same line as the provided one ends. Provides parts in a reversed order."""
     code_parts_for_the_same_line = []
     line = None
@@ -58,9 +58,9 @@ def get_code_parts_for_the_same_line(
     return code_parts_for_the_same_line
 
 
-def remove_unused_fragments_from_a_line(line: str, code_parts, index: int):
-    """
-    line = 'bar as bar_alias,\n'
+def remove_unused_fragments_from_a_line(line: str, code_parts, index: int) -> tuple[str, int]:
+    r"""
+    Line = 'bar as bar_alias,\n'
     #       ....--.....-----..
     # Line is 3.
     # Ranges have to be removed: :4,6:11,16:
@@ -98,14 +98,14 @@ def remove_unused_fragments_from_a_line(line: str, code_parts, index: int):
         and code_parts_for_the_same_line[0][0] == lineno
         and code_parts_for_the_same_line[0][1] != lineno
     ):
-        from_line, to_line, from_col, to_col, insert_code, insert_condition = code_parts_for_the_same_line[0]
+        from_line, to_line, from_col, to_col, _insert_code, _insert_condition = code_parts_for_the_same_line[0]
         line = line[:from_col] + '\n'  # re-attach newline so buffered blank lines stay intact
         code_parts_for_the_same_line.pop(0)
 
     # Remove fragments from the middle of the line.
     index_increment = 0
     for unused_part in code_parts_for_the_same_line:
-        from_line, to_line, from_col, to_col, insert_code, insert_condition = unused_part
+        from_line, to_line, from_col, to_col, _insert_code, _insert_condition = unused_part
         if from_line == to_line:
             line = line[:from_col] + line[to_col:]
             index_increment += 1
@@ -115,7 +115,7 @@ def remove_unused_fragments_from_a_line(line: str, code_parts, index: int):
     # Remove the begining of the line.
     first_code_part = code_parts[index]
     if first_code_part[0] != first_code_part[1]:
-        from_line, to_line, from_col, to_col, insert_code, insert_condition = first_code_part
+        from_line, to_line, from_col, to_col, _insert_code, _insert_condition = first_code_part
         line = line[to_col:]
         index_increment += 1
 
@@ -125,7 +125,7 @@ def remove_unused_fragments_from_a_line(line: str, code_parts, index: int):
     return line, index_increment
 
 
-def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: List[Part]) -> List[str]:
+def remove_file_parts_from_content(content_lines: list[str], unused_file_parts: list[Part]) -> list[str]:
     """ """
     # How should move through the lines of content?
     updated_content_lines = []
@@ -138,8 +138,8 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
     was_block_removed = False  # A block is a chunk of code spanning multiple rows.
     next_line_after_removed_block = None
     indentation_of_first_removed_line = ''
-    empty_lines_in_a_row_list: List[str] = []
-    empty_lines_before_removed_block_list: List[str] = []
+    empty_lines_in_a_row_list: list[str] = []
+    empty_lines_before_removed_block_list: list[str] = []
 
     # This method should be implemented not as a loop, but with a generator method, which is get next line.
     # We should operate in streams of symbols, not lines, since multiple code parts might be per line.
@@ -159,7 +159,8 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
         if unused_part := list_get(unused_file_parts, unused_part_index):
             from_line, to_line, from_col, to_col, insert_code, insert_condition = unused_part
             print(
-                f'{current_lineno}. Code part to remove {from_line=}, {to_line=}, {from_col=}, {to_col=}, {insert_code=}, {insert_condition=}'
+                f'{current_lineno}. Code part to remove {from_line=}, {to_line=}, {from_col=}, {to_col=},'
+                f' {insert_code=}, {insert_condition=}'
             )
 
         # Skip lines, which have to be ignored.
@@ -196,7 +197,8 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
                 #         # The cursor moves: how to get only needed chunks?
                 #         # How to clean it up? Reverse iteration is usually a solution.
                 #
-                #         # TODO: >>>>: Lets ensure that as is removed, comma is removed and assignment cleanup is resolved properly.
+                #         # TODO: >>>>: Lets ensure that as is removed, comma is removed
+                #         #   and assignment cleanup is resolved properly.
                 #         # Removing the workarounds for now.
                 #
                 #         # # TODO: this check is a workaround for an assignment expression.
@@ -229,12 +231,14 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
                     line += insert_code
                 has_block_started = not line.strip()
                 print(
-                    f'{current_lineno}. Modification is in different lines. Updated line: "{line}". {has_block_started=}'
+                    f'{current_lineno}. Modification is in different lines. Updated line: "{line}".'
+                    f' {has_block_started=}'
                 )
 
             if line.strip() and not line.startswith('#'):
                 print(
-                    f'{current_lineno}. Line has content: "{previous_non_removed_line=}", Adding line to content "{line}"'
+                    f'{current_lineno}. Line has content: "{previous_non_removed_line=}",'
+                    f' Adding line to content "{line}"'
                 )
                 previous_non_removed_line = line
                 updated_content_lines.append(line)
@@ -283,10 +287,9 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
                 print(f'{current_lineno}. Adding line to the result "{line=}"')
                 updated_content_lines.append(line)
 
-            else:
-                if line:
-                    print(f'{current_lineno}. Adding line to empty_lines_in_a_row_list "{line}"')
-                    empty_lines_in_a_row_list.append(line)
+            elif line:
+                print(f'{current_lineno}. Adding line to empty_lines_in_a_row_list "{line}"')
+                empty_lines_in_a_row_list.append(line)
 
             # TODO: The issue here was that the line was not empty and after removal it became empty.
             # I would love to preserve only lines that were initially empty.
@@ -297,7 +300,8 @@ def remove_file_parts_from_content(content_lines: List[str], unused_file_parts: 
             # TODO: When code item is removed - I have to remove white spaces from the line.
             # TODO: solution: check if the remaining line is empty: if yes remove it.
             # TODO: Check if the remaining line consits only of the whitespaces and remove it completely.
-            # TODO: conclusion: was_block_removed flag is not working properly. The block_was_removed, but the flag was truned off too early.
+            # TODO: conclusion: was_block_removed flag is not working properly.
+            # The block_was_removed, but the flag was truned off too early.
             # TODO: Investigate why and how was_block_removed flag should work.
 
             # Was this swap executed?

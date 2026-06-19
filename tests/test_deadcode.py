@@ -12,7 +12,7 @@ REPO_ROOT = Path(__file__).parents[1]
 
 class DeadCodeIntegrationTests(TestCase):
     def setUp(self):
-        self._prev_cwd = os.getcwd()
+        self._prev_cwd = Path.cwd()
         os.chdir(REPO_ROOT)
         self.addCleanup(os.chdir, self._prev_cwd)
 
@@ -81,7 +81,7 @@ class DeadCodeTests(BaseTestCase):
 
 class CliEntrypointTests(TestCase):
     def setUp(self):
-        self._prev_cwd = os.getcwd()
+        self._prev_cwd = Path.cwd()
         os.chdir(REPO_ROOT)
         self.addCleanup(os.chdir, self._prev_cwd)
 

@@ -36,7 +36,7 @@ class TestScopeTracking(BaseTestCase):
         # I have to put character position with which the pass statement is associated with.
         #
 
-        result = main(['foo.py', '--no-color', '--fix'])
+        main(['foo.py', '--no-color', '--fix'])
         print(self.updated_files)
 
         self.assertFiles({})

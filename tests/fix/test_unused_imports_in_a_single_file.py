@@ -2,8 +2,6 @@
 Test unused import detection and removal from a single file.
 """
 
-from unittest import skip
-
 from deadcode.cli import main
 from deadcode.utils.base_test_case import BaseTestCase
 from deadcode.utils.fix_indent import fix_indent
@@ -27,7 +25,7 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                 fn()
                 """
         }
-        unused_names = main('file.py --no-color --fix -v'.split())
+        unused_names = main(['file.py', '--no-color', '--fix', '-v'])
         self.assertEqual(
             unused_names,
             fix_indent("""\
@@ -61,7 +59,7 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                 """
         }
 
-        unused_names = main('file.py --no-color --fix -v'.split())
+        unused_names = main(['file.py', '--no-color', '--fix', '-v'])
 
         self.assertEqual(
             unused_names,
@@ -100,7 +98,7 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                 """
         }
 
-        unused_names = main('file.py --no-color --fix -v'.split())
+        unused_names = main(['file.py', '--no-color', '--fix', '-v'])
 
         self.assertEqual(
             unused_names,
@@ -135,7 +133,7 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                 """
         }
 
-        unused_names = main('file.py --no-color --fix -v'.split())
+        unused_names = main(['file.py', '--no-color', '--fix', '-v'])
 
         self.assertEqual(
             unused_names,
@@ -180,7 +178,7 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                 fn()
                 """
         }
-        unused_names = main('file.py --no-color --fix -v'.split())
+        main(['file.py', '--no-color', '--fix', '-v'])
         # self.assertEqual(
         #     unused_names,
         #     fix_indent("""\
@@ -220,7 +218,8 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                 """
         }
         ## Are detected parts correct?:
-        # [Part(line_start=1, line_end=3, col_start=17, col_end=4), Part(line_start=3, line_end=5, col_start=20, col_end=2)]
+        # [Part(line_start=1, line_end=3, col_start=17, col_end=4),
+        #  Part(line_start=3, line_end=5, col_start=20, col_end=2)]
         # from spam import bar as bar_alias
         #
         # It seems that detected characters are correct.
@@ -228,7 +227,7 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
 
         # print(bar_alias)
 
-        unused_names = main('file.py --no-color --fix -v'.split())
+        main(['file.py', '--no-color', '--fix', '-v'])
         # self.assertEqual(
         #     unused_names,
         #     fix_indent("""\

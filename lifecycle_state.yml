@@ -1,5 +1,5 @@
 code_quality_is_good: false
-heart_beat: 2026-06-19 08:49:13
+heart_beat: 2026-06-19 10:17:55
 # [~] = conditional / out-of-sequence phase (event-driven, not a linear 1..9 step).
 phases:
   - [x] 1_question
@@ -16,5 +16,5 @@ phases:
       in:  review_findings.yml (from 8_review)
       out: code edits; flips review_findings.yml resolved:true (no artifact-dir file)
 lifecycles_in_progress:
-  - artifact_dir: T6-2026-06-19-cq-ruff-format-audit-ruff-format-is-clean-across-t
-    heart_beat: 2026-06-19 08:49:13
+  - artifact_dir: T7-2026-06-19-cq-ruff-lint-audit-ruff-check-is-clean-across-the
+    heart_beat: 2026-06-19 10:17:55

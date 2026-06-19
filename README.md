@@ -120,7 +120,7 @@ This syncs pinned development dependencies from `requirements-dev.txt` and insta
 All code quality checks (tests, linting, formatting, type checking, complexity) are managed via Just targets:
 
 ```shell
-# Run all checks (tests + lint + format check + type check)
+# Run all checks (tests + lint + format check + type check + complexity check)
 just check
 
 # Run individual checks
@@ -132,9 +132,11 @@ just check-complexity  # Report functions exceeding complexity limit
 
 # Check-only mode (no auto-fixes)
 just check-format      # Check formatting without changing files
-just check-lint        # Check linting without changing files
+just check-lint        # Check linting without changing files (exit 0 if clean)
 just check-typecheck   # Check types without changing files
 ```
+
+The codebase is continuously kept **ruff-clean** (zero lint errors, zero warnings). The `just check` gate ensures code quality before merging.
 
 ### Test Determinism
 
@@ -168,7 +170,14 @@ Coverage configuration is in `pyproject.toml`:
 See [Development Documentation](docs/overview.md) for full testing details.
 
 ## Contributing
-Use `just check` before submitting pull requests to ensure all checks pass. See [Development Documentation](docs/overview.md) for the full development workflow.
+
+Use `just check` before submitting pull requests to ensure all checks pass:
+- All tests pass with 95.0% coverage
+- Code is ruff-clean (zero lint errors, zero warnings)
+- Type checking passes in strict mode
+- Complexity limits are respected
+
+See [Development Documentation](docs/overview.md) for the full development workflow.
 
 ## Rationale
 [ruff](https://pypi.org/project/ruff/) and

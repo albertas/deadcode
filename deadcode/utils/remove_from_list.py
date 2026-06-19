@@ -1,7 +1,7 @@
-from typing import List, Callable
+from collections.abc import Callable
 
 
-def remove_from_list(elements: List, should_remove: Callable) -> None:
+def remove_from_list(elements: list, should_remove: Callable) -> None:
     """
     Removes list items based on criteria (without recreating list).
 

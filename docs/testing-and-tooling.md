@@ -138,11 +138,33 @@ Both `Makefile` and `Justfile` test targets run parallel tests on all-but-one CP
 
 - **Entry point** (`pyproject.toml:38`): `deadcode = "deadcode.cli:main"` — defines the CLI command (the entry is on line 37; line 38 is the blank that follows)
 - **Pytest options** (`pyproject.toml:209`): `addopts` includes coverage settings; cite `pyproject.toml` for numeric gates rather than copying them into docs
-- **Ruff configuration** (`pyproject.toml:61-160`): line-length, lint rules, format style
+- **Ruff configuration** (`pyproject.toml:61-160`): line-length 120, all rules enabled with ~70 deliberate policy ignores (see Ruff Code Quality section below)
 - **MyPy configuration** (`pyproject.toml:162-170`): strict mode enabled
 - **`[tool.deadcode]`** (`pyproject.toml:178-201`): the project's own Deadcode configuration, demonstrating self-usage; ignores inert decorator options, test utilities, and internal visit methods
 
 The project **dog-foods itself**: it runs `make check` (which includes `make deadcode`) to ensure the codebase passes its own unused-code detection.
+
+### Ruff Code Quality
+
+The codebase is kept **ruff-clean** by enforcing a policy-based ignore list:
+
+- **All rules active** — `select = ["ALL"]` enables all ruff rules by default
+- **Policy ignores only** — the `ignore` list (~70 entries) contains only deliberate project policies, not fixes for historical violations:
+  - **Docstring rules** (`D1xx`, `D2xx`, `D4xx`) — permissive per project preference
+  - **Style & formatting** (`COM812`, `ISC001`) — handled by ruff formatter, not lint
+  - **Asserts & print** (`S101`, `T201`) — allowed in tests and CLI output
+  - **Type hints** (`ANN001`, `ANN002`, `ANN401`) — permissive where type contracts are clear
+  - **Complexity** (`C901`, `PLR0912/0913/0915/2004`) — managed by `check-complexity` (separate gate)
+  - **False positives** (`ARG001/002`, `PTH*` family) — rules too strict for this codebase
+  - **TODO/FIX/FIXME style** (`FIX002`, `TD002/003/005`) — project convention
+
+- **Tests module** — additional per-file ignores for `tests/*`:
+  - `S101` — allow assert statements in tests
+  - `PT009` — unittest assertion style permitted
+  - `ANN201` — return type hints optional in tests
+  - `D` — docstring requirements waived in tests
+
+Every ignore entry is tracked and validated: if a rule reaches zero violations it is removed from the list, keeping only active policies.
 
 ## Development Workflow
 

@@ -1,5 +1,4 @@
 import ast
-from difflib import SequenceMatcher
 from itertools import chain
 import os
 import re
@@ -10,7 +9,8 @@ from logging import getLogger
 from pathlib import Path
 from collections import defaultdict
 
-from typing import Callable, Dict, List, Optional, Set, TextIO, Union, Iterable, Tuple
+from typing import TextIO
+from collections.abc import Callable, Iterable
 from deadcode.constants import UnusedCodeType
 from deadcode.data_types import Args, Part, Filename
 from deadcode.visitor.code_item import CodeItem
@@ -42,40 +42,40 @@ logger = getLogger()
 class FindUnusedCodeVisitor(ast.NodeVisitor):
     """Finds dead code."""
 
-    def __init__(self, filenames: List[str], args: Args) -> None:
+    def __init__(self, filenames: list[str], args: Args) -> None:
         self.filenames = filenames
 
         self.args = args
 
-        self.ignore_decorators: List[str] = []
+        self.ignore_decorators: list[str] = []
 
         verbose = False
         # verbose = args.verbose
         self.verbose = verbose
 
-        self.defined_attrs: List[CodeItem] = LoggingList('attribute', verbose)
-        self.defined_classes: List[CodeItem] = LoggingList('class', verbose)
-        self.defined_funcs: List[CodeItem] = LoggingList('function', verbose)
-        self.defined_imports: List[CodeItem] = LoggingList('import', verbose)
-        self.defined_methods: List[CodeItem] = LoggingList('method', verbose)
-        self.defined_props: List[CodeItem] = LoggingList('property', verbose)
-        self.defined_vars: List[CodeItem] = LoggingList('variable', verbose)
-        self.unused_file: List[CodeItem] = LoggingList('unused_file', verbose)
-        self.unreachable_code: List[CodeItem] = LoggingList('unreachable_code', verbose)
+        self.defined_attrs: list[CodeItem] = LoggingList('attribute', verbose)
+        self.defined_classes: list[CodeItem] = LoggingList('class', verbose)
+        self.defined_funcs: list[CodeItem] = LoggingList('function', verbose)
+        self.defined_imports: list[CodeItem] = LoggingList('import', verbose)
+        self.defined_methods: list[CodeItem] = LoggingList('method', verbose)
+        self.defined_props: list[CodeItem] = LoggingList('property', verbose)
+        self.defined_vars: list[CodeItem] = LoggingList('variable', verbose)
+        self.unused_file: list[CodeItem] = LoggingList('unused_file', verbose)
+        self.unreachable_code: list[CodeItem] = LoggingList('unreachable_code', verbose)
 
-        self.used_names: Set[str] = LoggingSet('name', self.verbose)
+        self.used_names: set[str] = LoggingSet('name', self.verbose)
 
         self.filename = Path()
-        self.code: List[str] = []
+        self.code: list[str] = []
 
         # Note: scope is a stack containing current module name, class names, function names
-        self.scope_parts: List[str] = []
+        self.scope_parts: list[str] = []
 
         # This flag is used to stop registering code definitions in a code item
         # during recursive its parsing
         self.should_ignore_new_definitions = False
 
-        self.noqa_lines: Dict[str, Set[int]] = {}
+        self.noqa_lines: dict[str, set[int]] = {}
         self.scopes = NestedScope()
 
         # TODO: CodePart has to contain filename, because these code parts are for different files.
@@ -85,7 +85,7 @@ class FindUnusedCodeVisitor(ast.NodeVisitor):
     def scope(self) -> str:
         return '.'.join(self.scope_parts)
 
-    def add_used_name(self, name: str, scope: Optional[str] = None) -> None:
+    def add_used_name(self, name: str, scope: str | None = None) -> None:
         # TODO: Usage should be tracked on CodeItem.
 
         # TODO: Lets first resolve, how to correctly set the type of a function argument.
@@ -113,10 +113,12 @@ class FindUnusedCodeVisitor(ast.NodeVisitor):
 
                     # TODO: apply fixing step, only when visiting of all files is finished.
 
-                    # The only bug detected was that current solutions tries to apply changes, when not all files were analysed yet.
+                    # The only bug detected was that current solutions tries to apply changes,
+                    # when not all files were analysed yet.
                     #
                     # Still strictly separate detection and fixing.
-                    # Fixing should be done by reading a file once again, parsing its AST, making inline modification changes as anticipated now.
+                    # Fixing should be done by reading a file once again, parsing its AST,
+                    # making inline modification changes as anticipated now.
                     #
                     # Comparison for exact code items will be adjused in the future.
 
@@ -196,7 +198,7 @@ class FindUnusedCodeVisitor(ast.NodeVisitor):
     def unused_attrs(self) -> Iterable[CodeItem]:
         return _get_unused_items(self.defined_attrs, self.used_names)
 
-    def _log(self, *args, file: Optional[TextIO] = None, force: bool = False) -> None:  # type: ignore
+    def _log(self, *args, file: TextIO | None = None, force: bool = False) -> None:  # type: ignore
         if self.verbose or force:
             file = file or sys.stdout
             try:
@@ -206,7 +208,7 @@ class FindUnusedCodeVisitor(ast.NodeVisitor):
                 x = ' '.join(map(str, args))
                 print(x.encode(), file=file)
 
-    def _add_aliases(self, node: Union[ast.Import, ast.ImportFrom]) -> None:
+    def _add_aliases(self, node: ast.Import | ast.ImportFrom) -> None:
         """
         We delegate to this method instead of using visit_alias() to have
         access to line numbers and to filter imports from __future__.
@@ -233,7 +235,7 @@ class FindUnusedCodeVisitor(ast.NodeVisitor):
             if alias is not None:
                 self.add_used_name(name_and_alias.name)
 
-    def _handle_conditional_node(self, node: Union[ast.If, ast.IfExp, ast.While], name: str) -> None:
+    def _handle_conditional_node(self, node: ast.If | ast.IfExp | ast.While, name: str) -> None:
         if utils.condition_is_always_false(node.test):
             self._define(
                 self.unreachable_code,
@@ -270,13 +272,13 @@ class FindUnusedCodeVisitor(ast.NodeVisitor):
 
     def _define(
         self,
-        collection: List[CodeItem],
+        collection: list[CodeItem],
         name: str,
         first_node: ast.AST,
-        last_node: Optional[ast.AST] = None,
+        last_node: ast.AST | None = None,
         message: str = '',
-        ignore: Optional[Callable[[Path, str], bool]] = None,
-        expression_node: Optional[ast.AST] = None,
+        ignore: Callable[[Path, str], bool] | None = None,
+        expression_node: ast.AST | None = None,
     ) -> None:
 
         # TODO: add support for ignore_definitions, ignore_definitions_if_inherits_from options
@@ -403,7 +405,7 @@ class FindUnusedCodeVisitor(ast.NodeVisitor):
             and not node.keywords
         )
 
-    def get_inherits_from(self, node: ast.AST) -> Optional[List[str]]:
+    def get_inherits_from(self, node: ast.AST) -> list[str] | None:
         """Returns a set of base classes from any level in inheritance tree."""
 
         if not (bases_attr := getattr(node, 'bases', None)):
@@ -427,7 +429,7 @@ class FindUnusedCodeVisitor(ast.NodeVisitor):
         else:
             self._define(self.defined_classes, node.name, node, ignore=_ignore_class)
 
-    def visit_FunctionDef(self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef]) -> None:
+    def visit_FunctionDef(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> None:
         decorator_names = [utils.get_decorator_name(decorator) for decorator in node.decorator_list]  # type: ignore
 
         first_arg = node.args.args[0].arg if node.args.args else None
@@ -580,7 +582,7 @@ class FindUnusedCodeVisitor(ast.NodeVisitor):
         if was_scope_increased:
             self.scope_parts.pop()
 
-    def _handle_ast_list(self, ast_list: List[ast.AST]) -> None:
+    def _handle_ast_list(self, ast_list: list[ast.AST]) -> None:
         """
         Find unreachable nodes in the given sequence of ast nodes.
         """

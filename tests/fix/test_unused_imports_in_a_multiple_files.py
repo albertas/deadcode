@@ -11,11 +11,8 @@ Test unused import detection when code items are imported from one file to anoth
 Tests should be based on: test_method_at_the_end_of_file test.
 """
 
-from unittest import skip
-
 from deadcode.cli import main
 from deadcode.utils.base_test_case import BaseTestCase
-from deadcode.utils.fix_indent import fix_indent
 
 
 class TestCodeItemUsageWhenImportingFromDifferentFiles(BaseTestCase):
@@ -33,7 +30,7 @@ class TestCodeItemUsageWhenImportingFromDifferentFiles(BaseTestCase):
                 """,
         }
 
-        unused_names = main('file.py --no-color --fix -v'.split())
+        unused_names = main(['file.py', '--no-color', '--fix', '-v'])
         self.assertEqual(unused_names, None)
         self.assertFiles(
             {

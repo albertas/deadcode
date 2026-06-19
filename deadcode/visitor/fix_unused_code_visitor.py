@@ -14,7 +14,8 @@ by visiting the code nodes once again.
 #
 #
 # What is the answer?
-#   I should avoid second reanalysis, but I should have a garanttee, that those code items are unused before finding additional code parts to remove.
+#   I should avoid second reanalysis, but I should have a garanttee, that those code items are unused
+#   before finding additional code parts to remove.
 #   What are the different cases?
 #
 #   Partially removable code item types:
@@ -38,43 +39,20 @@ by visiting the code nodes once again.
 
 import ast
 from difflib import SequenceMatcher
-from itertools import chain
 import os
-import re
-import string
-import sys
 from logging import getLogger
 
 from pathlib import Path
 from collections import defaultdict
 
-from typing import Callable, Dict, List, Optional, Set, TextIO, Union, Iterable, Any, Tuple
-from deadcode.constants import UnusedCodeType
-from deadcode.data_types import Args, Part, Filename
-from deadcode.visitor.code_item import CodeItem
-from deadcode.visitor.utils import LoggingList, LoggingSet
-from deadcode.visitor import utils
+from typing import Any
+from deadcode.data_types import Part, Filename
 from deadcode.actions.parse_abstract_syntax_tree import parse_abstract_syntax_tree
-from deadcode.utils.nested_scopes import NestedScope
 
 from deadcode.visitor.find_unused_code_visitor import FindUnusedCodeVisitor
 from deadcode.visitor import noqa
 from deadcode.utils.print_ast import print_ast as show  # noqa: F401
 from deadcode.utils.remove_from_list import remove_from_list
-from deadcode.visitor import lines
-from deadcode.visitor.ignore import (
-    ERROR_CODES,
-    IGNORED_VARIABLE_NAMES,
-    _get_unused_items,
-    _match,
-    _match_many,
-    _assigns_special_variable__all__,
-    _ignore_class,
-    _ignore_import,
-    _ignore_function,
-    _ignore_method,
-    _ignore_variable,
-)
 
 logger = getLogger()
 
@@ -113,10 +91,12 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
 
                     # TODO: apply fixing step, only when visiting of all files is finished.
 
-                    # The only bug detected was that current solutions tries to apply changes, when not all files were analysed yet.
+                    # The only bug detected was that current solutions tries to apply changes,
+                    # when not all files were analysed yet.
                     #
                     # Still strictly separate detection and fixing.
-                    # Fixing should be done by reading a file once again, parsing its AST, making inline modification changes as anticipated now.
+                    # Fixing should be done by reading a file once again, parsing its AST,
+                    # making inline modification changes as anticipated now.
                     #
                     # Comparison for exact code items will be adjused in the future.
 
@@ -148,7 +128,7 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
 
         return self.additional_code_parts_to_remove
 
-    def get_original_code_lines(self, node: ast.AST) -> List[str]:
+    def get_original_code_lines(self, node: ast.AST) -> list[str]:
         lines = self.file_content_lines[node.lineno - 1 : node.end_lineno]
         lines[0] = lines[0][node.col_offset :]
         lines[-1] = lines[-1][: node.end_col_offset + 1]
@@ -159,8 +139,8 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
         return ast.unparse(node)
 
     def convert_1d_part_to_2d(
-        self, from_char: int, to_char: int, line_lengths: List[int], first_line: int, first_col: int
-    ) -> Tuple[int, int, int, int]:
+        self, from_char: int, to_char: int, line_lengths: list[int], first_line: int, first_col: int
+    ) -> tuple[int, int, int, int]:
         from_line = None
         from_col = None
         to_line = None
@@ -179,14 +159,15 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
             char_count += line_length
 
         if from_line is None or from_col is None or to_line is None or to_col is None:
-            raise ValueError('Conversion from 1D to 2D code part failed')
+            message = 'Conversion from 1D to 2D code part failed'
+            raise ValueError(message)
 
         code_part = Part(from_line, to_line, from_col, to_col)
         return code_part
 
     def get_chars_to_remove(
         self, original_code_lines, fixed_code, first_line, first_col
-    ) -> List[Tuple[int, int, int, int]]:
+    ) -> list[tuple[int, int, int, int]]:
         """Return a list code parts to be removed from the original code to get the first one.
         So that this could be applied with Code part removal algorithm.
         """
@@ -323,9 +304,12 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
                 insert_code='pass\n',
                 insert_code_if_character_is_not_removed=(node.lineno, node.col_offset),
                 #
-                # TODO: >>>  It is not possible to track, when pass has to be removed, or not. New design improvement has to be made.
-                # One solution is to remove inserted code when merging parts: if a symbol is removed after which the code has to be inserted, then do not insert the code.
-                # The better approach would be to track expressions: if expression has to be removed - then remove it completely with code inserted as well.
+                # TODO: >>>  It is not possible to track, when pass has to be removed, or not.
+                # New design improvement has to be made.
+                # One solution is to remove inserted code when merging parts: if a symbol is removed
+                # after which the code has to be inserted, then do not insert the code.
+                # The better approach would be to track expressions: if expression has to be removed -
+                # then remove it completely with code inserted as well.
                 #
                 # Pass has to be assigned to a particular character, if it gets removed - pass should not be rendered.
             )
@@ -436,8 +420,6 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
         self.add_code_adjustments_for_cleaned_up_code_items(node)
 
     def visit(self, node: ast.AST) -> None:
-        node_name = getattr(node, 'name', None)
-
         # > TODO: Expr scope has to be updated after visiting nested nodes.
         # Do I have to merge custom visits with visit method in order to achieve this?
         #

@@ -1,8 +1,7 @@
 import sys
-from typing import Optional
 
 
-def fix_indent(doc: str) -> Optional[str]:
+def fix_indent(doc: str) -> str | None:
     """Finds indentation of a first line and removes it from all following lines.
 
     Implemented based on inspect.cleandoc by keeping trailing lines.
