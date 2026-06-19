@@ -1,3 +1,5 @@
+code_quality_is_good: false
+heart_beat: 2026-06-19 07:38:33
 # [~] = conditional / out-of-sequence phase (event-driven, not a linear 1..9 step).
 phases:
   - [x] 1_question
@@ -13,8 +15,6 @@ phases:
       depends_on: 8_review — runs only on review restart when review_findings.yml has >=1 open finding
       in:  review_findings.yml (from 8_review)
       out: code edits; flips review_findings.yml resolved:true (no artifact-dir file)
-code_quality_is_good: false
-heart_beat: 2026-06-18 23:38:38
 lifecycles_in_progress:
-  - artifact_dir: T2-2026-06-18-cq-aliases-add-justfile-with-targets-to-run-tests
-    heart_beat: 2026-06-18 23:38:38
+  - artifact_dir: T3-2026-06-19-cq-tests-ensure-existing-tests-pass-fix-the-tests
+    heart_beat: 2026-06-19 07:38:33

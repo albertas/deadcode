@@ -270,7 +270,7 @@ class TestDryCliOption(BaseTestCase):
                 \x1b[0m\x1b[31m-    pass
                 \x1b[0m\x1b[31m-
                 \x1b[0m\x1b[31m-with open("tmp.txt", "r") as unused_var:
-                \x1b[0m\x1b[32m+with open("tmp.txt", "r") as :
+                \x1b[0m\x1b[32m+with open("tmp.txt", "r"):
                 \x1b[0m     pass
                  
                  print("Dont change this file")

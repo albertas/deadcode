@@ -98,7 +98,7 @@ def remove_unused_fragments_from_a_line(line: str, code_parts, index: int):
         and code_parts_for_the_same_line[0][1] != lineno
     ):
         from_line, to_line, from_col, to_col, insert_code, insert_condition = code_parts_for_the_same_line[0]
-        line = line[:from_col]
+        line = line[:from_col] + "\n"  # re-attach newline so buffered blank lines stay intact
         code_parts_for_the_same_line.pop(0)
 
     # Remove fragments from the middle of the line.

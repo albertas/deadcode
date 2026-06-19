@@ -212,6 +212,9 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
         for tag, i1, i2, j1, j2 in s.get_opcodes():
             print(f'{tag}   a[{i1}:{i2}] --> b[{j1}:{j2}] {original_code[i1:i2]} --> {fixed_code[j1:j2]}')
             if tag == "delete":
+                segment = original_code[i1:i2]
+                if segment.strip() == "" and (i1 == 0 or original_code[i1 - 1] == "\n"):
+                    continue  # ast.unparse re-indented the body; surplus indent is not a real delete
                 code_part_to_remove = self.convert_1d_part_to_2d(i1, i2, original_code_line_lengths, first_line, first_col)
                 code_parts_to_remove.append(code_part_to_remove)
 
