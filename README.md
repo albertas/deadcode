@@ -170,6 +170,10 @@ Coverage configuration is in `pyproject.toml`:
 - **Omitted**: `deadcode/utils/base_test_case.py` (test infrastructure)
 - **Gate**: Enforced at `95.0%` via `--cov-fail-under` in `pytest` options
 
+The test suite includes dedicated coverage for Python 3.11+ and 3.12+ syntax features:
+- **3.11-safe tests** (`test_match_statement.py`, `test_walrus.py`) run on all supported versions
+- **3.12+ tests** (`test_type_alias.py`, `test_pep695_generics.py`) are version-gated via `@skipUnless` and only run on 3.12+
+
 See [Development Documentation](docs/overview.md) for full testing details.
 
 ## Contributing

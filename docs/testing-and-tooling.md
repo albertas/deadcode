@@ -24,6 +24,10 @@ The `tests/` directory mirrors the package structure, with test modules and subd
 - `test_imports.py` — import handling tests
 - `test_line_number_detection.py` — line and column number accuracy
 - `test_variable_parsing_from_ast_dump.py` — variable parsing from AST dump representations
+- `test_match_statement.py` — `match`/`case` statement detection (3.11-safe, no version gate)
+- `test_walrus.py` — walrus operator (`:=`) detection (3.11-safe, no version gate)
+- `test_type_alias.py` — `type` alias detection (3.12+, gated with `@skipUnless(sys.version_info >= (3, 12))`)
+- `test_pep695_generics.py` — PEP 695 generic-parameter detection (3.12+, gated with `@skipUnless(sys.version_info >= (3, 12))`)
 
 ### Test Files Directory
 
@@ -65,6 +69,32 @@ Tests define a `files: Dict[str, str]` class attribute mapping filenames to Pyth
 
 - **`assertFiles(expected_files, removed=None)`** (`base_test_case.py:59-85`) — verifies that file contents (both updated and unchanged) match expectations, and that removed files match the optional `removed` list.
 - **`assertUpdatedFiles(expected_updated_files)`** (`base_test_case.py:87-96`) — verifies that only the specified files were modified and have the expected contents.
+
+### Testing New Syntax Features
+
+Tests for Python 3.11+ features (`match`/`case`, walrus, type aliases, PEP 695 generics) use literal syntax in fixtures and assert exact `path:line:col: DCxx` findings:
+
+- **Format**: `'<file>:<line>:<col>: DCxx <Type> `<name>` is never used'` where `<Type>` is capitalized (`Variable`, `Function`, `Class`).
+- **Line/column precision**: Line numbers are 1-based; column numbers are 0-based. Exact column positions for complex constructs (e.g., `total` in `(total := ...)`  or nested names in `type_params`) are confirmed by running the test once and reading the actual output.
+- **Negative cases**: Each positive assertion is accompanied by a companion test asserting `None` when the same construct is used (not unused), ensuring false negatives are caught.
+- **Fix-path coverage**: Type alias and generic-parameter tests include `--fix` variants to validate both detection and removal paths.
+
+### Version-Gating for Python 3.12+ Syntax
+
+New test files for Python 3.12+ features (type aliases, PEP 695 generics) use `unittest.skipUnless` decorators to gate them by Python version:
+
+```python
+@skipUnless(sys.version_info >= (3, 12), 'type alias syntax requires 3.12+')
+class TypeAliasTests(BaseTestCase):
+    # test methods here
+```
+
+This allows:
+- **3.11**: 3.12+ test classes are automatically skipped (not failed), keeping the test suite green on the 3.11 floor
+- **3.12+**: full test coverage including gated tests
+- **CI matrix**: the existing CI workflow (`.github/workflows/check.yml:19`) runs across 3.11–3.14, validating both skipped and active tests
+
+Tests for 3.11-safe constructs (`match`/`case`, walrus `:=`) have no version gate and run on all supported versions.
 
 ### Tests Outside BaseTestCase
 

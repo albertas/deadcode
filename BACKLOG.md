@@ -1,6 +1,4 @@
 # ToDo
-- [ ] Add more test cases targeting python versions 3.11, 3.12, 3.13, 3.14, (3.15 if available?). Make code base implementation compatible with these python versions.
-
 # Vision
 - [ ] Document testing conventions.
 - [ ] Generate various test cases, group them by similarity.
@@ -9,6 +7,7 @@
 - [ ] Generate fastapi, django test suits.
 
 # Done
+- [x] [T15] Add more test cases targeting python versions 3.11, 3.12, 3.13, 3.14, (3.15 if available?). Make code base implementation compatible with these python versions.
 - [x] [T14] Check implementation for correctness. Add additional unit tests cases to check implementation correctness. Update the code to fix all the test cases.
 - [x] [T13] Document testing conventions in docs directory.
 - [x] Ensure code quality [cq:ensure]

@@ -33,6 +33,10 @@ For empty, non-dunder files, a `CodeItem(type_='unused_file')` is created (`visi
 
 This pattern ensures scope state is consistent and ignore rules are evaluated at the right point in traversal.
 
+### Handling New Python Syntax
+
+New AST node types introduced in Python 3.12+ (e.g., `ast.TypeAlias`, `ast.MatchAs`, PEP 695 `type_params`) are walked via the generic recursion even if no specialized `visit_<NodeType>()` method exists. This means most new constructs "just work" for name tracking without requiring explicit visitor methods. Specialized handling (e.g., `visit_TypeAlias` or `visit_TypeVar`) is only added when a test proves a false positive or false negative. The suite includes version-gated tests for match/case statements, walrus operators, type aliases, and PEP 695 generics to ensure correct handling across Python versions.
+
 ## Defined-Name Collectors
 
 Definitions are recorded by calling `_define()` (`visitor/find_unused_code_visitor.py:274-328`), which creates a `CodeItem`, determines visibility, and either marks it used (if ignored) or appends it to the appropriate `defined_*` list.
