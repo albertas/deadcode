@@ -47,5 +47,5 @@ sync: .venv
 	uv pip install -e .[test]
 
 compile:
-	uv pip compile -U -q pyproject.toml -o requirements.txt
-	uv pip compile -U -q --all-extras pyproject.toml -o requirements-dev.txt
+	uv pip compile -U -q --python 3.11 --no-strip-markers pyproject.toml -o requirements.txt
+	uv pip compile -U -q --all-extras --python 3.11 --no-strip-markers pyproject.toml -o requirements-dev.txt

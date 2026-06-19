@@ -30,7 +30,7 @@
   - [x] [T9] [cq:complexity] Audit cyclomatic complexity stays <= 8 across `app/` and `tests/`. Run `just check-complexity`.
   - [x] [T10] [cq:check] Ensure that just check command exist, it combines all the checks from Justfile and this `check` target passes.
   - [x] [T11] [cq:pythonversion] Ensure that latest stable python version is used.
-  - [ ] [cq:versions] Ensure that latest dependency versions are used.
+  - [x] [T12] [cq:versions] Ensure that latest dependency versions are used.
 - [ ] Document testing conventions in docs directory.
 - [ ] Check implementation for correctness. Add additional unit tests cases to check implementation correctness. Update the code to fix all the test cases.
 - [ ] Add more test cases targeting python versions 3.11, 3.12, 3.13, 3.14, (3.15 if available?). Make code base implementation compatible with these python versions.
