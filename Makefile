@@ -1,11 +1,13 @@
 .PHONY: compile publish check fix lint fixlint format mypy deadcode audit test
 
+PYTHON_VERSION ?= 3.11
+
 check: test lint mypy audit deadcode
 fix: format fixlint
 
 .venv:
 	pip install uv
-	uv venv -p 3.11 .venv
+	uv venv -p $(PYTHON_VERSION) .venv
 	uv pip sync requirements-dev.txt
 	uv pip install -e .[test]
 

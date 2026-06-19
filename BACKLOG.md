@@ -29,7 +29,7 @@
   - [x] [T8] [cq:typecheck] Audit `mypy app/` passes. Add type hints in the code where possible. Run `just check-typecheck`.
   - [x] [T9] [cq:complexity] Audit cyclomatic complexity stays <= 8 across `app/` and `tests/`. Run `just check-complexity`.
   - [x] [T10] [cq:check] Ensure that just check command exist, it combines all the checks from Justfile and this `check` target passes.
-  - [ ] [cq:pythonversion] Ensure that latest stable python version is used.
+  - [x] [T11] [cq:pythonversion] Ensure that latest stable python version is used.
   - [ ] [cq:versions] Ensure that latest dependency versions are used.
 - [ ] Document testing conventions in docs directory.
 - [ ] Check implementation for correctness. Add additional unit tests cases to check implementation correctness. Update the code to fix all the test cases.

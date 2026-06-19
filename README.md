@@ -10,6 +10,9 @@
 
 
 ## Installation
+
+**Requires Python 3.11+** (tested on 3.11–3.14).
+
 ```shell
 pip install deadcode
 ```

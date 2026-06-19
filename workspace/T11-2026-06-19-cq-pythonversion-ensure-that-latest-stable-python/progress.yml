@@ -1,0 +1,178 @@
+simple_task: false
+phases:
+- name: 1_question
+  done: true
+  metrics:
+    duration_ms: 159297
+    cost_usd: 0.59234235
+    input_tokens: 3148
+    output_tokens: 4575
+    cache_read_tokens: 234320
+    cache_creation_tokens: 18100
+    model: Haiku 4.5, opus 4.8, sonnet 4.6
+    context_used: 21248
+    context_max: 1000000
+  artifacts:
+  - questions.md
+- name: 2_research
+  done: true
+  metrics:
+    duration_ms: 157339
+    cost_usd: 1.0468214
+    input_tokens: 4439
+    output_tokens: 7038
+    cache_read_tokens: 214536
+    cache_creation_tokens: 25209
+    model: Haiku 4.5, opus 4.8, sonnet 4.6
+    context_used: 29648
+    context_max: 1000000
+  artifacts:
+  - research.md
+- name: 3_design
+  done: true
+  metrics:
+    duration_ms: 126868
+    cost_usd: 0.5572945000000001
+    input_tokens: 3144
+    output_tokens: 8316
+    cache_read_tokens: 196339
+    cache_creation_tokens: 23238
+    model: Haiku 4.5, opus 4.8
+    context_used: 26382
+    context_max: 1000000
+  artifacts:
+  - design.md
+- name: 4_structure
+  done: true
+  metrics:
+    duration_ms: 59235
+    cost_usd: 0.3560405
+    input_tokens: 3009
+    output_tokens: 4127
+    cache_read_tokens: 95515
+    cache_creation_tokens: 18680
+    model: Haiku 4.5, opus 4.8
+    context_used: 21689
+    context_max: 1000000
+  artifacts:
+  - structure.md
+- name: 5_plan
+  done: true
+  metrics:
+    duration_ms: 97620
+    cost_usd: 0.5135255
+    input_tokens: 3140
+    output_tokens: 6469
+    cache_read_tokens: 138939
+    cache_creation_tokens: 26327
+    model: Haiku 4.5, opus 4.8
+    context_used: 29467
+    context_max: 1000000
+  artifacts:
+  - plan.md
+- name: 6_document
+  done: true
+  metrics:
+    duration_ms: 91316
+    cost_usd: 0.1337347
+    input_tokens: 91
+    output_tokens: 6792
+    cache_read_tokens: 282467
+    cache_creation_tokens: 33450
+    model: Haiku 4.5
+    context_used: 33541
+    context_max: 200000
+- name: 7_implement
+  done: true
+  metrics:
+    duration_ms: 53594
+    cost_usd: 0.2873988
+    input_tokens: 8
+    output_tokens: 1685
+    cache_read_tokens: 257906
+    cache_creation_tokens: 27596
+    model: Haiku 4.5, sonnet 4.6
+    context_used: 27604
+    context_max: 200000
+    lines_of_code: 108
+  sub_phases:
+  - num: 1
+    title: Parametrize the env builder
+    done: true
+    metrics:
+      duration_ms: 48670
+      cost_usd: 0.31295480000000003
+      input_tokens: 10
+      output_tokens: 1712
+      cache_read_tokens: 341866
+      cache_creation_tokens: 27587
+      model: Haiku 4.5, sonnet 4.6
+      context_used: 27597
+      context_max: 200000
+      lines_of_code: 13
+  - num: 2
+    title: Replace 3.8 CI workflow with a version matrix
+    done: true
+    metrics:
+      duration_ms: 61230
+      cost_usd: 0.34353510000000004
+      input_tokens: 11
+      output_tokens: 2665
+      cache_read_tokens: 382887
+      cache_creation_tokens: 28248
+      model: Haiku 4.5, sonnet 4.6
+      context_used: 28259
+      context_max: 200000
+      lines_of_code: 13
+  - num: 3
+    title: Remove vestigial `tomli` runtime dependency
+    done: true
+    metrics:
+      duration_ms: 268159
+      cost_usd: 0.5871388
+      input_tokens: 23
+      output_tokens: 4093
+      cache_read_tokens: 939786
+      cache_creation_tokens: 37428
+      model: Haiku 4.5, sonnet 4.6
+      context_used: 37451
+      context_max: 200000
+      lines_of_code: 107
+  - num: 4
+    title: Align black `target_version` to the floor
+    done: true
+    metrics:
+      duration_ms: 643324
+      cost_usd: 0.4398755
+      input_tokens: 17
+      output_tokens: 2961
+      cache_read_tokens: 642265
+      cache_creation_tokens: 30593
+      model: Haiku 4.5, sonnet 4.6
+      context_used: 30610
+      context_max: 200000
+      lines_of_code: 108
+  - num: 5
+    title: State supported Python range in README
+    done: true
+    metrics:
+      duration_ms: 53594
+      cost_usd: 0.2873988
+      input_tokens: 8
+      output_tokens: 1685
+      cache_read_tokens: 257906
+      cache_creation_tokens: 27596
+      model: Haiku 4.5, sonnet 4.6
+      context_used: 27604
+      context_max: 200000
+      lines_of_code: 108
+cumulative:
+  total_cost: 3.48715775
+  total_ms: 745269
+  total_cache_read: 1420022
+  total_cache_write: 172600
+  total_loc: 108
+  total_input_tokens: 16979
+  total_output_tokens: 39002
+  version: 0.0.8
+  completed_at: 2026-06-19 12:31:31.003560

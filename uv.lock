@@ -573,9 +573,6 @@ wheels = [
 name = "deadcode"
 version = "2.3.0"
 source = { editable = "." }
-dependencies = [
-    { name = "tomli" },
-]
 
 [package.optional-dependencies]
 test = [
@@ -599,7 +596,6 @@ requires-dist = [
     { name = "pytest-cov", marker = "extra == 'test'" },
     { name = "pytest-xdist", marker = "extra == 'test'" },
     { name = "ruff", marker = "extra == 'test'" },
-    { name = "tomli", specifier = ">=2.0.1" },
     { name = "vupi", marker = "extra == 'test'" },
 ]
 provides-extras = ["test"]
