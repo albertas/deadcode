@@ -136,7 +136,7 @@ just check-lint        # Check linting without changing files (exit 0 if clean)
 just check-typecheck   # Check types without changing files
 ```
 
-The codebase is continuously kept **ruff-clean** (zero lint errors, zero warnings). The `just check` gate ensures code quality before merging.
+The codebase is continuously kept **ruff-clean** (zero lint errors, zero warnings) and fully type-checked under mypy's strict mode. The `just check` gate ensures code quality before merging.
 
 ### Test Determinism
 
@@ -174,7 +174,7 @@ See [Development Documentation](docs/overview.md) for full testing details.
 Use `just check` before submitting pull requests to ensure all checks pass:
 - All tests pass with 95.0% coverage
 - Code is ruff-clean (zero lint errors, zero warnings)
-- Type checking passes in strict mode
+- Type checking passes with mypy in strict mode (zero type errors)
 - Complexity limits are respected
 
 See [Development Documentation](docs/overview.md) for the full development workflow.

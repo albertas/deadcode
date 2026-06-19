@@ -91,15 +91,15 @@ The codebase is kept **ruff-clean**: `just check-lint` exits 0 with zero output 
 just typecheck
 ```
 
-Runs `mypy` in strict mode on `deadcode/` (not `tests/`, per Makefile convention). Reports type errors.
-
-### Type checking check (no changes)
+Runs `mypy` in strict mode on `deadcode/` (not `tests/`). Reports type errors.
 
 ```bash
 just check-typecheck
 ```
 
-Reports type errors without modifying files. Part of the comprehensive `just check` pipeline.
+Reports type errors without modifying files and must exit with zero errors. This is the gating check; any type error fails the gate.
+
+The codebase is fully type-checked in strict mode: visitor methods use concrete AST node types (e.g., `visit_ClassDef(node: ast.ClassDef)`), all function signatures are annotated with correct return types, and position attributes on AST nodes are accessed via `typing.cast` where needed. The gate enforces zero type errors, zero suppression comments (`# type: ignore`), and correct use of type-equivalent constructs throughout the pipeline.
 
 ### Complexity check
 

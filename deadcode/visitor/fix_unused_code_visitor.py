@@ -45,7 +45,7 @@ from logging import getLogger
 from pathlib import Path
 from collections import defaultdict
 
-from typing import Any
+from typing import Any, cast
 from deadcode.data_types import Part, Filename
 from deadcode.actions.parse_abstract_syntax_tree import parse_abstract_syntax_tree
 
@@ -129,9 +129,10 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
         return self.additional_code_parts_to_remove
 
     def get_original_code_lines(self, node: ast.AST) -> list[str]:
-        lines = self.file_content_lines[node.lineno - 1 : node.end_lineno]
-        lines[0] = lines[0][node.col_offset :]
-        lines[-1] = lines[-1][: node.end_col_offset + 1]
+        statement = cast('ast.stmt', node)
+        lines = self.file_content_lines[statement.lineno - 1 : statement.end_lineno]
+        lines[0] = lines[0][statement.col_offset :]
+        lines[-1] = lines[-1][: cast('int', statement.end_col_offset) + 1]
         return lines
 
     def get_cleaned_up_code(self, node: ast.AST) -> str:
@@ -140,7 +141,7 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
 
     def convert_1d_part_to_2d(
         self, from_char: int, to_char: int, line_lengths: list[int], first_line: int, first_col: int
-    ) -> tuple[int, int, int, int]:
+    ) -> Part:
         from_line = None
         from_col = None
         to_line = None
@@ -166,8 +167,8 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
         return code_part
 
     def get_chars_to_remove(
-        self, original_code_lines, fixed_code, first_line, first_col
-    ) -> list[tuple[int, int, int, int]]:
+        self, original_code_lines: list[str], fixed_code: str, first_line: int, first_col: int
+    ) -> list[Part]:
         """Return a list code parts to be removed from the original code to get the first one.
         So that this could be applied with Code part removal algorithm.
         """
@@ -210,15 +211,16 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
 
         return code_parts_to_remove
 
-    def add_code_adjustments_for_cleaned_up_code_items(self, node) -> str:
+    def add_code_adjustments_for_cleaned_up_code_items(self, node: ast.AST) -> None:
         original_code_lines = self.get_original_code_lines(node)
         fixed_code = self.get_cleaned_up_code(node)
 
         # TODO: Fixing can only happend after visiting all the files.
 
         # TODO: >>>> Should provide initial line and column so that result would be absolute.
+        statement = cast('ast.stmt', node)
         code_parts_to_remove = self.get_chars_to_remove(
-            original_code_lines, fixed_code, node.lineno, node.col_offset
+            original_code_lines, fixed_code, statement.lineno, statement.col_offset
         )  # TODO: test with multiline code blocks
 
         self.additional_code_parts_to_remove[str(self.filename)].extend(code_parts_to_remove)
@@ -254,14 +256,20 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
         # TODO: CLI option might be added to preserve function calls, when its result is not needed.
 
     def remove_node(self, node: ast.AST) -> None:
+        statement = cast('ast.stmt', node)
         self.additional_code_parts_to_remove[str(self.filename)].append(
-            Part(node.lineno, node.end_lineno, node.col_offset, node.end_col_offset)
+            Part(
+                statement.lineno,
+                cast('int', statement.end_lineno),
+                statement.col_offset,
+                cast('int', statement.end_col_offset),
+            )
         )
 
-    def visit_With(self, node: ast.ClassDef) -> None:
+    def visit_With(self, node: ast.With) -> None:
         # Remove optional_var node from AST if optional_var name is in unused_names
         for item in node.items:
-            if isinstance(item.optional_vars, ast.AST):
+            if isinstance(item.optional_vars, ast.Name):
                 # How to find unused names? Why f is not in the unused_names?
                 if item.optional_vars.id not in self.find_unused_code_visitor.used_names:
                     item.optional_vars = None
@@ -283,7 +291,7 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
         # ast.iter_fields(node)
         # for node in node.body:
 
-        names = [body_node.name for body_node in node.body if getattr(body_node, 'name', None)]
+        names = [getattr(body_node, 'name', None) for body_node in node.body if getattr(body_node, 'name', None)]
         names_to_remove = [
             name for name in names if name not in self.find_unused_code_visitor.used_names
         ]  # Make sure that unused_names is a set
@@ -316,13 +324,13 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
 
             self.additional_code_parts_to_remove[str(self.filename)].append(pass_to_add)
 
-    def visit_ImportFrom(self, node: ast.Import) -> None:
+    def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
         if node.module != '__future__':
             self.visit_Import(node)
 
     # TODO: investigate if usage of an import with aliased name is marked as used properly.
     #       when item is imported, it should not be marked as used: these code items should be linked instead.
-    def visit_Import(self, node: ast.Import) -> None:
+    def visit_Import(self, node: ast.Import | ast.ImportFrom) -> None:
         # Adjust node by removing unused code items
         names = [e.asname or e.name.partition('.')[0] for e in node.names[::-1]]
         names_to_remove = [

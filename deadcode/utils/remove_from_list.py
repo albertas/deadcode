@@ -1,7 +1,10 @@
 from collections.abc import Callable
+from typing import TypeVar
+
+T = TypeVar('T')
 
 
-def remove_from_list(elements: list, should_remove: Callable) -> None:
+def remove_from_list(elements: list[T], should_remove: Callable[[T], bool]) -> None:
     """
     Removes list items based on criteria (without recreating list).
 

@@ -4,25 +4,25 @@ This document describes how unused code is removed or displayed, and how error m
 
 ## The Fix / Diff Generation Stage
 
-`fix_or_show_unused_code(unused_items: Iterable[CodeItem], additional_code_parts_to_remove: dict, args: Args) -> str` (`actions/fix_or_show_unused_code.py:15-63`)
+`fix_or_show_unused_code(unused_items: Iterable[CodeItem], additional_code_parts_to_remove: dict[Filename, list[Part]], args: Args) -> str` (`actions/fix_or_show_unused_code.py`)
 
-This stage processes all unused items and generates either a diff (if `args.dry`) or modifies files in-place (if `args.fix`):
+This stage processes all unused items and generates either a diff (if `args.dry`) or modifies files in-place (if `args.fix`). Both parameters correctly use `dict[Filename, list[Part]]` (not `tuple[int,int,int,int]`):
 
-1. **Group by filename** (`:26-28`) — collect all unused `CodeItem`s for each file
-2. **Flatten and merge `Part`s** (`:32-37`) — for each file, extract `code_parts` from all unused items, add any `additional_code_parts_to_remove` from the second visitor pass, and call `merge_overlaping_file_parts`
-3. **Read file content** (`:39-40`) — load the file as a list of lines
-4. **Remove fragments** (`:42`) — call `remove_file_parts_from_content` to excise or replace the parts
-5. **Output decision** (`:44-63`):
+1. **Group by filename** — collect all unused `CodeItem`s for each file
+2. **Flatten and merge `Part`s** — for each file, extract `code_parts` from all unused items, add any `additional_code_parts_to_remove` from the second visitor pass, and call `merge_overlaping_file_parts`
+3. **Read file content** — load the file as a list of lines
+4. **Remove fragments** — call `remove_file_parts_from_content` to excise or replace the parts
+5. **Output decision**:
    - If the updated content is non-empty:
-     - If `args.dry` and the filename matches `args.dry` patterns: generate a colored `unified_diff` (`:45-56`)
-     - Else if `args.fix`: write the updated content back to the file (`:58-61`)
-   - If the updated content is empty (entire file removed): delete the file (`:63`)
+     - If `args.dry` and the filename matches `args.dry` patterns: generate a colored `unified_diff`
+     - Else if `args.fix`: write the updated content back to the file
+   - If the updated content is empty (entire file removed): delete the file
 
 Returns a concatenated diff string (colored unless `--no-color`) or empty string if no changes.
 
 ## Part Merging
 
-`merge_overlaping_file_parts(parts: List[Part]) -> List[Part]` (`actions/merge_overlaping_file_parts.py:99-127`)
+`merge_overlaping_file_parts(parts: list[Part]) -> list[Part]` (`actions/merge_overlaping_file_parts.py`)
 
 Merges overlapping code removal regions:
 
@@ -38,7 +38,7 @@ Returns a list of non-overlapping `Part`s ready for removal.
 
 ## Fragment Removal and Insertion
 
-`remove_file_parts_from_content(file_content_lines: List[str], parts: List[Part]) -> List[str]` (`actions/remove_file_parts_from_content.py:127-390`)
+`remove_file_parts_from_content(file_content_lines: list[str], parts: list[Part]) -> list[str]` (`actions/remove_file_parts_from_content.py`)
 
 Applies removal and insertion operations:
 

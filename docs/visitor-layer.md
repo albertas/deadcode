@@ -4,7 +4,7 @@ This document describes Deadcode's AST traversal machinery: parsing, the custom 
 
 ## Parsing Python Files
 
-`parse_abstract_syntax_tree(content: str, filename: str) -> ast.Module` (`actions/parse_abstract_syntax_tree.py:6-13`) parses Python source code using `ast.parse(content, filename, type_comments=True)`. If parsing fails (e.g., syntax error), it returns an empty `ast.Module()` object, allowing analysis to continue on valid files in a mixed codebase.
+`parse_abstract_syntax_tree(content: str, filename: str) -> ast.Module` (`actions/parse_abstract_syntax_tree.py`) parses Python source code using `ast.parse(content, filename, type_comments=True)`. If parsing fails (e.g., syntax error), it returns an empty `ast.Module(body=[], type_ignores=[])` object, allowing analysis to continue on valid files in a mixed codebase.
 
 ## AST Visitor Initialization
 
@@ -37,28 +37,28 @@ This pattern ensures scope state is consistent and ignore rules are evaluated at
 
 Definitions are recorded by calling `_define()` (`visitor/find_unused_code_visitor.py:274-328`), which creates a `CodeItem`, determines visibility, and either marks it used (if ignored) or appends it to the appropriate `defined_*` list.
 
-Key visit methods that call `_define()`:
+Key visit methods that call `_define()` use correct AST node types:
 
-- **`visit_FunctionDef` / `visit_AsyncFunctionDef`** (`:342-453`) — classify as property, method, or function based on context
-- **`visit_ClassDef`** (`:426-432`) — collect class definitions
-- **`visit_Import` / `visit_ImportFrom`** (`:461-471`, `:212-237`) — collect imports via `_add_aliases()`, skipping `__future__` imports
-- **`visit_Name` Store/Param** (`:485-489`) — collect variable definitions (assignment or function parameter)
-- **`visit_Attribute` Store** (`:345-349`) — collect attribute assignments
+- **`visit_FunctionDef(node: ast.FunctionDef | ast.AsyncFunctionDef)` / `visit_AsyncFunctionDef(node: ast.AsyncFunctionDef)`** — classify as property, method, or function based on context
+- **`visit_ClassDef(node: ast.ClassDef)`** — collect class definitions
+- **`visit_Import(node: ast.Import)` / `visit_ImportFrom(node: ast.ImportFrom)`** — collect imports via `_add_aliases()`, skipping `__future__` imports; note that `visit_ImportFrom` correctly takes `ast.ImportFrom` (not `ast.Import`)
+- **`visit_Name(node: ast.Name)` Store/Param** — collect variable definitions (assignment or function parameter)
+- **`visit_Attribute(node: ast.Attribute)` Store** — collect attribute assignments
 
-The `_define()` call builds a `CodeItem` with one or more `Part`s (using `lines.get_first_line_number()` and `lines.get_last_line_number()` from `visitor/lines.py:41-82`), registers it in scope via `self.scopes.add()`, evaluates the `ignored()` predicate, and either marks it used or appends to `defined_*`.
+The `_define()` call builds a `CodeItem` with one or more `Part`s (using `lines.get_first_line_number()` and `lines.get_last_line_number()` from `visitor/lines.py`), registers it in scope via `self.scopes.add()`, evaluates the `ignored()` predicate, and either marks it used or appends to `defined_*`. Position attributes (`lineno`, `col_offset`, `end_lineno`, `end_col_offset`) are accessed on AST nodes via `typing.cast` where the static type is `ast.AST` but the runtime value is a position-bearing statement or expression (e.g., `cast('ast.stmt', node).lineno`).
 
 ## Used-Name Collectors
 
 Uses are recorded by calling `add_used_name(name)` (`visitor/find_unused_code_visitor.py:88-96`), which tracks any reference to a name across all files.
 
-Key visit methods that call `add_used_name()`:
+Key visit methods that call `add_used_name()` use correctly-typed AST node parameters:
 
-- **`visit_Name` Load/Del** (`:487`) — any reference to or deletion of a name
-- **`visit_Attribute` Load** (`:349`) — attribute access (e.g., `obj.attr`)
-- **`visit_Call`** (`:360-378`) — special handling for `getattr(obj, name)`, `hasattr(obj, name)`, and `str.format(**locals())`; the name inside the string is marked used
-- **`visit_BinOp`** (`:351-358`) — special handling for `"%(name)s" % locals()` patterns
-- **`visit_Assign`** (`:491-496`) — if assigning to `__all__`, all names in the list are marked used
-- **`visit_MatchClass`** (`:502-504`) — pattern matching with classes marks class names used
+- **`visit_Name(node: ast.Name)` Load/Del** — any reference to or deletion of a name
+- **`visit_Attribute(node: ast.Attribute)` Load** — attribute access (e.g., `obj.attr`)
+- **`visit_Call(node: ast.Call)`** — special handling for `getattr(obj, name)`, `hasattr(obj, name)`, and `str.format(**locals())`; for string arguments, checks with `isinstance(node, ast.Constant) and isinstance(node.value, str)` to extract the name from the string
+- **`visit_BinOp(node: ast.BinOp)`** — special handling for `"%(name)s" % locals()` patterns; string matching via `isinstance(node.left, ast.Constant) and isinstance(node.left.value, str)` (not the deprecated `ast.Str` / `.s` API)
+- **`visit_Assign(node: ast.Assign)`** — if assigning to `__all__`, all string constants in the list are marked used via `isinstance(elt, ast.Constant) and isinstance(elt.value, str)` checks
+- **`visit_MatchClass(node)`** — pattern matching with classes marks class names used (kept untyped per pre-existing design)
 
 ## Scope Tracking
 

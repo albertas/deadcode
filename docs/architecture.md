@@ -32,14 +32,14 @@ Searches the filesystem for Python files matching `args.paths` and respecting `a
 
 ### Stage 3: AST Analysis (Two-Pass)
 
-`find_unused_names(filenames: List[str], args: Args) -> Tuple[Iterable[CodeItem], dict[Filename, List[Part]]]` (`cli.py:20`, `find_unused_names.py:9-24`)
+`find_unused_names(filenames: list[str], args: Args) -> tuple[Iterable[CodeItem], dict[Filename, list[Part]]]` (`cli.py`, `find_unused_names.py`)
 
-The most complex stage, running two passes over all files (`find_unused_names.py:9-24`):
+The most complex stage, running two passes over all files:
 
-1. **First pass: `FindUnusedCodeVisitor`** — traverses the AST of each file, collecting all defined names (variables, functions, classes, imports) and all uses of those names, annotating with scope, type, and location. Applies ignore rules to filter out items.
-2. **Second pass: `FixUnusedCodeVisitor`** — uses the first pass's results to identify additional code fragments to remove (e.g., comments, unreachable code), yielding `additional_code_parts_to_remove`.
+1. **First pass: `FindUnusedCodeVisitor`** — traverses the AST of each file, collecting all defined names (variables, functions, classes, imports) and all uses of those names, annotating with scope, type, and location. Applies ignore rules to filter out items. Visitor method signatures are correctly typed (e.g., `visit_ClassDef(node: ast.ClassDef)`, `visit_ImportFrom(node: ast.ImportFrom)`). Position attributes on AST nodes are accessed via `typing.cast` where needed.
+2. **Second pass: `FixUnusedCodeVisitor`** — uses the first pass's results to identify additional code fragments to remove (e.g., comments, unreachable code), yielding `additional_code_parts_to_remove` as `dict[Filename, list[Part]]`.
 
-Returns a tuple of unused `CodeItem`s and a dict mapping each filename to its list of `Part`s to remove.
+Returns a tuple of unused `CodeItem`s and a dict mapping each filename to its list of `Part` objects to remove. The `Part` type is strictly used throughout the pipeline (not `tuple[int, int, int, int]`).
 
 ### Stage 4: Optional Diff/Fix Generation
 
@@ -72,6 +72,15 @@ Stage 3's visitors are detailed in [Visitor layer](visitor-layer.md), but the hi
 - **`FixUnusedCodeVisitor`**: Secondary pass over the same visitor to identify additional removal regions.
 
 Both are orchestrated by `find_unused_names` in the `deadcode/actions/` pipeline.
+
+## Type Correctness
+
+The codebase is fully annotated in strict mypy mode. Key invariants:
+
+- `Part` is the sole type for code fragments; no `tuple[int, int, int, int]` aliases are used in public APIs or function signatures
+- Visitor methods are correctly typed to concrete AST node types (e.g., `visit_ClassDef(node: ast.ClassDef)`, not generic `ast.AST`)
+- String constant detection uses `isinstance(node, ast.Constant) and isinstance(node.value, str)` (not deprecated `ast.Str`)
+- Position attributes (`lineno`, `col_offset`, `end_lineno`, `end_col_offset`) are accessed via `typing.cast` where the static type cannot be narrowed
 
 ## Module Organization
 

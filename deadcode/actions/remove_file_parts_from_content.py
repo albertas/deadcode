@@ -45,7 +45,7 @@ def get_code_parts_for_the_same_line(
     code_parts: list[tuple[int, int, int, int]], index: int
 ) -> list[tuple[int, int, int, int]]:
     """Code parts that start on the same line as the provided one ends. Provides parts in a reversed order."""
-    code_parts_for_the_same_line = []
+    code_parts_for_the_same_line: list[tuple[int, int, int, int]] = []
     line = None
 
     for code_part in code_parts[index:]:
@@ -58,7 +58,7 @@ def get_code_parts_for_the_same_line(
     return code_parts_for_the_same_line
 
 
-def remove_unused_fragments_from_a_line(line: str, code_parts, index: int) -> tuple[str, int]:
+def remove_unused_fragments_from_a_line(line: str, code_parts: list[Part], index: int) -> tuple[str, int]:
     r"""
     Line = 'bar as bar_alias,\n'
     #       ....--.....-----..
@@ -83,7 +83,7 @@ def remove_unused_fragments_from_a_line(line: str, code_parts, index: int) -> tu
     lineno = code_parts[index][1]
 
     # Find changes that have to be applied to the line in reverse order.
-    code_parts_for_the_same_line = []
+    code_parts_for_the_same_line: list[Part] = []
     for code_part in code_parts[index:]:
         if code_part[0] == lineno:
             code_parts_for_the_same_line.insert(0, code_part)

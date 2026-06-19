@@ -13,13 +13,13 @@ The type alias `Pathname = str` (`data_types.py:10`) denotes list field values. 
 
 ## Code Fragment Type: `Part`
 
-`Part` (`data_types.py:37-49`) is a `NamedTuple` representing an atomic removal or replacement region—a span of lines and columns to remove or replace during the fix stage:
+`Part` (`data_types.py:38-51`) is a `NamedTuple` representing an atomic removal or replacement region—a span of lines and columns to remove or replace during the fix stage:
 
 - `line_start, line_end, col_start, col_end: int` — 0-indexed line and column boundaries (inclusive start, exclusive end)
 - `insert_code: str | None = None` — optional code to insert in place of the removed fragment
-- `insert_code_if_character_is_not_removed: tuple[int,int] | None = None` — optional conditional insertion: insert `insert_code` only if the character at this coordinate survives removal
+- `insert_code_if_character_is_not_removed: tuple[int, int] | None = None` — optional conditional insertion: insert `insert_code` only if the character at this coordinate survives removal
 
-The fix stage (`fix-and-output.md`) merges overlapping `Part`s from all unused items and applies them to files.
+All six fields are strictly typed. The fix stage (`fix-and-output.md`) merges overlapping `Part`s from all unused items and applies them to files. Throughout the pipeline (analysis → fix → output), `Part` is the canonical position record; the analysis stage returns `dict[Filename, list[Part]]` and all downstream stages work with `Part` objects directly.
 
 ## Code Item Type: `CodeItem`
 

@@ -5,7 +5,7 @@ import os
 
 from deadcode.actions.merge_overlaping_file_parts import merge_overlaping_file_parts
 from deadcode.actions.remove_file_parts_from_content import remove_file_parts_from_content
-from deadcode.data_types import Args, Filename
+from deadcode.data_types import Args, Filename, Part
 from deadcode.visitor.code_item import CodeItem
 from deadcode.utils.flatten_lists import flatten_list
 from deadcode.utils.add_colors_to_diff import add_colors_to_diff
@@ -14,7 +14,7 @@ from deadcode.visitor.ignore import _match
 
 def fix_or_show_unused_code(
     unused_items: Iterable[CodeItem],
-    additional_code_parts_to_remove: dict[Filename, list[tuple[int, int, int, int]]],
+    additional_code_parts_to_remove: dict[Filename, list[Part]],
     args: Args,
 ) -> str:
     # Reading and writing should be patched in this file.

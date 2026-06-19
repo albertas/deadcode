@@ -1,6 +1,6 @@
 from collections.abc import Iterable
 
-from deadcode.data_types import Args, Filename
+from deadcode.data_types import Args, Filename, Part
 from deadcode.visitor.code_item import CodeItem
 from deadcode.visitor.find_unused_code_visitor import FindUnusedCodeVisitor
 from deadcode.visitor.fix_unused_code_visitor import FixUnusedCodeVisitor
@@ -9,7 +9,7 @@ from deadcode.visitor.fix_unused_code_visitor import FixUnusedCodeVisitor
 def find_unused_names(
     filenames: list[Filename],
     args: Args,
-) -> tuple[Iterable[CodeItem], list[tuple[int, int, int, int]]]:
+) -> tuple[Iterable[CodeItem], dict[Filename, list[Part]]]:
 
     find_unused_code_visitor = FindUnusedCodeVisitor(filenames, args)
     find_unused_code_visitor.visit_abstract_syntax_trees()

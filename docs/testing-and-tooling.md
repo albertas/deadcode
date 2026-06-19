@@ -138,11 +138,23 @@ Both `Makefile` and `Justfile` test targets run parallel tests on all-but-one CP
 
 - **Entry point** (`pyproject.toml:38`): `deadcode = "deadcode.cli:main"` — defines the CLI command (the entry is on line 37; line 38 is the blank that follows)
 - **Pytest options** (`pyproject.toml:209`): `addopts` includes coverage settings; cite `pyproject.toml` for numeric gates rather than copying them into docs
-- **Ruff configuration** (`pyproject.toml:61-160`): line-length 120, all rules enabled with ~70 deliberate policy ignores (see Ruff Code Quality section below)
-- **MyPy configuration** (`pyproject.toml:162-170`): strict mode enabled
-- **`[tool.deadcode]`** (`pyproject.toml:178-201`): the project's own Deadcode configuration, demonstrating self-usage; ignores inert decorator options, test utilities, and internal visit methods
+- **Ruff configuration** (`pyproject.toml`): line-length 120, all rules enabled with ~70 deliberate policy ignores (see Ruff Code Quality section below)
+- **MyPy configuration** (`pyproject.toml`): strict mode enabled (`strict = true`); type checking is run on the `deadcode/` package only (not `tests/`)
+- **`[tool.deadcode]`** (`pyproject.toml`): the project's own Deadcode configuration, demonstrating self-usage; ignores inert decorator options, test utilities, and internal visit methods
 
 The project **dog-foods itself**: it runs `make check` (which includes `make deadcode`) to ensure the codebase passes its own unused-code detection.
+
+### Type Checking in Strict Mode
+
+All code in the `deadcode/` package is fully type-checked under mypy's strict mode (`strict = true`). The type-checking gate requires:
+
+- **Zero type errors** — no `[error]` diagnostics reported by mypy
+- **No type suppression** — no `# type: ignore` comments (except where justified and documented)
+- **Correct node types in visitors** — visitor methods use concrete AST node types (e.g., `visit_ClassDef(node: ast.ClassDef)`, not generic `ast.AST`)
+- **Strict return/argument typing** — all function signatures are fully annotated with correct return types
+- **Position attribute safety** — AST position attributes (`lineno`, `col_offset`, `end_lineno`, `end_col_offset`) are accessed via `typing.cast` where the static type is too broad
+
+The command `just check-typecheck` runs `uv run mypy deadcode/ --strict` and must exit with zero errors. Tests are not type-checked (mypy targets `deadcode/` only).
 
 ### Ruff Code Quality
 
