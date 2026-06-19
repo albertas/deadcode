@@ -1,5 +1,5 @@
 code_quality_is_good: false
-heart_beat: 2026-06-19 07:38:33
+heart_beat: 2026-06-19 08:18:31
 # [~] = conditional / out-of-sequence phase (event-driven, not a linear 1..9 step).
 phases:
   - [x] 1_question
@@ -16,5 +16,5 @@ phases:
       in:  review_findings.yml (from 8_review)
       out: code edits; flips review_findings.yml resolved:true (no artifact-dir file)
 lifecycles_in_progress:
-  - artifact_dir: T3-2026-06-19-cq-tests-ensure-existing-tests-pass-fix-the-tests
-    heart_beat: 2026-06-19 07:38:33
+  - artifact_dir: T4-2026-06-19-cq-coverage-add-test-coverage-measurement-and-reac
+    heart_beat: 2026-06-19 08:18:31

@@ -1,4 +1,9 @@
-from deadcode.actions.merge_overlaping_file_parts import merge_overlaping_file_parts, does_overlap, merge_parts
+from deadcode.actions.merge_overlaping_file_parts import (
+    merge_overlaping_file_parts,
+    does_overlap,
+    merge_parts,
+    does_include,
+)
 from deadcode.utils.base_test_case import BaseTestCase
 
 
@@ -24,7 +29,6 @@ class TestMergeOverlapingFileParts(BaseTestCase):
         non_overlaping_file_parts = merge_overlaping_file_parts(overlaping_file_parts)
 
         self.assertEqual(non_overlaping_file_parts, expected_result)
-
 
     def test_overlaping_parts_in_the_same_line(self):
         # TODO: fix this test.
@@ -60,10 +64,7 @@ class TestMergeOverlapingFileParts(BaseTestCase):
             (1, 3, 17, 4, None, None),
             (3, 5, 20, 2, None, None),
         ]
-        self.assertEqual(
-            merge_overlaping_file_parts(parts),
-            expected_merged_parts
-        )
+        self.assertEqual(merge_overlaping_file_parts(parts), expected_merged_parts)
 
         # # Order input differently
         # parts = [
@@ -130,7 +131,9 @@ class TestMergeParts(BaseTestCase):
         self.assertEqual(merge_parts((2, 7, 0, 6, None, None), (1, 5, 0, 6, 'pass', None)), (1, 7, 0, 6, 'pass', None))
 
         ## Same
-        self.assertEqual(merge_parts((2, 7, 0, 6, 'pass', None), (2, 7, 0, 6, 'pass', None)), (2, 7, 0, 6, 'pass', None))
+        self.assertEqual(
+            merge_parts((2, 7, 0, 6, 'pass', None), (2, 7, 0, 6, 'pass', None)), (2, 7, 0, 6, 'pass', None)
+        )
 
         # Does not overlap
         self.assertEqual(merge_parts((4, 7, 0, 6, 'pass', None), (1, 3, 0, 6, None, None)), None)
@@ -153,7 +156,9 @@ class TestMergeParts(BaseTestCase):
         self.assertEqual(merge_parts((2, 7, 0, 6, 'pass', None), (1, 5, 0, 6, None, None)), (1, 7, 0, 6, None, None))
 
         ## Same
-        self.assertEqual(merge_parts((2, 7, 0, 6, 'pass', None), (2, 7, 0, 6, 'pass', None)), (2, 7, 0, 6, 'pass', None))
+        self.assertEqual(
+            merge_parts((2, 7, 0, 6, 'pass', None), (2, 7, 0, 6, 'pass', None)), (2, 7, 0, 6, 'pass', None)
+        )
 
         ## Does not overlap
         self.assertEqual(merge_parts((4, 7, 0, 6, 'pass', None), (1, 3, 0, 6, None, None)), None)
@@ -178,7 +183,9 @@ class TestMergeParts(BaseTestCase):
         self.assertEqual(merge_parts((1, 1, 2, 7, 'pass', None), (1, 1, 1, 5, None, None)), (1, 1, 1, 7, None, None))
 
         ## Same
-        self.assertEqual(merge_parts((1, 1, 2, 7, 'pass', None), (1, 1, 2, 7, 'pass', None)), (1, 1, 2, 7, 'pass', None))
+        self.assertEqual(
+            merge_parts((1, 1, 2, 7, 'pass', None), (1, 1, 2, 7, 'pass', None)), (1, 1, 2, 7, 'pass', None)
+        )
 
         ## Does not overlap
         self.assertEqual(merge_parts((1, 1, 4, 7, 'pass', None), (1, 1, 1, 3, None, None)), None)
@@ -188,3 +195,18 @@ class TestMergeParts(BaseTestCase):
         self.assertEqual(merge_parts((1, 1, 1, 3, 'pass', None), (1, 1, 4, 7, None, None)), None)
 
     # # TODO: add additional tests that for insert_parts testing when merging different intervals.
+
+
+class TestMergeBranches(BaseTestCase):
+    def test_does_include_returns_true_when_contained(self):
+        # bigger starts later and ends faster -> contained
+        assert does_include((3, 5, 0, 6, None, None), (1, 7, 0, 6, None, None)) is True
+
+    def test_contained_part_is_dropped_during_merge(self):
+        # (1,5) is contained in (1,10): break + drop path
+        parts = [(1, 10, 0, 6, None, None), (1, 5, 0, 6, None, None)]
+        assert merge_overlaping_file_parts(parts) == [(1, 10, 0, 6, None, None)]
+
+    def test_merge_picks_second_insert_code_at_same_start(self):
+        # same start, p1 insert falsy -> insert_code = p2's
+        assert merge_parts((2, 7, 0, 6, None, None), (2, 7, 0, 6, 'pass', None)) == (2, 7, 0, 6, 'pass', None)

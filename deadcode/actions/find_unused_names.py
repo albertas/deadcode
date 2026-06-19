@@ -22,4 +22,3 @@ def find_unused_names(
     additional_code_parts_to_remove = fix_unused_code_visitor.visit_abstract_syntax_trees()
 
     return unused_code_items, additional_code_parts_to_remove
-

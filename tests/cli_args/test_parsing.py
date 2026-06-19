@@ -2,7 +2,9 @@
 These tests should test command line value conversion into internal Args instance.
 """
 
-from deadcode.actions.parse_arguments import parse_arguments
+from unittest.mock import patch
+
+from deadcode.actions.parse_arguments import parse_arguments, parse_pyproject_toml
 from deadcode.utils.base_test_case import BaseTestCase
 
 
@@ -111,3 +113,12 @@ class CommandLineArgParsingTests(BaseTestCase):
         self.assertEqual(args.paths, ['.'])
         self.assertEqual(args.dry, ['foo.py', 'bar.py'])
         self.assertEqual(args.fix, False)
+
+    def test_falls_back_to_sys_argv_when_no_args_passed(self):
+        with patch('sys.argv', ['deadcode', '.']):
+            args = parse_arguments(None)
+        self.assertEqual(args.paths, ['.'])
+
+    def test_parse_pyproject_returns_empty_when_file_missing(self):
+        with patch('deadcode.actions.parse_arguments.os.path.isfile', return_value=False):
+            self.assertEqual(parse_pyproject_toml(), {})

@@ -12,9 +12,11 @@ from deadcode.utils.add_colors_to_diff import add_colors_to_diff
 from deadcode.visitor.ignore import _match
 
 
-def fix_or_show_unused_code(unused_items: Iterable[CodeItem],
-                            additional_code_parts_to_remove: Dict[Filename, List[Tuple[int, int, int, int]]],
-                            args: Args) -> str:
+def fix_or_show_unused_code(
+    unused_items: Iterable[CodeItem],
+    additional_code_parts_to_remove: Dict[Filename, List[Tuple[int, int, int, int]]],
+    args: Args,
+) -> str:
     # Reading and writing should be patched in this file.
 
     # Group unused_names by filenames

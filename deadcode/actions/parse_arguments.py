@@ -87,8 +87,7 @@ def parse_arguments(args: Optional[List[str]]) -> Args:
     parser.add_argument(
         '--ignore-definitions',
         help=(
-            'Ignores definition (including name and body) if a '
-            'name of an expression matches any of the provided ones.'
+            'Ignores definition (including name and body) if a name of an expression matches any of the provided ones.'
         ),
         nargs='*',
         action='append',

@@ -120,19 +120,16 @@ class FindUnusedCodeVisitor(ast.NodeVisitor):
                     #
                     # Comparison for exact code items will be adjused in the future.
 
-
                     # Lets create AST only one time?
-                        # Altering AST might be hard: you cannot just modify it.
+                    # Altering AST might be hard: you cannot just modify it.
 
                     # This means that every single modification will have to be made using AST? I dont want to do it.
 
-
                     # All file contents and ASTs will be cached.
                     # Or shoudl I read the files two times and recreate the ATSs?
-                        # This way deadcode could handle unlimited number of files.
+                    # This way deadcode could handle unlimited number of files.
 
-
-                    # They will be walked over and compared. 
+                    # They will be walked over and compared.
 
                     # File content used to be discarded for efficiency.
                     # Should the files be read once again? Are they read two times now?
@@ -279,9 +276,8 @@ class FindUnusedCodeVisitor(ast.NodeVisitor):
         last_node: Optional[ast.AST] = None,
         message: str = '',
         ignore: Optional[Callable[[Path, str], bool]] = None,
-        expression_node: Optional[ast.AST] = None
+        expression_node: Optional[ast.AST] = None,
     ) -> None:
-
 
         # TODO: add support for ignore_definitions, ignore_definitions_if_inherits_from options
         self._log(
@@ -460,7 +456,7 @@ class FindUnusedCodeVisitor(ast.NodeVisitor):
 
     def visit_Import(self, node: ast.Import) -> None:
         self._add_aliases(node)
-                
+
     # TODO: investigate if usage of an import with aliased name is marked as used properly.
     #       when item is imported, it should not be marked as used: these code items should be linked instead.
     def visit_Import_after_visiting_child_nodes(self, node: ast.Import) -> None:
@@ -530,7 +526,7 @@ class FindUnusedCodeVisitor(ast.NodeVisitor):
         # Visit node before visiting all its children
         method_name = 'visit_' + node.__class__.__name__
         visitor = getattr(self, method_name, None)
-        
+
         if visitor:
             visitor(node)
 
@@ -570,13 +566,11 @@ class FindUnusedCodeVisitor(ast.NodeVisitor):
                 elif isinstance(value, ast.AST):
                     self.visit(value)
 
-
         # Visit node after visiting children.
         visit_method_name = 'visit_' + node.__class__.__name__ + '_after_visiting_child_nodes'
         visit_method = getattr(self, visit_method_name, None)
         if visit_method:
             visit_method(node)
-
 
         # TODO: use decorator for this code chunk
         if should_turn_off_ignore_new_definitions:

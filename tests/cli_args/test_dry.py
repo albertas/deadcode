@@ -26,7 +26,7 @@ class TestDryCliOption(BaseTestCase):
                 -    pass
                 -
                  print("Dont change this file")
-                """)
+                """),
         )
 
     def test_file_is_not_modified_if_fix_option_is_used_with_dry(self):

@@ -13,7 +13,7 @@ by visiting the code nodes once again.
 #   Local scope and global scope difference.
 #
 #
-# What is the answer? 
+# What is the answer?
 #   I should avoid second reanalysis, but I should have a garanttee, that those code items are unused before finding additional code parts to remove.
 #   What are the different cases?
 #
@@ -29,7 +29,7 @@ by visiting the code nodes once again.
 #
 # Fix nodes only adjusts patially removal nodes.
 #   It does not remove completely, which was in that case test.
-# 
+#
 # This means that the issue is somewhere else.
 #
 #######################################################################################
@@ -81,7 +81,7 @@ logger = getLogger()
 
 class FixUnusedCodeVisitor(ast.NodeVisitor):
     """Adjusts code, which has to be removed.
-    
+
     Example: if import becomes empty after removal - the whole statement has to be removed,
     not only the imported names.
     """
@@ -120,26 +120,22 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
                     #
                     # Comparison for exact code items will be adjused in the future.
 
-
                     # Lets create AST only one time?
-                        # Altering AST might be hard: you cannot just modify it.
+                    # Altering AST might be hard: you cannot just modify it.
 
                     # This means that every single modification will have to be made using AST? I dont want to do it.
 
-
                     # All file contents and ASTs will be cached.
                     # Or shoudl I read the files two times and recreate the ATSs?
-                        # This way deadcode could handle unlimited number of files.
+                    # This way deadcode could handle unlimited number of files.
 
-
-                    # They will be walked over and compared. 
+                    # They will be walked over and compared.
 
                     # File content used to be discarded for efficiency.
                     # Should the files be read once again? Are they read two times now?
                     # Lets cache all the file in memory: for efficiency.
                     # I can modifie
                     self.file_content_lines = file_content.splitlines(True)
-
 
                     # TODO: this visiting has to be run only after all files were visited already.
                     # Ideally it should a completely new visitor to separate responsibilities.
@@ -153,16 +149,18 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
         return self.additional_code_parts_to_remove
 
     def get_original_code_lines(self, node: ast.AST) -> List[str]:
-        lines = self.file_content_lines[node.lineno -1:node.end_lineno]
-        lines[0] = lines[0][node.col_offset:]
-        lines[-1] = lines[-1][:node.end_col_offset + 1]
+        lines = self.file_content_lines[node.lineno - 1 : node.end_lineno]
+        lines[0] = lines[0][node.col_offset :]
+        lines[-1] = lines[-1][: node.end_col_offset + 1]
         return lines
 
     def get_cleaned_up_code(self, node: ast.AST) -> str:
         """Converts cleaned up node back into code by unparsing fixed node to code."""
         return ast.unparse(node)
 
-    def convert_1d_part_to_2d(self, from_char: int, to_char: int, line_lengths: List[int], first_line: int, first_col: int) -> Tuple[int, int, int, int]:
+    def convert_1d_part_to_2d(
+        self, from_char: int, to_char: int, line_lengths: List[int], first_line: int, first_col: int
+    ) -> Tuple[int, int, int, int]:
         from_line = None
         from_col = None
         to_line = None
@@ -181,12 +179,14 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
             char_count += line_length
 
         if from_line is None or from_col is None or to_line is None or to_col is None:
-            raise ValueError("Conversion from 1D to 2D code part failed")
+            raise ValueError('Conversion from 1D to 2D code part failed')
 
         code_part = Part(from_line, to_line, from_col, to_col)
         return code_part
 
-    def get_chars_to_remove(self, original_code_lines, fixed_code, first_line, first_col) -> List[Tuple[int, int, int, int]]:
+    def get_chars_to_remove(
+        self, original_code_lines, fixed_code, first_line, first_col
+    ) -> List[Tuple[int, int, int, int]]:
         """Return a list code parts to be removed from the original code to get the first one.
         So that this could be applied with Code part removal algorithm.
         """
@@ -211,11 +211,13 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
         code_parts_to_remove = []
         for tag, i1, i2, j1, j2 in s.get_opcodes():
             print(f'{tag}   a[{i1}:{i2}] --> b[{j1}:{j2}] {original_code[i1:i2]} --> {fixed_code[j1:j2]}')
-            if tag == "delete":
+            if tag == 'delete':
                 segment = original_code[i1:i2]
-                if segment.strip() == "" and (i1 == 0 or original_code[i1 - 1] == "\n"):
+                if segment.strip() == '' and (i1 == 0 or original_code[i1 - 1] == '\n'):
                     continue  # ast.unparse re-indented the body; surplus indent is not a real delete
-                code_part_to_remove = self.convert_1d_part_to_2d(i1, i2, original_code_line_lengths, first_line, first_col)
+                code_part_to_remove = self.convert_1d_part_to_2d(
+                    i1, i2, original_code_line_lengths, first_line, first_col
+                )
                 code_parts_to_remove.append(code_part_to_remove)
 
         # print("Original:\n", original_code)
@@ -234,17 +236,17 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
         # TODO: Fixing can only happend after visiting all the files.
 
         # TODO: >>>> Should provide initial line and column so that result would be absolute.
-        code_parts_to_remove = self.get_chars_to_remove(original_code_lines, fixed_code, node.lineno, node.col_offset)  # TODO: test with multiline code blocks
-        
+        code_parts_to_remove = self.get_chars_to_remove(
+            original_code_lines, fixed_code, node.lineno, node.col_offset
+        )  # TODO: test with multiline code blocks
+
         self.additional_code_parts_to_remove[str(self.filename)].extend(code_parts_to_remove)
 
         # Lets refactor step by step.
         # This method could provide a modified file content.
         #   # What can I say?
 
-
         # This method should provide a modified file content, which will be written on top.
-
 
         # It changer the flow
         #
@@ -256,20 +258,14 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
         #
         #
 
-
-        # but in order to update the content I have to: 
-            # > What can I say?
-
+        # but in order to update the content I have to:
+        # > What can I say?
 
         # >>>
         # Why cant I just modify this file content and write it into file?
         #   I could replace code chunks just like that.
 
-
-
         # That code part removal logic could be thrown out completely?
-
-
 
         ## TODO: find a diff of the code:
         # TODO: create additional CodeItems, which cleans up remaining characters, not only names.
@@ -298,8 +294,6 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
         #     #         if optional_var not in self.find_unused_code_visitor.used_names:
         #     #             self.remove_node(optional_var)
 
-
-
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         # TODO: Remove variables, methods, classes from nested elements.
         # TODO: add pass statement if needed.
@@ -308,36 +302,35 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
         # ast.iter_fields(node)
         # for node in node.body:
 
-
         names = [body_node.name for body_node in node.body if getattr(body_node, 'name', None)]
-        names_to_remove = [name for name in names if name not in self.find_unused_code_visitor.used_names]  # Make sure that unused_names is a set
+        names_to_remove = [
+            name for name in names if name not in self.find_unused_code_visitor.used_names
+        ]  # Make sure that unused_names is a set
 
         def should_remove(node: ast.AST) -> bool:
             return getattr(node, 'name', None) in names_to_remove
+
         remove_from_list(node.body, should_remove)
 
         # Add pass to the body if body is empty
         if not node.body:
             # TODO: Lets try creating an empty node with code to insert.
             pass_to_add = Part(
-                line_start=node.lineno+1,
-                col_start=node.col_offset+4,
-                line_end=node.lineno+1,
-                col_end=node.col_offset+4,
+                line_start=node.lineno + 1,
+                col_start=node.col_offset + 4,
+                line_end=node.lineno + 1,
+                col_end=node.col_offset + 4,
                 insert_code='pass\n',
                 insert_code_if_character_is_not_removed=(node.lineno, node.col_offset),
                 #
                 # TODO: >>>  It is not possible to track, when pass has to be removed, or not. New design improvement has to be made.
-
                 # One solution is to remove inserted code when merging parts: if a symbol is removed after which the code has to be inserted, then do not insert the code.
                 # The better approach would be to track expressions: if expression has to be removed - then remove it completely with code inserted as well.
-
                 #
                 # Pass has to be assigned to a particular character, if it gets removed - pass should not be rendered.
             )
 
             self.additional_code_parts_to_remove[str(self.filename)].append(pass_to_add)
-
 
     def visit_ImportFrom(self, node: ast.Import) -> None:
         if node.module != '__future__':
@@ -348,7 +341,9 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
     def visit_Import(self, node: ast.Import) -> None:
         # Adjust node by removing unused code items
         names = [e.asname or e.name.partition('.')[0] for e in node.names[::-1]]
-        names_to_remove = [name for name in names if name not in self.find_unused_code_visitor.used_names]  # Make sure that unused_names is a set
+        names_to_remove = [
+            name for name in names if name not in self.find_unused_code_visitor.used_names
+        ]  # Make sure that unused_names is a set
 
         # No names are being imported - whole import expression should be removed
         if len(names) == len(names_to_remove):
@@ -357,6 +352,7 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
 
         def should_remove(elem: Any) -> bool:
             return (elem.asname or elem.name.partition('.')[0]) in names_to_remove
+
         remove_from_list(node.names, should_remove)
 
         self.add_code_adjustments_for_cleaned_up_code_items(node)
@@ -369,7 +365,6 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
 
         # So this AST is actually really cool.
 
-
         # We have adjusted the AST node.
         # Now we have to adjust CodeItem parts, which have to be removed.
 
@@ -378,25 +373,19 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
         ####################
         # I could ammend the AST nodes with the links of unused code items in this expression.
         #   How to deal with children? Only direct unused code whildren would be saved.
-        # 
+        #
         #   Lets do it: on save aliases method save.
 
-
         # This algorithmic behavior has to be described somewhere.
-
 
         # Thats the point these have to be List and Set items.
         #
         # Find CodeItems that are related to this node expression.
         # Are those unused names CodeItems?
 
-
         # Should I just create additional CodeItem for the expression it self?
 
-
         # TODO: can we also have CodeItem, which has to be added? Like pass?
-
-
 
         ## TODO: Working MVP example, should make a utility out of it.
         # nodes.names = [s,g,h,j]
@@ -409,7 +398,6 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
         #         print("removing", names_count-i-1)
         #         node.names.pop(names_count-i-1)
         # print([(e.name, e.alias) for e in node.names])
-
 
     # def visit_ImportFrom_after_visiting_child_nodes(self, node: ast.Import) -> None:
     #     # TODO: there is no way to know if code items were used or not at this point.
@@ -442,6 +430,7 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
 
         def should_remove(elem: Any) -> bool:
             return getattr(elem, 'id', None) in names_to_remove
+
         remove_from_list(node.targets, should_remove)
 
         self.add_code_adjustments_for_cleaned_up_code_items(node)
@@ -455,11 +444,10 @@ class FixUnusedCodeVisitor(ast.NodeVisitor):
         # I should write a unit test with only an exrepssion and check which methods are being called.
         # I should only handled that single expression handling properly.
 
-
         # Visit node before visiting all its children
         method_name = 'visit_' + node.__class__.__name__
         visitor = getattr(self, method_name, None)
-        
+
         if visitor:
             visitor(node)
 

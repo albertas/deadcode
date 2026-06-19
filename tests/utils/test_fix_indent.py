@@ -27,24 +27,24 @@ Removed 3 unused code items!"""
         text_without_indentation = fix_indent(indented_text)
         self.assertEqual(text_without_indentation, expected_indentation)
 
-## TODO: add test for bytes as well:
-#     def test_fix_indent_for_byte_lines(self):
-#         indented_text = b"""\
-#             file2.py:1:12: DC07 Import `bar` is never used
-#             file2.py:1:7: DC07 Import `foo` is never used
-#             file2.py:1:17: DC07 Import `xyz` is never used
-#
-#             Removed 3 unused code items!"""
-#
-#         expected_indentation = b"""\
-# file2.py:1:12: DC07 Import `bar` is never used
-# file2.py:1:7: DC07 Import `foo` is never used
-# file2.py:1:17: DC07 Import `xyz` is never used
-#
-# Removed 3 unused code items!"""
-#
-#         text_without_indentation = fix_indent(indented_text)
-#         self.assertEqual(expected_indentation, text_without_indentation)
+    ## TODO: add test for bytes as well:
+    #     def test_fix_indent_for_byte_lines(self):
+    #         indented_text = b"""\
+    #             file2.py:1:12: DC07 Import `bar` is never used
+    #             file2.py:1:7: DC07 Import `foo` is never used
+    #             file2.py:1:17: DC07 Import `xyz` is never used
+    #
+    #             Removed 3 unused code items!"""
+    #
+    #         expected_indentation = b"""\
+    # file2.py:1:12: DC07 Import `bar` is never used
+    # file2.py:1:7: DC07 Import `foo` is never used
+    # file2.py:1:17: DC07 Import `xyz` is never used
+    #
+    # Removed 3 unused code items!"""
+    #
+    #         text_without_indentation = fix_indent(indented_text)
+    #         self.assertEqual(expected_indentation, text_without_indentation)
 
     def test_fix_indent_last_empty_line(self):
         indented_text = """\

@@ -78,14 +78,16 @@ class TestNoqaComments(BaseTestCase):
         # "NOQA" comments should be treated as part of code.
 
         # File foo.py is not removed, but should be.
-        self.assertFiles({
-            'foo.py': """
+        self.assertFiles(
+            {
+                'foo.py': """
                   # noqa: DC02
                 """
-            })
+            }
+        )
         self.assertEqual(
             unused_names,
-            ('foo.py:1:0: DC01 Variable `unused_variable` is never used\n\n' 'Removed 1 unused code item!'),
+            ('foo.py:1:0: DC01 Variable `unused_variable` is never used\n\nRemoved 1 unused code item!'),
         )
 
     def test_unused_function(self):

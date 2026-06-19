@@ -11,6 +11,6 @@ def remove_from_list(elements: List, should_remove: Callable) -> None:
     >>> print(elements)
     ... [1, 3]
     """
-    for i in range(len(elements)-1, -1, -1):
+    for i in range(len(elements) - 1, -1, -1):
         if should_remove(elements[i]):
             elements.pop(i)

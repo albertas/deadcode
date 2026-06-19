@@ -34,3 +34,12 @@ class TestFindPythonFilenames(BaseTestCase):
             find_python_filenames(args=self.args)
 
         self.assertEqual(cm.output[0], 'ERROR:root:Error: path_does_not_exist could not be found.')
+
+    def test_verbose_logs_ignored_and_listed_files(self):
+        self.args.paths = ['deadcode/cli.py']
+        self.args.exclude = ['deadcode/cli.py']
+        self.args.verbose = True
+        with self.assertLogs(level='INFO') as cm:
+            find_python_filenames(args=self.args)
+        assert any('Ignoring' in message for message in cm.output)
+        assert any('Files to be checked' in message for message in cm.output)

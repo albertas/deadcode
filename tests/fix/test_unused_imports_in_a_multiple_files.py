@@ -30,14 +30,11 @@ class TestCodeItemUsageWhenImportingFromDifferentFiles(BaseTestCase):
             'spam.py': """
                 from foo import bar
                 print(bar())
-                """
+                """,
         }
 
         unused_names = main('file.py --no-color --fix -v'.split())
-        self.assertEqual(
-            unused_names,
-            None
-        )
+        self.assertEqual(unused_names, None)
         self.assertFiles(
             {
                 'foo.py': """
@@ -47,7 +44,7 @@ class TestCodeItemUsageWhenImportingFromDifferentFiles(BaseTestCase):
                 'spam.py': """
                     from foo import bar
                     print(bar())
-                    """
+                    """,
             }
         )
 
@@ -109,7 +106,6 @@ class TestCodeItemUsageWhenImportingFromDifferentFiles(BaseTestCase):
         # files were analysed before applying fixing.
         #
         # Lets fix: fix part applying only after all files were visited.
-
 
         # TODO: detect, why pass was not preserved?
         # Method was removed, but its pass statement was not preserved.

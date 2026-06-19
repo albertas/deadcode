@@ -1,4 +1,6 @@
-from unittest import TestCase
+import runpy
+import sys
+from unittest import TestCase, mock
 
 from deadcode.cli import main
 from deadcode.utils.base_test_case import BaseTestCase
@@ -66,3 +68,10 @@ class DeadCodeTests(BaseTestCase):
         unused_names = main(['tests/files/invalid_file.py', '--no-color'])
 
         self.assertEqual(unused_names, None)
+
+
+class CliEntrypointTests(TestCase):
+    def test_module_runs_as_script(self):
+        argv = ['deadcode', 'deadcode/data_types.py', '--no-color', '--quiet']
+        with mock.patch.object(sys, 'argv', argv):
+            runpy.run_module('deadcode.cli', run_name='__main__')  # executes line 35

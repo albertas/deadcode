@@ -82,7 +82,7 @@ class TestClassDefRemoval(BaseTestCase):
         unused_names = main(['foo.py', '--no-color', '--fix'])
         self.assertEqual(
             unused_names,
-            ('bar.py:1:0: DC03 Class `MyTest` is never used\n\n' 'Removed 2 unused code items!'),
+            ('bar.py:1:0: DC03 Class `MyTest` is never used\n\nRemoved 2 unused code items!'),
         )
 
         self.assertFiles({})
@@ -111,7 +111,7 @@ class TestClassDefRemoval(BaseTestCase):
         unused_names = main(['foo.py', '--no-color', '--fix'])
         self.assertEqual(
             unused_names,
-            ('foo.py:2:4: DC04 Method `foo` is never used\n\n' 'Removed 1 unused code item!'),
+            ('foo.py:2:4: DC04 Method `foo` is never used\n\nRemoved 1 unused code item!'),
         )
 
         self.assertFiles({})

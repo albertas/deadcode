@@ -42,7 +42,7 @@ def does_overlap(bigger_part: Part, smaller_part: Part) -> bool:
 
 
 def merge_parts(p1: Part, p2: Part) -> Optional[Part]:
-    '''Merge code parts that have to be removed'''
+    """Merge code parts that have to be removed"""
     p1, p2 = sort_parts(p1, p2)
 
     line_start1, line_end1, col_start1, col_end1, insert_code1, insert_condition_1 = p1
@@ -66,11 +66,7 @@ def merge_parts(p1: Part, p2: Part) -> Optional[Part]:
             line_end = line_end1
             col_end = max(col_end1, col_end2)
 
-
-        p1_starts_first = (
-            (line_start1 < line_start2) or
-            ((line_start1 == line_start2) and (col_start1 < col_start2))
-        )
+        p1_starts_first = (line_start1 < line_start2) or ((line_start1 == line_start2) and (col_start1 < col_start2))
         starts_at_the_same_place = (line_start1 == line_start2) and (col_start1 == col_start2)
         if p1_starts_first:
             insert_code = insert_code1
@@ -89,7 +85,7 @@ def merge_parts(p1: Part, p2: Part) -> Optional[Part]:
         # TODO: improve merging of code1 and code2
         # TODO: choose insert code based on col
         # which col is higher
-        #insert_code = insert_code1 or insert_code2
+        # insert_code = insert_code1 or insert_code2
 
         return Part(line_start, line_end, col_start, col_end, insert_code, insert_contition)
 
@@ -105,7 +101,7 @@ def merge_overlaping_file_parts(overlaping_file_parts: List[Part]) -> List[Part]
     sorted_overlaping_file_parts = sorted(overlaping_file_parts, key=lambda x: (x[0], x[2], -x[1], -x[3]))
 
     for p1 in sorted_overlaping_file_parts:
-    # for p1 in sorted(overlaping_file_parts):
+        # for p1 in sorted(overlaping_file_parts):
         merged_part = None
         merged_with_index = None
         for j, p2 in enumerate(non_overlaping_file_parts):

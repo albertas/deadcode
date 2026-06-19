@@ -36,6 +36,7 @@ class Args:
 
 class Part(NamedTuple):
     """Code file part"""
+
     # Code fragment to remove.
     line_start: int
     line_end: int

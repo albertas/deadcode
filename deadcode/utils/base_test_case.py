@@ -74,7 +74,7 @@ class BaseTestCase(TestCase):
             self.assertEqual(
                 fix_indent(content),
                 fix_indent(self.updated_files.get(filename) or unchanged_files.get(filename) or ''),
-                f'File {filename} content does not match.'
+                f'File {filename} content does not match.',
             )
 
         self.assertListEqual(

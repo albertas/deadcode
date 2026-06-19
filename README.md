@@ -136,7 +136,24 @@ just check-lint        # Check linting without changing files
 just check-typecheck   # Check types without changing files
 ```
 
-For details on each target, see [Development Documentation](docs/overview.md).
+### Test Coverage
+
+Test coverage is measured on the `deadcode/` package only (excluding test infrastructure). The test suite maintains a **95.0% line coverage threshold** enforced by `pytest-cov`. To check coverage:
+
+```shell
+# Run tests and display coverage report (includes term-missing for line-by-line breakdown)
+just test
+
+# Run coverage for a specific subset (e.g., actions module)
+uv run pytest -o addopts="" --cov=deadcode --cov-report=term-missing tests/actions/
+```
+
+Coverage configuration is in `pyproject.toml`:
+- **Source**: `deadcode/` package only (not `tests/`)
+- **Omitted**: `deadcode/utils/base_test_case.py` (test infrastructure)
+- **Gate**: Enforced at `95.0%` via `--cov-fail-under` in `pytest` options
+
+See [Development Documentation](docs/overview.md) for full testing details.
 
 ## Contributing
 Use `just check` before submitting pull requests to ensure all checks pass. See [Development Documentation](docs/overview.md) for the full development workflow.

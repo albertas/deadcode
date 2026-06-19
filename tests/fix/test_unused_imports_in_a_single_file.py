@@ -36,7 +36,7 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                 file.py:4:4: DC07 Import `xyz` is never used
                 file.py:7:18: DC07 Import `foo` is never used
 
-                Removed 4 unused code items!""")
+                Removed 4 unused code items!"""),
         )
         self.assertFiles(
             {
@@ -48,7 +48,6 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                     """
             }
         )
-
 
     def test_unused_import_removal(self):
         self.files = {
@@ -71,7 +70,7 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                 file.py:1:7: DC07 Import `foo` is never used
                 file.py:1:17: DC07 Import `xyz` is never used
 
-                Removed 3 unused code items!""")
+                Removed 3 unused code items!"""),
         )
 
         self.assertFiles(
@@ -110,7 +109,7 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                 file.py:3:4: DC07 Import `bar` is never used
                 file.py:4:4: DC07 Import `xyz` is never used
 
-                Removed 3 unused code items!""")
+                Removed 3 unused code items!"""),
         )
 
         self.assertFiles(
@@ -144,7 +143,7 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                 file.py:1:18: DC07 Import `foo` is never used
                 file.py:1:29: DC07 Import `spam` is never used
 
-                Removed 2 unused code items!""")
+                Removed 2 unused code items!"""),
         )
 
         self.assertFiles(

@@ -208,4 +208,12 @@ target_version = ["py38"]
 
 
 [tool.pytest.ini_options]
-addopts = "--cov=. --no-cov-on-fail --cov-fail-under=88.0"
+addopts = "--cov=deadcode --no-cov-on-fail --cov-fail-under=95.0"
+
+[tool.coverage.run]
+source = ["deadcode"]
+omit = ["deadcode/utils/base_test_case.py"]
+
+[tool.coverage.report]
+# Coverage's default exclude already matches "# pragma: no cover";
+# pragmas added in later phases are honored without further config.
