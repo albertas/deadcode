@@ -18,7 +18,7 @@ The `tests/` directory mirrors the package structure, with test modules and subd
 
 ### Test Modules at Top Level
 
-- `test_deadcode.py` — full integration tests (uses real filesystem)
+- `test_deadcode.py` — **mixed**: a `BaseTestCase` class using the mock layer plus two real-filesystem integration classes (`DeadCodeIntegrationTests`, `CliEntrypointTests`)
 - `test_output.py` — output formatting tests
 - `test_accurate_usage_detection.py` — verification of name usage detection
 - `test_imports.py` — import handling tests
@@ -31,19 +31,29 @@ The `tests/` directory mirrors the package structure, with test modules and subd
 - `classes.py`, `functions.py`, `variables.py` — code samples for testing
 - `subdir/` — subdirectory samples for path handling tests
 
+### Naming and Style Conventions
+
+- **Modules**: all named `test_<snake_case_subject>.py` (e.g. `tests/fix/test_class_def.py`).
+- **Classes**: two forms — the dominant `Test<DescriptiveName>` (e.g. `TestAssignmentExpressionRemoval`) and a minority `<DescriptiveName>Tests` (e.g. `CommandLineArgParsingTests`, `DeadCodeIntegrationTests`).
+- **Methods**: uniformly `test_<behavior_in_snake_case>` (e.g. `test_unused_variable_name_found_successfully`).
+- **Runner style**: the suite is entirely `unittest`-style classes — no plain pytest functions and **no `conftest.py`** anywhere under `tests/`.
+- **`__init__.py`**: present only in `tests/cli_args/` and `tests/utils/` (both empty); other subdirs have none. (`tests/files/subdir/another_subdir/__init__.py` is a fixture, not a package marker.)
+
 ## BaseTestCase Helper Class
 
-`BaseTestCase` (`deadcode/utils/base_test_case.py:10-93`) extends `unittest.TestCase` and provides utilities for testing Deadcode without touching the real filesystem.
+`BaseTestCase` (`deadcode/utils/base_test_case.py:10`) extends `unittest.TestCase` and provides utilities for testing Deadcode without touching the real filesystem.
 
 ### Setup
 
-`setUp()` (`base_test_case.py:37-54`) patches critical I/O and discovery functions:
+`setUp()` (`base_test_case.py:37-57`) patches critical I/O and discovery functions:
 
 - `find_python_filenames` (mocked to return `self.files.keys()`)
 - `open()` in `deadcode.visitor.find_unused_code_visitor` (mocked to return `self.files[...]`)
 - `open()` in `deadcode.visitor.fix_unused_code_visitor` (mocked to return `self.files[...]`)
 - `open()` in `deadcode.actions.fix_or_show_unused_code` (mocked to capture writes)
 - `os.remove()` (mocked to track deletions)
+
+It also exposes a `patch(path)` helper (`base_test_case.py:15-18`) that wraps `unittest.mock.patch`, starts it, and auto-registers `patcher.stop` via `addCleanup` so each patch is torn down after the test.
 
 Creates a fresh `Args()` for each test.
 
@@ -53,12 +63,12 @@ Tests define a `files: Dict[str, str]` class attribute mapping filenames to Pyth
 
 ### Assertions
 
-- **`assertFiles(expected_files, removed=None)`** (`base_test_case.py:56-82`) — verifies that file contents (both updated and unchanged) match expectations, and that removed files match the optional `removed` list.
-- **`assertUpdatedFiles(expected_updated_files)`** (`base_test_case.py:84-93`) — verifies that only the specified files were modified and have the expected contents.
+- **`assertFiles(expected_files, removed=None)`** (`base_test_case.py:59-85`) — verifies that file contents (both updated and unchanged) match expectations, and that removed files match the optional `removed` list.
+- **`assertUpdatedFiles(expected_updated_files)`** (`base_test_case.py:87-96`) — verifies that only the specified files were modified and have the expected contents.
 
 ### Tests Outside BaseTestCase
 
-Some tests bypass the mock layer:
+The suite uses three tiers: (1) mock-backed unit tests via `BaseTestCase` (no disk); (2) real-filesystem integration tests anchored to `REPO_ROOT`; (3) a hybrid that subclasses `BaseTestCase` but uses `tempfile.TemporaryDirectory()` to exercise the real `os.walk` (see Deterministic Testing below). Some tests deliberately bypass the mock layer entirely:
 
 - `tests/code_item/test_code_item.py:7` — tests the `CodeItem` class directly
 - `tests/test_deadcode.py` — integration tests using the real filesystem (see Deterministic Testing section below for cwd anchoring)
@@ -70,7 +80,7 @@ Tests are designed to pass regardless of the current working directory, `PYTHONH
 
 ### Directory Walk Determinism
 
-The file discovery walk in `find_python_filenames` (`deadcode/actions/find_python_filenames.py:25`) is sorted to ensure stable discovery order across different filesystems and Python hash seeds. The walk uses a LIFO stack, so appended entries determine discovery order. Sorting the `path.glob('*')` results makes this order deterministic, while the final output is still sorted by filename/line in the visitor layer.
+The file discovery walk in `find_python_filenames` (`deadcode/actions/find_python_filenames.py:24`) is sorted to ensure stable discovery order across different filesystems and Python hash seeds. The walk uses a LIFO stack, so appended entries determine discovery order. Sorting the `path.glob('*')` results makes this order deterministic, while the final output is still sorted by filename/line in the visitor layer.
 
 ### Config Discovery Mocking
 
@@ -111,33 +121,33 @@ The project uses a `Makefile` and a `Justfile` for automation. All common tasks 
 
 See `pyproject.toml` for numeric configuration (line-length, coverage targets, etc.) — do not copy these into prose.
 
-- **`test`** (`Makefile:18-19`) — runs `pytest -n "$(nproc --ignore=1)" -vv` with optional `PYTEST_ME_PLEASE` filter (parallel on all-but-one cores via xdist)
-- **`lint`** (`Makefile:21-22`) — runs `ruff check deadcode tests`
-- **`format`** (`Makefile:37-38`) — runs `ruff format deadcode tests`
-- **`mypy`** (`Makefile:27-28`) — runs type-checking on `deadcode/`
-- **`deadcode`** (`Makefile:30-31`) — runs Deadcode on itself (self-checking)
-- **`audit`** (`Makefile:40-41`) — runs `pip-audit` for security vulnerabilities
-- **`check`** (`Makefile:3`) — runs all of the above: `test lint mypy audit deadcode`
-- **`fix`** (`Makefile:4`) — runs `format` and `fixlint` (applies automatic fixes)
+- **`test`** (`Makefile:20-21`) — runs `pytest -n "$(nproc --ignore=1)" -vv` with optional `PYTEST_ME_PLEASE` filter (parallel on all-but-one cores via xdist)
+- **`lint`** (`Makefile:23-24`) — runs `ruff check deadcode tests`
+- **`format`** (`Makefile:39-40`) — runs `ruff format deadcode tests`
+- **`mypy`** (`Makefile:29-30`) — runs type-checking on `deadcode/`
+- **`deadcode`** (`Makefile:32-33`) — runs Deadcode on itself (self-checking)
+- **`audit`** (`Makefile:42-43`) — runs `pip-audit` for security vulnerabilities
+- **`check`** (`Makefile:5`) — runs all of the above: `test lint mypy audit deadcode`
+- **`fix`** (`Makefile:6`) — runs `format` and `fixlint` (applies automatic fixes)
 
 ### Justfile Recipes
 
 The `Justfile` provides these key recipes:
 
-- **`test`** — runs `uv run pytest -n "$(nproc --ignore=1)"` (parallel on all-but-one cores via xdist, matching the Makefile)
+- **`test`** (`Justfile:10-11`) — runs `uv run pytest -n "$(nproc --ignore=1)"` (parallel on all-but-one cores via xdist, matching the Makefile)
 - **`sync`** — syncs dependencies and installs the package in editable mode
 - **`format`**, **`lint`**, **`typecheck`**, **`check-*`** — individual check targets
-- **`check`** — runs all checks (format, lint, complexity, typecheck, test) in sequence
+- **`check`** (`Justfile:34`) — runs all checks (format, lint, complexity, typecheck, test) in sequence
 - **`lifecycle`** — orchestrates workflow tasks via the `lifecycle` command
 
-Both `Makefile` and `Justfile` test targets run parallel tests on all-but-one CPU cores via pytest-xdist, ensuring consistent execution across both runners.
+Both `Makefile` and `Justfile` run `pytest -n "$(nproc --ignore=1)"`, keeping parallel behavior identical across runners. They diverge on extras: the `Makefile` `check` adds `audit` (`pip-audit`) and a self-`deadcode` run, while the `Justfile` `check` adds an explicit `check-complexity` gate (`ruff check --select C901`).
 
 ## Configuration Files
 
 ### pyproject.toml
 
-- **Entry point** (`pyproject.toml:38`): `deadcode = "deadcode.cli:main"` — defines the CLI command (the entry is on line 37; line 38 is the blank that follows)
-- **Pytest options** (`pyproject.toml:209`): `addopts` includes coverage settings; cite `pyproject.toml` for numeric gates rather than copying them into docs
+- **Entry point**: `deadcode = "deadcode.cli:main"` — defines the CLI command
+- **Pytest options** (`pyproject.toml:215`): `addopts` includes coverage settings; cite `pyproject.toml` for numeric gates rather than copying them into docs
 - **Ruff configuration** (`pyproject.toml`): line-length 120, all rules enabled with ~70 deliberate policy ignores (see Ruff Code Quality section below)
 - **MyPy configuration** (`pyproject.toml`): strict mode enabled (`strict = true`); type checking is run on the `deadcode/` package only (not `tests/`)
 - **`[tool.deadcode]`** (`pyproject.toml`): the project's own Deadcode configuration, demonstrating self-usage; ignores inert decorator options, test utilities, and internal visit methods
@@ -174,9 +184,8 @@ The codebase is kept **ruff-clean** by enforcing a policy-based ignore list:
   - `S101` — allow assert statements in tests
   - `PT009` — unittest assertion style permitted
   - `ANN201` — return type hints optional in tests
+  - `SLF001` — tests legitimately read private members (e.g. `visitor._log`)
   - `D` — docstring requirements waived in tests
-
-Every ignore entry is tracked and validated: if a rule reaches zero violations it is removed from the list, keeping only active policies.
 
 ## Development Workflow
 

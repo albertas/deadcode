@@ -1,5 +1,17 @@
 # ToDo
-- [ ] Ensure code quality [cq:ensure]
+- [ ] Check implementation for correctness. Add additional unit tests cases to check implementation correctness. Update the code to fix all the test cases.
+- [ ] Add more test cases targeting python versions 3.11, 3.12, 3.13, 3.14, (3.15 if available?). Make code base implementation compatible with these python versions.
+
+# Vision
+- [ ] Document testing conventions.
+- [ ] Generate various test cases, group them by similarity.
+- [ ] Check implementation for correctness. Generate test cases for incorrect behavior.
+- [ ] Use maturin, Ruff version for implementation.
+- [ ] Generate fastapi, django test suits.
+
+# Done
+- [x] [T13] Document testing conventions in docs directory.
+- [x] Ensure code quality [cq:ensure]
   - [x] [T1] [cq:spec] Write a codebase specification under `docs/` describing the package goals, architecture and key code parts. Split docs/ into multiple files index.md should have project goal and documentation index.
   - [x] [T2] [cq:aliases] Add Justfile with targets to run tests, ruff format, ruff lint, typecheck, code complexity check and all these checks combined via `check` target. Also, add dev dependencies needed for these targets. Use a Justfile consistent with this project's, e.g.:
     ```
@@ -31,15 +43,3 @@
   - [x] [T10] [cq:check] Ensure that just check command exist, it combines all the checks from Justfile and this `check` target passes.
   - [x] [T11] [cq:pythonversion] Ensure that latest stable python version is used.
   - [x] [T12] [cq:versions] Ensure that latest dependency versions are used.
-- [ ] Document testing conventions in docs directory.
-- [ ] Check implementation for correctness. Add additional unit tests cases to check implementation correctness. Update the code to fix all the test cases.
-- [ ] Add more test cases targeting python versions 3.11, 3.12, 3.13, 3.14, (3.15 if available?). Make code base implementation compatible with these python versions.
-
-# Vision
-- [ ] Document testing conventions.
-- [ ] Generate various test cases, group them by similarity.
-- [ ] Check implementation for correctness. Generate test cases for incorrect behavior.
-- [ ] Use maturin, Ruff version for implementation.
-- [ ] Generate fastapi, django test suits.
-
-# Done
