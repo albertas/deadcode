@@ -418,10 +418,21 @@ class FindUnusedCodeVisitor(ast.NodeVisitor):
         if not (bases_attr := getattr(node, 'bases', None)):
             return None
 
-        bases = [base.id for base in bases_attr if getattr(base, 'id', None)]
-        inherits_from = bases[:]
+        inherits_from: list[str] = []
+        simple_names: list[str] = []
+        for base in bases_attr:
+            name = utils.get_base_name(base)
+            if name is None:
+                continue
+            inherits_from.append(name)
+            leaf = name.rsplit('.', 1)[-1]
+            if leaf != name:
+                # Dotted base (db.Model): also store the trailing leaf so both
+                # `db.Model` and `*Model` patterns match via fnmatch.
+                inherits_from.append(leaf)
+            simple_names.append(leaf)
 
-        for base in bases:
+        for base in simple_names:
             if base_code_item := self.scopes.get(name=base, scope=self.scope):
                 if base_inherits_from := getattr(base_code_item, 'inherits_from', None):
                     inherits_from.extend(base_inherits_from)

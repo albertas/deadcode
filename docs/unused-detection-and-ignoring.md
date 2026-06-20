@@ -95,4 +95,12 @@ Any item that reaches step 6 with its name not in `used_names` is reported as un
 - Step 3: Decorator gate matches `@app.get` against `@app.*`; the function definition (name and body) is marked used.
 - Step 6: Name is in `used_names`, item is not unused, not reported.
 
+**Scenario 6**: Class inheriting from `db.Model` (Flask-SQLAlchemy), `--ignore-definitions-if-inherits-from=db.Model --ignore-bodies-if-inherits-from=db.Model` set.
+- Step 3: Inheritance gate matches the dotted base `db.Model`; the class name and its `Column` body members are marked used.
+- Step 6: Class and columns are in `used_names`, not reported.
+
+**Scenario 7**: Alembic migration file under `versions/`, `--ignore-names-in-files=*/versions/*` set (or `--ignore-names=upgrade,downgrade,revision,down_revision,branch_labels,depends_on`).
+- Step 1: Path / name pattern matches; the migration's names are marked used.
+- Step 6: Names are in `used_names`, not reported.
+
 See [Visitor layer](visitor-layer.md) for more details on how items are collected and ignored.

@@ -59,6 +59,17 @@ ignore-definitions-if-inherits-from = ["BaseModel"]
 ```
 `app` and `router` are the conventional FastAPI instance names — rename the globs to match your own variables. TOML values are a list: each pattern is a separate list entry (they are not comma-split).
 
+For SQLAlchemy and Alembic projects, suppress ORM models (matched by their base class), event listeners (matched by their decorator), and migration boilerplate (matched by name or by the migrations directory):
+```
+[tool.deadcode]
+ignore-definitions-if-inherits-from = ["Base", "db.Model"]
+ignore-bodies-if-inherits-from = ["Base", "db.Model"]
+ignore-definitions-if-decorated-with = ["@event.*"]
+ignore-names = ["upgrade", "downgrade", "revision", "down_revision", "branch_labels", "depends_on"]
+ignore-names-in-files = ["*/versions/*"]
+```
+`Base` is the conventional SQLAlchemy declarative base; `db.Model` is the Flask-SQLAlchemy base — rename them to match your own. Note: a model that owns columns needs **both** `ignore-definitions-if-inherits-from` (silences the class name) and `ignore-bodies-if-inherits-from` (silences the `Column` / `mapped_column` members) — the definition option alone does not silence the columns.
+
 ## Command line options
 
 | Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Meaning  |

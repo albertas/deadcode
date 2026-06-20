@@ -1,5 +1,4 @@
 # ToDo
-- [ ] Generate unused code SQLAlchemy + Alembic. And ensure that deadcode is capable to handle it.
 - [ ] Generate unused code test cases for Django framework. And ensure that deadcode is capable to handle it.
 - [ ] Document testing conventions.
 
@@ -9,6 +8,7 @@
 - [ ] Use maturin, Ruff version for implementation.
 
 # Done
+- [x] [T17] Generate unused code SQLAlchemy + Alembic. And ensure that deadcode is capable to handle it.
 - [x] [T16] Generate unused code test cases for FastAPI framework. And ensure that deadcode is capable to handle it.
 - [x] [T15] Add more test cases targeting python versions 3.11, 3.12, 3.13, 3.14, (3.15 if available?). Make code base implementation compatible with these python versions.
 - [x] [T14] Check implementation for correctness. Add additional unit tests cases to check implementation correctness. Update the code to fix all the test cases.

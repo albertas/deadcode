@@ -61,6 +61,22 @@ def get_decorator_name(decorator: ast.Call | ast.Attribute) -> str:
     return '@' + '.'.join(reversed(parts))
 
 
+def get_base_name(base: ast.expr) -> str | None:
+    """Return a base class as a dotted string ('db.Model') or simple name
+    ('Base'); None for bases that are neither ast.Name nor a dotted
+    ast.Attribute chain (e.g. ast.Subscript like Generic[T])."""
+    if isinstance(base, ast.Name):
+        return base.id
+    parts: list[str] = []
+    while isinstance(base, ast.Attribute):
+        parts.append(base.attr)
+        base = base.value
+    if isinstance(base, ast.Name):
+        parts.append(base.id)
+        return '.'.join(reversed(parts))
+    return None
+
+
 class LoggingList(list):  # type: ignore
     def __init__(self, type_: UnusedCodeType, verbose: bool) -> None:
         self.type_ = type_
