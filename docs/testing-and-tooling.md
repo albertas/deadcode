@@ -146,33 +146,31 @@ This allows them to pass from any cwd and survive concurrent xdist workers, each
 
 ## Build and Check Commands
 
-The project uses a `Makefile` and a `Justfile` for automation. All common tasks are defined as recipes.
-
-### Makefile Recipes
-
-See `pyproject.toml` for numeric configuration (line-length, coverage targets, etc.) — do not copy these into prose.
-
-- **`test`** (`Makefile:20-21`) — runs `pytest -n "$(nproc --ignore=1)" -vv` with optional `PYTEST_ME_PLEASE` filter (parallel on all-but-one cores via xdist)
-- **`lint`** (`Makefile:23-24`) — runs `ruff check deadcode tests`
-- **`format`** (`Makefile:39-40`) — runs `ruff format deadcode tests`
-- **`mypy`** (`Makefile:29-30`) — runs type-checking on `deadcode/`
-- **`deadcode`** (`Makefile:32-33`) — runs Deadcode on itself (self-checking)
-- **`audit`** (`Makefile:42-43`) — runs `pip-audit` for security vulnerabilities
-- **`check`** (`Makefile:5`) — runs all of the above: `test lint mypy audit deadcode`
-- **`fix`** (`Makefile:6`) — runs `format` and `fixlint` (applies automatic fixes)
+The project uses a `Justfile` for all automation. All common tasks are defined as recipes via Just.
 
 ### Justfile Recipes
 
-The `Justfile` provides these key recipes:
+See `pyproject.toml` for numeric configuration (line-length, coverage targets, etc.) — do not copy these into prose.
 
-- **`test`** (`Justfile:10-11`) — runs `uv run pytest -n "$(nproc --ignore=1)"` (parallel on all-but-one cores via xdist, matching the Makefile)
+Core recipes:
+
 - **`sync`** — installs development dependencies from `requirements-dev.txt` via `uv add`
 - **`lock`** — refreshes `uv.lock` via `uv lock`
-- **`format`**, **`lint`**, **`typecheck`**, **`check-*`** — individual check targets
-- **`check`** (`Justfile:34`) — runs all checks (format, lint, complexity, typecheck, test) in sequence
+- **`test`** — runs `uv run pytest -n "$(nproc --ignore=1)"` with optional test filter (parallel on all-but-one cores via xdist)
+- **`format`** — runs `uv run ruff format` on `deadcode/` and `tests/`
+- **`lint`** — runs `uv run ruff check` on `deadcode/` and `tests/`
+- **`typecheck`** — runs `uv run mypy deadcode/` for type checking
+- **`check-format`**, **`check-lint`**, **`check-complexity`**, **`check-typecheck`** — individual check targets (no auto-fix variants)
+- **`check`** — runs all checks in sequence (format, lint, complexity, typecheck, test)
+- **`publish`** — removes old dist files and publishes to PyPI via `uv run hatch build` and `uv run hatch publish`
+- **`fix`** — runs `format` then `fixlint` to apply automatic fixes
+- **`fixlint`** — runs `uv run ruff check --fix --unsafe-fixes` then `uv run deadcode --fix` for comprehensive linting fixes
+- **`deadcode`** — runs Deadcode on itself for self-checking (unused-code detection)
+- **`audit`** — runs `uv run pip-audit` for security vulnerability scanning
+- **`compile`** — refreshes `requirements.txt` and `requirements-dev.txt` via `uv pip compile`
 - **`lifecycle`** — orchestrates workflow tasks via the `lifecycle` command
 
-Both `Makefile` and `Justfile` run `pytest -n "$(nproc --ignore=1)"`, keeping parallel behavior identical across runners. They diverge on extras: the `Makefile` `check` adds `audit` (`pip-audit`) and a self-`deadcode` run, while the `Justfile` `check` adds an explicit `check-complexity` gate (`ruff check --select C901`).
+All recipes use `uv run` to invoke tools rather than direct `.venv/bin/` invocation, ensuring the dev environment is properly activated.
 
 ## Configuration Files
 
@@ -184,7 +182,7 @@ Both `Makefile` and `Justfile` run `pytest -n "$(nproc --ignore=1)"`, keeping pa
 - **MyPy configuration** (`pyproject.toml`): strict mode enabled (`strict = true`); type checking is run on the `deadcode/` package only (not `tests/`)
 - **`[tool.deadcode]`** (`pyproject.toml`): the project's own Deadcode configuration, demonstrating self-usage; ignores inert decorator options, test utilities, and internal visit methods
 
-The project **dog-foods itself**: it runs `make check` (which includes `make deadcode`) to ensure the codebase passes its own unused-code detection.
+The project **dog-foods itself**: it runs `just check` (which includes `just deadcode`) to ensure the codebase passes its own unused-code detection.
 
 ### Type Checking in Strict Mode
 
@@ -243,4 +241,4 @@ just lock
 uv run deadcode deadcode tests -v
 ```
 
-The `check` recipe is the regression guard ensuring no changes break tests, linting, typing, or complexity limits. For Makefile equivalents, use `make .venv`, `make test`, `make check`, etc.
+The `check` recipe is the regression guard ensuring no changes break tests, linting, typing, or complexity limits. For any development task, use the corresponding Just recipe (e.g. `just sync`, `just test`, `just check`).

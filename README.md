@@ -171,6 +171,42 @@ just check-typecheck   # Check types without changing files
 
 The codebase is continuously kept **ruff-clean** (zero lint errors, zero warnings) and fully type-checked under mypy's strict mode. The `just check` gate ensures code quality before merging.
 
+### Automated Fixes
+
+Apply automatic code fixes with:
+
+```shell
+just fix              # Run format then fixlint (comprehensive fixes)
+```
+
+This combines:
+- `just format` — auto-format code with ruff
+- `just fixlint` — auto-fix linting issues with `ruff check --fix --unsafe-fixes` then `just deadcode --fix`
+
+### Code Quality Beyond Checks
+
+```shell
+just deadcode         # Run Deadcode on itself (unused-code detection)
+just audit            # Run pip-audit for security vulnerabilities
+```
+
+These are included in the broader check suite but can also be run independently.
+
+### Dependency Management
+
+```shell
+just lock             # Refresh uv.lock after dependency changes
+just compile          # Regenerate requirements.txt and requirements-dev.txt
+```
+
+### Publishing
+
+```shell
+just publish          # Build and publish to PyPI
+```
+
+This cleans the `dist/` directory, builds distribution packages, and publishes them.
+
 ### Test Determinism
 
 All tests pass regardless of the current working directory, `PYTHONHASHSEED`, and xdist worker count. This is achieved through:
@@ -179,7 +215,7 @@ All tests pass regardless of the current working directory, `PYTHONHASHSEED`, an
 - **Config mocking** — unit tests are isolated from the repo's real `pyproject.toml` settings
 - **Isolated file systems** — FS-bypass unit tests use temporary directories instead of cwd-relative literals
 - **Root anchoring** — integration tests anchor to the repo root via `chdir` with cleanup handlers
-- **Parallel runners** — both `make test` and `just test` run parallel tests on all-but-one CPU cores
+- **Parallel execution** — `just test` runs parallel tests on all-but-one CPU cores via pytest-xdist
 
 For details, see [Testing & Tooling](docs/testing-and-tooling.md).
 

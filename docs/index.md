@@ -14,4 +14,4 @@ For installation, usage examples, and CLI reference, see [README](../README.md).
 - [Unused detection & ignoring](unused-detection-and-ignoring.md) — how "unused" is decided; ignore mechanisms.
 - [Fix & output](fix-and-output.md) — merge/remove `Part`s, diff rendering, error messages.
 - [Data types](data-types.md) — `Args`, `Part`, `CodeItem`, constants & error codes.
-- [Testing & tooling](testing-and-tooling.md) — `tests/` layout, `BaseTestCase`, Make/Just.
+- [Testing & tooling](testing-and-tooling.md) — `tests/` layout, `BaseTestCase`, Just automation.

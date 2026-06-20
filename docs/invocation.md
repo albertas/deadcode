@@ -23,11 +23,7 @@ To update and refresh the `uv.lock` lockfile after modifying dependencies:
 just lock
 ```
 
-This runs `uv lock` to update the lockfile with the latest resolved dependency tree. The Makefile also provides this via:
-
-```bash
-make lock
-```
+This runs `uv lock` to update the lockfile with the latest resolved dependency tree.
 
 ## Testing
 
@@ -172,14 +168,38 @@ uv run deadcode . --ignore-names="BaseTestCase,*Mixin"
 
 For all options, see [cli-and-configuration.md](cli-and-configuration.md) or run `uv run deadcode --help`.
 
-## Makefile Test Target
+## Additional Development Targets
 
-The `Makefile` test target (`make test`) runs pytest with the same parallel execution as the Just target:
+In addition to the core targets above, Just provides additional development targets:
+
+### Security Audit
 
 ```bash
-make test
+just audit
 ```
 
-Runs pytest with parallel execution on all-but-one CPU cores via `nproc --ignore=1`, matching the `just test` runner. Both runners are now unified, so `make test` and `just test` produce identical execution behavior.
+Runs `pip-audit` to scan for known security vulnerabilities in dependencies.
 
-Legacy Makefile targets for other checks (lint, format, typecheck, audit, deadcode) are available but the Just targets are preferred for development work.
+### Self-Check (Deadcode Detection)
+
+```bash
+just deadcode
+```
+
+Runs Deadcode on itself to detect unused code in the `deadcode/` and `tests/` directories. This ensures the tool passes its own quality checks.
+
+### Build & Publish
+
+```bash
+just publish
+```
+
+Builds distribution packages (`uv run hatch build`) and publishes them to PyPI (`uv run hatch publish`). Cleans the `dist/` directory before building.
+
+### Compile Requirements
+
+```bash
+just compile
+```
+
+Refreshes `requirements.txt` and `requirements-dev.txt` from the current `pyproject.toml` using `uv pip compile`.
