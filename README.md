@@ -70,6 +70,17 @@ ignore-names-in-files = ["*/versions/*"]
 ```
 `Base` is the conventional SQLAlchemy declarative base; `db.Model` is the Flask-SQLAlchemy base — rename them to match your own. Note: a model that owns columns needs **both** `ignore-definitions-if-inherits-from` (silences the class name) and `ignore-bodies-if-inherits-from` (silences the `Column` / `mapped_column` members) — the definition option alone does not silence the columns.
 
+For Django projects, suppress models (matched by their base class), views and app configs (matched by their base class), admin registrations and signals (matched by their decorators), and settings files (matched by their path):
+```
+[tool.deadcode]
+ignore-definitions-if-inherits-from = ["models.Model", "View", "AppConfig", "admin.ModelAdmin", "BaseCommand"]
+ignore-bodies-if-inherits-from = ["models.Model", "View", "AppConfig", "admin.ModelAdmin", "BaseCommand"]
+ignore-definitions-if-decorated-with = ["@admin.register*", "@receiver*"]
+ignore-names = ["urlpatterns"]
+ignore-names-in-files = ["*settings*"]
+```
+`models.Model` is the Django ORM base class, `View` is the base for class-based views, `AppConfig` is the app configuration base, `admin.ModelAdmin` is the admin registration base, and `BaseCommand` is the management command base. Rename the globs to match your own. Settings files are suppressed by path pattern to avoid listing each constant individually. The `urlpatterns` list variable is suppressed by name since Django imports it dynamically.
+
 ## Command line options
 
 | Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Meaning  |
