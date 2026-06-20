@@ -11,10 +11,23 @@ just sync
 ```
 
 This runs:
-- `uv pip sync requirements-dev.txt` — Installs pinned dev dependencies
-- `uv pip install -e .[test]` — Installs Deadcode in editable mode with test extras
+- `uv add --requirements requirements-dev.txt` — Installs pinned dev dependencies from `requirements-dev.txt`
 
 All other targets depend on `sync`, so it runs automatically if needed.
+
+## Dependency Locking
+
+To update and refresh the `uv.lock` lockfile after modifying dependencies:
+
+```bash
+just lock
+```
+
+This runs `uv lock` to update the lockfile with the latest resolved dependency tree. The Makefile also provides this via:
+
+```bash
+make lock
+```
 
 ## Testing
 

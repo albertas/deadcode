@@ -19,7 +19,7 @@ This is the index of development and build documentation for Deadcode. For usage
 
 To develop Deadcode:
 
-1. **Sync dependencies:** `just sync`
+1. **Sync dependencies:** `just sync` (installs dev dependencies from `requirements-dev.txt`)
 2. **Run all checks:** `just check` (tests + lint + format check + type check + complexity check)
 3. **Run specific checks:**
    - Tests: `just test`
@@ -28,5 +28,6 @@ To develop Deadcode:
    - Type checking: `just typecheck` or check-only `just check-typecheck`
    - Complexity: `just check-complexity`
 4. **Apply fixes:** `just format` then `just lint -- --fix`
+5. **Update lockfile:** `just lock` (refreshes `uv.lock`)
 
 For details on each target, see [invocation.md](invocation.md).

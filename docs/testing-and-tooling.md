@@ -166,7 +166,8 @@ See `pyproject.toml` for numeric configuration (line-length, coverage targets, e
 The `Justfile` provides these key recipes:
 
 - **`test`** (`Justfile:10-11`) — runs `uv run pytest -n "$(nproc --ignore=1)"` (parallel on all-but-one cores via xdist, matching the Makefile)
-- **`sync`** — syncs dependencies and installs the package in editable mode
+- **`sync`** — installs development dependencies from `requirements-dev.txt` via `uv add`
+- **`lock`** — refreshes `uv.lock` via `uv lock`
 - **`format`**, **`lint`**, **`typecheck`**, **`check-*`** — individual check targets
 - **`check`** (`Justfile:34`) — runs all checks (format, lint, complexity, typecheck, test) in sequence
 - **`lifecycle`** — orchestrates workflow tasks via the `lifecycle` command
@@ -224,19 +225,22 @@ A typical contributor flow:
 
 ```bash
 # Set up environment
-make .venv
+just sync
 
 # Run tests
-make test
+just test
 
-# Run the full check suite (tests, lint, type checking, audits, self-check)
-make check
+# Run the full check suite (tests, lint, type checking, complexity)
+just check
 
 # Apply automatic fixes
-make fix
+just format && just lint -- --fix
+
+# Update the lockfile if dependencies change
+just lock
 
 # Run Deadcode locally
-.venv/bin/deadcode deadcode tests -v
+uv run deadcode deadcode tests -v
 ```
 
-The `check` recipe is the regression guard ensuring no changes break tests, linting, typing, or Deadcode's own analysis.
+The `check` recipe is the regression guard ensuring no changes break tests, linting, typing, or complexity limits. For Makefile equivalents, use `make .venv`, `make test`, `make check`, etc.

@@ -1,5 +1,5 @@
 code_quality_is_good: true
-heart_beat: 2026-06-20 19:14:29
+heart_beat: 2026-06-20 19:42:57
 # [~] = conditional / out-of-sequence phase (event-driven, not a linear 1..9 step).
 phases:
   - [x] 1_question
@@ -16,5 +16,5 @@ phases:
       in:  review_findings.yml (from 8_review)
       out: code edits; flips review_findings.yml resolved:true (no artifact-dir file)
 lifecycles_in_progress:
-  - artifact_dir: T18-2026-06-20-generate-unused-code-test-cases-for-django-framewo
-    heart_beat: 2026-06-20 19:14:29
+  - artifact_dir: T20-2026-06-20-use-uv-add-instead-of-uv-pip-add-requirements-txt
+    heart_beat: 2026-06-20 19:42:57

@@ -1,5 +1,6 @@
 # ToDo
-- [ ] Document testing conventions.
+- [ ] Move aliases from Makefile to Justfile, that are not in Justfile. Remove Makefile, Justfile should be primary file for aliases. 
+- [ ] Check deadcode package implementation for correctness. It should be able to detect unused python code for modern python versions (3.11+) and various Python frameworks.
 
 # Vision
 - [ ] Generate various test cases, group them by similarity.
@@ -7,6 +8,7 @@
 - [ ] Use maturin, Ruff version for implementation.
 
 # Done
+- [x] [T20] Use `uv add` instead of uv pip (add requirements*.txt) in Makefile and Justfile. Add uv lock command to the Makefile and Justfile.
 - [x] [T18] Generate unused code test cases for Django framework. And ensure that deadcode is capable to handle it.
 - [x] [T17] Generate unused code SQLAlchemy + Alembic. And ensure that deadcode is capable to handle it.
 - [x] [T16] Generate unused code test cases for FastAPI framework. And ensure that deadcode is capable to handle it.

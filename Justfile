@@ -1,11 +1,12 @@
 lifecycle:
-  @uv pip sync requirements-dev.txt
-  @uv pip install -e .[test]
+  @uv add --requirements requirements-dev.txt
   @count=0; while uv run lifecycle --max-tasks 1 --prior-tasks "$count"; do count=$((count + 1)); done
 
 sync:
-  @uv pip sync requirements-dev.txt
-  @uv pip install -e .[test]
+  @uv add --requirements requirements-dev.txt
+
+lock:
+  uv lock
 
 test *args: sync
   uv run pytest -n "$(nproc --ignore=1)" {{args}}

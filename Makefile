@@ -1,4 +1,4 @@
-.PHONY: compile publish check fix lint fixlint format mypy deadcode audit test
+.PHONY: compile publish check fix lint fixlint format mypy deadcode audit test lock
 
 PYTHON_VERSION ?= 3.11
 
@@ -8,8 +8,7 @@ fix: format fixlint
 .venv:
 	pip install uv
 	uv venv -p $(PYTHON_VERSION) .venv
-	uv pip sync requirements-dev.txt
-	uv pip install -e .[test]
+	uv add --requirements requirements-dev.txt
 
 
 publish: .venv
@@ -43,8 +42,10 @@ audit: .venv
 	.venv/bin/pip-audit
 
 sync: .venv
-	uv pip sync requirements-dev.txt
-	uv pip install -e .[test]
+	uv add --requirements requirements-dev.txt
+
+lock:
+	uv lock
 
 compile:
 	uv pip compile -U -q --python 3.11 --no-strip-markers pyproject.toml -o requirements.txt

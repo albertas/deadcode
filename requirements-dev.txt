@@ -40,7 +40,7 @@ click==8.4.1
     #   hatch
     #   userpath
     #   uvicorn
-coverage==7.14.1
+coverage==7.14.2
     # via pytest-cov
 cryptography==49.0.0
     # via
@@ -131,6 +131,8 @@ mypy==2.1.0
     # via deadcode (pyproject.toml)
 mypy-extensions==1.1.0
     # via mypy
+networkx==3.6.1
+    # via vupi
 packageurl-python==0.17.6
     # via cyclonedx-python-lib
 packaging==26.2
@@ -178,7 +180,7 @@ pydantic==2.13.4
     #   vupi
 pydantic-core==2.46.4
     # via pydantic
-pydantic-settings==2.14.1
+pydantic-settings==2.14.2
     # via mcp
 pygments==2.20.0
     # via
@@ -279,13 +281,13 @@ urllib3==2.7.0
     # via requests
 userpath==1.9.2
     # via hatch
-uv==0.11.22
+uv==0.11.23
     # via hatch
 uvicorn==0.49.0 ; sys_platform != 'emscripten'
     # via mcp
 virtualenv==21.5.1
     # via hatch
-vupi==0.0.10
+vupi==0.0.11
     # via deadcode (pyproject.toml)
 zipp==4.1.0 ; python_full_version < '3.12'
     # via importlib-metadata

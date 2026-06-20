@@ -1,0 +1,16 @@
+simple_task: false
+phases:
+- name: 1_question
+  done: false
+- name: 2_research
+  done: false
+- name: 3_design
+  done: false
+- name: 4_structure
+  done: false
+- name: 5_plan
+  done: false
+- name: 6_document
+  done: false
+- name: 7_implement
+  done: false

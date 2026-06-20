@@ -146,7 +146,7 @@ To develop Deadcode, clone the repository and use Just to manage the development
 just sync
 ```
 
-This syncs pinned development dependencies from `requirements-dev.txt` and installs Deadcode as an editable package with test extras.
+This installs the development dependencies from `requirements-dev.txt` into the project environment and ensures Deadcode is available for development.
 
 ### Running Checks
 
