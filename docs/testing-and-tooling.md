@@ -97,6 +97,113 @@ This allows:
 
 Tests for 3.11-safe constructs (`match`/`case`, walrus `:=`) have no version gate and run on all supported versions.
 
+### Audit Testing: Verifying Detection Correctness
+
+Audit tests verify correctness gaps and boundary behaviors in the detection logic. They encode the **correct/intended** expected behavior and use three patterns:
+
+**1. Confirmed Bugs via `@expectedFailure`**
+
+Tests that expose confirmed false negatives or false positives use `@unittest.expectedFailure`. This allows tests to assert the correct expected behavior (what *should* happen) while the implementation still produces the wrong result:
+
+```python
+@expectedFailure
+def test_unused_method_shadowed_by_unrelated_use_is_reported(self):
+    # Currently returns None (a false negative), but should report the method.
+    self.files = {'foo.py': """
+        class A:
+            def run(self): return 1
+        class B:
+            def run(self): return 2
+        A().run()
+        B()
+    """}
+    unused = main(['foo.py', '--no-color'])
+    self.assertEqual(unused, 'foo.py:7:4: DC04 Method `run` is never used')
+```
+
+When a fix lands, the assertion passes and pytest reports an "unexpected pass" — the regression guard that signals the bug is fixed. The test automatically converts to a guard without code changes.
+
+**2. By-Design Behavior via Green Tests**
+
+Tests for intentionally disabled or limited features (e.g., parameter tracking disabled, conservative heuristic boundaries) are green characterization tests with no `@expectedFailure`:
+
+```python
+def test_unused_parameter_is_not_reported(self):
+    # By-design: visit_arg is commented out, so parameters never tracked.
+    self.files = {'foo.py': """
+        def f(unused_param):
+            x = 1
+            return 0
+        f(2)
+    """}
+    unused = main(['foo.py', '--no-color'])
+    # Only the unused local x is reported, not the parameter.
+    self.assertEqual(unused, 'foo.py:2:4: DC01 Variable `x` is never used')
+```
+
+These pin current behavior as intentional; audits later can reclassify as bugs if requirements change.
+
+**3. Vacuous-Pass Guard: Control Tests**
+
+Every "None / not reported" audit assertion is paired with a **control** — a similar fixture that *should* be reported, proving the visitor actually ran:
+
+```python
+def test_distinctly_named_unused_method_is_reported(self):
+    # Control: a uniquely-named unused method IS reported, proving
+    # the visitor ran and the F1 gap is specific to name collisions.
+    self.files = {'foo.py': """
+        class A:
+            def run(self): return 1
+        class B:
+            def distinctly_unused(self): return 2
+        A().run()
+        B()
+    """}
+    unused = main(['foo.py', '--no-color'])
+    self.assertEqual(unused, 'foo.py:7:4: DC04 Method `distinctly_unused` is never used')
+```
+
+Without the control, a `None` assertion might pass for the wrong reason (e.g., the entire visitor is broken). The control proves the mechanism is running.
+
+**4. Version-Gating for Version-Dependent Bugs**
+
+Bugs tied to version-dependent syntax (e.g., `match` captures in 3.10+, PEP 695 type params in 3.12+) use `@skipUnless`:
+
+```python
+@skipUnless(sys.version_info >= (3, 10), 'match statements require 3.10+')
+class MatchCaptureUnusedTests(BaseTestCase):
+    @expectedFailure
+    def test_unused_match_capture_is_reported(self):
+        # Python 3.10+: captures bind via str attrs, not Name nodes.
+        self.files = {'foo.py': """
+            match command:
+                case [a]:
+                    return 0
+            handle([1])
+        """}
+        unused = main(['foo.py', '--no-color'])
+        self.assertEqual(unused, 'foo.py:3:14: DC01 Variable `a` is never used')
+```
+
+On hosts below the gate, tests **skip** (not fail), keeping the test suite green on the minimum supported Python version.
+
+**Running Audit Tests**
+
+Audit tests run as part of the standard `just test` command. To run only audit tests:
+
+```bash
+# Run a single audit test file
+uv run pytest tests/test_scope_blind_matching.py -q
+
+# Run all audit test files (by convention, top-level test_*.py files in tests/)
+uv run pytest tests/test_*.py -q
+
+# Run with verbose xfail output to see expected failures
+uv run pytest tests/ -q -rxX
+```
+
+The `-rxX` flag prints expected failures (`x`) and unexpected passes (`X`), useful for tracking which bugs have been fixed (unexpected passes flip the guard).
+
 ### Tests Outside BaseTestCase
 
 The suite uses three tiers: (1) mock-backed unit tests via `BaseTestCase` (no disk); (2) real-filesystem integration tests anchored to `REPO_ROOT`; (3) a hybrid that subclasses `BaseTestCase` but uses `tempfile.TemporaryDirectory()` to exercise the real `os.walk` (see Deterministic Testing below). Some tests deliberately bypass the mock layer entirely:

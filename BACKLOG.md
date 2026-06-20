@@ -1,12 +1,11 @@
 # ToDo
-- [ ] Check deadcode package implementation for correctness. It should be able to detect unused python code for modern python versions (3.11+) and various Python frameworks.
-
 # Vision
 - [ ] Generate various test cases, group them by similarity.
 - [ ] Check implementation for correctness. Generate test cases for incorrect behavior.
 - [ ] Use maturin, Ruff version for implementation.
 
 # Done
+- [x] [T22] Check deadcode package implementation for correctness. It should be able to detect unused python code for modern python versions (3.11+) and various Python frameworks.
 - [x] [T21] Move aliases from Makefile to Justfile, that are not in Justfile. Remove Makefile, Justfile should be primary file for aliases. 
 - [x] [T20] Use `uv add` instead of uv pip (add requirements*.txt) in Makefile and Justfile. Add uv lock command to the Makefile and Justfile.
 - [x] [T18] Generate unused code test cases for Django framework. And ensure that deadcode is capable to handle it.

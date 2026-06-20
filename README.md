@@ -240,7 +240,12 @@ The test suite includes dedicated coverage for Python 3.11+ and 3.12+ syntax fea
 - **3.11-safe tests** (`test_match_statement.py`, `test_walrus.py`) run on all supported versions
 - **3.12+ tests** (`test_type_alias.py`, `test_pep695_generics.py`) are version-gated via `@skipUnless` and only run on 3.12+
 
-See [Development Documentation](docs/overview.md) for full testing details.
+The suite also includes audit tests that verify detection correctness and pin known gaps:
+- **Confirmed-bug tests** use `@unittest.expectedFailure` to assert correct behavior while the implementation still produces the wrong result; when a fix lands, these tests flip to guards (unexpected passes)
+- **By-design characterization tests** (green, no `@expectedFailure`) pin current behavior for intentionally limited features
+- **Control tests** accompany each "not reported" assertion to prove the visitor actually ran, preventing vacuous passes
+
+See [Development Documentation](docs/overview.md) for full testing details and the audit testing pattern.
 
 ## Contributing
 

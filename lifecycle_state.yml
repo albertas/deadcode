@@ -1,5 +1,5 @@
 code_quality_is_good: true
-heart_beat: 2026-06-20 19:49:42
+heart_beat: 2026-06-20 20:35:07
 # [~] = conditional / out-of-sequence phase (event-driven, not a linear 1..9 step).
 phases:
   - [x] 1_question
@@ -16,5 +16,5 @@ phases:
       in:  review_findings.yml (from 8_review)
       out: code edits; flips review_findings.yml resolved:true (no artifact-dir file)
 lifecycles_in_progress:
-  - artifact_dir: T21-2026-06-20-move-aliases-from-makefile-to-justfile-that-are-no
-    heart_beat: 2026-06-20 19:49:42
+  - artifact_dir: T22-2026-06-20-check-deadcode-package-implementation-for-correctn
+    heart_beat: 2026-06-20 20:35:07
