@@ -281,13 +281,6 @@ class FindUnusedCodeVisitor(ast.NodeVisitor):
         expression_node: ast.AST | None = None,
     ) -> None:
 
-        # TODO: add support for ignore_definitions, ignore_definitions_if_inherits_from options
-        self._log(
-            f'Options ignore_definitions, ignore_definitions_if_inherits_from not implemented yet. '
-            f'Got these values: ignore_definitions={self.args.ignore_definitions}, '
-            f'ignore_definitions_if_inherits_from={self.args.ignore_definitions_if_inherits_from}'
-        )
-
         def ignored(lineno: int, type_: UnusedCodeType) -> bool:
             return bool(
                 (ignore and ignore(self.filename, name))
@@ -524,14 +517,21 @@ class FindUnusedCodeVisitor(ast.NodeVisitor):
         for kwd_attr in node.kwd_attrs:
             self.add_used_name(kwd_attr)
 
-    def _apply_ignore_definitions(self, node_name: str | None, inherits_from: list[str] | None) -> bool:
-        """Activate should_ignore_new_definitions for name/inheritance matches.
+    def _apply_ignore_definitions(
+        self,
+        node_name: str | None,
+        inherits_from: list[str] | None,
+        decorators: list[str] | None,
+    ) -> bool:
+        """Activate should_ignore_new_definitions for name/inheritance/decorator matches.
 
         Returns True iff this call turned the flag on (i.e. the caller owns turning
         it back off in teardown).
         """
-        if (node_name and _match(node_name, self.args.ignore_definitions)) or (
-            inherits_from and _match_many(inherits_from, self.args.ignore_definitions_if_inherits_from)
+        if (
+            (node_name and _match(node_name, self.args.ignore_definitions))
+            or (inherits_from and _match_many(inherits_from, self.args.ignore_definitions_if_inherits_from))
+            or (decorators and _match_many(decorators, self.args.ignore_definitions_if_decorated_with))
         ):
             if not self.should_ignore_new_definitions:
                 self.should_ignore_new_definitions = True
@@ -598,7 +598,9 @@ class FindUnusedCodeVisitor(ast.NodeVisitor):
         if inherits_from:
             node.inherits_from = inherits_from  # type: ignore
 
-        should_turn_off_ignore_new_definitions = self._apply_ignore_definitions(node_name, inherits_from)
+        decorators = [utils.get_decorator_name(decorator) for decorator in getattr(node, 'decorator_list', [])] or None
+
+        should_turn_off_ignore_new_definitions = self._apply_ignore_definitions(node_name, inherits_from, decorators)
 
         self._dispatch_pre_visit(node)
 

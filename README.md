@@ -51,6 +51,14 @@ ignore-names = ["BaseTestCase", "*Mixin"]
 ignore-names-in-files = ["migrations"]
 ```
 
+For FastAPI and Pydantic projects, suppress route handlers (matched by their decorators) and Pydantic models (matched by their base class):
+```
+[tool.deadcode]
+ignore-definitions-if-decorated-with = ["@app.*", "@router.*"]
+ignore-definitions-if-inherits-from = ["BaseModel"]
+```
+`app` and `router` are the conventional FastAPI instance names — rename the globs to match your own variables. TOML values are a list: each pattern is a separate list entry (they are not comma-split).
+
 ## Command line options
 
 | Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Meaning  |

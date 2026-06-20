@@ -23,7 +23,7 @@ For empty, non-dunder files, a `CodeItem(type_='unused_file')` is created (`visi
 `FindUnusedCodeVisitor` overrides the standard `visit()` method to insert custom logic before and after child traversal (`visitor/find_unused_code_visitor.py:506-587`):
 
 1. Attaches `node.inherits_from` via helper `get_inherits_from()`
-2. Checks `ignore_definitions` gate: if the node's name matches, sets `self.should_ignore_new_definitions = True` and proceeds (`:519-528`)
+2. Computes decorator names (if any) and checks `ignore_definitions` gate: if the node's name, inheritance, or decorators match patterns, sets `self.should_ignore_new_definitions = True` and proceeds (`:519-528`)
 3. Dispatches to `visit_<NodeType>()` for pre-children processing (e.g., `visit_ClassDef`, `visit_FunctionDef`)
 4. **Scope push** for `ClassDef`, `FunctionDef`, `AsyncFunctionDef` (`:540-541`)
 5. Checks `ignore_bodies_if_inherits_from` gate after scope push for class bodies (`:547-550`)

@@ -8,8 +8,9 @@ The `tests/` directory mirrors the package structure, with test modules and subd
 
 ### Test Directories by Area
 
-- **`cli_args/`** — argument parsing and CLI option combinations (`test_parsing.py`, `test_ignore_names.py`, `test_exclude.py`, `test_ignore_names_in_files.py`, `test_no_color.py`, `test_dry.py`, `test_quiet.py`, `test_count.py`, etc.)
+- **`cli_args/`** — argument parsing and CLI option combinations (`test_parsing.py`, `test_ignore_names.py`, `test_exclude.py`, `test_ignore_names_in_files.py`, `test_no_color.py`, `test_dry.py`, `test_quiet.py`, `test_count.py`, `test_ignore_definitions_if_decorated_with.py`, etc.)
 - **`fix/`** — fix/removal behavior by code construct (`test_assign.py`, `test_class_def.py`, `test_empty_files.py`, `test_method_def.py`, `test_scope.py`, `test_unreachable_code.py`, `test_unused_imports_in_a_multiple_files.py`, `test_unused_imports_in_a_single_file.py`)
+- **`frameworks/`** — framework-specific scenario tests (`test_fastapi.py`, etc.) demonstrating Deadcode with FastAPI, Pydantic, and other framework patterns
 - **`actions/`** — pipeline stages (`test_find_python_filenames.py`, `test_merge_overlaping_file_parts.py`, `test_remove_file_parts_from_content.py`, etc.)
 - **`noqa/`** — noqa comment handling (`test_noqa_comments.py`)
 - **`nested_scope/`** — scope tracking and nesting
@@ -41,7 +42,7 @@ The `tests/` directory mirrors the package structure, with test modules and subd
 - **Classes**: two forms — the dominant `Test<DescriptiveName>` (e.g. `TestAssignmentExpressionRemoval`) and a minority `<DescriptiveName>Tests` (e.g. `CommandLineArgParsingTests`, `DeadCodeIntegrationTests`).
 - **Methods**: uniformly `test_<behavior_in_snake_case>` (e.g. `test_unused_variable_name_found_successfully`).
 - **Runner style**: the suite is entirely `unittest`-style classes — no plain pytest functions and **no `conftest.py`** anywhere under `tests/`.
-- **`__init__.py`**: present only in `tests/cli_args/` and `tests/utils/` (both empty); other subdirs have none. (`tests/files/subdir/another_subdir/__init__.py` is a fixture, not a package marker.)
+- **`__init__.py`**: present in `tests/cli_args/`, `tests/utils/`, and `tests/frameworks/` (all empty); other subdirs have none. (`tests/files/subdir/another_subdir/__init__.py` is a fixture, not a package marker.)
 
 ## BaseTestCase Helper Class
 

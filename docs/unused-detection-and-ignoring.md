@@ -50,7 +50,6 @@ Independent of `args`, the visitor applies built-in ignore rules:
 
 The following configuration options are **currently inert / not consulted** in the code:
 
-- `ignore_definitions_if_decorated_with`
 - `ignore_bodies_if_decorated_with`
 - `ignore_if_decorated_with`
 - `ignore_names_if_decorated_with`
@@ -67,7 +66,7 @@ The full filtering pipeline is:
 
 1. **Visitor phase**: For each definition, the visitor checks if it matches `ignore_names` patterns → `add_used_name()` if matched
 2. **Visitor phase**: Checks if file matches `ignore_names_in_files` → all defs in file marked used
-3. **Visitor phase**: Checks inheritance-based gates in `visit()` dispatcher → definitions marked used if conditions met
+3. **Visitor phase**: Checks inheritance- and decorator-based gates in `visit()` dispatcher → definitions marked used if conditions met
 4. **Visitor phase**: Applies built-in predicates (test classes, test functions, special variables, `__all__` exports) → `add_used_name()` if matched
 5. **Noqa phase**: Checks for `# noqa` comments on definition lines (supporting `#noqa`, `# noqa`, `#  noqa`, and specific codes like `# noqa: dc07` or `# noqa: DC07`) → `add_used_name()` if matched (`visitor/noqa.py` and `find_unused_code_visitor.py:299`)
 6. **Post-visitor**: `_get_unused_items()` compares all defined names against `used_names` → final unused set
@@ -91,5 +90,9 @@ Any item that reaches step 6 with its name not in `used_names` is reported as un
 **Scenario 4**: Method defined in a class inheriting from `django.db.models.Model`, `--ignore-definitions-if-inherits-from models.Model` set.
 - Step 3: Inheritance gate matches; method definitions inside the class are marked used.
 - Step 6: All methods are in `used_names`, not reported.
+
+**Scenario 5**: Function decorated with `@app.get("/items")`, `--ignore-definitions-if-decorated-with=@app.*` set.
+- Step 3: Decorator gate matches `@app.get` against `@app.*`; the function definition (name and body) is marked used.
+- Step 6: Name is in `used_names`, item is not unused, not reported.
 
 See [Visitor layer](visitor-layer.md) for more details on how items are collected and ignored.
