@@ -276,6 +276,21 @@ def remote_tag_hash(code_root: Path, remote: str, tag: str) -> str:
     return peeled_hash or tag_hash
 
 
+def remote_branch_hash(code_root: Path, remote: str, branch: str) -> str:
+    completed = run_command(
+        ['git', 'ls-remote', remote, f'refs/heads/{branch}'],
+        code_root,
+        check=False,
+    )
+    if completed.returncode != 0:
+        return ''
+    for line in completed.stdout.splitlines():
+        parts = line.split()
+        if len(parts) >= 2 and parts[1] == f'refs/heads/{branch}':
+            return parts[0]
+    return ''
+
+
 def version_on_pypi(project_name: str, version: str) -> bool:
     """Return whether a version is on PyPI, retrying transient failures."""
 
@@ -487,6 +502,9 @@ def create_and_push_tag(options: ReleaseOptions, tag: str) -> None:
         options.code_root,
         dry_run=options.dry_run,
     )
+    pushed_hash = remote_tag_hash(options.code_root, options.remote, tag)
+    if pushed_hash != local_tag_hash:
+        raise ReleaseError(f'remote tag {tag} is {pushed_hash or "missing"}, local tag is ' f'{local_tag_hash}')
 
 
 def push_branch(options: ReleaseOptions) -> None:
@@ -496,6 +514,15 @@ def push_branch(options: ReleaseOptions) -> None:
         options.code_root,
         dry_run=options.dry_run,
     )
+    if options.dry_run:
+        return
+    local_head = git_output(options.code_root, ['rev-parse', 'HEAD'])
+    remote_head = remote_branch_hash(options.code_root, options.remote, options.branch)
+    if remote_head != local_head:
+        raise ReleaseError(
+            f'remote branch {options.remote}/{options.branch} is '
+            f'{remote_head or "missing"}, local HEAD is {local_head}'
+        )
 
 
 def release(options: ReleaseOptions) -> int:
