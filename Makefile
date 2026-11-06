@@ -1,4 +1,4 @@
-.PHONY: compile publish check fix lint fixlint format mypy deadcode audit test pre-commit hook-test
+.PHONY: compile publish check fix lint fixlint format mypy deadcode audit test pre-commit hook-test github-cli github-cli-verify
 
 check: test lint mypy deadcode
 fix: format fixlint
@@ -48,6 +48,13 @@ audit: .venv
 sync: .venv
 	uv pip sync requirements-dev.txt
 	uv pip install -e .[test]
+
+github-cli:
+	python3 install_github_cli/install_github_cli.py install
+	python3 install_github_cli/install_github_cli.py authenticate
+
+github-cli-verify:
+	python3 install_github_cli/install_github_cli.py verify $(if $(SMOKE),--smoke-pull-request)
 
 compile:
 	uv pip compile -U -q pyproject.toml -o requirements.txt
