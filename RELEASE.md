@@ -10,6 +10,19 @@ make publish
 repository. It bumps the version, runs the checks, builds the distributions,
 publishes to PyPI, creates a version tag, and pushes the branch and the tag.
 
+## Branches and pull requests
+
+Features are developed on `task/<task_id>` feature branches and merged into
+`main` through pull requests; humans review those PRs. `make publish` refuses
+to run on any branch other than `main`, so a release happens only after the
+feature PR is merged. Do not publish from a feature branch, and do not tag a
+feature branch.
+
+The task worker creates the feature branch, opens the PR with `gh pr create`,
+and leaves the task `awaiting_review`; rerun `make do` after the human merges
+the PR. The release itself is a maintainer action on `main`: it commits the
+version bump and release notes, pushes `main`, and pushes the version tag.
+
 ## 1. Write the release notes
 
 Add an entry for the version you are about to release under

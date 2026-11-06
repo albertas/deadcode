@@ -66,11 +66,19 @@ repos:
 The `rev` is the release tag, so it matches the version published on PyPI. To
 run the same hook while developing deadcode itself, use `make pre-commit`.
 
+## Contributing
+
+Create a feature branch from `main`, open a pull request targeting `main`, and
+wait for review. Do not commit directly to `main`. The mind task worker used
+by the maintainer automates the feature branch and PR creation; human review
+still decides when the change lands.
+
 ## Releasing
 
 Releases are one restartable command: `make publish`. Add the target version's
-entry under `## Release notes` first. See [RELEASE.md](RELEASE.md) for the
-version bump options, PyPI credentials, and resume/rollback steps.
+entry under `## Release notes` first. Release only from `main`, after the
+feature pull request has been reviewed and merged. See [RELEASE.md](RELEASE.md)
+for the version bump options, PyPI credentials, and resume/rollback steps.
 
 ## Command line options
 

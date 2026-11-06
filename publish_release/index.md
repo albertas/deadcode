@@ -39,6 +39,10 @@ make publish BUMP=major
 make publish VERSION=3.0.0
 ```
 
+Feature work lands on `task/<task_id>` branches and is merged to `main` via
+pull requests. Release only from `main` after the feature PR is merged; the
+script refuses any other branch unless `--allow-branch` is passed.
+
 Before running, add the release notes to `README.md`:
 
 ```markdown
