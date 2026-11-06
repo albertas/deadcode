@@ -70,9 +70,7 @@ run the same hook while developing deadcode itself, use `make pre-commit`.
 
 Create a feature branch from `main`, open a pull request targeting `main`, and
 wait for review. Do not commit feature changes directly to `main`; release
-commits are made by the maintainer on `main`. The mind task worker used by the
-maintainer automates the feature branch and PR creation; human review still
-decides when the change lands.
+commits are made by the maintainer on `main`.
 
 ## Releasing
 
