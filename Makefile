@@ -3,6 +3,8 @@
 check: test lint mypy deadcode
 fix: format fixlint
 
+PUBLISH_ARGUMENTS := $(if $(BUMP),--bump $(BUMP)) $(if $(VERSION),--version $(VERSION))
+
 .venv:
 	@command -v uv >/dev/null || pip install uv
 	uv venv -p 3.10 .venv
@@ -10,9 +12,7 @@ fix: format fixlint
 	uv pip install -e .[test]
 
 publish: .venv
-	.venv/bin/python publish_release/publish_release.py \
-		$(if $(BUMP),--bump $(BUMP)) \
-		$(if $(VERSION),--version $(VERSION))
+	.venv/bin/python publish_release/publish_release.py $(PUBLISH_ARGUMENTS)
 
 test: .venv
 	.venv/bin/pytest -vv $(PYTEST_ME_PLEASE)
