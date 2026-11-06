@@ -20,8 +20,10 @@ feature branch.
 
 The task worker creates the feature branch, opens the PR with `gh pr create`,
 and leaves the task `awaiting_review`; rerun `make do` after the human merges
-the PR. The release itself is a maintainer action on `main`: it commits the
-version bump and release notes, pushes `main`, and pushes the version tag.
+the PR. Before releasing, switch to `main` and pull the merged PR:
+`git switch main && git pull --ff-only`. The release itself is a maintainer
+action on `main`: it commits the version bump and release notes, pushes
+`main`, and pushes the version tag.
 
 ## 1. Write the release notes
 
