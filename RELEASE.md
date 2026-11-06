@@ -25,6 +25,9 @@ Add an entry for the version you are about to release under
 The release script refuses to continue when the target version has no entry.
 This keeps the README's release notes and the PyPI release in sync.
 
+Also update the `rev:` value in the README's pre-commit example to the new
+version, so consumers pin the tag this release creates.
+
 ## 2. Choose the version
 
 `make publish` defaults to a patch bump. Use:

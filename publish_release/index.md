@@ -14,7 +14,8 @@ package repository (or in `deadcode_py/`, which delegates) invokes it.
    - the current version when a previous release run stopped early.
 4. **Requires release notes for the target version in `README.md`** under
    `## Release notes`, as a line like `- vX.Y.Z:`. If the entry is missing,
-   the release stops before changing anything.
+   the release stops before changing anything. Update the pre-commit `rev:` in
+   the README to the same version in the same edit.
 5. Allows only `pyproject.toml` and `README.md` to be dirty, writes the version
    bump, and commits both as `Bump version to X.Y.Z` (or
    `Add release notes for X.Y.Z` when only the notes changed).
