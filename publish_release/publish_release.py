@@ -404,9 +404,7 @@ def hatch_executable(code_root: Path) -> str:
 def build_distributions(options: ReleaseOptions) -> None:
     distribution_directory = options.code_root / 'dist'
     if distribution_directory.exists() and not options.dry_run:
-        for child in distribution_directory.iterdir():
-            if child.is_file():
-                child.unlink()
+        shutil.rmtree(distribution_directory)
     print('building distributions')
     run_command(
         [hatch_executable(options.code_root), 'build'],
