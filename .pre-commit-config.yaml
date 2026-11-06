@@ -1,0 +1,21 @@
+# Local development hooks. The hook published for consumers is defined in
+# .pre-commit-hooks.yaml; this file is only for working on deadcode itself.
+repos:
+  - repo: local
+    hooks:
+      - id: deadcode
+        name: deadcode
+        entry: .venv/bin/deadcode
+        language: system
+        types: [python]
+        require_serial: true
+      - id: ruff-check
+        name: ruff check
+        entry: .venv/bin/ruff check
+        language: system
+        types: [python]
+      - id: ruff-format
+        name: ruff format
+        entry: .venv/bin/ruff format
+        language: system
+        types: [python]

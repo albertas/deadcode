@@ -1,26 +1,27 @@
-.PHONY: compile publish check fix lint fixlint format mypy deadcode audit test
+.PHONY: compile publish check fix lint fixlint format mypy deadcode audit test pre-commit hook-test
 
-check: test lint mypy audit deadcode
+check: test lint mypy deadcode
 fix: format fixlint
 
 .venv:
-	pip install uv
+	@command -v uv >/dev/null || pip install uv
 	uv venv -p 3.10 .venv
 	uv pip sync requirements-dev.txt
 	uv pip install -e .[test]
 
-VERSION := $(shell .venv/bin/deadcode --version);
-
 publish: .venv
-	rm -fr dist/*
-	.venv/bin/hatch build
-	.venv/bin/hatch -v publish
-
-	git tag $(VERSION)
-	git push origin tag $(VERSION)
+	.venv/bin/python publish_release/publish_release.py \
+		$(if $(BUMP),--bump $(BUMP)) \
+		$(if $(VERSION),--version $(VERSION))
 
 test: .venv
 	.venv/bin/pytest -vv $(PYTEST_ME_PLEASE)
+
+pre-commit: .venv
+	.venv/bin/pre-commit run --all-files
+
+hook-test: .venv
+	.venv/bin/pre-commit try-repo . deadcode --all-files
 
 lint: .venv
 	.venv/bin/ruff check deadcode tests

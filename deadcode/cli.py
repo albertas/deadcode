@@ -14,7 +14,6 @@ from deadcode.actions.get_unused_names_error_message import (
 def main(
     command_line_args: Optional[List[str]] = None,
 ) -> Optional[str]:
-
     if command_line_args and '--version' in command_line_args or '--version' in sys.argv:
         return __version__
 
