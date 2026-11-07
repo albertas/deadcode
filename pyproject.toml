@@ -50,7 +50,7 @@ disable = false
 
 [tool.hatch.build]
 include = ["**/*.py"]
-exclude = ["tests/**", "publish_release/**", "install_github_cli/**"]
+exclude = ["tests/**"]
 
 
 [tool.ruff]  # https://beta.ruff.rs/docs/settings/
@@ -155,20 +155,6 @@ ignore = [
     "D",
 ]
 "tests/fix/test_unused_imports.py" = ["F401", "W291"]
-"publish_release/*" = [
-    "EM101",
-    "EM102",
-    "S603",
-    "S310",
-    "TRY003",
-]
-"install_github_cli/*" = [
-    "EM101",
-    "EM102",
-    "S603",
-    "S310",
-    "TRY003",
-]
 
 [tool.mypy]
 exclude = ["build", "dist", ".venv"]
@@ -206,6 +192,3 @@ exclude = ["tests"]
 
 [tool.pytest.ini_options]
 addopts = "--cov=. --no-cov-on-fail --cov-fail-under=88.0"
-
-[tool.coverage.run]
-omit = ["publish_release/*", "install_github_cli/*"]

@@ -1,18 +1,13 @@
-.PHONY: compile publish check fix lint fixlint format mypy deadcode audit test pre-commit hook-test github-cli github-cli-verify
+.PHONY: compile check fix lint fixlint format mypy deadcode audit test pre-commit hook-test
 
 check: test lint mypy deadcode
 fix: format fixlint
-
-PUBLISH_ARGUMENTS := $(if $(BUMP),--bump $(BUMP)) $(if $(VERSION),--version $(VERSION))
 
 .venv:
 	@command -v uv >/dev/null || pip install uv
 	uv venv -p 3.10 .venv
 	uv pip sync requirements-dev.txt
 	uv pip install -e .[test]
-
-publish: .venv
-	.venv/bin/python publish_release/publish_release.py $(PUBLISH_ARGUMENTS)
 
 test: .venv
 	.venv/bin/pytest -vv $(PYTEST_ME_PLEASE)
@@ -48,13 +43,6 @@ audit: .venv
 sync: .venv
 	uv pip sync requirements-dev.txt
 	uv pip install -e .[test]
-
-github-cli:
-	python3 install_github_cli/install_github_cli.py install
-	python3 install_github_cli/install_github_cli.py authenticate
-
-github-cli-verify:
-	python3 install_github_cli/install_github_cli.py verify $(if $(SMOKE),--smoke-pull-request)
 
 compile:
 	uv pip compile -U -q pyproject.toml -o requirements.txt

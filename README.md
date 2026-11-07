@@ -74,10 +74,12 @@ commits are made by the maintainer on `main`.
 
 ## Releasing
 
-Releases are one restartable command: `make publish`. Add the target version's
-entry under `## Release notes` first. Release only from `main`, after the
-feature pull request has been reviewed and merged. See [RELEASE.md](RELEASE.md)
-for the version bump options, PyPI credentials, and resume/rollback steps.
+Releases are one restartable command: `make publish` from the maintainer
+project directory that contains this repository's checkout. Add the target
+version's entry under `## Release notes` first. Release only from `main`, after
+the feature pull request has been reviewed and merged. The release guide
+(version bump options, PyPI credentials, and resume/rollback steps) lives
+outside this repository, in the maintainer project's `RELEASE.md`.
 
 ## Command line options
 
