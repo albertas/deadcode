@@ -171,6 +171,11 @@ build abstract syntax tree for name usage detection.
 It is assumed that `deadcode` will be run using the same or higher Python version as the
 code base is implemented in.
 
+Wildcard imports are resolved by module basename, without package paths, so modules with the same basename are treated as one.
+`__all__` is honoured only when it is a statically readable module-level list or tuple of strings; modules with unknown exports
+(dynamic `__all__`, unreadable or unparsable files, or modules outside the analysed file set) are not restricted. Without `__all__`,
+the public module-level names are exported.
+
 ## Feature requests
 - [x] Replace `.*` with only `*` in regexp matching.
 - [x] Add unused class method detection DC04 check.
@@ -224,6 +229,9 @@ code base is implemented in.
         - Do not crash when the terminal cannot encode the success message.
         - Exit with code 1 when unused code is found, so CI jobs and pre-commit hooks can fail.
         - Honor `# noqa` comments on the definition line of decorated functions, methods and classes.
+        - Wildcard imports now honour a module `__all__` list or tuple, so excluded names are reported as unused.
+        - Wildcard imports stay unrestricted when `__all__` is dynamic or unknown, and explicit imports keep working.
+        - Without `__all__`, wildcard imports expose public module-level names, and the README documents the limits.
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
