@@ -1,4 +1,4 @@
-.PHONY: compile check fix lint fixlint format mypy deadcode audit test pre-commit hook-test
+.PHONY: compile publish check fix lint fixlint format mypy deadcode audit test pre-commit hook-test
 
 check: test lint mypy deadcode
 fix: format fixlint
@@ -8,6 +8,9 @@ fix: format fixlint
 	uv venv -p 3.10 .venv
 	uv pip sync requirements-dev.txt
 	uv pip install -e .[test]
+
+publish: .venv
+	.venv/bin/hatch publish
 
 test: .venv
 	.venv/bin/pytest -vv $(PYTEST_ME_PLEASE)
