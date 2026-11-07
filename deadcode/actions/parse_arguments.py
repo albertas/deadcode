@@ -1,5 +1,5 @@
 import argparse
-from typing import Any
+from typing import Any, Dict, List, Optional
 import sys
 import os
 
@@ -12,7 +12,7 @@ from deadcode.data_types import Args
 from deadcode.utils.flatten_lists import flatten_lists_of_comma_separated_values
 
 
-def parse_arguments(args: list[str] | None) -> Args:
+def parse_arguments(args: Optional[List[str]]) -> Args:
     """Parses arguments (execution options) for deadcode tool.
 
     Arguments for DeadCode can be provided via:
@@ -219,7 +219,7 @@ def parse_arguments(args: list[str] | None) -> Args:
     return Args(**parsed_args)
 
 
-def parse_pyproject_toml() -> dict[str, Any]:
+def parse_pyproject_toml() -> Dict[str, Any]:
     """Parse a pyproject toml file, pulling out relevant parts for Black.
 
     If parsing fails, will raise a tomllib.TOMLDecodeError.
@@ -232,6 +232,6 @@ def parse_pyproject_toml() -> dict[str, Any]:
     with open(pyproject_toml_filename, 'rb') as f:
         pyproject_toml = tomllib.load(f)
 
-    config: dict[str, Any] = pyproject_toml.get('tool', {}).get('deadcode', {})
+    config: Dict[str, Any] = pyproject_toml.get('tool', {}).get('deadcode', {})
     config = {k.replace('--', '').replace('-', '_'): v for k, v in config.items()}
     return config

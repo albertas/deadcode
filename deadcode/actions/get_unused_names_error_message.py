@@ -1,11 +1,11 @@
-from collections.abc import Iterable
+from typing import Iterable, Optional
 
 from deadcode.data_types import Args
 from deadcode.visitor.code_item import CodeItem
 from deadcode.visitor.ignore import _match
 
 
-def get_unused_names_error_message(unused_names: Iterable[CodeItem], args: Args) -> str | None:
+def get_unused_names_error_message(unused_names: Iterable[CodeItem], args: Args) -> Optional[str]:
     unused_names = list(unused_names)
 
     if not unused_names:

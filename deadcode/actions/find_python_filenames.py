@@ -1,4 +1,5 @@
 from logging import getLogger
+from typing import List
 from pathlib import Path
 
 from deadcode.data_types import Args
@@ -7,9 +8,9 @@ from deadcode.visitor.ignore import _match
 logger = getLogger()
 
 
-def find_python_filenames(args: Args) -> list[str]:
+def find_python_filenames(args: Args) -> List[str]:
     filenames = []
-    paths: list[str] = list(args.paths)
+    paths: List[str] = list(args.paths)
     while paths:
         path = Path(paths.pop())
 

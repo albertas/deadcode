@@ -1,8 +1,7 @@
 import ast
 
 from dataclasses import dataclass
-from typing import NamedTuple
-from collections.abc import Iterable
+from typing import Iterable, NamedTuple
 
 
 AbstractSyntaxTree = ast.Module  # Should be module instead of ast
