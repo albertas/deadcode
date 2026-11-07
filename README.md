@@ -189,8 +189,11 @@ code base is implemented in.
 
 ## Release notes
 - v2.4.1:
-    - Add `--version` option to show `deadcode` version.
-    - Use stdout for `deadcode` output.
+    - Features:
+        - Add `--version` option to show `deadcode` version.
+        - Add support for Python 3.13 and 3.14.
+    - Bugfixes:
+        - Use stdout for `deadcode` output.
 - v2.4.0:
     - Add `--only` option that accepts filenames only which will be reflected in the output and modified.
       This option can be used with `--fix` and `--fix --dry` options as well as for simple unused code detection without fixing.
