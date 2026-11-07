@@ -299,8 +299,7 @@ class WildcardImportPublicDefaultTests(BaseTestCase):
         }
         unused_names = main(['foo.py', 'bar.py', '--no-color'])
         assert unused_names == (
-            'foo.py:2:0: DC01 Variable `foo` is never used\n'
-            'foo.py:3:0: DC01 Variable `bar` is never used'
+            'foo.py:2:0: DC01 Variable `foo` is never used\n' 'foo.py:3:0: DC01 Variable `bar` is never used'
         )
 
     def test_names_not_defined_at_module_level_are_not_exported(self):
