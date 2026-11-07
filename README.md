@@ -221,9 +221,6 @@ code base is implemented in.
     - Features:
         - Add support for Python 3.13, 3.14 and 3.15.
         - Documentation is now published on Read the Docs at https://deadcode.readthedocs.io/.
-        - Package metadata and the README logo link to the published Read the Docs documentation.
-        - The Read the Docs configuration pins Python 3.12 and the Sphinx requirements for reproducible builds.
-        - The project's own deadcode check skips the documentation sources.
     - Bugfixes:
         - Do not crash when the terminal cannot encode the success message.
         - Exit with code 1 when unused code is found, so CI jobs and pre-commit hooks can fail.
