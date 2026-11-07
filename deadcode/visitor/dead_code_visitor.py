@@ -307,10 +307,10 @@ class DeadCodeVisitor(ast.NodeVisitor):
         "%(my_var)s" % locals()
         """
         if (
-                isinstance(node.left, ast.Constant)
-                and isinstance(node.left.value, str)
-                and isinstance(node.op, ast.Mod)
-                and self._is_locals_call(node.right)
+            isinstance(node.left, ast.Constant)
+            and isinstance(node.left.value, str)
+            and isinstance(node.op, ast.Mod)
+            and self._is_locals_call(node.right)
         ):
             self.used_names |= set(re.findall(r'%\((\w+)\)', node.left.value))
 
@@ -321,10 +321,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
             or (node.func.id == 'hasattr' and len(node.args) == 2)
         ):
             attr_name_arg = node.args[1]
-            if (
-                    isinstance(attr_name_arg, ast.Constant)
-                    and isinstance(attr_name_arg.value, str)
-            ):
+            if isinstance(attr_name_arg, ast.Constant) and isinstance(attr_name_arg.value, str):
                 self.add_used_name(attr_name_arg.value)
 
         # Parse variable names in new format strings:
