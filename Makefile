@@ -58,4 +58,4 @@ sync: .venv
 
 compile:
 	uv pip compile -U -q pyproject.toml -o requirements.txt
-	uv pip compile -U -q --all-extras pyproject.toml -o requirements-dev.txt
+	uv pip compile -U -q --universal --all-extras pyproject.toml -o requirements-dev.txt
