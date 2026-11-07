@@ -86,7 +86,18 @@ run the same hook while developing deadcode itself, use `make pre-commit`.
 |`--ignore-definitions-if-decorated-with`   | list | Ignores definition (including name and body) of an expression, which is decorated with any of the provided decorator names. |
 |`--no-color`                               | -    | Removes colors from the output. |
 |`--count`                                  | -    | Provides the count of the detected unused names instead of printing them all out. |
-|`--quiet`                                  | -    | Does not output anything. Makefile still fails with exit code 1 if unused names are found. |
+|`--quiet`                                  | -    | Does not output anything. The command exits with code 1 if unused names are found. |
+
+### Exit status
+
+- `0` — no dead code found.
+- `1` — dead code found (in any output mode).
+- `2` — invalid command line usage.
+- Unexpected errors print a Python traceback and exit `1`.
+
+The status is independent of `--quiet`, `--count`, `--only`, `--dry`, and `--fix`.
+A `--fix` run exits `1` on the run that found items and `0` on a subsequent run
+over the cleaned tree.
 
 
 ##### Glossory
@@ -198,10 +209,10 @@ code base is implemented in.
 ## Release notes
 - v2.5.1:
     - Features:
-        - Add support for Python 3.13 and 3.14.
-        - Add support for Python 3.15.
+        - Add support for Python 3.13, 3.14 and 3.15.
     - Bugfixes:
         - Do not crash when the terminal cannot encode the success message.
+        - Exit with code 1 when unused code is found, so CI jobs and pre-commit hooks can fail.
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
