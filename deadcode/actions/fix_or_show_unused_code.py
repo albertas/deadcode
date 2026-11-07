@@ -3,6 +3,7 @@ from difflib import diff_bytes, unified_diff
 from collections.abc import Iterable
 import os
 
+from deadcode.actions.get_unused_import_parts import get_unused_import_parts
 from deadcode.actions.merge_overlaping_file_parts import merge_overlaping_file_parts
 from deadcode.actions.remove_file_parts_from_content import remove_file_parts_from_content
 from deadcode.data_types import Args
@@ -28,12 +29,19 @@ def fix_or_show_unused_code(unused_items: Iterable[CodeItem], args: Args) -> str
     result = []
 
     for filename, file_unused_items in filename_to_unused_items.items():
-        file_parts = flatten_list([item.code_parts for item in file_unused_items])
+        import_items = [item for item in file_unused_items if item.type_ == 'import']
+        other_items = [item for item in file_unused_items if item.type_ != 'import']
 
-        unused_file_parts = merge_overlaping_file_parts(file_parts)
+        with open(filename, 'rb') as f:
+            file_content = f.read()
 
         with open(filename, 'rb') as f:
             file_content_lines = f.readlines()
+
+        import_parts = get_unused_import_parts(file_content, import_items) if import_items else []
+        file_parts = flatten_list([item.code_parts for item in other_items]) + import_parts
+
+        unused_file_parts = merge_overlaping_file_parts(file_parts)
 
         updated_file_content_lines = remove_file_parts_from_content(file_content_lines, unused_file_parts)
         updated_file_content = b''.join(updated_file_content_lines)
