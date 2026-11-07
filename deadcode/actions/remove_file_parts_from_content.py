@@ -43,6 +43,29 @@ def remove_comma_from_begining(line: bytes) -> bytes:
 
 def remove_file_parts_from_content(content_lines: list[bytes], unused_file_parts: list[Part]) -> list[bytes]:
     """ """
+    # Several parts on one physical line are applied line-locally, right to left,
+    # because the loop below consumes at most one part per line.
+    line_number_to_parts: dict[int, list[Part]] = {}
+    for part in unused_file_parts:
+        if part.line_start == part.line_end:
+            line_number_to_parts.setdefault(part.line_start, []).append(part)
+
+    parts_applied_line_locally: list[Part] = []
+    replaced_lines: dict[int, bytes] = {}
+    for line_number, line_parts in line_number_to_parts.items():
+        if len(line_parts) <= 1:
+            continue
+
+        line = content_lines[line_number - 1]
+        for part in sorted(line_parts, key=lambda part: part.col_start, reverse=True):
+            line = line[: part.col_start] + line[part.col_end :]
+        replaced_lines[line_number] = line
+        parts_applied_line_locally.extend(line_parts)
+
+    if replaced_lines:
+        unused_file_parts = [part for part in unused_file_parts if part not in parts_applied_line_locally]
+        content_lines = [replaced_lines.get(number, line) for number, line in enumerate(content_lines, start=1)]
+
     # How should move through the lines of content?
     updated_content_lines = []
 
