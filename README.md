@@ -1,4 +1,4 @@
-[![Deadcode Logo](https://raw.githubusercontent.com/albertas/deadcode/main/docs/_static/deadcode-logo-readme.png)](https://deadcode.readthedocs.io/en/stable/)
+[![Deadcode Logo](https://raw.githubusercontent.com/albertas/deadcode/main/docs/_static/deadcode-logo-readme.png)](https://deadcode.readthedocs.io/)
 
 <h2 align="center">Find and Fix Unused Python Code</h2>
 
@@ -225,6 +225,7 @@ the public module-level names are exported.
 - v2.5.1:
     - Features:
         - Add support for Python 3.13, 3.14 and 3.15.
+        - Documentation is now published on Read the Docs at https://deadcode.readthedocs.io/.
     - Bugfixes:
         - Fix `--fix` leaving invalid or partially removed imports when unused names are deleted from parenthesized or multi-line import statements.
         - Do not crash when the terminal cannot encode the success message.

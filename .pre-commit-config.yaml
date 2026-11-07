@@ -9,7 +9,7 @@ repos:
         language: system
         types: [python]
         require_serial: true
-        exclude: ^tests/
+        exclude: ^(tests/|docs/)
       - id: ruff-check
         name: ruff check
         entry: .venv/bin/ruff check
