@@ -41,7 +41,7 @@ deadcode = "deadcode.cli:print_main"
 
 [project.urls]
 homepage = "https://github.com/albertas/deadcode"
-documentation = "https://deadcode.readthedocs.io/"
+documentation = "https://github.com/albertas/deadcode#readme"
 
 [build-system]
 requires = ["hatchling"]
