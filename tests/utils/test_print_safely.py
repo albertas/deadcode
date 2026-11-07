@@ -38,9 +38,7 @@ class NonAsciiRefusingStream:
         try:
             text.encode('ascii')
         except UnicodeEncodeError as error:
-            raise UnicodeEncodeError(
-                ASCII_ENCODING, text, error.start, error.end, error.reason
-            ) from None
+            raise UnicodeEncodeError(ASCII_ENCODING, text, error.start, error.end, error.reason) from None
         self.written_text += text
         return len(text)
 

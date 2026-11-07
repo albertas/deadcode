@@ -36,9 +36,7 @@ class AsciiOnlyStringStream(io.StringIO):
         try:
             text.encode('ascii')
         except UnicodeEncodeError as error:
-            raise UnicodeEncodeError(
-                ASCII_ENCODING, text, error.start, error.end, error.reason
-            ) from None
+            raise UnicodeEncodeError(ASCII_ENCODING, text, error.start, error.end, error.reason) from None
         return super().write(text)
 
 
@@ -46,9 +44,11 @@ class CliOutputEncodingTests(TestCase):
     def test_main_finishes_when_stdout_cannot_encode(self):
         stream = Cp1252Stream()
 
-        with patch('sys.stdout', stream), patch(
-            'deadcode.cli.find_python_filenames', return_value=[]
-        ), patch('deadcode.cli.find_unused_names', return_value=[]):
+        with (
+            patch('sys.stdout', stream),
+            patch('deadcode.cli.find_python_filenames', return_value=[]),
+            patch('deadcode.cli.find_unused_names', return_value=[]),
+        ):
             result = main(['tests/files/variables.py', '--no-color'])
 
         self.assertIsNone(result)
@@ -57,9 +57,11 @@ class CliOutputEncodingTests(TestCase):
     def test_stringio_stdout_without_buffer_or_reconfigure(self):
         stream = AsciiOnlyStringStream()
 
-        with patch('sys.stdout', stream), patch(
-            'deadcode.cli.find_python_filenames', return_value=[]
-        ), patch('deadcode.cli.find_unused_names', return_value=[]):
+        with (
+            patch('sys.stdout', stream),
+            patch('deadcode.cli.find_python_filenames', return_value=[]),
+            patch('deadcode.cli.find_unused_names', return_value=[]),
+        ):
             result = main(['tests/files/variables.py', '--no-color'])
 
         self.assertIsNone(result)
