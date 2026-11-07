@@ -1,10 +1,10 @@
 import sys
-from typing import Optional, TypeVar
+from typing import TypeVar
 
 T = TypeVar('T')
 
 
-def fix_indent(doc: T) -> Optional[T]:
+def fix_indent(doc: T) -> T | None:
     """Finds indentation of a first line and removes it from all following lines.
 
     Implemented based on inspect.cleandoc by keeping trailing lines.
