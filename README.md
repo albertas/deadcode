@@ -223,6 +223,7 @@ code base is implemented in.
     - Bugfixes:
         - Do not crash when the terminal cannot encode the success message.
         - Exit with code 1 when unused code is found, so CI jobs and pre-commit hooks can fail.
+        - Honor `# noqa` comments on the definition line of decorated functions, methods and classes.
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
