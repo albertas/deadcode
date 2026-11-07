@@ -1,12 +1,12 @@
 import re
-from typing import List, Optional, TypeVar
+from typing import TypeVar
 
 from deadcode.data_types import Part
 
 T = TypeVar('T')
 
 
-def list_get(list_: List[T], index: int) -> Optional[T]:
+def list_get(list_: list[T], index: int) -> T | None:
     if len(list_) > index:
         return list_[index]
     return None
@@ -41,7 +41,7 @@ def remove_comma_from_begining(line: bytes) -> bytes:
     return line.lstrip()[1:].lstrip()
 
 
-def remove_file_parts_from_content(content_lines: List[bytes], unused_file_parts: List[Part]) -> List[bytes]:
+def remove_file_parts_from_content(content_lines: list[bytes], unused_file_parts: list[Part]) -> list[bytes]:
     """ """
     # How should move through the lines of content?
     updated_content_lines = []
@@ -53,8 +53,8 @@ def remove_file_parts_from_content(content_lines: List[bytes], unused_file_parts
     was_block_removed = False
     next_line_after_removed_block = None
     indentation_of_first_removed_line = b''
-    empty_lines_in_a_row_list: List[bytes] = []
-    empty_lines_before_removed_block_list: List[bytes] = []
+    empty_lines_in_a_row_list: list[bytes] = []
+    empty_lines_before_removed_block_list: list[bytes] = []
 
     for current_lineno, line in enumerate(content_lines, start=1):
         from_line, to_line, from_col, to_col = 0, 0, 0, 0

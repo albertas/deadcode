@@ -1,4 +1,4 @@
-from typing import List, NamedTuple, Optional
+from typing import NamedTuple
 import sys
 
 from deadcode import __version__
@@ -13,12 +13,12 @@ from deadcode.utils.print_safely import print_safely
 
 
 class RunResult(NamedTuple):
-    message: Optional[str]
+    message: str | None
     exit_status: int
 
 
 def run(
-    command_line_args: Optional[List[str]] = None,
+    command_line_args: list[str] | None = None,
 ) -> RunResult:
     if command_line_args and '--version' in command_line_args or '--version' in sys.argv:
         return RunResult(__version__, 0)
@@ -43,12 +43,12 @@ def run(
 
 
 def main(  # noqa: DC02
-    command_line_args: Optional[List[str]] = None,
-) -> Optional[str]:
+    command_line_args: list[str] | None = None,
+) -> str | None:
     return run(command_line_args).message
 
 
-def print_main(command_line_args: Optional[List[str]] = None) -> int:
+def print_main(command_line_args: list[str] | None = None) -> int:
     result = run(command_line_args)
     if result.message:
         print_safely(result.message)

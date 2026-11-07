@@ -1,4 +1,4 @@
-class UnusedClass(object):
+class UnusedClass:
     pass
 
 

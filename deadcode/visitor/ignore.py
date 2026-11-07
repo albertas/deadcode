@@ -1,7 +1,7 @@
 import ast
 from fnmatch import fnmatch, fnmatchcase
 from pathlib import Path
-from typing import Iterable, Set, Union
+from collections.abc import Iterable
 
 from deadcode.visitor.code_item import CodeItem
 
@@ -36,7 +36,7 @@ ERROR_CODES = {
 }
 
 
-def _get_unused_items(defined_items: Iterable[CodeItem], used_names: Set[str]) -> Iterable[CodeItem]:
+def _get_unused_items(defined_items: Iterable[CodeItem], used_names: set[str]) -> Iterable[CodeItem]:
     unused_items = [item for item in defined_items if item.name not in used_names]
     unused_items.sort(key=lambda item: item.name.lower())
     return unused_items
@@ -46,12 +46,12 @@ def _is_special_name(name: str) -> bool:
     return name.startswith('__') and name.endswith('__')
 
 
-def _match(name: Union[str, Path], patterns: Iterable[str], case: bool = True) -> bool:
+def _match(name: str | Path, patterns: Iterable[str], case: bool = True) -> bool:
     func = fnmatchcase if case else fnmatch
     return any(func(str(name), pattern) for pattern in patterns)
 
 
-def _match_many(names: Union[Iterable[str], Iterable[Path]], patterns: Iterable[str], case: bool = True) -> bool:
+def _match_many(names: Iterable[str] | Iterable[Path], patterns: Iterable[str], case: bool = True) -> bool:
     return any(_match(name, patterns, case) for name in names)
 
 

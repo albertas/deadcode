@@ -1,8 +1,7 @@
 import ast
-from typing import List, Optional, Union
 
 
-def _get_last_child_with_lineno(node: ast.AST) -> Optional[ast.AST]:
+def _get_last_child_with_lineno(node: ast.AST) -> ast.AST | None:
     """
     Return the last direct child of `node` that has a lineno attribute,
     or None if `node` has no such children.
@@ -26,7 +25,7 @@ def _get_last_child_with_lineno(node: ast.AST) -> Optional[ast.AST]:
             continue
 
         try:
-            last_field: Union[ast.AST, List[ast.AST]] = getattr(node, name)
+            last_field: ast.AST | list[ast.AST] = getattr(node, name)
         except AttributeError:
             continue
 
