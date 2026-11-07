@@ -1,6 +1,6 @@
 [project]
 name = "deadcode"
-version = "2.4.1"
+version = "2.5.0"
 authors = [
     {name = "Albertas Gimbutas", email = "albertasgim@gmail.com"},
 ]
@@ -30,8 +30,9 @@ test = [
     "mypy==1.10.1",
     "pip-audit",
     "deadcode",
-    "pytest",
-    "pytest-cov",
+    "pre-commit",
+    "pytest==9.0.3",
+    "pytest-cov==5.0.0",
 ]
 
 [project.scripts]
@@ -151,6 +152,7 @@ ignore = [
 "tests/*" = [
     "S101",  # allow assert and no docs in tests
     "PT009",
+    "PT027",
     "ANN201",
     "D",
 ]

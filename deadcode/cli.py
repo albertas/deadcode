@@ -9,12 +9,12 @@ from deadcode.actions.parse_arguments import parse_arguments
 from deadcode.actions.get_unused_names_error_message import (
     get_unused_names_error_message,
 )
+from deadcode.utils.print_safely import print_safely
 
 
 def main(
     command_line_args: Optional[List[str]] = None,
 ) -> Optional[str]:
-
     if command_line_args and '--version' in command_line_args or '--version' in sys.argv:
         return __version__
 
@@ -33,13 +33,13 @@ def main(
         return error_message + ('\n\n' + file_diff if file_diff else '')
 
     if not args.count and not args.quiet:
-        print('\033[1mWell done!\033[0m ✨ 🚀 ✨')
+        print_safely('\033[1mWell done!\033[0m ✨ 🚀 ✨')
     return None
 
 
 def print_main() -> None:
     if result := main():
-        print(result)
+        print_safely(result)
 
 
 if __name__ == '__main__':
