@@ -171,6 +171,11 @@ build abstract syntax tree for name usage detection.
 It is assumed that `deadcode` will be run using the same or higher Python version as the
 code base is implemented in.
 
+Wildcard imports are resolved by module basename, without package paths, so modules with the same basename are treated as one.
+`__all__` is honoured only when it is a statically readable module-level list or tuple of strings; modules with unknown exports
+(dynamic `__all__`, unreadable or unparsable files, or modules outside the analysed file set) are not restricted. Without `__all__`,
+the public module-level names are exported.
+
 ## Feature requests
 - [x] Replace `.*` with only `*` in regexp matching.
 - [x] Add unused class method detection DC04 check.
