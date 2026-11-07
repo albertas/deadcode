@@ -72,15 +72,6 @@ Create a feature branch from `main`, open a pull request targeting `main`, and
 wait for review. Do not commit feature changes directly to `main`; release
 commits are made by the maintainer on `main`.
 
-## Releasing
-
-Releases are one restartable command: `make publish` from the maintainer
-project directory that contains this repository's checkout. Add the target
-version's entry under `## Release notes` first. Release only from `main`, after
-the feature pull request has been reviewed and merged. The release guide
-(version bump options, PyPI credentials, and resume/rollback steps) lives
-outside this repository, in the maintainer project's `RELEASE.md`.
-
 ## Command line options
 
 | Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Meaning  |
