@@ -66,12 +66,6 @@ repos:
 The `rev` is the release tag, so it matches the version published on PyPI. To
 run the same hook while developing deadcode itself, use `make pre-commit`.
 
-## Contributing
-
-Create a feature branch from `main`, open a pull request targeting `main`, and
-wait for review. Do not commit feature changes directly to `main`; release
-commits are made by the maintainer on `main`.
-
 ## Command line options
 
 | Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Meaning  |
@@ -128,6 +122,11 @@ class Foo:  # noqa: DC03
 ```
 
 ## Contributing
+
+Create a feature branch from `main`, open a pull request targeting `main`, and
+wait for review. Do not commit feature changes directly to `main`; release
+commits are made by the maintainer on `main`.
+
 - `make check` - runs unit tests and other checks using virtual environment.
 
 ## Rationale
