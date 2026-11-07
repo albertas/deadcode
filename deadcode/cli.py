@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, NamedTuple, Optional
 import sys
 
 from deadcode import __version__
@@ -12,11 +12,16 @@ from deadcode.actions.get_unused_names_error_message import (
 from deadcode.utils.print_safely import print_safely
 
 
-def main(
+class RunResult(NamedTuple):
+    message: Optional[str]
+    exit_status: int
+
+
+def run(
     command_line_args: Optional[List[str]] = None,
-) -> Optional[str]:
+) -> RunResult:
     if command_line_args and '--version' in command_line_args or '--version' in sys.argv:
-        return __version__
+        return RunResult(__version__, 0)
 
     args = parse_arguments(command_line_args)
 
@@ -30,17 +35,25 @@ def main(
         file_diff = fix_or_show_unused_code(unused_names, args=args)
 
     if (error_message := get_unused_names_error_message(unused_names, args=args)) is not None:
-        return error_message + ('\n\n' + file_diff if file_diff else '')
+        return RunResult(error_message + ('\n\n' + file_diff if file_diff else ''), 1)
 
     if not args.count and not args.quiet:
         print_safely('\033[1mWell done!\033[0m ✨ 🚀 ✨')
-    return None
+    return RunResult(None, 0)
 
 
-def print_main() -> None:
-    if result := main():
-        print_safely(result)
+def main(  # noqa: DC02
+    command_line_args: Optional[List[str]] = None,
+) -> Optional[str]:
+    return run(command_line_args).message
+
+
+def print_main(command_line_args: Optional[List[str]] = None) -> int:
+    result = run(command_line_args)
+    if result.message:
+        print_safely(result.message)
+    return result.exit_status
 
 
 if __name__ == '__main__':
-    print_main()
+    sys.exit(print_main())
