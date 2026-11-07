@@ -306,8 +306,13 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
         "%(my_var)s" % locals()
         """
-        if isinstance(node.left, ast.Str) and isinstance(node.op, ast.Mod) and self._is_locals_call(node.right):
-            self.used_names |= set(re.findall(r'%\((\w+)\)', node.left.s))
+        if (
+            isinstance(node.left, ast.Constant)
+            and isinstance(node.left.value, str)
+            and isinstance(node.op, ast.Mod)
+            and self._is_locals_call(node.right)
+        ):
+            self.used_names |= set(re.findall(r'%\((\w+)\)', node.left.value))
 
     def visit_Call(self, node: ast.Call) -> None:
         # Count getattr/hasattr(x, "some_attr", ...) as usage of some_attr.
@@ -316,18 +321,19 @@ class DeadCodeVisitor(ast.NodeVisitor):
             or (node.func.id == 'hasattr' and len(node.args) == 2)
         ):
             attr_name_arg = node.args[1]
-            if isinstance(attr_name_arg, ast.Str):
-                self.add_used_name(attr_name_arg.s)
+            if isinstance(attr_name_arg, ast.Constant) and isinstance(attr_name_arg.value, str):
+                self.add_used_name(attr_name_arg.value)
 
         # Parse variable names in new format strings:
         # "{my_var}".format(**locals())
         if (
             isinstance(node.func, ast.Attribute)
-            and isinstance(node.func.value, ast.Str)
+            and isinstance(node.func.value, ast.Constant)
+            and isinstance(node.func.value.value, str)
             and node.func.attr == 'format'
             and any(kw.arg is None and self._is_locals_call(kw.value) for kw in node.keywords)
         ):
-            self._handle_new_format_string(node.func.value.s)
+            self._handle_new_format_string(node.func.value.value)
 
     def _handle_new_format_string(self, s: str) -> None:
         def is_identifier(name: str) -> bool:
@@ -427,8 +433,8 @@ class DeadCodeVisitor(ast.NodeVisitor):
         if _assigns_special_variable__all__(node):
             assert isinstance(node.value, (ast.List, ast.Tuple))
             for elt in node.value.elts:
-                if isinstance(elt, ast.Str):
-                    self.add_used_name(elt.s)
+                if isinstance(elt, ast.Constant) and isinstance(elt.value, str):
+                    self.add_used_name(elt.value)
 
     def visit_While(self, node: ast.While) -> None:
         self._handle_conditional_node(node, 'while')

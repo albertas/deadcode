@@ -3,9 +3,11 @@
 check: test lint mypy deadcode
 fix: format fixlint
 
+PYTHON_VERSION ?= 3.10
+
 .venv:
 	@command -v uv >/dev/null || pip install uv
-	uv venv -p 3.10 .venv
+	uv venv -p $(PYTHON_VERSION) .venv
 	uv pip sync requirements-dev.txt
 	uv pip install -e .[test]
 
