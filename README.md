@@ -226,8 +226,12 @@ the public module-level names are exported.
     - Features:
         - Add support for Python 3.13, 3.14 and 3.15.
     - Bugfixes:
+        - Fix `--fix` leaving invalid or partially removed imports when unused names are deleted from parenthesized or multi-line import statements.
         - Do not crash when the terminal cannot encode the success message.
         - Exit with code 1 when unused code is found, so CI jobs and pre-commit hooks can fail.
+        - Fix `deadcode --fix` removing the `f` from the `from` keyword in multi-line parenthesized imports (issue #5)
+        - Remove fully unused import statements, including multi-line parenthesized ones, without leaving broken syntax behind
+        - Remove only the unused names from partially used import statements while keeping the used names and their order
         - Honor `# noqa` comments on the definition line of decorated functions, methods and classes.
         - Wildcard imports now honour a module `__all__` list or tuple, so excluded names are reported as unused.
         - Wildcard imports stay unrestricted when `__all__` is dynamic or unknown, and explicit imports keep working.

@@ -1,3 +1,4 @@
+import ast
 from pathlib import Path
 from typing import Any
 from unittest import TestCase
@@ -5,6 +6,14 @@ from unittest.mock import MagicMock, patch
 
 from deadcode.utils.fix_indent import fix_indent
 from deadcode.data_types import Args
+
+
+def assert_valid_python(test_case: TestCase, content: bytes) -> None:
+    """Fail the test case when the given file content is not valid Python source."""
+    try:
+        ast.parse(content)
+    except SyntaxError as error:
+        test_case.fail(f'Fixed file is not valid Python: {error}')
 
 
 class BaseTestCase(TestCase):
@@ -71,10 +80,13 @@ class BaseTestCase(TestCase):
 
         # Check if non removed file contents match (both changed and unchanged)
         for filename, content in expected_files.items():
+            actual_content = self.updated_files.get(filename) or unchanged_files.get(filename) or ''
             self.assertEqual(
                 fix_indent(content),
-                fix_indent(self.updated_files.get(filename) or unchanged_files.get(filename) or ''),
+                fix_indent(actual_content),
             )
+            if filename in self.updated_files:
+                assert_valid_python(self, self.updated_files[filename])
 
     def assertUpdatedFiles(self, expected_updated_files: dict[str, bytes]) -> None:
         """Checks if updated files match expected updated files."""
@@ -86,3 +98,4 @@ class BaseTestCase(TestCase):
                 fix_indent(content),
                 self.updated_files[filename],
             )
+            assert_valid_python(self, self.updated_files[filename])
