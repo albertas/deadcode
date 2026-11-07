@@ -197,6 +197,8 @@ code base is implemented in.
 
 ## Release notes
 - v2.5.1:
+    - Features:
+        - Add support for Python 3.13 and 3.14.
     - Bugfixes:
         - Do not crash when the terminal cannot encode the success message.
 - v2.5.0 (2026-11-07):
