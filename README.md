@@ -211,6 +211,7 @@ code base is implemented in.
     - Features:
         - Add support for Python 3.13, 3.14 and 3.15.
     - Bugfixes:
+        - Fix `--fix` leaving invalid or partially removed imports when unused names are deleted from parenthesized or multi-line import statements.
         - Do not crash when the terminal cannot encode the success message.
         - Exit with code 1 when unused code is found, so CI jobs and pre-commit hooks can fail.
 - v2.5.0 (2026-11-07):

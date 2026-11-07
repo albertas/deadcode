@@ -8,6 +8,14 @@ from deadcode.utils.fix_indent import fix_indent
 from deadcode.data_types import Args
 
 
+def assert_valid_python(test_case: TestCase, content: bytes) -> None:
+    """Fail the test case when the given file content is not valid Python source."""
+    try:
+        ast.parse(content)
+    except SyntaxError as error:
+        test_case.fail(f'Fixed file is not valid Python: {error}')
+
+
 class BaseTestCase(TestCase):
     files: dict[str, bytes] = {}
 
@@ -78,7 +86,7 @@ class BaseTestCase(TestCase):
                 fix_indent(actual_content),
             )
             if filename in self.updated_files:
-                self.assertValidPython(self.updated_files[filename])
+                assert_valid_python(self, self.updated_files[filename])
 
     def assertUpdatedFiles(self, expected_updated_files: dict[str, bytes]) -> None:
         """Checks if updated files match expected updated files."""
@@ -90,11 +98,4 @@ class BaseTestCase(TestCase):
                 fix_indent(content),
                 self.updated_files[filename],
             )
-            self.assertValidPython(self.updated_files[filename])
-
-    def assertValidPython(self, content: bytes) -> None:
-        """Checks that the given file content is valid Python source."""
-        try:
-            ast.parse(content)
-        except SyntaxError as error:
-            self.fail(f'Fixed file is not valid Python: {error}')
+            assert_valid_python(self, self.updated_files[filename])
