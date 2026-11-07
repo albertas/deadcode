@@ -2,20 +2,9 @@
 Test unused import detection and removal.
 """
 
-import ast
-
-from unittest import TestCase
-
 from deadcode.cli import main
 from deadcode.utils.base_test_case import BaseTestCase
 from deadcode.utils.fix_indent import fix_indent
-
-
-def assert_valid_python(test_case: TestCase, content: bytes) -> None:
-    try:
-        ast.parse(content)
-    except SyntaxError as error:
-        test_case.fail(f'Fixed file is not valid Python: {error}')
 
 
 class TestAssignmentExpressionRemoval(BaseTestCase):
@@ -60,7 +49,6 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                     """
             }
         )
-        assert_valid_python(self, self.updated_files['file2.py'])
         self.assertIn(b'fn()', self.updated_files['file2.py'])
 
     def test_unused_single_line_from_import(self):
@@ -89,7 +77,6 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                     """
             }
         )
-        assert_valid_python(self, self.updated_files['file2.py'])
 
     def test_unused_import_of_several_names(self):
         self.files = {
@@ -118,7 +105,6 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                     """
             }
         )
-        assert_valid_python(self, self.updated_files['file2.py'])
 
     def test_unused_single_line_parenthesized_import(self):
         self.files = {
@@ -147,7 +133,6 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                     """
             }
         )
-        assert_valid_python(self, self.updated_files['file2.py'])
 
     def test_wildcard_import_is_kept(self):
         self.files = {
@@ -177,7 +162,6 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                     """
             }
         )
-        assert_valid_python(self, self.updated_files['file2.py'])
         self.assertIn(b'from file1 import *', self.updated_files['file2.py'])
 
     def test_partial_same_line_import_removal(self):
@@ -203,7 +187,6 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                     """
             }
         )
-        assert_valid_python(self, self.updated_files['file2.py'])
 
     def test_partial_import_removal_of_unused_names_between_a_used_name(self):
         self.files = {
@@ -229,7 +212,6 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                     """
             }
         )
-        assert_valid_python(self, self.updated_files['file2.py'])
 
     def test_partial_multi_line_parenthesized_import_removal(self):
         self.files = {
@@ -261,7 +243,6 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                     """
             }
         )
-        assert_valid_python(self, self.updated_files['file2.py'])
 
     def test_partial_as_alias_import_removal(self):
         self.files = {
@@ -286,7 +267,6 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                     """
             }
         )
-        assert_valid_python(self, self.updated_files['file2.py'])
 
     def test_partial_import_of_several_names(self):
         self.files = {
@@ -311,7 +291,6 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                     """
             }
         )
-        assert_valid_python(self, self.updated_files['file2.py'])
 
     def test_duplicate_import_with_one_protected_occurrence(self):
         self.files = {
@@ -335,7 +314,6 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                     """
             }
         )
-        assert_valid_python(self, self.updated_files['file2.py'])
 
     def test_partial_import_with_noqa_protected_alias(self):
         self.files = {
@@ -367,7 +345,6 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                     """
             }
         )
-        assert_valid_python(self, self.updated_files['file2.py'])
         self.assertIn(b'protected_func', self.updated_files['file2.py'])
 
     def test_unused_multi_line_parenthesized_import_block(self):
@@ -400,4 +377,3 @@ class TestAssignmentExpressionRemoval(BaseTestCase):
                     """
             }
         )
-        assert_valid_python(self, self.updated_files['file2.py'])

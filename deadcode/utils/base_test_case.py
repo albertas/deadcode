@@ -1,3 +1,4 @@
+import ast
 from pathlib import Path
 from typing import Any
 from unittest import TestCase
@@ -71,10 +72,13 @@ class BaseTestCase(TestCase):
 
         # Check if non removed file contents match (both changed and unchanged)
         for filename, content in expected_files.items():
+            actual_content = self.updated_files.get(filename) or unchanged_files.get(filename) or ''
             self.assertEqual(
                 fix_indent(content),
-                fix_indent(self.updated_files.get(filename) or unchanged_files.get(filename) or ''),
+                fix_indent(actual_content),
             )
+            if filename in self.updated_files:
+                self.assertValidPython(self.updated_files[filename])
 
     def assertUpdatedFiles(self, expected_updated_files: dict[str, bytes]) -> None:
         """Checks if updated files match expected updated files."""
@@ -86,3 +90,11 @@ class BaseTestCase(TestCase):
                 fix_indent(content),
                 self.updated_files[filename],
             )
+            self.assertValidPython(self.updated_files[filename])
+
+    def assertValidPython(self, content: bytes) -> None:
+        """Checks that the given file content is valid Python source."""
+        try:
+            ast.parse(content)
+        except SyntaxError as error:
+            self.fail(f'Fixed file is not valid Python: {error}')

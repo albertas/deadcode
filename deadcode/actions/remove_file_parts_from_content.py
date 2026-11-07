@@ -42,7 +42,11 @@ def remove_comma_from_begining(line: bytes) -> bytes:
 
 
 def remove_file_parts_from_content(content_lines: list[bytes], unused_file_parts: list[Part]) -> list[bytes]:
-    """ """
+    """Remove the given character ranges from the file content lines.
+
+    Parts on one physical line are applied right to left first, then the remaining
+    parts are removed line by line, keeping blank lines and indentation valid.
+    """
     # Several parts on one physical line are applied line-locally, right to left,
     # because the loop below consumes at most one part per line.
     line_number_to_parts: dict[int, list[Part]] = {}
