@@ -21,6 +21,7 @@ from deadcode.utils.nested_scopes import NestedScope
 from deadcode.visitor import noqa
 from deadcode.utils.print_ast import print_ast as show  # noqa: F401
 from deadcode.visitor import lines
+from deadcode.visitor.module_exports import collect_module_exports
 from deadcode.visitor.ignore import (
     ERROR_CODES,
     IGNORED_VARIABLE_NAMES,
@@ -64,6 +65,12 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
         self.used_names: set[str] = LoggingSet('name', self.verbose)
 
+        self.module_name: str = ''
+        self.module_exports: dict[str, set[str]] = {}
+        self.bare_used_names: dict[str, set[str]] = {}
+        self.wildcard_imports: dict[str, set[str]] = {}
+        self.explicit_imports: dict[str, set[str]] = {}
+
         self.filename = Path()
         self.code: list[str] = []
 
@@ -81,21 +88,58 @@ class DeadCodeVisitor(ast.NodeVisitor):
     def scope(self) -> str:
         return '.'.join(self.scope_parts)
 
-    def add_used_name(self, name: str, scope: str | None = None) -> None:
+    def add_used_name(self, name: str, scope: str | None = None, *, is_bare: bool = False) -> None:
         # TODO: Usage should be tracked on CodeItem.
 
         # TODO: Lets first resolve, how to correctly set the type of a function argument.
         # We should have CodeItem as a type, not only name as string.
         # TODO: investigate: am I always able to retrieve the type of a variable?
 
-        self.used_names.add(name)
+        if is_bare:
+            self.bare_used_names.setdefault(self.module_name, set()).add(name)
+        else:
+            self.used_names.add(name)
         self.scopes.mark_as_used(name, self.scope)
 
+    def is_name_used_in_module(self, name: str, module: str) -> bool:
+        if name in self.used_names:
+            return True
+        if name in self.bare_used_names.get(module, set()):
+            return True
+        for importer, names in self.bare_used_names.items():
+            if name not in names:
+                continue
+            if module not in self.wildcard_imports.get(importer, set()):
+                return True
+            exports = self.module_exports.get(module)
+            if exports is None or name in exports or name in self.explicit_imports.get(importer, set()):
+                return True
+        return False
+
+    def _is_item_used(self, item: CodeItem) -> bool:
+        module = os.path.splitext(os.path.basename(str(item.filename)))[0]
+        return self.is_name_used_in_module(item.name, module)
+
+    def _collect_module_exports(self) -> None:
+        for file_path in self.filenames:
+            module_name = os.path.splitext(os.path.basename(file_path))[0]
+            try:
+                with open(file_path, 'rb') as f:
+                    file_content = f.read()
+                tree = ast.parse(file_content, filename=file_path)
+            except (SyntaxError, OSError):
+                continue
+            exports = collect_module_exports(tree)
+            if exports is not None:
+                self.module_exports[module_name] = exports
+
     def visit_abstract_syntax_trees(self) -> None:
+        self._collect_module_exports()
         for file_path in self.filenames:
             with open(file_path, 'rb') as f:
                 filename = os.path.basename(file_path)
                 module_name = os.path.splitext(filename)[0]
+                self.module_name = module_name
                 self.scope_parts = [module_name]
 
                 file_content = f.read()
@@ -136,31 +180,31 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
     @property
     def unused_classes(self) -> Iterable[CodeItem]:
-        return _get_unused_items(self.defined_classes, self.used_names)
+        return _get_unused_items(self.defined_classes, self.used_names, is_used=self._is_item_used)
 
     @property
     def unused_funcs(self) -> Iterable[CodeItem]:
-        return _get_unused_items(self.defined_funcs, self.used_names)
+        return _get_unused_items(self.defined_funcs, self.used_names, is_used=self._is_item_used)
 
     @property
     def unused_imports(self) -> Iterable[CodeItem]:
-        return _get_unused_items(self.defined_imports, self.used_names)
+        return _get_unused_items(self.defined_imports, self.used_names, is_used=self._is_item_used)
 
     @property
     def unused_methods(self) -> Iterable[CodeItem]:
-        return _get_unused_items(self.defined_methods, self.used_names)
+        return _get_unused_items(self.defined_methods, self.used_names, is_used=self._is_item_used)
 
     @property
     def unused_props(self) -> Iterable[CodeItem]:
-        return _get_unused_items(self.defined_props, self.used_names)
+        return _get_unused_items(self.defined_props, self.used_names, is_used=self._is_item_used)
 
     @property
     def unused_vars(self) -> Iterable[CodeItem]:
-        return _get_unused_items(self.defined_vars, self.used_names)
+        return _get_unused_items(self.defined_vars, self.used_names, is_used=self._is_item_used)
 
     @property
     def unused_attrs(self) -> Iterable[CodeItem]:
-        return _get_unused_items(self.defined_attrs, self.used_names)
+        return _get_unused_items(self.defined_attrs, self.used_names, is_used=self._is_item_used)
 
     def _log(self, *args, file: TextIO | None = None, force: bool = False) -> None:  # type: ignore
         if self.verbose or force:
@@ -245,13 +289,13 @@ class DeadCodeVisitor(ast.NodeVisitor):
             f'ignore_definitions_if_inherits_from={self.args.ignore_definitions_if_inherits_from}'
         )
 
-        def ignored(lineno: int, type_: UnusedCodeType) -> bool:
+        def ignored(linenos: Iterable[int], type_: UnusedCodeType) -> bool:
             return bool(
                 (ignore and ignore(self.filename, name))
                 or _match(name, self.args.ignore_names)
                 or _match(self.filename, self.args.ignore_names_in_files)
                 or self.should_ignore_new_definitions
-                or noqa.ignore_line(self.noqa_lines, lineno, ERROR_CODES[type_])
+                or any(noqa.ignore_line(self.noqa_lines, lineno, ERROR_CODES[type_]) for lineno in linenos)
             )
 
         last_node = last_node or first_node
@@ -259,6 +303,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
         first_lineno = lines.get_first_line_number(first_node)
         last_lineno = lines.get_last_line_number(last_node)
+        name_line = last_node.lineno
 
         inherits_from = getattr(first_node, 'inherits_from', None)
         code_item = CodeItem(
@@ -267,7 +312,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
             filename=self.filename,
             code_parts=[Part(first_lineno, last_lineno, last_node.col_offset, last_node.end_col_offset or 0)],
             scope=self.scope,
-            name_line=last_node.lineno,  # TODO: Maybe this should be a property?
+            name_line=name_line,  # TODO: Maybe this should be a property?
             name_column=last_node.col_offset,  # TODO: Maybe this should be a property?
             message=message,
             inherits_from=inherits_from,
@@ -275,7 +320,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
         self.scopes.add(code_item)
 
-        if ignored(first_lineno, type_=type_):
+        if ignored((first_lineno, name_line), type_=type_):
             self._log(f'Ignoring {type_} "{name}"')
         else:
             collection.append(code_item)
@@ -422,11 +467,19 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
         if node.module != '__future__':
+            if node.module is not None:
+                explicit_imports = self.explicit_imports.setdefault(self.module_name, set())
+                for name_and_alias in node.names:
+                    if name_and_alias.name != '*':
+                        explicit_imports.add(name_and_alias.asname or name_and_alias.name)
+                if any(name_and_alias.name == '*' for name_and_alias in node.names):
+                    wildcard_module = node.module.rpartition('.')[2]
+                    self.wildcard_imports.setdefault(self.module_name, set()).add(wildcard_module)
             self._add_aliases(node)
 
     def visit_Name(self, node: ast.Name) -> None:
         if isinstance(node.ctx, (ast.Load, ast.Del)) and node.id not in IGNORED_VARIABLE_NAMES:
-            self.add_used_name(node.id)
+            self.add_used_name(node.id, is_bare=True)
         elif isinstance(node.ctx, (ast.Param, ast.Store)):
             self._define_variable(node.id, node)
 

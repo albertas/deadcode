@@ -327,3 +327,219 @@ class TestNoqaComments(BaseTestCase):
         )
 
         self.assertEqual(unused_names, None)
+
+    def test_unused_decorated_function_definition_line_with_alias(self):
+        self.files = {
+            'foo.py': b"""
+                @cache
+                def unused_function():  # noqa: DC002
+                    pass
+                """
+        }
+
+        unused_names = main(['foo.py', '--no-color', '--fix'])
+
+        self.assertFiles(
+            {
+                'foo.py': b"""
+                @cache
+                def unused_function():  # noqa: DC002
+                    pass
+                """
+            }
+        )
+
+        self.assertEqual(unused_names, None)
+
+    def test_unused_decorated_function_stacked_decorators(self):
+        self.files = {
+            'foo.py': b"""
+                @first
+                @second
+                @third
+                def unused_function():  # noqa: DC02
+                    pass
+                """
+        }
+
+        unused_names = main(['foo.py', '--no-color', '--fix'])
+
+        self.assertFiles(
+            {
+                'foo.py': b"""
+                @first
+                @second
+                @third
+                def unused_function():  # noqa: DC02
+                    pass
+                """
+            }
+        )
+
+        self.assertEqual(unused_names, None)
+
+    def test_unused_decorated_function_decorator_with_arguments(self):
+        self.files = {
+            'foo.py': b"""
+                @cache(maxsize=None)
+                def unused_function():  # noqa: DC02
+                    pass
+                """
+        }
+
+        unused_names = main(['foo.py', '--no-color', '--fix'])
+
+        self.assertFiles(
+            {
+                'foo.py': b"""
+                @cache(maxsize=None)
+                def unused_function():  # noqa: DC02
+                    pass
+                """
+            }
+        )
+
+        self.assertEqual(unused_names, None)
+
+    def test_unused_decorated_async_function(self):
+        self.files = {
+            'foo.py': b"""
+                @cache
+                async def unused_function():  # noqa: DC02
+                    pass
+                """
+        }
+
+        unused_names = main(['foo.py', '--no-color', '--fix'])
+
+        self.assertFiles(
+            {
+                'foo.py': b"""
+                @cache
+                async def unused_function():  # noqa: DC02
+                    pass
+                """
+            }
+        )
+
+        self.assertEqual(unused_names, None)
+
+    def test_unused_decorated_function_bare_noqa(self):
+        self.files = {
+            'foo.py': b"""
+                @cache
+                def unused_function():  # noqa
+                    pass
+                """
+        }
+
+        unused_names = main(['foo.py', '--no-color', '--fix'])
+
+        self.assertFiles(
+            {
+                'foo.py': b"""
+                @cache
+                def unused_function():  # noqa
+                    pass
+                """
+            }
+        )
+
+        self.assertEqual(unused_names, None)
+
+    def test_unused_decorated_function_noqa_on_first_decorator_line(self):
+        self.files = {
+            'foo.py': b"""
+                @cache  # noqa: DC02
+                def unused_function():
+                    pass
+                """
+        }
+
+        unused_names = main(['foo.py', '--no-color', '--fix'])
+
+        self.assertFiles(
+            {
+                'foo.py': b"""
+                @cache  # noqa: DC02
+                def unused_function():
+                    pass
+                """
+            }
+        )
+
+        self.assertEqual(unused_names, None)
+
+    def test_unused_decorated_class_definition_line(self):
+        self.files = {
+            'foo.py': b"""
+                @cache
+                class MyTest:  # noqa: DC03
+                    pass
+                """
+        }
+
+        unused_names = main(['foo.py', '--no-color', '--fix'])
+
+        self.assertFiles(
+            {
+                'foo.py': b"""
+                @cache
+                class MyTest:  # noqa: DC03
+                    pass
+                """
+            }
+        )
+
+        self.assertEqual(unused_names, None)
+
+    def test_unused_decorated_method_definition_line(self):
+        self.files = {
+            'foo.py': b"""
+                class MyTest:
+                    @cache
+                    def unused_method(self):  # noqa: DC04
+                        pass
+
+                instance = MyTest()
+                print(instance)
+                """
+        }
+
+        unused_names = main(['foo.py', '--no-color', '--fix'])
+
+        self.assertFiles(
+            {
+                'foo.py': b"""
+                class MyTest:
+                    @cache
+                    def unused_method(self):  # noqa: DC04
+                        pass
+
+                instance = MyTest()
+                print(instance)
+                """
+            }
+        )
+
+        self.assertEqual(unused_names, None)
+
+    def test_unused_decorated_function_definition_line_with_wrong_noqa_code(self):
+        self.files = {
+            'foo.py': b"""
+                @cache
+                def check(arg):  # noqa: DC01
+                    pass
+
+                value = 1
+                print(value)
+                """
+        }
+
+        unused_names = main(['foo.py', '--no-color', '--fix'])
+
+        self.assertUpdatedFiles({'foo.py': b'value = 1\nprint(value)\n'})
+        self.assertEqual(
+            unused_names,
+            ('foo.py:2:0: DC02 Function `check` is never used\n\n' 'Removed 1 unused code item!'),
+        )

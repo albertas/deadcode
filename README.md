@@ -132,6 +132,16 @@ class Foo:  # noqa: DC03
     pass
 ```
 
+For a decorated function, method, property, or class, place the comment on the physical line of the `def`, `async def`, or `class` keyword:
+
+```python
+@cache
+def foo():  # noqa: DC02
+    pass
+```
+
+A comment on the first decorator line is still accepted.
+
 ## Contributing
 
 Create a feature branch from `main`, open a pull request targeting `main`, and
@@ -160,6 +170,11 @@ build abstract syntax tree for name usage detection.
 
 It is assumed that `deadcode` will be run using the same or higher Python version as the
 code base is implemented in.
+
+Wildcard imports are resolved by module basename, without package paths, so modules with the same basename are treated as one.
+`__all__` is honoured only when it is a statically readable module-level list or tuple of strings; modules with unknown exports
+(dynamic `__all__`, unreadable or unparsable files, or modules outside the analysed file set) are not restricted. Without `__all__`,
+the public module-level names are exported.
 
 ## Feature requests
 - [x] Replace `.*` with only `*` in regexp matching.
@@ -217,6 +232,10 @@ code base is implemented in.
         - Fix `deadcode --fix` removing the `f` from the `from` keyword in multi-line parenthesized imports (issue #5)
         - Remove fully unused import statements, including multi-line parenthesized ones, without leaving broken syntax behind
         - Remove only the unused names from partially used import statements while keeping the used names and their order
+        - Honor `# noqa` comments on the definition line of decorated functions, methods and classes.
+        - Wildcard imports now honour a module `__all__` list or tuple, so excluded names are reported as unused.
+        - Wildcard imports stay unrestricted when `__all__` is dynamic or unknown, and explicit imports keep working.
+        - Without `__all__`, wildcard imports expose public module-level names, and the README documents the limits.
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
