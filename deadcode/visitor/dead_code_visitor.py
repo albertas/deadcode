@@ -245,13 +245,13 @@ class DeadCodeVisitor(ast.NodeVisitor):
             f'ignore_definitions_if_inherits_from={self.args.ignore_definitions_if_inherits_from}'
         )
 
-        def ignored(lineno: int, type_: UnusedCodeType) -> bool:
+        def ignored(linenos: Iterable[int], type_: UnusedCodeType) -> bool:
             return bool(
                 (ignore and ignore(self.filename, name))
                 or _match(name, self.args.ignore_names)
                 or _match(self.filename, self.args.ignore_names_in_files)
                 or self.should_ignore_new_definitions
-                or noqa.ignore_line(self.noqa_lines, lineno, ERROR_CODES[type_])
+                or any(noqa.ignore_line(self.noqa_lines, lineno, ERROR_CODES[type_]) for lineno in linenos)
             )
 
         last_node = last_node or first_node
@@ -259,6 +259,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
         first_lineno = lines.get_first_line_number(first_node)
         last_lineno = lines.get_last_line_number(last_node)
+        name_line = last_node.lineno
 
         inherits_from = getattr(first_node, 'inherits_from', None)
         code_item = CodeItem(
@@ -267,7 +268,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
             filename=self.filename,
             code_parts=[Part(first_lineno, last_lineno, last_node.col_offset, last_node.end_col_offset or 0)],
             scope=self.scope,
-            name_line=last_node.lineno,  # TODO: Maybe this should be a property?
+            name_line=name_line,  # TODO: Maybe this should be a property?
             name_column=last_node.col_offset,  # TODO: Maybe this should be a property?
             message=message,
             inherits_from=inherits_from,
@@ -275,7 +276,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
         self.scopes.add(code_item)
 
-        if ignored(first_lineno, type_=type_):
+        if ignored((first_lineno, name_line), type_=type_):
             self._log(f'Ignoring {type_} "{name}"')
         else:
             collection.append(code_item)
