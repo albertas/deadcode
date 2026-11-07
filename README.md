@@ -58,7 +58,7 @@ Create a `.pre-commit-config.yaml` file in the root of your project directory, i
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
   - repo: https://github.com/albertas/deadcode
-    rev: 2.4.1
+    rev: 2.5.0
     hooks:
       - id: deadcode
 ```
@@ -197,9 +197,8 @@ code base is implemented in.
 - [ ] Investigate ways of extracting and backporting Python3.10+ `ast` implementation to lower Python versions.
 
 ## Release notes
-- v2.4.2:
-    - Add a restartable `make publish` release script with PyPI upload, version tags, and branch push.
-    - Add local pre-commit hooks and release documentation.
+- v2.5.0:
+    - Fix a crash when a decorator has no `id` attribute.
 - v2.4.1:
     - Add `--version` option to show `deadcode` version.
     - Use stdout for `deadcode` output.
