@@ -1,6 +1,6 @@
 from collections import defaultdict
 from difflib import diff_bytes, unified_diff
-from typing import Iterable
+from collections.abc import Iterable
 import os
 
 from deadcode.actions.merge_overlaping_file_parts import merge_overlaping_file_parts
