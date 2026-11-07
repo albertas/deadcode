@@ -66,12 +66,6 @@ repos:
 The `rev` is the release tag, so it matches the version published on PyPI. To
 run the same hook while developing deadcode itself, use `make pre-commit`.
 
-## Contributing
-
-Create a feature branch from `main`, open a pull request targeting `main`, and
-wait for review. Do not commit feature changes directly to `main`; release
-commits are made by the maintainer on `main`.
-
 ## Command line options
 
 | Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Meaning  |
@@ -128,6 +122,11 @@ class Foo:  # noqa: DC03
 ```
 
 ## Contributing
+
+Create a feature branch from `main`, open a pull request targeting `main`, and
+wait for review. Do not commit feature changes directly to `main`; release
+commits are made by the maintainer on `main`.
+
 - `make check` - runs unit tests and other checks using virtual environment.
 
 ## Rationale
@@ -197,20 +196,27 @@ code base is implemented in.
 - [ ] Investigate ways of extracting and backporting Python3.10+ `ast` implementation to lower Python versions.
 
 ## Release notes
-- v2.5.0:
-    - Fix a crash when a decorator has no `id` attribute.
-- v2.4.1:
-    - Add `--version` option to show `deadcode` version.
-    - Use stdout for `deadcode` output.
-- v2.4.0:
-    - Add `--only` option that accepts filenames only which will be reflected in the output and modified.
-      This option can be used with `--fix` and `--fix --dry` options as well as for simple unused code detection without fixing.
-- v2.3.2:
-    - Add `pre-commit` hook support.
-    - Drop support for Python 3.8 and 3.9 versions, since their `ast` implementation is lacking features.
-- v2.3.1:
-    - Started analysing files in bytes instead of trying to convert them into UTF-8 encoded strings.
-    - Improved automatic removal of unused imports.
-- v2.3.0:
-    - Add `--dry` option.
-    - Update error codes to use DCXX format instead of DCXXX.
+- v2.5.0 (2026-11-07):
+    - Bugfixes:
+        - Fix a crash when a decorator has no `id` attribute.
+- v2.4.1 (2024-08-09):
+    - Features:
+        - Add `--version` option to show `deadcode` version.
+    - Bugfixes:
+        - Use stdout for `deadcode` output.
+- v2.4.0 (2024-07-12):
+    - Features:
+        - Add `--only` option that accepts filenames only which will be reflected in the output and modified.
+          This option can be used with `--fix` and `--fix --dry` options as well as for simple unused code detection without fixing.
+- v2.3.2 (2024-07-10):
+    - Features:
+        - Add `pre-commit` hook support.
+        - Drop support for Python 3.8 and 3.9 versions, since their `ast` implementation is lacking features.
+- v2.3.1 (2024-07-03):
+    - Bugfixes:
+        - Started analysing files in bytes instead of trying to convert them into UTF-8 encoded strings.
+        - Improved automatic removal of unused imports.
+- v2.3.0 (2024-04-07):
+    - Features:
+        - Add `--dry` option.
+        - Update error codes to use DCXX format instead of DCXXX.
