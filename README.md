@@ -1,4 +1,4 @@
-[![Deadcode Logo](https://raw.githubusercontent.com/albertas/deadcode/main/docs/_static/deadcode-logo-readme.png)](https://github.com/albertas/deadcode#readme)
+[![Deadcode Logo](https://raw.githubusercontent.com/albertas/deadcode/main/docs/_static/deadcode-logo-readme.png)](https://deadcode.readthedocs.io/)
 
 <h2 align="center">Find and Fix Unused Python Code</h2>
 
