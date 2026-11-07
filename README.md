@@ -63,6 +63,15 @@ repos:
       - id: deadcode
 ```
 
+The `rev` is the release tag, so it matches the version published on PyPI. To
+run the same hook while developing deadcode itself, use `make pre-commit`.
+
+## Contributing
+
+Create a feature branch from `main`, open a pull request targeting `main`, and
+wait for review. Do not commit feature changes directly to `main`; release
+commits are made by the maintainer on `main`.
+
 ## Command line options
 
 | Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Meaning  |
@@ -188,6 +197,9 @@ code base is implemented in.
 - [ ] Investigate ways of extracting and backporting Python3.10+ `ast` implementation to lower Python versions.
 
 ## Release notes
+- v2.4.2:
+    - Add a restartable `make publish` release script with PyPI upload, version tags, and branch push.
+    - Add local pre-commit hooks and release documentation.
 - v2.4.1:
     - Add `--version` option to show `deadcode` version.
     - Use stdout for `deadcode` output.
