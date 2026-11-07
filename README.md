@@ -132,6 +132,16 @@ class Foo:  # noqa: DC03
     pass
 ```
 
+For a decorated function, method, property, or class, place the comment on the physical line of the `def`, `async def`, or `class` keyword:
+
+```python
+@cache
+def foo():  # noqa: DC02
+    pass
+```
+
+A comment on the first decorator line is still accepted.
+
 ## Contributing
 
 Create a feature branch from `main`, open a pull request targeting `main`, and
