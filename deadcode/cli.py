@@ -1,6 +1,5 @@
 from typing import List, Optional
 import sys
-import io
 
 from deadcode import __version__
 from deadcode.actions.find_python_filenames import find_python_filenames
@@ -10,8 +9,7 @@ from deadcode.actions.parse_arguments import parse_arguments
 from deadcode.actions.get_unused_names_error_message import (
     get_unused_names_error_message,
 )
-
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+from deadcode.utils.print_safely import print_safely
 
 
 def main(
@@ -35,13 +33,13 @@ def main(
         return error_message + ('\n\n' + file_diff if file_diff else '')
 
     if not args.count and not args.quiet:
-        print('\033[1mWell done!\033[0m ✨ 🚀 ✨')
+        print_safely('\033[1mWell done!\033[0m ✨ 🚀 ✨')
     return None
 
 
 def print_main() -> None:
     if result := main():
-        print(result)
+        print_safely(result)
 
 
 if __name__ == '__main__':
