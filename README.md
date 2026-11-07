@@ -214,6 +214,9 @@ code base is implemented in.
         - Fix `--fix` leaving invalid or partially removed imports when unused names are deleted from parenthesized or multi-line import statements.
         - Do not crash when the terminal cannot encode the success message.
         - Exit with code 1 when unused code is found, so CI jobs and pre-commit hooks can fail.
+        - Fix `deadcode --fix` removing the `f` from the `from` keyword in multi-line parenthesized imports (issue #5)
+        - Remove fully unused import statements, including multi-line parenthesized ones, without leaving broken syntax behind
+        - Remove only the unused names from partially used import statements while keeping the used names and their order
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
