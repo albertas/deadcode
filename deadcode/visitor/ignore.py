@@ -1,7 +1,7 @@
 import ast
 from fnmatch import fnmatch, fnmatchcase
 from pathlib import Path
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 
 from deadcode.visitor.code_item import CodeItem
 
@@ -36,8 +36,12 @@ ERROR_CODES = {
 }
 
 
-def _get_unused_items(defined_items: Iterable[CodeItem], used_names: set[str]) -> Iterable[CodeItem]:
-    unused_items = [item for item in defined_items if item.name not in used_names]
+def _get_unused_items(
+    defined_items: Iterable[CodeItem],
+    used_names: set[str],
+    is_used: Callable[[CodeItem], bool] | None = None,
+) -> Iterable[CodeItem]:
+    unused_items = [item for item in defined_items if item.name not in used_names and not (is_used and is_used(item))]
     unused_items.sort(key=lambda item: item.name.lower())
     return unused_items
 
