@@ -7,6 +7,7 @@
 <a href="https://pypi.org/project/deadcode/"><img alt="PyPI" src="https://img.shields.io/pypi/v/deadcode"></a>
 <a href="https://pepy.tech/project/deadcode"><img alt="Downloads" src="https://static.pepy.tech/badge/deadcode"></a>
 <a href="https://github.com/albertas/deadcode/blob/main/LICENSE"><img alt="License: AGPLv3" src="https://raw.githubusercontent.com/albertas/deadcode/main/docs/_static/AGPLv3-license.svg"></a>
+<a href="https://codecov.io/gh/albertas/deadcode"><img alt="Coverage" src="https://codecov.io/gh/albertas/deadcode/branch/main/graph/badge.svg"></a>
 <br/><a href='https://ko-fi.com/V7V21681GD' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi3.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 </p>
 
@@ -276,6 +277,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - `--ignore-bodies-if-decorated-with` now suppresses the bodies of decorated definitions
         - `--ignore-names-if-inherits-from` now ignores class names matching a base class
         - `--ignore-definitions` now reliably ignores function, method, property and nested class definitions; its limits are documented
+        - Add a code coverage badge to the README, fed by the coverage report uploaded from CI
     - Bugfixes:
         - Exit with code 1 when unused code is found, so CI jobs and pre-commit hooks can fail.
         - Fix `--fix` leaving invalid or partially removed imports when unused names are deleted from parenthesized or multi-line import statements.
