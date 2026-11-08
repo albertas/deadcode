@@ -1,10 +1,25 @@
 from deadcode.cli import main
-from deadcode.utils.base_test_case import BaseTestCase
 
 
-class TestIgnoreDefinitionsByPattern(BaseTestCase):
-    def test_ignore_class_definition(self):
-        self.files = {
+def test_ignore_class_definition(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
+                class UnusedClass:
+                    unused_attribute = None
+
+                    def unused_method(self, unused_parameter: str = "") -> None:
+                        unused_local_var = 123
+
+                    class UnusedInnerClass:
+                        unused_class_attribute = ""
+                """
+    }
+    unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--ignore-definitions=UnusedClass', '--fix'])
+
+    assert unused_names is None
+
+    virtual_file_system.assert_files(
+        {
             'foo.py': b"""
                 class UnusedClass:
                     unused_attribute = None
@@ -16,28 +31,12 @@ class TestIgnoreDefinitionsByPattern(BaseTestCase):
                         unused_class_attribute = ""
                 """
         }
-        unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--ignore-definitions=UnusedClass', '--fix'])
+    )
 
-        self.assertEqual(unused_names, None)
 
-        self.assertFiles(
-            {
-                'foo.py': b"""
-                class UnusedClass:
-                    unused_attribute = None
-
-                    def unused_method(self, unused_parameter: str = "") -> None:
-                        unused_local_var = 123
-
-                    class UnusedInnerClass:
-                        unused_class_attribute = ""
-                """
-            }
-        )
-
-    def test_ignore_class_definition_another_class_is_detected(self):
-        self.files = {
-            'foo.py': b"""
+def test_ignore_class_definition_another_class_is_detected(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class UnusedClass:
                     unused_attribute = None
 
@@ -50,31 +49,13 @@ class TestIgnoreDefinitionsByPattern(BaseTestCase):
                 class AnotherUnusedClass:
                     pass
                 """
-        }
-        unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--ignore-definitions=UnusedClass', '--fix'])
+    }
+    unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--ignore-definitions=UnusedClass', '--fix'])
 
-        self.assertEqual(
-            unused_names,
-            ('foo.py:10:0: DC03 Class `AnotherUnusedClass` is never used\n\nRemoved 1 unused code item!'),
-        )
+    assert unused_names == ('foo.py:10:0: DC03 Class `AnotherUnusedClass` is never used\n\nRemoved 1 unused code item!')
 
-        self.assertFiles(
-            {
-                'foo.py': b"""
-                class UnusedClass:
-                    unused_attribute = None
-
-                    def unused_method(self, unused_parameter: str = "") -> None:
-                        unused_local_var = 123
-
-                    class UnusedInnerClass:
-                        unused_class_attribute = ""
-                """
-            }
-        )
-
-    def test_ignore_class_definition_matched_by_pattern(self):
-        self.files = {
+    virtual_file_system.assert_files(
+        {
             'foo.py': b"""
                 class UnusedClass:
                     unused_attribute = None
@@ -86,13 +67,12 @@ class TestIgnoreDefinitionsByPattern(BaseTestCase):
                         unused_class_attribute = ""
                 """
         }
-        unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--ignore-definitions=Unused*', '--fix'])
+    )
 
-        self.assertEqual(unused_names, None)
 
-        self.assertFiles(
-            {
-                'foo.py': b"""
+def test_ignore_class_definition_matched_by_pattern(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class UnusedClass:
                     unused_attribute = None
 
@@ -102,5 +82,22 @@ class TestIgnoreDefinitionsByPattern(BaseTestCase):
                     class UnusedInnerClass:
                         unused_class_attribute = ""
                 """
-            }
-        )
+    }
+    unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--ignore-definitions=Unused*', '--fix'])
+
+    assert unused_names is None
+
+    virtual_file_system.assert_files(
+        {
+            'foo.py': b"""
+                class UnusedClass:
+                    unused_attribute = None
+
+                    def unused_method(self, unused_parameter: str = "") -> None:
+                        unused_local_var = 123
+
+                    class UnusedInnerClass:
+                        unused_class_attribute = ""
+                """
+        }
+    )

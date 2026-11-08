@@ -1,77 +1,26 @@
 from deadcode import __version__
 from deadcode.cli import main
-from deadcode.utils.base_test_case import BaseTestCase
 
 
-class TestVersionCliOption(BaseTestCase):
-    def test_show_version(self):
-        self.files = {
-            'foo.py': b"""
-                class UnusedClass:
-                    pass
+def test_show_version():
+    result = main('--version'.split())
 
-                print("Dont change this file")""",
-            'bar.py': b"""
-                def unused_function():
-                    pass
+    assert result == __version__
 
-                print("Dont change this file")""",
-        }
 
-        result = main('--version'.split())
+def test_show_version_when_path_provided():
+    result = main('. --version'.split())
 
-        self.assertEqual(result, __version__)
+    assert result == __version__
 
-    def test_show_version_when_path_provided(self):
-        self.files = {
-            'foo.py': b"""
-                class UnusedClass:
-                    pass
 
-                print("Dont change this file")""",
-            'bar.py': b"""
-                def unused_function():
-                    pass
+def test_show_version_with_short_option():
+    result = main('-V'.split())
 
-                print("Dont change this file")""",
-        }
+    assert result == __version__
 
-        result = main('. --version'.split())
 
-        self.assertEqual(result, __version__)
+def test_show_version_with_short_option_when_path_provided():
+    result = main('. -V'.split())
 
-    def test_show_version_with_short_option(self):
-        self.files = {
-            'foo.py': b"""
-                class UnusedClass:
-                    pass
-
-                print("Dont change this file")""",
-            'bar.py': b"""
-                def unused_function():
-                    pass
-
-                print("Dont change this file")""",
-        }
-
-        result = main('-V'.split())
-
-        self.assertEqual(result, __version__)
-
-    def test_show_version_with_short_option_when_path_provided(self):
-        self.files = {
-            'foo.py': b"""
-                class UnusedClass:
-                    pass
-
-                print("Dont change this file")""",
-            'bar.py': b"""
-                def unused_function():
-                    pass
-
-                print("Dont change this file")""",
-        }
-
-        result = main('. -V'.split())
-
-        self.assertEqual(result, __version__)
+    assert result == __version__

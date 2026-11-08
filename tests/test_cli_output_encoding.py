@@ -1,8 +1,7 @@
 import importlib
 import io
 import sys
-from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import MagicMock
 
 import deadcode.cli
 from deadcode.cli import main
@@ -40,38 +39,37 @@ class AsciiOnlyStringStream(io.StringIO):
         return super().write(text)
 
 
-class CliOutputEncodingTests(TestCase):
-    def test_main_finishes_when_stdout_cannot_encode(self):
-        stream = Cp1252Stream()
+def test_main_finishes_when_stdout_cannot_encode(monkeypatch):
+    stream = Cp1252Stream()
 
-        with (
-            patch('sys.stdout', stream),
-            patch('deadcode.cli.find_python_filenames', return_value=[]),
-            patch('deadcode.cli.find_unused_names', return_value=[]),
-        ):
-            result = main(['tests/files/variables.py', '--no-color'])
+    monkeypatch.setattr('sys.stdout', stream)
+    monkeypatch.setattr('deadcode.cli.find_python_filenames', MagicMock(return_value=[]))
+    monkeypatch.setattr('deadcode.cli.find_unused_names', MagicMock(return_value=[]))
 
-        self.assertIsNone(result)
-        self.assertIn('Well done!', stream.written_text)
+    result = main(['tests/files/variables.py', '--no-color'])
 
-    def test_stringio_stdout_without_buffer_or_reconfigure(self):
-        stream = AsciiOnlyStringStream()
+    assert result is None
+    assert 'Well done!' in stream.written_text
 
-        with (
-            patch('sys.stdout', stream),
-            patch('deadcode.cli.find_python_filenames', return_value=[]),
-            patch('deadcode.cli.find_unused_names', return_value=[]),
-        ):
-            result = main(['tests/files/variables.py', '--no-color'])
 
-        self.assertIsNone(result)
-        self.assertIn('Well done!', stream.getvalue())
-        self.assertNotIn('✨', stream.getvalue())
-        self.assertIn('?', stream.getvalue())
+def test_stringio_stdout_without_buffer_or_reconfigure(monkeypatch):
+    stream = AsciiOnlyStringStream()
 
-    def test_import_does_not_rebind_stdout(self):
-        original_stdout = sys.stdout
+    monkeypatch.setattr('sys.stdout', stream)
+    monkeypatch.setattr('deadcode.cli.find_python_filenames', MagicMock(return_value=[]))
+    monkeypatch.setattr('deadcode.cli.find_unused_names', MagicMock(return_value=[]))
 
-        importlib.reload(deadcode.cli)
+    result = main(['tests/files/variables.py', '--no-color'])
 
-        self.assertIs(sys.stdout, original_stdout)
+    assert result is None
+    assert 'Well done!' in stream.getvalue()
+    assert '✨' not in stream.getvalue()
+    assert '?' in stream.getvalue()
+
+
+def test_import_does_not_rebind_stdout():
+    original_stdout = sys.stdout
+
+    importlib.reload(deadcode.cli)
+
+    assert sys.stdout is original_stdout

@@ -1,20 +1,21 @@
-from unittest import skip
+import pytest
 
 from deadcode.cli import main
-from deadcode.utils.base_test_case import BaseTestCase
+
+pytestmark = pytest.mark.skip(
+    reason='Skipped without a recorded reason before the pytest migration; behaviour preserved'
+)
 
 
-@skip
-class TestAccurateUsageDetection(BaseTestCase):
-    def test_function_call_with_one_argument(self):
-        ## TODO:
-        # Variable types should be tracked in each scope
-        # When scope changes during call: parameter types should be mapped from arguments
+def test_function_call_with_one_argument(virtual_file_system):
+    ## TODO:
+    # Variable types should be tracked in each scope
+    # When scope changes during call: parameter types should be mapped from arguments
 
-        # When new type is defined: during import or definition: scope has to be updated.
+    # When new type is defined: during import or definition: scope has to be updated.
 
-        self.files = {
-            'foo.py': b"""
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class X:
                     def used_method(self):
                         pass
@@ -26,14 +27,14 @@ class TestAccurateUsageDetection(BaseTestCase):
 
                 foo(x)
                 """
-        }
+    }
 
-        unused_names = main(['foo.py', '--no-color', '--fix'])
-        self.assertIsNone(unused_names)
+    unused_names = main(['foo.py', '--no-color', '--fix'])
+    assert unused_names is None
 
-        self.assertFiles(
-            {
-                'foo.py': b"""
+    virtual_file_system.assert_files(
+        {
+            'foo.py': b"""
                     class X:
                         def used_method(self):
                             pass
@@ -45,5 +46,5 @@ class TestAccurateUsageDetection(BaseTestCase):
 
                     foo(x)
                     """
-            }
-        )
+        }
+    )

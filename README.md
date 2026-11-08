@@ -158,6 +158,10 @@ def foo():  # noqa: DC02
 
 A comment on the first decorator line is still accepted.
 
+## Ignoring unittest lifecycle methods
+`unittest` lifecycle methods (`setUp`, `tearDown`, `setUpClass`, `tearDownClass`, `asyncSetUp`, `asyncTearDown`, `setUpModule`, `tearDownModule`) declared in test files are ignored by default, alongside the existing pytest hooks.
+Declarations with those names outside test files are still reported as unused code.
+
 ## Contributing
 
 Create a feature branch from `main`, open a pull request targeting `main`, and
@@ -268,6 +272,10 @@ the public module-level names are exported.
         - Render decorator names deterministically, including dotted names, and stop unusual decorators such as `@Class().function()` from crashing or producing memory addresses.
         - The README content is available again as its own page in the Read the Docs documentation.
         - The documentation home page no longer repeats the README content.
+        - Stop reporting unittest lifecycle methods declared in test files as unused code (issue #21).
+        - Migrate the test suite from unittest.TestCase to pytest fixtures and plain asserts
+        - Add shared pytest fixtures for the virtual file system and default arguments
+        - Remove the obsolete unittest test helper and its linter configuration
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.

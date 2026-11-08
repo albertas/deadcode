@@ -2,14 +2,17 @@
 These tests should test command line value conversion into internal Args instance.
 """
 
+from unittest.mock import MagicMock
+
+import pytest
+
 from deadcode.actions.parse_arguments import parse_arguments
-from deadcode.utils.base_test_case import BaseTestCase
 
 
-class CommandLineArgParsingTests(BaseTestCase):
-    def setUp(self):
-        self.tomlib_load_mock = self.patch('deadcode.actions.parse_arguments.tomllib.load')
-        self.tomlib_load_mock.return_value = {
+@pytest.fixture()
+def tomllib_load_mock(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
+    mock = MagicMock(
+        return_value={
             'tool': {
                 'deadcode': {
                     'exclude': [],
@@ -18,100 +21,116 @@ class CommandLineArgParsingTests(BaseTestCase):
                 }
             }
         }
+    )
+    monkeypatch.setattr('deadcode.actions.parse_arguments.tomllib.load', mock)
+    return mock
 
-    def test_calling_with_one_paths_argument(self):
-        options = '.'
-        args = parse_arguments(options.split())
-        self.assertEqual(args.paths, ['.'])
-        self.assertEqual(args.exclude, [])
-        self.assertEqual(args.ignore_names, [])
-        self.assertEqual(args.ignore_names_in_files, [])
 
-    def test_calling_with_several_paths_argument(self):
-        options = '. tests'
-        args = parse_arguments(options.split())
-        self.assertEqual(args.paths, ['.', 'tests'])
-        self.assertEqual(args.exclude, [])
-        self.assertEqual(args.ignore_names, [])
-        self.assertEqual(args.ignore_names_in_files, [])
+def test_calling_with_one_paths_argument(tomllib_load_mock: MagicMock):
+    options = '.'
+    args = parse_arguments(options.split())
+    assert args.paths == ['.']
+    assert args.exclude == []
+    assert args.ignore_names == []
+    assert args.ignore_names_in_files == []
 
-    def test_calling_with_exclude(self):
-        options = '. --exclude=tests,venv'
-        args = parse_arguments(options.split())
-        self.assertEqual(args.paths, ['.'])
-        self.assertEqual(args.exclude, ['tests', 'venv'])
-        self.assertEqual(args.ignore_names, [])
-        self.assertEqual(args.ignore_names_in_files, [])
 
-    def test_calling_with_several_exclude_options(self):
-        options = '. --exclude=tests,venv --exclude=migrations'
-        args = parse_arguments(options.split())
-        self.assertEqual(args.paths, ['.'])
-        self.assertEqual(args.exclude, ['tests', 'venv', 'migrations'])
-        self.assertEqual(args.ignore_names, [])
-        self.assertEqual(args.ignore_names_in_files, [])
+def test_calling_with_several_paths_argument(tomllib_load_mock: MagicMock):
+    options = '. tests'
+    args = parse_arguments(options.split())
+    assert args.paths == ['.', 'tests']
+    assert args.exclude == []
+    assert args.ignore_names == []
+    assert args.ignore_names_in_files == []
 
-    def test_calling_with_no_color_option(self):
-        options = '. --no-color'
-        args = parse_arguments(options.split())
-        self.assertEqual(args.paths, ['.'])
-        self.assertEqual(args.no_color, True)
 
-    def test_ignore_names_and_ignore_files_command_line_argument_parsing(self):
-        options = '. --ignore-names-in-files=tests,venv --ignore-names=BaseTestCase,lambda_handler'
-        args = parse_arguments(options.split())
-        self.assertEqual(args.paths, ['.'])
-        self.assertEqual(args.exclude, [])
-        self.assertEqual(args.ignore_names, ['BaseTestCase', 'lambda_handler'])
-        self.assertEqual(args.ignore_names_in_files, ['tests', 'venv'])
+def test_calling_with_exclude(tomllib_load_mock: MagicMock):
+    options = '. --exclude=tests,venv'
+    args = parse_arguments(options.split())
+    assert args.paths == ['.']
+    assert args.exclude == ['tests', 'venv']
+    assert args.ignore_names == []
+    assert args.ignore_names_in_files == []
 
-    def test_verbose_flag_is_on_using_long_name(self):
-        options = '--verbose .'
-        args = parse_arguments(options.split())
-        self.assertEqual(args.verbose, True)
-        self.assertEqual(args.paths, ['.'])
 
-    def test_verbose_flag_is_on_using_short_name(self):
-        options = '. -v'
-        args = parse_arguments(options.split())
-        self.assertEqual(args.paths, ['.'])
-        self.assertEqual(args.verbose, True)
+def test_calling_with_several_exclude_options(tomllib_load_mock: MagicMock):
+    options = '. --exclude=tests,venv --exclude=migrations'
+    args = parse_arguments(options.split())
+    assert args.paths == ['.']
+    assert args.exclude == ['tests', 'venv', 'migrations']
+    assert args.ignore_names == []
+    assert args.ignore_names_in_files == []
 
-    def test_calling_with_fix(self):
-        options = '. --fix'
-        args = parse_arguments(options.split())
-        self.assertEqual(args.paths, ['.'])
-        self.assertEqual(args.dry, False)
-        self.assertEqual(args.fix, True)
 
-    def test_calling_with_dry(self):
-        options = '. --dry --verbose'
-        args = parse_arguments(options.split())
-        self.assertEqual(args.paths, ['.'])
-        self.assertEqual(args.dry, True)
-        self.assertEqual(args.only, [])
-        self.assertEqual(args.verbose, True)
-        self.assertEqual(args.fix, False)
+def test_calling_with_no_color_option(tomllib_load_mock: MagicMock):
+    options = '. --no-color'
+    args = parse_arguments(options.split())
+    assert args.paths == ['.']
+    assert args.no_color is True
 
-    def test_calling_with_fix_and_dry(self):
-        options = '. --dry --fix'
-        args = parse_arguments(options.split())
-        self.assertEqual(args.dry, True)
-        self.assertEqual(args.fix, False)
-        self.assertEqual(args.only, [])
 
-    def test_calling_with_dry_and_single_only_filename(self):
-        options = '. --dry --only foo.py --fix'
-        args = parse_arguments(options.split())
-        self.assertEqual(args.paths, ['.'])
-        self.assertEqual(args.dry, True)
-        self.assertEqual(args.only, ['foo.py'])
-        self.assertEqual(args.fix, False)
+def test_ignore_names_and_ignore_files_command_line_argument_parsing(tomllib_load_mock: MagicMock):
+    options = '. --ignore-names-in-files=tests,venv --ignore-names=BaseTestCase,lambda_handler'
+    args = parse_arguments(options.split())
+    assert args.paths == ['.']
+    assert args.exclude == []
+    assert args.ignore_names == ['BaseTestCase', 'lambda_handler']
+    assert args.ignore_names_in_files == ['tests', 'venv']
 
-    def test_calling_with_two_dry_filenames(self):
-        options = '. --fix --dry --only foo.py bar.py'
-        args = parse_arguments(options.split())
-        self.assertEqual(args.paths, ['.'])
-        self.assertEqual(args.only, ['foo.py', 'bar.py'])
-        self.assertEqual(args.fix, False)
-        self.assertEqual(args.dry, True)
+
+def test_verbose_flag_is_on_using_long_name(tomllib_load_mock: MagicMock):
+    options = '--verbose .'
+    args = parse_arguments(options.split())
+    assert args.verbose is True
+    assert args.paths == ['.']
+
+
+def test_verbose_flag_is_on_using_short_name(tomllib_load_mock: MagicMock):
+    options = '. -v'
+    args = parse_arguments(options.split())
+    assert args.paths == ['.']
+    assert args.verbose is True
+
+
+def test_calling_with_fix(tomllib_load_mock: MagicMock):
+    options = '. --fix'
+    args = parse_arguments(options.split())
+    assert args.paths == ['.']
+    assert args.dry is False
+    assert args.fix is True
+
+
+def test_calling_with_dry(tomllib_load_mock: MagicMock):
+    options = '. --dry --verbose'
+    args = parse_arguments(options.split())
+    assert args.paths == ['.']
+    assert args.dry is True
+    assert args.only == []
+    assert args.verbose is True
+    assert args.fix is False
+
+
+def test_calling_with_fix_and_dry(tomllib_load_mock: MagicMock):
+    options = '. --dry --fix'
+    args = parse_arguments(options.split())
+    assert args.dry is True
+    assert args.fix is False
+    assert args.only == []
+
+
+def test_calling_with_dry_and_single_only_filename(tomllib_load_mock: MagicMock):
+    options = '. --dry --only foo.py --fix'
+    args = parse_arguments(options.split())
+    assert args.paths == ['.']
+    assert args.dry is True
+    assert args.only == ['foo.py']
+    assert args.fix is False
+
+
+def test_calling_with_two_dry_filenames(tomllib_load_mock: MagicMock):
+    options = '. --fix --dry --only foo.py bar.py'
+    args = parse_arguments(options.split())
+    assert args.paths == ['.']
+    assert args.only == ['foo.py', 'bar.py']
+    assert args.fix is False
+    assert args.dry is True

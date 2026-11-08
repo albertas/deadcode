@@ -1,5 +1,4 @@
 import io
-from unittest import TestCase
 
 from deadcode.data_types import Args
 from deadcode.visitor.dead_code_visitor import DeadCodeVisitor
@@ -13,20 +12,20 @@ class AsciiOnlyStream(io.StringIO):
         return super().write(text)
 
 
-class TestVerboseOutputEncoding(TestCase):
-    def test_log_replaces_unencodable_characters(self):
-        visitor = DeadCodeVisitor(filenames=[], args=Args())
-        stream = AsciiOnlyStream()
+def test_log_replaces_unencodable_characters():
+    visitor = DeadCodeVisitor(filenames=[], args=Args())
+    stream = AsciiOnlyStream()
 
-        visitor._log('✨', file=stream, force=True)  # noqa: SLF001
+    visitor._log('✨', file=stream, force=True)  # noqa: SLF001
 
-        self.assertEqual(stream.getvalue(), '?\n')
-        self.assertNotIn("b'", stream.getvalue())
+    assert stream.getvalue() == '?\n'
+    assert "b'" not in stream.getvalue()
 
-    def test_log_keeps_ascii_text(self):
-        visitor = DeadCodeVisitor(filenames=[], args=Args())
-        stream = io.StringIO()
 
-        visitor._log('plain ascii', file=stream, force=True)  # noqa: SLF001
+def test_log_keeps_ascii_text():
+    visitor = DeadCodeVisitor(filenames=[], args=Args())
+    stream = io.StringIO()
 
-        self.assertEqual(stream.getvalue(), 'plain ascii\n')
+    visitor._log('plain ascii', file=stream, force=True)  # noqa: SLF001
+
+    assert stream.getvalue() == 'plain ascii\n'

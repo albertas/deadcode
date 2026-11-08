@@ -1,42 +1,42 @@
 from deadcode.cli import main
-from deadcode.utils.base_test_case import BaseTestCase
 
 
-class DetectLineNumbersOfExpressionsTests(BaseTestCase):
-    def test_parse_variable_names_from_files(self):
-        # Having
-        self.files = {
-            'variables.py': b"""
+def test_parse_variable_names_from_files(virtual_file_system):
+    # Having
+    virtual_file_system.files = {
+        'variables.py': b"""
                 foo = None
                 bar, spam, eggs = 1, 2, 3
             """
-        }
+    }
 
-        # When
-        unused_name_count = main(['ignore_names_by_pattern.py', '--no-color', '--count'])
+    # When
+    unused_name_count = main(['ignore_names_by_pattern.py', '--no-color', '--count'])
 
-        # Then
-        self.assertEqual(unused_name_count, '4')
+    # Then
+    assert unused_name_count == '4'
 
-    def test_parse_function_names_from_files(self):
-        # Having
-        self.files = {
-            'functions.py': b"""
+
+def test_parse_function_names_from_files(virtual_file_system):
+    # Having
+    virtual_file_system.files = {
+        'functions.py': b"""
                 def foo(an_arg: str):
                     return an_arg
                 """
-        }
+    }
 
-        # When
-        unused_name_count = main(['functions.py', '--no-color', '--count'])
+    # When
+    unused_name_count = main(['functions.py', '--no-color', '--count'])
 
-        # Then
-        self.assertEqual(unused_name_count, '1')
+    # Then
+    assert unused_name_count == '1'
 
-    def test_parse_class_names_from_files(self):
-        # Having
-        self.files = {
-            'classes.py': b"""
+
+def test_parse_class_names_from_files(virtual_file_system):
+    # Having
+    virtual_file_system.files = {
+        'classes.py': b"""
                 class Foo:
                     bar = None
                     spam = None
@@ -47,51 +47,53 @@ class DetectLineNumbersOfExpressionsTests(BaseTestCase):
                 class Bar(Foo):
                     pass
                 """
-        }
+    }
 
-        # When
-        unused_name_count = main(['ignore_names_by_pattern.py', '--no-color', '--count'])
+    # When
+    unused_name_count = main(['ignore_names_by_pattern.py', '--no-color', '--count'])
 
-        # Then
-        self.assertEqual(unused_name_count, '4')
+    # Then
+    assert unused_name_count == '4'
 
-    def test_parse_lambda_function_names_from_files(self):
-        # Having
-        self.files = {
-            'variables.py': b"""
+
+def test_parse_lambda_function_names_from_files(virtual_file_system):
+    # Having
+    virtual_file_system.files = {
+        'variables.py': b"""
                 my_func = lambda x: x
                 """
-        }
+    }
 
-        # When
-        unused_name_count = main(['ignore_names_by_pattern.py', '--no-color', '--count'])
+    # When
+    unused_name_count = main(['ignore_names_by_pattern.py', '--no-color', '--count'])
 
-        # Then
-        self.assertEqual(unused_name_count, '1')
+    # Then
+    assert unused_name_count == '1'
 
-    # def test_parse_class_names_from_files(self):
-    #     # Having
-    #     self.files = {
-    #         "ignore_names_by_pattern.py": d("""
-    #             foo = None
-    #             bar, spam, eggs = 1, 2, 3
 
-    #             class MyModel:
-    #                 pass
+# def test_parse_class_names_from_files(virtual_file_system):
+#     # Having
+#     self.files = {
+#         "ignore_names_by_pattern.py": d("""
+#             foo = None
+#             bar, spam, eggs = 1, 2, 3
 
-    #             class MyUserModel:
-    #                 pass
+#             class MyModel:
+#                 pass
 
-    #             class Unused:
-    #                 pass
+#             class MyUserModel:
+#                 pass
 
-    #             class ThisClassShouldBeIgnored:
-    #                 pass
-    #             """)
-    #     }
+#             class Unused:
+#                 pass
 
-    #     # When
-    #     unused_name_count = main(["ignore_names_by_pattern.py", "--no-color", "--count"])
+#             class ThisClassShouldBeIgnored:
+#                 pass
+#             """)
+#     }
 
-    #     # Then
-    #     self.assertEqual(unused_name_count, "4")
+#     # When
+#     unused_name_count = main(["ignore_names_by_pattern.py", "--no-color", "--count"])
+
+#     # Then
+#     self.assertEqual(unused_name_count, "4")
