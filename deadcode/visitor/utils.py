@@ -62,6 +62,15 @@ def get_decorator_name(decorator: ast.AST) -> str:
     return '@' + '.'.join(reversed(parts))
 
 
+def get_base_class_names(base: ast.AST) -> list[str]:
+    """Return candidate class names for a class base expression."""
+    if isinstance(base, ast.Name):
+        return [base.id]
+    if isinstance(base, ast.Attribute):
+        return list(dict.fromkeys([ast.unparse(base), base.attr]))
+    return []
+
+
 class LoggingList(list):  # type: ignore
     def __init__(self, type_: UnusedCodeType, verbose: bool) -> None:
         self.type_ = type_
