@@ -19,6 +19,18 @@ PYTEST_METHOD_NAMES = {
     'setup_method',
     'teardown_method',
 }
+UNITTEST_METHOD_NAMES = {
+    'setUp',
+    'tearDown',
+    'setUpClass',
+    'tearDownClass',
+    'asyncSetUp',
+    'asyncTearDown',
+}
+UNITTEST_FUNCTION_NAMES = {
+    'setUpModule',
+    'tearDownModule',
+}
 
 ERROR_CODES = {
     'variable': b'DC01',
@@ -88,12 +100,20 @@ def _ignore_import(filename: Path, import_name: str) -> bool:
 
 
 def _ignore_function(filename: Path, function_name: str) -> bool:
-    return (function_name in PYTEST_FUNCTION_NAMES or function_name.startswith('test_')) and _is_test_file(filename)
+    # Class-level lifecycle methods such as `def setUpClass(cls)` have no decorator and a first argument other
+    # than `self`, so `visit_FunctionDef` classifies them as functions and they must be suppressed here as well.
+    return (
+        function_name in PYTEST_FUNCTION_NAMES
+        or function_name in UNITTEST_METHOD_NAMES
+        or function_name in UNITTEST_FUNCTION_NAMES
+        or function_name.startswith('test_')
+    ) and _is_test_file(filename)
 
 
 def _ignore_method(filename: Path, method_name: str) -> bool:
     return _is_special_name(method_name) or (
-        (method_name in PYTEST_METHOD_NAMES or method_name.startswith('test_')) and _is_test_file(filename)
+        (method_name in PYTEST_METHOD_NAMES or method_name in UNITTEST_METHOD_NAMES or method_name.startswith('test_'))
+        and _is_test_file(filename)
     )
 
 
