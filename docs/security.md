@@ -28,11 +28,9 @@ Dependabot version updates are enabled for the repository and are configured in 
 Both ecosystems check for updates weekly on Monday, timezone `UTC`. Minor and patch updates arrive as one grouped pull request per ecosystem
 (`python-dependencies` for `pip`, `github-actions` for the actions), while major updates arrive as separate pull requests.
 
-Dependabot alerts and Dependabot security updates are not enabled, so a fixed release is picked up either by the weekly version update or by the
+Dependabot alerts and Dependabot security updates are not enabled, so a fixed release is picked up either by the next release or by the
 `Vulnerability audit` workflow described above, not by an automatic security fix. The dependency graph is enabled and is the data source for these
 checks.
-
-A maintainer changes these three GitHub-side settings on the repository's Settings → Code security and analysis page.
 
 ## How to read and fix a finding
 
