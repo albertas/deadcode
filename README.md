@@ -242,6 +242,8 @@ the public module-level names are exported.
         - Wildcard imports stay unrestricted when `__all__` is dynamic or unknown, and explicit imports keep working.
         - Without `__all__`, wildcard imports expose public module-level names, and the README documents the limits.
         - Print verbose log messages as readable ASCII instead of a `bytes` repr when the output stream cannot encode a character.
+        - --ignore-bodies-if-inherits-from and --ignore-definitions-if-inherits-from now recognize dotted base classes such as graphene.ObjectType and match their final component.
+        - The option help text and README document the accepted plain, dotted and glob base-name forms.
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
