@@ -1,6 +1,10 @@
+from pathlib import Path
+
 import pytest
 
 from deadcode.cli import main
+from deadcode.utils.nested_scopes import NestedScope
+from deadcode.visitor.code_item import CodeItem
 
 
 def test_class_should_be_in_scope(virtual_file_system):
@@ -206,3 +210,16 @@ def test_scope_update_for_method_call_expression(virtual_file_system):
     virtual_file_system.assert_files({'foo.py': b""""""})
 
     assert result is None
+
+
+def test_add_code_item_without_scope_is_ignored():
+    # Having
+    nested_scope = NestedScope()
+    code_item = CodeItem(name='Foo', type_='class', filename=Path('foo.py'))
+
+    # When
+    result = nested_scope.add(code_item)
+
+    # Then
+    assert result is None
+    assert nested_scope._scopes == {}  # noqa: SLF001

@@ -1,4 +1,7 @@
+import ast
+
 from deadcode.cli import main
+from deadcode.visitor.lines import get_last_line_number
 
 
 def test_parse_variable_names_from_files(virtual_file_system):
@@ -97,3 +100,24 @@ def test_parse_lambda_function_names_from_files(virtual_file_system):
 
 #     # Then
 #     self.assertEqual(unused_name_count, "4")
+
+
+def test_last_child_without_line_number_is_skipped():
+    # Having
+    last_child = ast.arg(arg='value')
+    node = ast.arguments(
+        posonlyargs=[],
+        args=[last_child],
+        vararg=None,
+        kwonlyargs=[],
+        kw_defaults=[],
+        kwarg=None,
+        defaults=[],
+    )
+    node.lineno = 7
+
+    # When
+    last_line_number = get_last_line_number(node)
+
+    # Then
+    assert last_line_number == 7
