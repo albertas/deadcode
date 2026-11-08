@@ -169,6 +169,9 @@ wait for review. Do not commit feature changes directly to `main`; release
 commits are made by the maintainer on `main`.
 
 - `make check` - runs unit tests and other checks using virtual environment.
+- `make test` - runs the test suite in parallel with `pytest-xdist`, using one worker per logical CPU minus one.
+  Set `PYTEST_XDIST_WORKERS` to change the worker count (`make test PYTEST_XDIST_WORKERS=2`), or pass
+  `PYTEST_ME_PLEASE="-n 0"` to run serially.
 
 ## Rationale
 [ruff](https://pypi.org/project/ruff/) and
@@ -248,6 +251,7 @@ the public module-level names are exported.
         - Documentation is now published on Read the Docs at https://deadcode.readthedocs.io/.
         - Add `-V` as a short alias for `--version`.
         - Document the pre-commit hook setup and usage on a separate documentation page, including why a hook run differs from `deadcode .`.
+        - Run the test suite in parallel with `pytest-xdist`, using one worker per logical CPU minus one.
     - Bugfixes:
         - Fix `--fix` leaving invalid or partially removed imports when unused names are deleted from parenthesized or multi-line import statements.
         - Do not crash when the terminal cannot encode the success message.
@@ -267,15 +271,12 @@ the public module-level names are exported.
         - Test suites cover common FastAPI features and every dependency injection form without reporting them as dead code
         - Print verbose log messages as readable ASCII instead of a `bytes` repr when the output stream cannot encode a character.
         - The FastAPI guide now explains dependency injection and shows feature usage examples
-        - --ignore-bodies-if-inherits-from and --ignore-definitions-if-inherits-from now recognize dotted base classes such as graphene.ObjectType and match their final component.
-        - The option help text and README document the accepted plain, dotted and glob base-name forms.
+        - `--ignore-bodies-if-inherits-from` and `--ignore-definitions-if-inherits-from` now recognize dotted base classes such as `graphene.ObjectType` and match their final component.
         - Render decorator names deterministically, including dotted names, and stop unusual decorators such as `@Class().function()` from crashing or producing memory addresses.
         - The README content is available again as its own page in the Read the Docs documentation.
         - The documentation home page no longer repeats the README content.
         - Stop reporting unittest lifecycle methods declared in test files as unused code (issue #21).
-        - Migrate the test suite from unittest.TestCase to pytest fixtures and plain asserts
-        - Add shared pytest fixtures for the virtual file system and default arguments
-        - Remove the obsolete unittest test helper and its linter configuration
+        - Use pytest instead of unittest.TestCase
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.

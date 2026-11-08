@@ -4,6 +4,7 @@ check: test lint mypy deadcode
 fix: format fixlint
 
 PYTHON_VERSION ?= 3.10
+PYTEST_XDIST_WORKERS ?= $(shell .venv/bin/python -c 'import os; print(max(1, (os.cpu_count() or 2) - 1))')
 
 .venv:
 	@command -v uv >/dev/null || pip install uv
@@ -22,7 +23,7 @@ publish: .venv
 	git push origin tag $(VERSION)
 
 test: .venv
-	.venv/bin/pytest -vv $(PYTEST_ME_PLEASE)
+	.venv/bin/pytest -vv -n $(PYTEST_XDIST_WORKERS) $(PYTEST_ME_PLEASE)
 
 pre-commit: .venv
 	.venv/bin/pre-commit run --all-files
