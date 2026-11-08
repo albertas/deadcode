@@ -27,7 +27,7 @@ It covers released versions only: unreleased changes on the `vulture` `main` bra
 | Python support | `>=3.10` | `>=3.9` |
 | Runtime dependency | `tomli>=2.0.1` on Python < 3.11 | `tomli>=1.1.0` on Python < 3.11 |
 | Console command | `deadcode` | `vulture` |
-| Repository | https://github.com/albertas/deadcode | https://github.com/jendrikseipp/vulture |
+| Repository | [albertas/deadcode](https://github.com/albertas/deadcode) | [jendrikseipp/vulture](https://github.com/jendrikseipp/vulture) |
 
 ## Detection and findings
 

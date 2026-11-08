@@ -297,7 +297,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
 - **v2.6.0** `2026-11-08`:
     - Features:
         - Add support for Python 3.13, 3.14 and 3.15.
-        - Documentation is now published on Read the Docs at https://deadcode.readthedocs.io/.
+        - Documentation is now published on Read the Docs at [deadcode.readthedocs.io](https://deadcode.readthedocs.io/).
         - Add `-V` as a short alias for `--version`.
         - `--ignore-definitions-if-decorated-with` now ignores whole decorated definitions
         - `--ignore-bodies-of` now suppresses the bodies of matching classes and functions
