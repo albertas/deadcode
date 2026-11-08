@@ -255,6 +255,9 @@ the public module-level names are exported.
         - Wildcard imports stay unrestricted when `__all__` is dynamic or unknown, and explicit imports keep working.
         - Without `__all__`, wildcard imports expose public module-level names, and the README documents the limits.
         - Honour `--ignore-names-if-decorated-with` and render decorator names as dotted identifiers such as `@app.get` (see the FastAPI section).
+        - Decorator names are reported as dotted identifiers such as `@app.get` instead of memory addresses
+        - `--ignore-names-if-decorated-with` now suppresses decorated functions, methods, properties, and classes
+        - README explains the recommended configuration for FastAPI projects, verified by an acceptance test
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
