@@ -63,4 +63,4 @@ def test_readme_snippet_pins_the_current_version():
     repository = load_readme_pre_commit_configuration()['repos'][0]
 
     # Then
-    assert repository['rev'] == deadcode.__version__
+    assert repository['rev'] == f'v{deadcode.__version__}'

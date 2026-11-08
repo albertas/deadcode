@@ -27,7 +27,7 @@ Create a `.pre-commit-config.yaml` file in the root of your project directory, i
 ```yaml
 repos:
   - repo: https://github.com/albertas/deadcode
-    rev: 2.5.0
+    rev: v2.6.0
     hooks:
       - id: deadcode
 ```
@@ -45,7 +45,7 @@ Add `args: [--fix]` to let the hook remove the findings instead of only reportin
 ```yaml
 repos:
   - repo: https://github.com/albertas/deadcode
-    rev: 2.5.0
+    rev: v2.6.0
     hooks:
       - id: deadcode
         args: [--fix]
@@ -89,6 +89,6 @@ A hook run and a direct `deadcode .` run can give different results. There are t
 
 ## Solving it
 
-Update `rev` to `2.5.0` or newer. Those releases contain the Unicode-safe output chain for CLI messages in general: the success banner, findings, the parse-failure warning and verbose output use a plain print first, then `sys.stdout.reconfigure(encoding='utf-8')`, then ASCII with `?` replacements. The crash no longer occurs.
+Update `rev` to `v2.6.0` or newer. Those releases contain the Unicode-safe output chain for CLI messages in general: the success banner, findings, the parse-failure warning and verbose output use a plain print first, then `sys.stdout.reconfigure(encoding='utf-8')`, then ASCII with `?` replacements. The crash no longer occurs.
 
 Setting `PYTHONUTF8=1` in the environment is an additional user-side workaround for older pinned versions.

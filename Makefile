@@ -20,8 +20,8 @@ publish: .venv
 	.venv/bin/hatch build
 	.venv/bin/uv publish
 
-	git tag -a $(VERSION) -m "deadcode $(VERSION)"
-	git push origin tag $(VERSION)
+	git tag -a v$(VERSION) -m "deadcode $(VERSION)"
+	git push origin tag v$(VERSION)
 
 	$(MAKE) readthedocs
 
