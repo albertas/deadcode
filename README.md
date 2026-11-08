@@ -284,6 +284,7 @@ the public module-level names are exported.
         - `--ignore-bodies-if-decorated-with` now suppresses the bodies of decorated definitions
         - `--ignore-names-if-inherits-from` now ignores class names matching a base class
         - `--ignore-definitions` now reliably ignores function, method, property and nested class definitions; its limits are documented
+        - Add make targets to measure code coverage reproducibly
     - Bugfixes:
         - Fix `--fix` leaving invalid or partially removed imports when unused names are deleted from parenthesized or multi-line import statements.
         - Fix `--fix` leaving invalid or fragmented imports when removing names from backslash-continued, semicolon-separated, or commented import statements.
