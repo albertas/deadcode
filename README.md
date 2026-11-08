@@ -293,8 +293,8 @@ A checked entry is implemented on `main` and is included in the next release; pu
 - next:
     - Features:
         - Audit runtime and development dependencies for known vulnerabilities in CI on every pull request and weekly.
-- **v2.6.0** `2026-11-08`:
         - Add a sourced vulture comparison page to the published documentation covering versions, feature differences, pros, cons and choosing guidance.
+- **v2.6.0** `2026-11-08`:
     - Features:
         - Add support for Python 3.13, 3.14 and 3.15.
         - Documentation is now published on Read the Docs at https://deadcode.readthedocs.io/.
