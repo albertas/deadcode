@@ -360,9 +360,12 @@ class DeadCodeVisitor(ast.NodeVisitor):
             removal_node=self._get_assignment_removal_node(node),
         )
 
-    # def visit_arg(self, node: ast.AST) -> None:
-    #     """Function argument"""
-    #     self._define_variable(node.arg, node)
+    def _record_annotation_names(self, annotation: ast.AST | None) -> None:
+        for name in utils.collect_names_from_annotation_strings(annotation):
+            self.add_used_name(name, is_bare=True)
+
+    def visit_arg(self, node: ast.arg) -> None:
+        self._record_annotation_names(node.annotation)
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
         return self.visit_FunctionDef(node)
@@ -474,6 +477,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
             )
 
     def visit_FunctionDef(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> None:
+        self._record_annotation_names(node.returns)
         decorator_names = [utils.get_decorator_name(decorator) for decorator in node.decorator_list]
 
         first_arg = node.args.args[0].arg if node.args.args else None
@@ -527,6 +531,9 @@ class DeadCodeVisitor(ast.NodeVisitor):
             for elt in node.value.elts:
                 if isinstance(elt, ast.Constant) and isinstance(elt.value, str):
                     self.add_used_name(elt.value)
+
+    def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
+        self._record_annotation_names(node.annotation)
 
     def visit_While(self, node: ast.While) -> None:
         self._handle_conditional_node(node, 'while')

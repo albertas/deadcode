@@ -107,3 +107,156 @@ def test_exclude_option():
 
 def test_ignore_names_in_files_option():
     pass
+
+
+def test_quoted_annotation_from_issue_is_used(virtual_file_system):
+    virtual_file_system.files = {
+        'quoted.py': b"""from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from abc import ABC
+
+a: "ABC | None" = None
+print(a)
+"""
+    }
+    assert main(['quoted.py', '--no-color']) is None
+
+
+def test_quoted_annassign_annotation_outside_guard_is_used(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""from abc import ABC
+
+a: "ABC | None" = None
+print(a)
+"""
+    }
+    assert main(['foo.py', '--no-color']) is None
+
+
+def test_quoted_parameter_annotation_is_used(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from abc import ABC
+
+
+def handler(value: "ABC") -> None:
+    print(value)
+
+
+print(handler)
+"""
+    }
+    assert main(['foo.py', '--no-color']) is None
+
+
+def test_quoted_return_annotation_with_typing_guard_is_used(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""import typing
+
+if typing.TYPE_CHECKING:
+    from abc import ABC
+
+
+def handler() -> "ABC":
+    return None
+
+
+print(handler)
+"""
+    }
+    assert main(['foo.py', '--no-color']) is None
+
+
+def test_quoted_annotation_with_typing_extensions_guard_is_used(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""from typing_extensions import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from abc import ABC
+
+a: "ABC" = None
+print(a)
+"""
+    }
+    assert main(['foo.py', '--no-color']) is None
+
+
+def test_quoted_annotation_with_aliased_guard_is_used(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""from typing import TYPE_CHECKING as TC
+
+if TC:
+    from abc import ABC
+
+a: "ABC" = None
+print(a)
+"""
+    }
+    assert main(['foo.py', '--no-color']) is None
+
+
+def test_nested_quoted_annotations_are_used(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""from abc import ABC
+
+x: list["ABC"] = []
+
+
+def handler() -> "dict[str, 'ABC']":
+    return {}
+
+
+print(x)
+print(handler)
+"""
+    }
+    assert main(['foo.py', '--no-color']) is None
+
+
+def test_dotted_quoted_annotation_records_module_name(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""from helpers import mod
+
+value: "mod.Type" = None
+print(value)
+"""
+    }
+    assert main(['foo.py', '--no-color']) is None
+
+
+def test_import_not_mentioned_by_quoted_annotation_is_still_unused(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from abc import ABC
+
+a: "XYZ | None" = None
+print(a)
+"""
+    }
+    assert main(['foo.py', '--no-color']) == 'foo.py:4:20: DC07 Import `ABC` is never used'
+
+
+def test_name_only_in_ordinary_string_is_still_unused(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""from abc import ABC
+
+print("ABC")
+"""
+    }
+    assert main(['foo.py', '--no-color']) == 'foo.py:1:16: DC07 Import `ABC` is never used'
+
+
+def test_unparseable_quoted_annotation_is_ignored(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""from abc import ABC
+
+value: "ABC |" = None
+print(value)
+"""
+    }
+    assert main(['foo.py', '--no-color']) == 'foo.py:1:16: DC07 Import `ABC` is never used'
