@@ -35,13 +35,13 @@ publish: .venv
 readthedocs:
 	@curl --fail-with-body --silent --show-error --request POST \
 		--header "Authorization: Token $(READTHEDOCS_API_TOKEN)" \
-		"$(READTHEDOCS_API_URL)/versions/$(VERSION)/builds/"
+		"$(READTHEDOCS_API_URL)/versions/$(VERSION)/builds/" >/dev/null
 	@curl --fail-with-body --silent --show-error --request POST \
 		--header "Authorization: Token $(READTHEDOCS_API_TOKEN)" \
-		"$(READTHEDOCS_API_URL)/versions/stable/builds/"
+		"$(READTHEDOCS_API_URL)/versions/stable/builds/" >/dev/null
 	@curl --fail-with-body --silent --show-error --request POST \
 		--header "Authorization: Token $(READTHEDOCS_API_TOKEN)" \
-		"$(READTHEDOCS_API_URL)/versions/latest/builds/"
+		"$(READTHEDOCS_API_URL)/versions/latest/builds/" >/dev/null
 
 test: .venv
 	.venv/bin/pytest -vv -n $(PYTEST_XDIST_WORKERS) $(PYTEST_ME_PLEASE)
