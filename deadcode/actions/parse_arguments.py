@@ -216,8 +216,11 @@ def parse_arguments(args: list[str] | None) -> Args:
 
     # Extend the Args with the values provided in the pyproject.toml
     for key, item in parse_pyproject_toml().items():
-        if key in parsed_args:
-            parsed_args[key].extend(item)
+        if key not in parsed_args:
+            continue
+        if isinstance(item, str) and isinstance(parsed_args[key], list):
+            item = [item]
+        parsed_args[key].extend(item)
 
     # Do not fix if dry option is provided:
     if parsed_args['dry']:
