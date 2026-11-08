@@ -208,6 +208,16 @@ commits are made by the maintainer on `main`.
   Set `PYTEST_XDIST_WORKERS` to change the worker count (`make test PYTEST_XDIST_WORKERS=2`), or pass
   `PYTEST_ME_PLEASE="-n 0"` to run serially.
 
+## Security
+
+The runtime dependencies in `requirements.txt` and the development dependencies in `requirements-dev.txt` are audited for known
+vulnerabilities with `pip-audit`. The `Vulnerability audit` workflow in `.github/workflows/vulnerability-audit.yml` runs on every pull request,
+on every push to `main`, and weekly on a schedule. Run the same audit locally with `make audit`, `make audit-runtime`, or
+`make audit-development`.
+
+Read the [security documentation](https://deadcode.readthedocs.io/en/latest/security.html) for how to read and fix a finding. The only accepted
+exception is `filelock==4.1.0` on Python 3.10, where the fix requires Python 3.11 or newer.
+
 ## Rationale
 [ruff](https://pypi.org/project/ruff/) and
 [flake8](https://pypi.org/project/flake8/) - don't have rules for unused global
@@ -281,6 +291,9 @@ A checked entry is implemented on `main` and is included in the next release; pu
 - [ ] Investigate ways of extracting and backporting Python3.10+ `ast` implementation to lower Python versions.
 
 ## Release notes
+- next:
+    - Features:
+        - Audit runtime and development dependencies for known vulnerabilities in CI on every pull request and weekly.
 - **v2.6.0** `2026-11-08`:
     - Features:
         - Add support for Python 3.13, 3.14 and 3.15.

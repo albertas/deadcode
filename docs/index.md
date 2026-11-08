@@ -24,6 +24,8 @@ Read the {doc}`pre_commit` page for setting up and using the pre-commit hook.
 
 Read the {doc}`contributing` page for the contribution workflow and the feature-request checklist.
 
+Read the {doc}`security` page for the vulnerability detection process and how to respond to a finding.
+
 Read the {doc}`known_limitations` page for the analyser's known limitations.
 
 Read the {doc}`release_notes` page for the release history.
@@ -39,6 +41,7 @@ rules
 fastapi
 pre_commit
 contributing
+security
 known_limitations
 release_notes
 features
