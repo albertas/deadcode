@@ -56,7 +56,7 @@ def test_plain_comment_is_not_reported(virtual_file_system):
     # Having
     virtual_file_system.files = {
         'foo.py': b"""
-                # TODO: explain the next line
+                # plain comment, which is not commented out code
                 print("Keep the file")
                 """
     }

@@ -73,7 +73,6 @@ def remove_file_parts_from_content(content_lines: list[bytes], unused_file_parts
     # How should move through the lines of content?
     updated_content_lines = []
 
-    # TODO: iterate by line and crop that line if needed.
     unused_part_index = 0
 
     previous_non_removed_line = b''
@@ -132,7 +131,6 @@ def remove_file_parts_from_content(content_lines: list[bytes], unused_file_parts
                 line = line.lstrip()[1:].lstrip()
 
             unused_part_index += 1
-            # TODO: Add tests for case, when comments are added at the start or end of the removed block
             if line.strip() and not line.startswith(b'#'):
                 updated_content_lines.append(line)
 

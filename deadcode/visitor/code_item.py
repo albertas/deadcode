@@ -1,5 +1,3 @@
-# TODO: filename is incorrect, because `.` is used instead of the actual file.
-
 from pathlib import Path
 
 from deadcode.constants import UnusedCodeType, ERROR_TYPE_TO_ERROR_CODE
@@ -31,7 +29,7 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
         name: str,
         type_: UnusedCodeType,
         filename: Path,
-        code_parts: list[Part] | None = None,  # TODO: I should use a dataclass instead of a tuple for Part.
+        code_parts: list[Part] | None = None,
         scope: str | None = None,
         inherits_from: list[str] | None = None,
         name_line: int | None = None,

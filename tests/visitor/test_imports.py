@@ -69,7 +69,6 @@ def test_module_imported_with_alias_and_var_from_it_is_used(virtual_file_system)
 
 
 def test_relative_module_imports(virtual_file_system):
-    # TODO: add more relative import tests
     # https://docs.python.org/3/tutorial/modules.html#intra-package-references
 
     # Having
@@ -78,6 +77,22 @@ def test_relative_module_imports(virtual_file_system):
         'eggs/spam/bar.py': b"""
                 from .. import foo as f
                 print(f.used_var)""",
+    }
+
+    # When
+    unused_names = main(['ignore_names_by_pattern.py', '--no-color'])
+
+    # Then
+    assert unused_names is None
+
+
+def test_sibling_relative_module_imports(virtual_file_system):
+    # Having
+    virtual_file_system.files = {
+        'eggs/foo.py': b'used_var = None',
+        'eggs/bar.py': b"""
+                from .foo import used_var
+                print(used_var)""",
     }
 
     # When
@@ -143,22 +158,6 @@ def test_ignore_variable_names_in_strings(virtual_file_system):
 
     # Then
     assert unused_names == 'foo.py:4:0: DC01 Variable `unused_var` is never used'
-
-
-# TODO:
-def test_unused_names_found_in_subdirectories():
-    # Having
-    pass
-
-
-def test_exclude_option():
-    # Having
-    pass
-
-
-def test_ignore_names_in_files_option():
-    # Having
-    pass
 
 
 def test_quoted_annotation_from_issue_is_used(virtual_file_system):
