@@ -386,7 +386,7 @@ def test_unused_multi_line_parenthesized_import_block(virtual_file_system):
     )
 
 
-def test_issue_24_partly_used_multi_name_from_import(virtual_file_system):
+def test_partly_used_multi_name_from_import(virtual_file_system):
     virtual_file_system.files = {
         'file2.py': b"""
                 from mymodule.test import used_func, unused_func
@@ -418,7 +418,7 @@ def test_issue_24_partly_used_multi_name_from_import(virtual_file_system):
     assert virtual_file_system.updated_files['file2.py'] == first_content
 
 
-def test_issue_24_fully_unused_single_name_from_import(virtual_file_system):
+def test_fully_unused_single_name_from_import(virtual_file_system):
     virtual_file_system.files = {
         'file2.py': b"""
                 from mymodule.test import unused_func
