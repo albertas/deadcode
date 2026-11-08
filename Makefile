@@ -15,8 +15,6 @@ PYTEST_XDIST_WORKERS ?= $(shell .venv/bin/python -c 'import os; print(max(1, (os
 
 VERSION := $(shell .venv/bin/hatch version)
 
-READTHEDOCS_API_URL ?= https://app.readthedocs.org/api/v3/projects/deadcode
-
 publish: .venv
 	@test -n "$(READTHEDOCS_API_TOKEN)" || { \
 		echo "publish: set READTHEDOCS_API_TOKEN to a Read the Docs API token with build permissions" >&2; \
@@ -35,13 +33,13 @@ publish: .venv
 readthedocs:
 	@curl --fail-with-body --silent --show-error --request POST \
 		--header "Authorization: Token $(READTHEDOCS_API_TOKEN)" \
-		"$(READTHEDOCS_API_URL)/versions/$(VERSION)/builds/" >/dev/null
+		"https://app.readthedocs.org/api/v3/projects/deadcode/versions/$(VERSION)/builds/" >/dev/null
 	@curl --fail-with-body --silent --show-error --request POST \
 		--header "Authorization: Token $(READTHEDOCS_API_TOKEN)" \
-		"$(READTHEDOCS_API_URL)/versions/stable/builds/" >/dev/null
+		"https://app.readthedocs.org/api/v3/projects/deadcode/versions/stable/builds/" >/dev/null
 	@curl --fail-with-body --silent --show-error --request POST \
 		--header "Authorization: Token $(READTHEDOCS_API_TOKEN)" \
-		"$(READTHEDOCS_API_URL)/versions/latest/builds/" >/dev/null
+		"https://app.readthedocs.org/api/v3/projects/deadcode/versions/latest/builds/" >/dev/null
 
 test: .venv
 	.venv/bin/pytest -vv -n $(PYTEST_XDIST_WORKERS) $(PYTEST_ME_PLEASE)
