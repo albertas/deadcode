@@ -27,13 +27,13 @@ dependencies = [
 [project.optional-dependencies]
 test = [
     "hatch",
-    "ruff==0.5.1",
+    "ruff==0.17.3",
     "mypy==1.10.1",
     "pip-audit==2.10.1",
     "deadcode",
     "diff-cover==10.6.0",
     "pre-commit",
-    "pytest==9.0.3",
+    "pytest==9.2.0",
     "pytest-cov==5.0.0",
     "pytest-xdist==3.8.0",
 ]
