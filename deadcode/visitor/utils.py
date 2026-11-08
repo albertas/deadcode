@@ -52,14 +52,12 @@ def condition_is_always_true(condition: ast.AST) -> bool:
 
 def get_decorator_name(decorator: ast.AST) -> str:
     if isinstance(decorator, ast.Call):
-        decorator = decorator.func
-    parts = []
-    while isinstance(decorator, ast.Attribute):
-        parts.append(decorator.attr)
-        decorator = decorator.value
+        return get_decorator_name(decorator.func)
     if isinstance(decorator, ast.Name):
-        parts.append(decorator.id)
-    return '@' + '.'.join(reversed(parts))
+        return '@' + decorator.id
+    if isinstance(decorator, ast.Attribute):
+        return get_decorator_name(decorator.value) + '.' + decorator.attr
+    return '@' + ast.unparse(decorator)
 
 
 def get_base_class_names(base: ast.AST) -> list[str]:
