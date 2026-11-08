@@ -158,12 +158,14 @@ over the cleaned tree.
 | DC03  | unused-class         | Class `{name}` is never used
 | DC04  | unused-method        | Method `{name}` is never used
 | DC05  | unused-attribute     | Attribute `{name}` is never used
+| DC06  | unused-name          | Name `{name}` is never used
 | DC07  | unused-import        | Import `{name}` is never used
 | DC08  | unused-property      | Property `{name}` is never used
+| DC09  | unreachable-body     | Unreachable body of a conditional statement or loop
 | DC11  | empty-file           | Empty Python file
+| DC12  | commented-out-code   | Commented out code
+| DC13  | unreachable-code     | Code after terminal statement, e.g. `return`, `raise`, `continue`, `break`
 | DC    | ignore-expression    | Do not show any findings for an expression, which starts on current line (this code can only be used in `# noqa: DC` comments)
-
-Planned rules that are not implemented yet: DC06 (unused-name), DC09 (unreachable-if-block), DC12 (commented-out-code), DC13 (unreachable-code).
 
 ## Ignoring checks with noqa comments
 Inline `# noqa` comments can be used to ignore `deadcode` checks.
@@ -237,9 +239,9 @@ A checked entry is implemented on `main` and is included in the next release; pu
     - [ ] Allow to disable each check separately using:
         - [ ] inline comment.
         - [ ] pyproject.toml file
-- [ ] Add a check for code in comments.
-- [ ] DC06: detect an unused name (no detection is implemented yet).
-- [ ] DC09: report an unreachable if-block (items are collected but not reported yet).
+- [x] Add a check for code in comments.
+- [x] DC06: detect an unused name.
+- [x] DC09: report an unreachable body, e.g. an `if` or `while` block that cannot run.
 - [ ] Add target python version option, if specified it will be used for code base check.
 - [ ] Add a `--depth` parameter to ignore nested code.. (To only check global scope use 0).
 - [ ] Add options:
@@ -255,13 +257,13 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - What expression would allow this type of precission?
 - [ ] Distinguish between definitions with same name, but different files.
 - [ ] Repeated application of `deadcode` till the output stops changing.
-- [ ] Unreachable code detection and fixing: this should only be scoped for if statements and only limited to primitive variables.
+- [x] Unreachable code detection and fixing: this should only be scoped for if statements and only limited to primitive variables.
 - [ ] Benchmarking performance with larger projects (time, CPU and memory consumption) in order to optimize.
 - [ ] `--fix` could accept a list of filenames as well (only those files would be changed, but the summary could would be full).
     (This might be confusing, because filenames, which have to be considered are provided without any flag, --fix is expected to not accept arguments)
 - [ ] pre-commit-hook.
 - [ ] language server.
-- [ ] DC10: remove code after terminal statements like `raise`, `return`, `break`, `continue` and comes in the same scope.
+- [x] DC13: remove code after terminal statements like `raise`, `return`, `break`, `continue` and comes in the same scope.
 - [ ] Add `ignore` and `per-file-ignores` command line and pyproject.toml options, which allows to skip some rules.
 - [ ] Make sure that all rules are being skipped by `noqa` comment and all rules react to `noqa: rule_id` comments.
 - [ ] Include package names into code item scope (dot-separated path), e.g. "package1.package2.module.class.method.variable".

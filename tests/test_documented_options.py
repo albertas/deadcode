@@ -29,8 +29,6 @@ def documented_options() -> dict[str, str]:
             continue
         long_option = max(option_tokens, key=len)
         cells = line.split('|')
-        if len(cells) < 4:  # noqa: PLR2004
-            continue
         options[long_option] = cells[3].strip()
     return options
 

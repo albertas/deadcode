@@ -49,10 +49,11 @@ ERROR_CODES = {
     'name': b'DC06',
     'import': b'DC07',
     'property': b'DC08',
-    'unreachable_code': b'DC09',
+    'unreachable_body': b'DC09',
     'empty_file': b'DC11',
     'commented_out_code': b'DC12',
     'ignore_expression': b'DC13',
+    'unreachable_code': b'DC13',
 }
 
 
