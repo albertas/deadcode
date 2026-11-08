@@ -26,10 +26,13 @@ class MyTests(TestCase):
         pass
 """
 
-SOURCE_WITH_UNUSED_HELPER = SOURCE + b"""
+SOURCE_WITH_UNUSED_HELPER = (
+    SOURCE
+    + b"""
     def unused_helper(self):
         pass
 """
+)
 
 
 class TestUnittestLifecycleMethods(BaseTestCase):
