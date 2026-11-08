@@ -384,3 +384,182 @@ def test_unused_multi_line_parenthesized_import_block(virtual_file_system):
                     """
         }
     )
+
+
+def test_partly_used_multi_name_from_import(virtual_file_system):
+    virtual_file_system.files = {
+        'file2.py': b"""
+                from mymodule.test import used_func, unused_func
+
+                used_func()
+                """
+    }
+
+    unused_names = main('file2.py --no-color --fix'.split())
+
+    assert 'DC07 Import `unused_func` is never used' in (unused_names or '')
+    assert 'DC07 Import `used_func` is never used' not in (unused_names or '')
+
+    first_content = virtual_file_system.updated_files['file2.py']
+    virtual_file_system.assert_files(
+        {
+            'file2.py': b"""
+                    from mymodule.test import used_func
+
+                    used_func()
+                    """
+        }
+    )
+
+    virtual_file_system.files = {'file2.py': first_content}
+    second_output = main('file2.py --no-color --fix'.split())
+
+    assert 'never used' not in (second_output or '')
+    assert virtual_file_system.updated_files['file2.py'] == first_content
+
+
+def test_fully_unused_single_name_from_import(virtual_file_system):
+    virtual_file_system.files = {
+        'file2.py': b"""
+                from mymodule.test import unused_func
+
+                print(1)
+                """
+    }
+
+    unused_names = main('file2.py --no-color --fix'.split())
+
+    assert 'DC07 Import `unused_func` is never used' in (unused_names or '')
+
+    first_content = virtual_file_system.updated_files['file2.py']
+    virtual_file_system.assert_files(
+        {
+            'file2.py': b"""
+                    print(1)
+                    """
+        }
+    )
+
+    virtual_file_system.files = {'file2.py': first_content}
+    second_output = main('file2.py --no-color --fix'.split())
+
+    assert 'never used' not in (second_output or '')
+    assert virtual_file_system.updated_files['file2.py'] == first_content
+
+
+def test_partial_backslash_continued_import_removal(virtual_file_system):
+    virtual_file_system.files = {
+        'file2.py': b"""
+                from m import used, \\
+                    unused
+
+                used()
+                """
+    }
+
+    unused_names = main('file2.py --no-color --fix'.split())
+
+    assert 'DC07 Import `unused` is never used' in (unused_names or '')
+
+    first_content = virtual_file_system.updated_files['file2.py']
+    virtual_file_system.assert_files(
+        {
+            'file2.py': b"""
+                    from m import used
+                    used()
+                    """
+        }
+    )
+
+    virtual_file_system.files = {'file2.py': first_content}
+    second_output = main('file2.py --no-color --fix'.split())
+
+    assert 'never used' not in (second_output or '')
+    assert virtual_file_system.updated_files['file2.py'] == first_content
+
+
+def test_partial_multi_line_last_alias_removal(virtual_file_system):
+    virtual_file_system.files = {
+        'file2.py': b"""
+                from file1 import (
+                    used_func,
+                    unused_func,
+                )
+
+                used_func()
+                """
+    }
+
+    unused_names = main('file2.py --no-color --fix'.split())
+
+    assert 'DC07 Import `unused_func` is never used' in (unused_names or '')
+
+    first_content = virtual_file_system.updated_files['file2.py']
+    virtual_file_system.assert_files(
+        {
+            'file2.py': b"""
+                    from file1 import (
+                        used_func
+                    )
+
+                    used_func()
+                    """
+        }
+    )
+
+    virtual_file_system.files = {'file2.py': first_content}
+    second_output = main('file2.py --no-color --fix'.split())
+
+    assert 'never used' not in (second_output or '')
+    assert virtual_file_system.updated_files['file2.py'] == first_content
+
+
+def test_fully_unused_import_followed_by_statement_on_same_line(virtual_file_system):
+    virtual_file_system.files = {'file2.py': b'from m import unused; print(1)\n'}
+
+    unused_names = main('file2.py --no-color --fix'.split())
+
+    assert 'DC07 Import `unused` is never used' in (unused_names or '')
+
+    first_content = virtual_file_system.updated_files['file2.py']
+    virtual_file_system.assert_files({'file2.py': b'print(1)\n'})
+
+    virtual_file_system.files = {'file2.py': first_content}
+    second_output = main('file2.py --no-color --fix'.split())
+
+    assert 'never used' not in (second_output or '')
+    assert virtual_file_system.updated_files['file2.py'] == first_content
+
+
+def test_fully_unused_import_preceded_by_statement_on_same_line(virtual_file_system):
+    virtual_file_system.files = {'file2.py': b'print(1); from m import unused\n'}
+
+    unused_names = main('file2.py --no-color --fix'.split())
+
+    assert 'DC07 Import `unused` is never used' in (unused_names or '')
+
+    first_content = virtual_file_system.updated_files['file2.py']
+    virtual_file_system.assert_files({'file2.py': b'print(1)\n'})
+
+    virtual_file_system.files = {'file2.py': first_content}
+    second_output = main('file2.py --no-color --fix'.split())
+
+    assert 'never used' not in (second_output or '')
+    assert virtual_file_system.updated_files['file2.py'] == first_content
+
+
+def test_fully_unused_import_with_trailing_comment(virtual_file_system):
+    virtual_file_system.files = {'file2.py': b'from m import unused  # only used for typing\n\nprint(1)\n'}
+
+    unused_names = main('file2.py --no-color --fix'.split())
+
+    assert 'DC07 Import `unused` is never used' in (unused_names or '')
+
+    first_content = virtual_file_system.updated_files['file2.py']
+    virtual_file_system.assert_files({'file2.py': b'print(1)\n'})
+
+    virtual_file_system.files = {'file2.py': first_content}
+    second_output = main('file2.py --no-color --fix'.split())
+
+    assert 'never used' not in (second_output or '')
+    assert virtual_file_system.updated_files['file2.py'] == first_content
