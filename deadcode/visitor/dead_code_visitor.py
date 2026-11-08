@@ -54,7 +54,6 @@ class DeadCodeVisitor(ast.NodeVisitor):
         self.ignore_decorators: list[str] = []
 
         verbose = False
-        # verbose = args.verbose  # noqa: DC12
         self.verbose = verbose
 
         self.defined_attrs: list[CodeItem] = LoggingList('attribute', verbose)
@@ -502,7 +501,6 @@ class DeadCodeVisitor(ast.NodeVisitor):
                 self.add_used_name(attr_name_arg.value)
 
         # Parse variable names in new format strings:
-        # "{my_var}".format(**locals())  # noqa: DC12
         if (
             isinstance(node.func, ast.Attribute)
             and isinstance(node.func.value, ast.Constant)
@@ -639,7 +637,6 @@ class DeadCodeVisitor(ast.NodeVisitor):
     def visit_While(self, node: ast.While) -> None:
         self._handle_conditional_node(node, 'while')
 
-    # def visit_MatchClass(self, node: ast.MatchClass) -> None:  # type: ignore
     def visit_MatchClass(self, node) -> None:  # type: ignore
         for kwd_attr in node.kwd_attrs:
             self.add_used_name(kwd_attr)
@@ -720,7 +717,6 @@ class DeadCodeVisitor(ast.NodeVisitor):
             self.visit(ast.parse(type_comment, filename='<type_comment>', mode=mode))
 
         ###########
-        # """Called if no explicit visitor function exists for a node."""
         # TODO: for assignment statements unused_code unit should be whole assignment statement instead of a name itself
         # Note: Node is None if file is empty, contains only a docstring, a comment or has a SyntaxError.
         pushed_assignment_node: ast.Assign | ast.AnnAssign | ast.AugAssign | None = None

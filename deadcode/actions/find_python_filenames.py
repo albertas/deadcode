@@ -40,9 +40,3 @@ def find_python_filenames(args: Args) -> list[str]:
 
 # TODO: Whats the solution for mocking the file system checking?
 # Every single provided file is assumed to exist.
-
-
-# # TODO: investigate what can be reused from this module
-#     Loop over all given paths, abort if any ends with .pyc, add the other given
-#     files (even those not ending with .py) and collect all .py files under the
-#     given directories.

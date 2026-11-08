@@ -75,9 +75,6 @@ class NestedScope:
 
         # In this place I should get a list of names, which are being used in the invocation.
 
-        # if name == "spam":
-        #     breakpoint()  # noqa: DC12
-
         code_item = self.get(name, scope)
         if isinstance(code_item, CodeItem):
             code_item.number_of_uses += 1

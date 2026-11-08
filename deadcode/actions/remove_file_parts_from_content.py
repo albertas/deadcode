@@ -147,9 +147,6 @@ def remove_file_parts_from_content(content_lines: list[bytes], unused_file_parts
             if not line.strip():
                 empty_lines_in_a_row_list.append(line)
                 continue
-
-                # if was_block_removed:  # These lines will be added when first non-empty line is found
-                #     continue  # noqa: DC12
             elif not was_block_removed:
                 updated_content_lines.extend(empty_lines_in_a_row_list)
                 empty_lines_in_a_row_list.clear()
