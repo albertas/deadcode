@@ -281,6 +281,8 @@ class DeadCodeVisitor(ast.NodeVisitor):
         last_node: ast.AST | None = None,
         message: str = '',
         ignore: Callable[[Path, str], bool] | None = None,
+        *,
+        decorator_names: Iterable[str] = (),
     ) -> None:
         # TODO: add support for ignore_definitions, ignore_definitions_if_inherits_from options
         self._log(
@@ -294,6 +296,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
                 (ignore and ignore(self.filename, name))
                 or _match(name, self.args.ignore_names)
                 or _match(self.filename, self.args.ignore_names_in_files)
+                or _match_many(decorator_names, self.args.ignore_names_if_decorated_with)
                 or self.should_ignore_new_definitions
                 or any(noqa.ignore_line(self.noqa_lines, lineno, ERROR_CODES[type_]) for lineno in linenos)
             )
@@ -428,15 +431,22 @@ class DeadCodeVisitor(ast.NodeVisitor):
         return list(dict.fromkeys(inherits_from))
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        decorator_names = [utils.get_decorator_name(decorator) for decorator in node.decorator_list]
         for decorator in node.decorator_list:
-            if _match(utils.get_decorator_name(decorator), self.ignore_decorators):  # type: ignore
+            if _match(utils.get_decorator_name(decorator), self.ignore_decorators):
                 self._log(f'Ignoring class "{node.name}" (decorator whitelisted)')
                 break
         else:
-            self._define(self.defined_classes, node.name, node, ignore=_ignore_class)
+            self._define(
+                self.defined_classes,
+                node.name,
+                node,
+                ignore=_ignore_class,
+                decorator_names=decorator_names,
+            )
 
     def visit_FunctionDef(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> None:
-        decorator_names = [utils.get_decorator_name(decorator) for decorator in node.decorator_list]  # type: ignore
+        decorator_names = [utils.get_decorator_name(decorator) for decorator in node.decorator_list]
 
         first_arg = node.args.args[0].arg if node.args.args else None
 
@@ -450,11 +460,11 @@ class DeadCodeVisitor(ast.NodeVisitor):
         if any(_match(name, self.ignore_decorators) for name in decorator_names):
             self._log(f'Ignoring {type_} "{node.name}" (decorator whitelisted)')
         elif type_ == 'property':
-            self._define(self.defined_props, node.name, node)
+            self._define(self.defined_props, node.name, node, decorator_names=decorator_names)
         elif type_ == 'method':
-            self._define(self.defined_methods, node.name, node, ignore=_ignore_method)
+            self._define(self.defined_methods, node.name, node, ignore=_ignore_method, decorator_names=decorator_names)
         else:
-            self._define(self.defined_funcs, node.name, node, ignore=_ignore_function)
+            self._define(self.defined_funcs, node.name, node, ignore=_ignore_function, decorator_names=decorator_names)
 
     def visit_If(self, node: ast.If) -> None:
         self._handle_conditional_node(node, 'if')

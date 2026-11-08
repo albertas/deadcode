@@ -1,27 +1,24 @@
 import ast
-import re
+
+import pytest
 
 from deadcode.visitor.utils import get_decorator_name
 
 
+def _decorator_node(source: str) -> ast.AST:
+    return ast.parse(f'{source}\ndef function():\n    pass\n').body[0].decorator_list[0]
+
+
 class TestUtils:
-    def test_get_decorator_name_attribute(self):
-        # Test with a decorator with an attribute
-        decorator = ast.Attribute(value=ast.Name(id='module', ctx=ast.Load()), attr='my_decorator1')
-        assert get_decorator_name(decorator).endswith('.my_decorator1')
-
-        # Test with a complex decorator
-        decorator = ast.Attribute(
-            value=decorator,  # Create nested attributes
-            attr='my_decorator2',
-            ctx=ast.Load(),
-        )
-        assert re.match(r'@\d+\.my_decorator1\.\d+\.my_decorator2', get_decorator_name(decorator))
-
-    def test_get_decorator_name_call(self):
-        decorator = ast.Attribute(value=ast.Name(id='module', ctx=ast.Load()), attr='my_decorator')
-        assert re.match(r'@\d+\.my_decorator', get_decorator_name(decorator))
-
-        # Test with a decorator that is a call
-        decorator = ast.Call(func=decorator, args=[], keywords=[])
-        assert re.match(r'@\d+\.my_decorator', get_decorator_name(decorator))
+    @pytest.mark.parametrize(
+        ('source', 'expected'),
+        [
+            ('@deco', '@deco'),
+            ('@app.get', '@app.get'),
+            ('@a.b.c.get', '@a.b.c.get'),
+            ('@app.get("/x")', '@app.get'),
+            ('@Class().function()', '@function'),
+        ],
+    )
+    def test_get_decorator_name(self, source, expected):
+        assert get_decorator_name(_decorator_node(source)) == expected

@@ -50,6 +50,20 @@ ignore-names = ["BaseTestCase", "*Mixin"]
 ignore-names-in-files = ["migrations"]
 ```
 
+## Using deadcode on a FastAPI project
+
+FastAPI registers handlers through decorators and populates Pydantic model fields at runtime, so both look unused to a static analyser.
+Configure deadcode like this:
+
+```toml
+[tool.deadcode]
+ignore-names-if-decorated-with = ["@app.*", "@router.*"]
+ignore-bodies-if-inherits-from = ["BaseModel"]
+```
+
+Read the [FastAPI guide](https://deadcode.readthedocs.io/en/latest/fastapi.html) for common use cases, the complete example application,
+the dependency injection strategy, and the expected output with no wrong detections.
+
 ## Pre-commit hook
 Create a `.pre-commit-config.yaml` file in the root of your project directory, if it doesn't exist, and add the following to the file:
 
@@ -196,7 +210,7 @@ the public module-level names are exported.
     - [x] --ignore-definitions-if-inherits-from
     - [ ] --ignore-definitions-if-decorated-with
     - [ ] --ignore-names-if-inherits-from
-    - [ ] --ignore-names-if-decorated-with
+    - [x] --ignore-names-if-decorated-with
     - [ ] --ignore-bodies-of
     - [ ] --ignore-bodies-if-decorated-with
     - [x] --ignore-bodies-if-inherits-from
@@ -241,7 +255,14 @@ the public module-level names are exported.
         - Wildcard imports now honour a module `__all__` list or tuple, so excluded names are reported as unused.
         - Wildcard imports stay unrestricted when `__all__` is dynamic or unknown, and explicit imports keep working.
         - Without `__all__`, wildcard imports expose public module-level names, and the README documents the limits.
+        - Honour `--ignore-names-if-decorated-with` and render decorator names as dotted identifiers such as `@app.get` (see the FastAPI section).
+        - Decorator names are reported as dotted identifiers such as `@app.get` instead of memory addresses
+        - `--ignore-names-if-decorated-with` now suppresses decorated functions, methods, properties, and classes
+        - The FastAPI guide documents the recommended configuration, common use cases, dependency injection, and a complete example
+          application with only real findings
+        - Test suites cover common FastAPI features and every dependency injection form without reporting them as dead code
         - Print verbose log messages as readable ASCII instead of a `bytes` repr when the output stream cannot encode a character.
+        - The FastAPI guide now explains dependency injection and shows feature usage examples
         - --ignore-bodies-if-inherits-from and --ignore-definitions-if-inherits-from now recognize dotted base classes such as graphene.ObjectType and match their final component.
         - The option help text and README document the accepted plain, dotted and glob base-name forms.
 - v2.5.0 (2026-11-07):
