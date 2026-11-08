@@ -25,6 +25,7 @@ from deadcode.visitor import lines
 from deadcode.visitor.module_exports import collect_module_exports
 from deadcode.visitor.ignore import (
     ERROR_CODES,
+    IGNORED_INTERFACE_DECORATOR_NAMES,
     IGNORED_VARIABLE_NAMES,
     _get_unused_items,
     _match,
@@ -289,6 +290,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
                 or _match(name, self.args.ignore_names)
                 or _match(self.filename, self.args.ignore_names_in_files)
                 or _match_many(decorator_names, self.args.ignore_names_if_decorated_with)
+                or _match_many(decorator_names, IGNORED_INTERFACE_DECORATOR_NAMES)
                 or (item_inherits_from := getattr(first_node, 'inherits_from', None))
                 and _match_many(item_inherits_from, self.args.ignore_names_if_inherits_from)
                 or self.should_ignore_new_definitions
