@@ -122,7 +122,7 @@ more-itertools==11.2.1 ; python_full_version >= '3.11'
     #   jaraco-functools
 msgpack==1.2.4
     # via cachecontrol
-mypy==1.10.1
+mypy==2.4.1
     # via deadcode (pyproject.toml)
 mypy-extensions==1.2.0
     # via mypy
