@@ -271,14 +271,10 @@ the public module-level names are exported.
         - Test suites cover common FastAPI features and every dependency injection form without reporting them as dead code
         - Print verbose log messages as readable ASCII instead of a `bytes` repr when the output stream cannot encode a character.
         - The FastAPI guide now explains dependency injection and shows feature usage examples
-        - --ignore-bodies-if-inherits-from and --ignore-definitions-if-inherits-from now recognize dotted base classes such as graphene.ObjectType and match their final component.
-        - The option help text and README document the accepted plain, dotted and glob base-name forms.
+        - `--ignore-bodies-if-inherits-from` and `--ignore-definitions-if-inherits-from` now recognize dotted base classes such as `graphene.ObjectType` and match their final component.
         - Render decorator names deterministically, including dotted names, and stop unusual decorators such as `@Class().function()` from crashing or producing memory addresses.
         - Stop reporting unittest lifecycle methods declared in test files as unused code (issue #21).
-        - Migrate the test suite from unittest.TestCase to pytest fixtures and plain asserts
-        - Add shared pytest fixtures for the virtual file system and default arguments
-        - Remove the obsolete unittest test helper and its linter configuration
-        - Run the test suite in parallel with pytest-xdist, using one worker per logical CPU minus one.
+        - Use pytest instead of unittest.TestCase
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
