@@ -20,7 +20,7 @@ def test_class_should_be_in_scope(virtual_file_system):
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
     # Then
-    assert unused_names == ('foo.py:1:0: DC03 Class `Foo` is never used\n\n' 'Removed 1 unused code item!')
+    assert unused_names == ('foo.py:1:0: DC03 Class `Foo` is never used\n\nRemoved 1 unused code item!')
 
     virtual_file_system.assert_files({})
 

@@ -75,7 +75,7 @@ def test_name_excluded_by_all_is_reported_for_variables_and_functions(virtual_fi
 
     # Then
     assert unused_names == (
-        'foo.py:3:0: DC01 Variable `hidden` is never used\n' 'foo.py:6:0: DC02 Function `hidden_function` is never used'
+        'foo.py:3:0: DC01 Variable `hidden` is never used\nfoo.py:6:0: DC02 Function `hidden_function` is never used'
     )
 
 
@@ -393,7 +393,7 @@ def test_empty_all_reports_every_other_name(virtual_file_system):
 
     # Then
     assert unused_names == (
-        'foo.py:2:0: DC01 Variable `foo` is never used\n' 'foo.py:3:0: DC01 Variable `bar` is never used'
+        'foo.py:2:0: DC01 Variable `foo` is never used\nfoo.py:3:0: DC01 Variable `bar` is never used'
     )
 
 

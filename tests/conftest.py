@@ -73,9 +73,9 @@ class VirtualFileSystem:
             for filename, file_content in self.files.items()
             if filename not in self.updated_files and filename not in removed_filenames
         }
-        assert list(expected_files.keys()) == list(self.updated_files.keys()) + list(
-            unchanged_files.keys()
-        ), 'file names do not match'
+        assert list(expected_files.keys()) == list(self.updated_files.keys()) + list(unchanged_files.keys()), (
+            'file names do not match'
+        )
 
         for filename, content in expected_files.items():
             actual_content = self.updated_files.get(filename) or unchanged_files.get(filename) or ''
@@ -92,17 +92,17 @@ class VirtualFileSystem:
             assert_valid_python(self.updated_files[filename])
 
 
-@pytest.fixture()
+@pytest.fixture
 def virtual_file_system(monkeypatch: pytest.MonkeyPatch) -> VirtualFileSystem:
     return VirtualFileSystem(monkeypatch)
 
 
-@pytest.fixture()
+@pytest.fixture
 def arguments() -> Args:
     return Args()
 
 
-@pytest.fixture()
+@pytest.fixture
 def project_directory(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.chdir(tmp_path)
     return tmp_path

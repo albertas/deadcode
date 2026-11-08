@@ -199,7 +199,7 @@ def test_configuration_in_pyproject_toml_ignores_base_class_names(project_direct
 
     # Then
     assert unused_names == (
-        'foo.py:5:4: DC04 Method `on_load` is never used' '\nfoo.py:13:0: DC03 Class `Unrelated` is never used'
+        'foo.py:5:4: DC04 Method `on_load` is never used\nfoo.py:13:0: DC03 Class `Unrelated` is never used'
     )
 
 

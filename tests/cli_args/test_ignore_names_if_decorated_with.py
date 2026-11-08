@@ -127,7 +127,7 @@ def test_non_matching_decorators_are_still_reported(virtual_file_system):
 
     # Then
     assert unused_names == (
-        'foo.py:1:0: DC02 Function `plain` is never used\n' 'foo.py:5:0: DC02 Function `decorated` is never used'
+        'foo.py:1:0: DC02 Function `plain` is never used\nfoo.py:5:0: DC02 Function `decorated` is never used'
     )
 
 

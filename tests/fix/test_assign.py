@@ -20,9 +20,7 @@ def test_variable(virtual_file_system):
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
     # Then
-    assert unused_names == (
-        'foo.py:1:0: DC01 Variable `unused_variable` is never used\n\n' 'Removed 1 unused code item!'
-    )
+    assert unused_names == ('foo.py:1:0: DC01 Variable `unused_variable` is never used\n\nRemoved 1 unused code item!')
 
     virtual_file_system.assert_files(
         {
@@ -48,9 +46,7 @@ def test_multiline_call_assignment(virtual_file_system):
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
     # Then
-    assert unused_names == (
-        'foo.py:1:0: DC01 Variable `unused_variable` is never used\n\n' 'Removed 1 unused code item!'
-    )
+    assert unused_names == ('foo.py:1:0: DC01 Variable `unused_variable` is never used\n\nRemoved 1 unused code item!')
 
     virtual_file_system.assert_files(
         {
@@ -77,9 +73,7 @@ def test_multiline_list_assignment(virtual_file_system):
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
     # Then
-    assert unused_names == (
-        'foo.py:1:0: DC01 Variable `unused_variable` is never used\n\n' 'Removed 1 unused code item!'
-    )
+    assert unused_names == ('foo.py:1:0: DC01 Variable `unused_variable` is never used\n\nRemoved 1 unused code item!')
 
     virtual_file_system.assert_files(
         {
@@ -105,9 +99,7 @@ def test_multiline_dict_assignment(virtual_file_system):
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
     # Then
-    assert unused_names == (
-        'foo.py:1:0: DC01 Variable `unused_variable` is never used\n\n' 'Removed 1 unused code item!'
-    )
+    assert unused_names == ('foo.py:1:0: DC01 Variable `unused_variable` is never used\n\nRemoved 1 unused code item!')
 
     virtual_file_system.assert_files(
         {
@@ -134,9 +126,7 @@ def test_multiline_parenthesised_binary_expression_assignment(virtual_file_syste
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
     # Then
-    assert unused_names == (
-        'foo.py:1:0: DC01 Variable `unused_variable` is never used\n\n' 'Removed 1 unused code item!'
-    )
+    assert unused_names == ('foo.py:1:0: DC01 Variable `unused_variable` is never used\n\nRemoved 1 unused code item!')
 
     virtual_file_system.assert_files(
         {
@@ -165,9 +155,7 @@ def test_multiline_nested_call_assignment(virtual_file_system):
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
     # Then
-    assert unused_names == (
-        'foo.py:1:0: DC01 Variable `unused_variable` is never used\n\n' 'Removed 1 unused code item!'
-    )
+    assert unused_names == ('foo.py:1:0: DC01 Variable `unused_variable` is never used\n\nRemoved 1 unused code item!')
 
     virtual_file_system.assert_files(
         {
@@ -193,9 +181,7 @@ def test_multiline_fstring_assignment(virtual_file_system):
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
     # Then
-    assert unused_names == (
-        'foo.py:1:0: DC01 Variable `unused_variable` is never used\n\n' 'Removed 1 unused code item!'
-    )
+    assert unused_names == ('foo.py:1:0: DC01 Variable `unused_variable` is never used\n\nRemoved 1 unused code item!')
 
     virtual_file_system.assert_files(
         {
@@ -221,9 +207,7 @@ def test_multiline_triple_quoted_string_assignment(virtual_file_system):
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
     # Then
-    assert unused_names == (
-        'foo.py:1:0: DC01 Variable `unused_variable` is never used\n\n' 'Removed 1 unused code item!'
-    )
+    assert unused_names == ('foo.py:1:0: DC01 Variable `unused_variable` is never used\n\nRemoved 1 unused code item!')
 
     virtual_file_system.assert_files(
         {
@@ -249,9 +233,7 @@ def test_multiline_annotated_assignment(virtual_file_system):
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
     # Then
-    assert unused_names == (
-        'foo.py:1:0: DC01 Variable `unused_variable` is never used\n\n' 'Removed 1 unused code item!'
-    )
+    assert unused_names == ('foo.py:1:0: DC01 Variable `unused_variable` is never used\n\nRemoved 1 unused code item!')
 
     virtual_file_system.assert_files(
         {
@@ -311,9 +293,7 @@ def test_multiline_assignment_inside_function(virtual_file_system):
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
     # Then
-    assert unused_names == (
-        'foo.py:2:4: DC01 Variable `unused_variable` is never used\n\n' 'Removed 1 unused code item!'
-    )
+    assert unused_names == ('foo.py:2:4: DC01 Variable `unused_variable` is never used\n\nRemoved 1 unused code item!')
 
     virtual_file_system.assert_files(
         {
@@ -347,7 +327,7 @@ def test_multiline_assignment_inside_class(virtual_file_system):
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
     # Then
-    assert unused_names == ('foo.py:2:4: DC06 Name `unused_variable` is never used\n\n' 'Removed 1 unused code item!')
+    assert unused_names == ('foo.py:2:4: DC06 Name `unused_variable` is never used\n\nRemoved 1 unused code item!')
 
     virtual_file_system.assert_files(
         {
@@ -448,9 +428,7 @@ def test_variable_with_type_hint(virtual_file_system):
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
     # Then
-    assert unused_names == (
-        'foo.py:1:0: DC01 Variable `unused_variable` is never used\n\n' 'Removed 1 unused code item!'
-    )
+    assert unused_names == ('foo.py:1:0: DC01 Variable `unused_variable` is never used\n\nRemoved 1 unused code item!')
 
     virtual_file_system.assert_files({'foo.py': b""""""})
 

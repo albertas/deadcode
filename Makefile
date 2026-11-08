@@ -91,6 +91,7 @@ sync: .venv
 	uv pip sync requirements-dev.txt
 	uv pip install -e .[test]
 
+# Resolve the dependencies to the newest versions allowed by pyproject.toml.
 compile:
 	uv pip compile -U -q pyproject.toml -o requirements.txt
 	uv pip compile -U -q --universal --all-extras pyproject.toml -o requirements-dev.txt

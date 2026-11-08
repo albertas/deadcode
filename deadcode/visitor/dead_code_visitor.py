@@ -10,7 +10,7 @@ from logging import getLogger
 
 from pathlib import Path
 
-from typing import TextIO
+from typing import Any, TextIO, cast
 from collections.abc import Callable, Iterable
 from deadcode.constants import UnusedCodeType
 from deadcode.data_types import Args, Part
@@ -363,7 +363,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
     def _get_else_linenos(self, node: ast.If | ast.IfExp | ast.While, first_else_node: ast.AST) -> tuple[int, ...]:
         """Return line numbers of the `else` keyword preceding the first else statement."""
-        for lineno in range(first_else_node.lineno - 1, node.lineno, -1):
+        for lineno in range(int(cast('Any', first_else_node).lineno) - 1, int(cast('Any', node).lineno), -1):
             if 0 < lineno <= len(self.code) and self.code[lineno - 1].strip().startswith('else:'):
                 return (lineno,)
         return ()
@@ -388,8 +388,10 @@ class DeadCodeVisitor(ast.NodeVisitor):
                 or _match(self.filename, self.args.ignore_names_in_files)
                 or _match_many(decorator_names, self.args.ignore_names_if_decorated_with)
                 or _match_many(decorator_names, IGNORED_INTERFACE_DECORATOR_NAMES)
-                or (item_inherits_from := getattr(first_node, 'inherits_from', None))
-                and _match_many(item_inherits_from, self.args.ignore_names_if_inherits_from)
+                or (
+                    (item_inherits_from := getattr(first_node, 'inherits_from', None))
+                    and _match_many(item_inherits_from, self.args.ignore_names_if_inherits_from)
+                )
                 or self.should_ignore_new_definitions
                 or any(noqa.ignore_line(self.noqa_lines, lineno, ERROR_CODES[type_]) for lineno in linenos)
             )
@@ -399,19 +401,19 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
         first_lineno = lines.get_first_line_number(first_node)
         last_lineno = lines.get_last_line_number(last_node)
-        name_line = last_node.lineno
+        name_line = int(cast('Any', last_node).lineno)
 
         removal_node_end_lineno = getattr(removal_node, 'end_lineno', None)
         if removal_node is not None and removal_node_end_lineno is not None:
             line_start = lines.get_first_line_number(removal_node)
             line_end = removal_node_end_lineno
-            col_start = removal_node.col_offset
-            col_end = removal_node.end_col_offset or 0
+            col_start = int(cast('Any', removal_node).col_offset)
+            col_end = int(cast('Any', removal_node).end_col_offset or 0)
         else:
             line_start = first_lineno
             line_end = last_lineno
-            col_start = last_node.col_offset
-            col_end = last_node.end_col_offset or 0
+            col_start = int(cast('Any', last_node).col_offset)
+            col_end = int(cast('Any', last_node).end_col_offset or 0)
 
         inherits_from = getattr(first_node, 'inherits_from', None)
         code_item = CodeItem(
@@ -421,7 +423,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
             code_parts=[Part(line_start, line_end, col_start, col_end)],
             scope=self.scope,
             name_line=name_line,  # TODO: Maybe this should be a property?
-            name_column=last_node.col_offset,  # TODO: Maybe this should be a property?
+            name_column=int(cast('Any', last_node).col_offset),  # TODO: Maybe this should be a property?
             message=message,
             inherits_from=inherits_from,
         )

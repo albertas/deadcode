@@ -10,7 +10,7 @@ import pytest
 from deadcode.actions.parse_arguments import parse_arguments
 
 
-@pytest.fixture()
+@pytest.fixture
 def tomllib_load_mock(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     mock = MagicMock(
         return_value={

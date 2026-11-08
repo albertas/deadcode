@@ -5,7 +5,7 @@ import pytest
 from deadcode.cli import main
 
 
-@pytest.fixture()
+@pytest.fixture
 def pyproject_config_mock(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     mock = MagicMock(
         return_value={
