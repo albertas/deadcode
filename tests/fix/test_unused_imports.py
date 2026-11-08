@@ -563,3 +563,55 @@ def test_fully_unused_import_with_trailing_comment(virtual_file_system):
 
     assert 'never used' not in (second_output or '')
     assert virtual_file_system.updated_files['file2.py'] == first_content
+
+
+def test_quoted_annotation_import_is_not_removed(virtual_file_system):
+    original_content = b"""
+            from typing import TYPE_CHECKING
+
+            if TYPE_CHECKING:
+                from abc import ABC
+
+            a: "ABC | None" = None
+            print(a)
+            """
+    virtual_file_system.files = {'file2.py': original_content}
+
+    unused_names = main('file2.py --no-color --fix'.split())
+
+    assert unused_names is None
+    assert 'file2.py' not in virtual_file_system.updated_files
+    assert virtual_file_system.files['file2.py'] == original_content
+
+
+def test_unused_import_inside_type_checking_is_removed(virtual_file_system):
+    virtual_file_system.files = {
+        'file2.py': b"""
+                from typing import TYPE_CHECKING
+
+                if TYPE_CHECKING:
+                    from abc import ABC
+
+                print('ok')
+                """
+    }
+
+    unused_names = main('file2.py --no-color --fix'.split())
+
+    assert unused_names == fix_indent("""\
+                file2.py:4:20: DC07 Import `ABC` is never used
+
+                Removed 1 unused code item!""")
+
+    virtual_file_system.assert_files(
+        {
+            'file2.py': b"""
+                    from typing import TYPE_CHECKING
+
+                    if TYPE_CHECKING:
+                        pass
+
+                    print('ok')
+                    """
+        }
+    )

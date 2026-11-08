@@ -297,6 +297,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - Use pytest instead of unittest.TestCase
         - Fix `ignore-names-if-inherits-from` having no effect when set in `pyproject.toml`; its accepted base-class forms and class-name-only scope are now documented (issue #25)
         - A scalar string in `pyproject.toml` is now honoured as one pattern instead of being split into characters
+        - Names referenced from quoted type annotations (forward references) are no longer reported as unused imports.
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
