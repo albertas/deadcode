@@ -1,4 +1,4 @@
-.PHONY: compile publish readthedocs check fix lint fixlint format mypy deadcode audit test coverage-new pre-commit hook-test
+.PHONY: compile publish readthedocs check fix lint fixlint format mypy deadcode audit audit-runtime audit-development test coverage-new pre-commit hook-test
 
 check: test lint mypy deadcode
 fix: format fixlint
@@ -79,8 +79,13 @@ fixlint: .venv
 format: .venv
 	.venv/bin/ruff format deadcode tests
 
-audit: .venv
-	.venv/bin/pip-audit --skip-editable
+audit: audit-runtime audit-development
+
+audit-runtime: .venv
+	.venv/bin/pip-audit --no-deps --disable-pip -r requirements.txt
+
+audit-development: .venv
+	.venv/bin/pip-audit --no-deps --disable-pip -r requirements-dev.txt
 
 sync: .venv
 	uv pip sync requirements-dev.txt
