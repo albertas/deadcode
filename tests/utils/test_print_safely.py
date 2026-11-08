@@ -72,3 +72,20 @@ def test_ascii_fallback_writes_replacement_character(monkeypatch: pytest.MonkeyP
     print_safely('✨')
 
     assert stream.written_text == '?\n'
+
+
+def test_custom_file_target_uses_reconfigure():
+    stream = WritesUnicodeAfterReconfigureStream()
+
+    print_safely('✨', file=stream)
+
+    assert stream.written_text == '✨\n'
+    assert stream.reconfigure_calls == ['utf-8']
+
+
+def test_custom_file_target_uses_ascii_fallback():
+    stream = NonAsciiRefusingStream()
+
+    print_safely('✨', file=stream)
+
+    assert stream.written_text == '?\n'

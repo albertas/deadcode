@@ -1,6 +1,7 @@
 import ast
 
 from deadcode.data_types import Args, FileContent, AbstractSyntaxTree
+from deadcode.utils.print_safely import print_safely
 
 
 def parse_abstract_syntax_tree(file_content: FileContent, args: Args, filename: str) -> AbstractSyntaxTree:
@@ -9,5 +10,5 @@ def parse_abstract_syntax_tree(file_content: FileContent, args: Args, filename: 
         return ast.parse(file_content, filename=filename, type_comments=True)
     except:  # noqa: E722
         if not args.count and not args.quiet:
-            print(f'Error: Failed to parse {filename} file, ignoring it.')
+            print_safely(f'Error: Failed to parse {filename} file, ignoring it.')
         return ast.Module()
