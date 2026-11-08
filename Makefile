@@ -13,8 +13,12 @@ PYTEST_XDIST_WORKERS ?= $(shell .venv/bin/python -c 'import os; print(max(1, (os
 	uv pip sync requirements-dev.txt
 	uv pip install -e .[test]
 
+TAG_PREFIX ?=
 VERSION := $(shell .venv/bin/hatch version)
+TAG := $(TAG_PREFIX)$(VERSION)
 
+REMOTE ?= origin
+SKIP_PYPI ?=
 READTHEDOCS_API_URL ?= https://app.readthedocs.org/api/v3/projects/deadcode
 
 publish: .venv
@@ -24,10 +28,15 @@ publish: .venv
 	}
 	rm -fr dist/*
 	.venv/bin/hatch build
-	.venv/bin/uv publish
+	@if [ -z "$(SKIP_PYPI)" ]; then \
+		.venv/bin/uv publish; \
+	else \
+		echo "publish: skipping the PyPI upload (SKIP_PYPI=1)"; \
+	fi
 
-	git tag -a $(VERSION) -m "deadcode $(VERSION)"
-	git push origin tag $(VERSION)
+	git rev-parse --verify refs/tags/$(TAG) >/dev/null 2>&1 || \
+		git tag -a $(TAG) -m "deadcode $(TAG)"
+	git push $(REMOTE) tag $(TAG)
 
 	$(MAKE) readthedocs
 
@@ -48,26 +57,26 @@ readthedocs:
 	request --request POST "$$api/sync-versions/" >/dev/null; \
 	delay=2; \
 	for attempt in 1 2 3 4 5 6; do \
-		if request "$$api/versions/$(VERSION)/" >/dev/null 2>&1; then break; fi; \
+		if request "$$api/versions/$(TAG)/" >/dev/null 2>&1; then break; fi; \
 		if [ "$$attempt" -eq 6 ]; then \
-			echo "readthedocs: version $(VERSION) did not appear; check the Read the Docs Git integration" >&2; \
+			echo "readthedocs: version $(TAG) did not appear; check the Read the Docs Git integration" >&2; \
 			exit 1; \
 		fi; \
-		echo "readthedocs: waiting $${delay}s for version $(VERSION)" >&2; \
+		echo "readthedocs: waiting $${delay}s for version $(TAG)" >&2; \
 		sleep "$$delay"; \
 		delay=$$((delay * 2)); \
 	done; \
-	if request "$$api/versions/$(VERSION)/" | grep -q '"active": true'; then \
-		request --request POST "$$api/versions/$(VERSION)/builds/" >/dev/null; \
+	if request "$$api/versions/$(TAG)/" | grep -q '"active": true'; then \
+		request --request POST "$$api/versions/$(TAG)/builds/" >/dev/null; \
 	else \
 		request --request PATCH --header 'Content-Type: application/json' \
-			--data '{"active": true}' "$$api/versions/$(VERSION)/" >/dev/null; \
+			--data '{"active": true}' "$$api/versions/$(TAG)/" >/dev/null; \
 	fi; \
 	delay=2; \
 	for attempt in 1 2 3 4 5 6; do \
-		if request "$$api/versions/stable/" | grep -q "\"ref\": \"$(VERSION)\""; then break; fi; \
+		if request "$$api/versions/stable/" | grep -q "\"ref\": \"$(TAG)\""; then break; fi; \
 		if [ "$$attempt" -eq 6 ]; then \
-			echo "readthedocs: stable does not point at $(VERSION)" >&2; \
+			echo "readthedocs: stable does not point at $(TAG)" >&2; \
 			exit 1; \
 		fi; \
 		sleep "$$delay"; \
@@ -75,7 +84,7 @@ readthedocs:
 	done; \
 	request --request POST "$$api/versions/stable/builds/" >/dev/null; \
 	request --request POST "$$api/versions/latest/builds/" >/dev/null; \
-	echo "readthedocs: triggered builds for $(VERSION), stable and latest"
+	echo "readthedocs: triggered builds for $(TAG), stable and latest"
 
 test: .venv
 	.venv/bin/pytest -vv -n $(PYTEST_XDIST_WORKERS) $(PYTEST_ME_PLEASE)
