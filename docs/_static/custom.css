@@ -1,0 +1,19 @@
+/* Keep docutils tables inside the content column. The theme forbids line
+   breaks inside table cells and lets a wide table scroll horizontally; these
+   rules wrap cell content, fit the table to its container, and give the first
+   column of a two-column table a fixed share of the width. */
+.rst-content .wy-table-responsive table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.rst-content .wy-table-responsive table td,
+.rst-content .wy-table-responsive table th {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.rst-content .wy-table-responsive table td:first-child:nth-last-child(2),
+.rst-content .wy-table-responsive table th:first-child:nth-last-child(2) {
+  width: 40%;
+}
