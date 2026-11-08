@@ -80,9 +80,9 @@ run the same hook while developing deadcode itself, use `make pre-commit`.
 |`--ignore-names-if-decorated-with`         | list | Ignores names of an expression, which is decorated with one of the provided decorator names. |
 |`--ignore-bodies-of`                       | list | Ignores body of an expression if its name matches any of the provided names. |
 |`--ignore-bodies-if-decorated-with`        | list | Ignores body of an expression if its decorated with one of the provided decorator names. |
-|`--ignore-bodies-if-inherits-from`         | list | Ignores body of a class if it inherits from any of the provided class names. |
+|`--ignore-bodies-if-inherits-from`         | list | Ignores body of a class if it inherits from any of the provided class names. The class name may be a plain name, a dotted path such as `graphene.ObjectType`, or a glob such as `*.ObjectType`; a dotted base also matches its final component (`ObjectType`). |
 |`--ignore-definitions`                     | list | Ignores definition (including name and body) if a name of an expression matches any of the provided ones. |
-|`--ignore-definitions-if-inherits-from`    | list | Ignores definition (including name and body) of a class if it inherits from any of the provided class names. |
+|`--ignore-definitions-if-inherits-from`    | list | Ignores definition (including name and body) of a class if it inherits from any of the provided class names. The class name may be a plain name, a dotted path such as `graphene.ObjectType`, or a glob such as `*.ObjectType`; a dotted base also matches its final component (`ObjectType`). |
 |`--ignore-definitions-if-decorated-with`   | list | Ignores definition (including name and body) of an expression, which is decorated with any of the provided decorator names. |
 |`--no-color`                               | -    | Removes colors from the output. |
 |`--count`                                  | -    | Provides the count of the detected unused names instead of printing them all out. |
@@ -199,9 +199,9 @@ the public module-level names are exported.
     - [ ] --ignore-names-if-decorated-with
     - [ ] --ignore-bodies-of
     - [ ] --ignore-bodies-if-decorated-with
-    - [ ] --ignore-bodies-if-inherits-from
+    - [x] --ignore-bodies-if-inherits-from
     - [ ] --ignore-definitions
-    - [ ] --ignore-definitions-if-inherits-from
+    - [x] --ignore-definitions-if-inherits-from
     - [ ] --ignore-definitions-if-decorated-with
         - Question: would it be possible to ignore only certain types of checks for a body, e.g. only variable attributes of TypedDict and still check usage of methods and properties?
         - What expression would allow this type of precission?
@@ -242,6 +242,8 @@ the public module-level names are exported.
         - Wildcard imports stay unrestricted when `__all__` is dynamic or unknown, and explicit imports keep working.
         - Without `__all__`, wildcard imports expose public module-level names, and the README documents the limits.
         - Print verbose log messages as readable ASCII instead of a `bytes` repr when the output stream cannot encode a character.
+        - --ignore-bodies-if-inherits-from and --ignore-definitions-if-inherits-from now recognize dotted base classes such as graphene.ObjectType and match their final component.
+        - The option help text and README document the accepted plain, dotted and glob base-name forms.
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.

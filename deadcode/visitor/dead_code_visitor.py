@@ -417,7 +417,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
         if not (bases_attr := getattr(node, 'bases', None)):
             return None
 
-        bases = [base.id for base in bases_attr if getattr(base, 'id', None)]
+        bases = [name for base in bases_attr for name in utils.get_base_class_names(base)]
         inherits_from = bases[:]
 
         for base in bases:
@@ -425,7 +425,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
                 if base_inherits_from := getattr(base_code_item, 'inherits_from', None):
                     inherits_from.extend(base_inherits_from)
 
-        return inherits_from
+        return list(dict.fromkeys(inherits_from))
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         for decorator in node.decorator_list:
