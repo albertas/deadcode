@@ -568,9 +568,7 @@ class ReleaseFlowTest(unittest.TestCase):
             mock.patch.object(trigger, 'EXISTING_BUILD_WAIT_SECONDS', 0),
             redirect_stdout(io.StringIO()),
         ):
-            return trigger.run_release_flow(
-                RELEASE_VERSION, COMMIT, expect_stable_ref, 0, api
-            )
+            return trigger.run_release_flow(RELEASE_VERSION, COMMIT, expect_stable_ref, 0, api)
 
     def test_builds_the_version_and_stable(self) -> None:
         # Given
@@ -609,9 +607,7 @@ class ReleaseFlowTest(unittest.TestCase):
             mock.patch.object(trigger.time, 'sleep'),
             redirect_stdout(io.StringIO()),
         ):
-            builds = trigger.run_release_flow(
-                RELEASE_VERSION, COMMIT, RELEASE_VERSION, 5, api
-            )
+            builds = trigger.run_release_flow(RELEASE_VERSION, COMMIT, RELEASE_VERSION, 5, api)
 
         # Then
         self.assertEqual([build['id'] for build in builds], [11, 12])
@@ -786,9 +782,12 @@ class MainTest(unittest.TestCase):
             ):
                 exit_code = trigger.main(
                     [
-                        '--version', RELEASE_VERSION,
-                        '--commit', COMMIT,
-                        '--expect-stable-ref', RELEASE_VERSION,
+                        '--version',
+                        RELEASE_VERSION,
+                        '--commit',
+                        COMMIT,
+                        '--expect-stable-ref',
+                        RELEASE_VERSION,
                     ],
                     environment={
                         trigger.TOKEN_ENVIRONMENT_VARIABLE: TOKEN,
