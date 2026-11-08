@@ -18,6 +18,20 @@ It has two jobs:
 - `development-dependencies` runs on Python 3.10 and 3.15 and audits `requirements-dev.txt` with `make audit-development`. The Python 3.10
   audit step is `continue-on-error` because of the accepted exception below, so the job stays green while the advisories remain in the step log.
 
+## Dependabot
+
+Dependabot version updates are enabled for the repository and are configured in `.github/dependabot.yml`. They cover:
+
+- the `pip` ecosystem, for the pinned runtime and development dependencies in `requirements.txt` and `requirements-dev.txt`;
+- the `github-actions` ecosystem, for the actions pinned in `.github/workflows/`.
+
+Both ecosystems check for updates weekly on Monday, timezone `UTC`. Minor and patch updates arrive as one grouped pull request per ecosystem
+(`python-dependencies` for `pip`, `github-actions` for the actions), while major updates arrive as separate pull requests.
+
+Dependabot alerts and Dependabot security updates are not enabled, so a fixed release is picked up either by the next release or by the
+`Vulnerability audit` workflow described above, not by an automatic security fix. The dependency graph is enabled and is the data source for these
+checks.
+
 ## How to read and fix a finding
 
 `pip-audit` prints one row per advisory: the distribution name, its version, the advisory ID and any alias (for example a `GHSA-…` or
