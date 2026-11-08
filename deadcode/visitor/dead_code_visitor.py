@@ -429,14 +429,14 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         for decorator in node.decorator_list:
-            if _match(utils.get_decorator_name(decorator), self.ignore_decorators):  # type: ignore
+            if _match(utils.get_decorator_name(decorator), self.ignore_decorators):
                 self._log(f'Ignoring class "{node.name}" (decorator whitelisted)')
                 break
         else:
             self._define(self.defined_classes, node.name, node, ignore=_ignore_class)
 
     def visit_FunctionDef(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> None:
-        decorator_names = [utils.get_decorator_name(decorator) for decorator in node.decorator_list]  # type: ignore
+        decorator_names = [utils.get_decorator_name(decorator) for decorator in node.decorator_list]
 
         first_arg = node.args.args[0].arg if node.args.args else None
 

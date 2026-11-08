@@ -50,14 +50,15 @@ def condition_is_always_true(condition: ast.AST) -> bool:
 #         return path
 
 
-def get_decorator_name(decorator: ast.Call | ast.Attribute) -> str:
+def get_decorator_name(decorator: ast.AST) -> str:
     if isinstance(decorator, ast.Call):
-        decorator = decorator.func  # type: ignore
+        decorator = decorator.func
     parts = []
     while isinstance(decorator, ast.Attribute):
         parts.append(decorator.attr)
-        decorator = decorator.value  # type: ignore
-        parts.append(str(id(decorator)))
+        decorator = decorator.value
+    if isinstance(decorator, ast.Name):
+        parts.append(decorator.id)
     return '@' + '.'.join(reversed(parts))
 
 
