@@ -14,7 +14,7 @@ It covers released versions only: unreleased changes on the `vulture` `main` bra
 - Whitelist mechanism: `deadcode` has no whitelist file and relies on ignore options and `# noqa`;
   `vulture` generates whitelist files with `--make-whitelist` and loads bundled whitelists for imported modules.
 - Argument reporting: `deadcode` does not report unused function arguments; `vulture` reports them at 100% confidence.
-- Test coverage: `deadcode` maintains 100% line coverage of the package with its test suite.
+- Test coverage: `deadcode` maintains 100% test coverage.
 
 ## At a glance
 
