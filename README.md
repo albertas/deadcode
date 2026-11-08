@@ -278,6 +278,7 @@ the public module-level names are exported.
         - Stop reporting unittest lifecycle methods declared in test files as unused code (issue #21).
         - Use pytest instead of unittest.TestCase
         - The pre-commit guide explains that the encoding-safe output chain covers all CLI messages.
+        - Split the Read the Docs README page into separate Installation, Usage, Rules, Contributing, Known limitations, and Release notes pages.
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
