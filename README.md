@@ -287,6 +287,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - Add a code coverage badge to the README, fed by the coverage report uploaded from CI
         - Definitions decorated with `@abstractmethod` or `@override` are ignored by default (issue #40)
         - Implement DC06 unused names, DC09 unreachable bodies, DC12 commented-out code and DC13 unreachable code rules.
+        - Build the released version, stable and latest documentation automatically when `make publish` publishes a release
     - Bugfixes:
         - Exit with code 1 when unused code is found, so CI jobs and pre-commit hooks can fail.
         - Fix `--fix` leaving invalid or partially removed imports when unused names are deleted from parenthesized or multi-line import statements.

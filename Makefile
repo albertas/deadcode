@@ -1,4 +1,4 @@
-.PHONY: compile publish check fix lint fixlint format mypy deadcode audit test coverage-new pre-commit hook-test
+.PHONY: compile publish readthedocs check fix lint fixlint format mypy deadcode audit test coverage-new pre-commit hook-test
 
 check: test lint mypy deadcode
 fix: format fixlint
@@ -22,6 +22,20 @@ publish: .venv
 
 	git tag -a $(VERSION) -m "deadcode $(VERSION)"
 	git push origin tag $(VERSION)
+
+	$(MAKE) readthedocs
+
+# Rebuild the released version, stable and latest documentation on Read the Docs.
+readthedocs:
+	@curl --fail-with-body --silent --show-error --request POST \
+		--header "Authorization: Token $(READTHEDOCS_API_TOKEN)" \
+		"https://app.readthedocs.org/api/v3/projects/deadcode/versions/$(VERSION)/builds/" >/dev/null
+	@curl --fail-with-body --silent --show-error --request POST \
+		--header "Authorization: Token $(READTHEDOCS_API_TOKEN)" \
+		"https://app.readthedocs.org/api/v3/projects/deadcode/versions/stable/builds/" >/dev/null
+	@curl --fail-with-body --silent --show-error --request POST \
+		--header "Authorization: Token $(READTHEDOCS_API_TOKEN)" \
+		"https://app.readthedocs.org/api/v3/projects/deadcode/versions/latest/builds/" >/dev/null
 
 test: .venv
 	.venv/bin/pytest -vv -n $(PYTEST_XDIST_WORKERS) $(PYTEST_ME_PLEASE)
