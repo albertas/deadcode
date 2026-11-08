@@ -43,6 +43,29 @@ def condition_is_always_true(condition: ast.AST) -> bool:
     return _safe_eval(condition, False)
 
 
+def collect_names_from_annotation_strings(annotation: ast.AST | None, max_depth: int = 10) -> set[str]:
+    """Return names referenced by strings nested in an annotation."""
+    if annotation is None or max_depth <= 0:
+        return set()
+
+    names: set[str] = set()
+    for node in ast.walk(annotation):
+        if not isinstance(node, ast.Constant) or not isinstance(node.value, str):
+            continue
+        try:
+            parsed: ast.AST = ast.parse(node.value, filename='<annotation>', mode='eval')
+        except SyntaxError:
+            continue
+        names.update(
+            inner.id
+            for inner in ast.walk(parsed)
+            if isinstance(inner, ast.Name) and isinstance(inner.ctx, (ast.Load, ast.Del))
+        )
+        names |= collect_names_from_annotation_strings(parsed, max_depth - 1)
+
+    return names
+
+
 # def format_path(path: pathlib.Path) -> pathlib.Path:
 #     try:
 #         return path.relative_to(pathlib.Path.cwd())
