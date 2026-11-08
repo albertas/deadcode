@@ -174,6 +174,37 @@ commits are made by the maintainer on `main`.
   Set `PYTEST_XDIST_WORKERS` to change the worker count (`make test PYTEST_XDIST_WORKERS=2`), or pass
   `PYTEST_ME_PLEASE="-n 0"` to run serially.
 
+## Code coverage
+Measured on revision `043f3f0` on 2026-11-08 with `make coverage-report` on CPython 3.10.22:
+
+- Full suite (`--cov=.`): `94.61%`, that is 2844 covered of 3006 statements.
+- Package only (`--include='deadcode/*'`): `94.81%`, that is 1187 covered of 1252 statements.
+
+`pyproject.toml` configures `--cov-fail-under=88.0`, and that `88.0%` threshold applies to the full-suite `--cov=.` total that `make test` enforces.
+
+The two scopes measure different things. `--cov=.` also measures the test code under `tests/` (1754 of the 3006 statements), so it is the number CI enforces,
+while `--include='deadcode/*'` covers only the shipped `deadcode` package and is the API/package figure. Both are line coverage: `branch = False` is in effect,
+so branch coverage is not measured.
+
+A statistical confidence interval does not apply here. Coverage is a census of the statements in one fixed code revision, not a sample from a population, so
+there is no sampling error to put an interval around. What does vary is the interpreter running the suite. `make coverage-matrix` measures every available
+environment and reported a full-suite range of `94.60%` to `94.61%` and a package-only range of `94.78%` to `94.81%` across CPython 3.10.22, 3.11.17, 3.14.8,
+and 3.15.0. Only interpreter-conditional import lines differ, which keeps the variation small:
+`deadcode/actions/parse_arguments.py:6-9` imports `tomllib` on 3.11+ and `tomli` on 3.10, and `deadcode/__init__.py:1-8` falls back from
+`importlib.metadata` to `importlib_metadata`.
+
+That range is a measurement of this checkout, not a guarantee for future revisions, and coverage moves with every source or test change. Rerun the commands
+below and trust their current output over the numbers recorded above.
+
+- `make coverage-report` - runs the suite in `.venv` with the configured pytest options and prints the full-suite total, the package-only total, and the
+  package-only per-module table.
+- `make coverage-matrix` - runs the same measurement in every environment matched by `COVERAGE_ENVIRONMENTS` (default `.venv .venv3*`) and prints the
+  interpreter version plus both totals per environment. Set it to choose environments, e.g.
+  `make coverage-matrix COVERAGE_ENVIRONMENTS=".venv .venv311"`.
+- `.venv/bin/python -m coverage report --include='deadcode/*'` - prints the package-only per-module table for the last run.
+- `.venv/bin/python -m coverage report --format=total --precision=2` - prints the full-suite total for the last run; add `--include='deadcode/*'` for the
+  package-only total.
+
 ## Rationale
 [ruff](https://pypi.org/project/ruff/) and
 [flake8](https://pypi.org/project/flake8/) - don't have rules for unused global
