@@ -105,6 +105,27 @@ run the same hook while developing deadcode itself, use `make pre-commit`.
 |`-V`, `--version`                          | -    | Shows `deadcode` version. |
 |`-v`, `--verbose`                          | -    | Shows verbose logging output. |
 
+### Decorator matching
+Decorator names are written as in the source, including the leading `@`; a pattern without `@` matches nothing.
+Entries are glob patterns matched with `fnmatch.fnmatchcase`, so `*`, `?` and `[seq]` apply and `*` also crosses dots
+(`@app.*` matches `@app.route`). Matching is case-sensitive.
+Decorator call arguments are ignored, so `@app.route("/")` is matched as `@app.route`.
+Stacked decorators match when any one decorator matches.
+These options cover classes, functions, async functions, methods and properties; variables, attributes and imports are not covered.
+Imports and aliases are not resolved, so `@aliased.route` needs `@aliased.*` rather than `@app.*`.
+The same rules apply to all three decorated-with options.
+
+```toml
+[tool.deadcode]
+ignore-names-if-decorated-with = ["@app.route"]
+```
+
+```python
+@app.route("/", methods=["POST"])
+def post_tax_adder_customer():
+    pass
+```
+
 ### Exit status
 
 - `0` — no dead code found.
@@ -201,6 +222,8 @@ Wildcard imports are resolved by module basename, without package paths, so modu
 the public module-level names are exported.
 
 ## Feature requests
+A checked entry is implemented on `main` and is included in the next release; published releases may lag behind `main`.
+
 - [x] Replace `.*` with only `*` in regexp matching.
 - [x] Add unused class method detection DC04 check.
 - [x] Add `--fix` option to automatically remove detected dead code occourencies
