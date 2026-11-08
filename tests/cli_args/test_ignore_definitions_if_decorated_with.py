@@ -95,9 +95,7 @@ def test_fix_keeps_whole_decorated_definition(virtual_file_system):
                 """
     }
 
-    unused_names = main(
-        ['foo.py', '--no-color', '--ignore-definitions-if-decorated-with=@deco', '--fix']
-    )
+    unused_names = main(['foo.py', '--no-color', '--ignore-definitions-if-decorated-with=@deco', '--fix'])
 
     assert unused_names == ('foo.py:5:0: DC02 Function `unused` is never used\n\nRemoved 1 unused code item!')
 
