@@ -115,6 +115,11 @@ Stacked decorators match when any one decorator matches.
 These options cover classes, functions, async functions, methods and properties; variables, attributes and imports are not covered.
 Imports and aliases are not resolved, so `@aliased.route` needs `@aliased.*` rather than `@app.*`.
 The same rules apply to all three decorated-with options.
+Definitions decorated with `@abstractmethod` or `@override` are always ignored, with no option needed (issue #40).
+The recognized spellings are `@abstractmethod`, `@abc.abstractmethod`, `@override`, `@typing.override` and `@typing_extensions.override`.
+This applies to every definition kind that renders decorator names (classes, functions, async functions, methods and properties),
+matches the decorator name only, and still analyses the decorated body for its own unused code.
+Imports and aliases are not resolved, so `from abc import abstractmethod as abstract` renders `@abstract` and is not ignored.
 
 ```toml
 [tool.deadcode]
@@ -278,6 +283,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - `--ignore-names-if-inherits-from` now ignores class names matching a base class
         - `--ignore-definitions` now reliably ignores function, method, property and nested class definitions; its limits are documented
         - Add a code coverage badge to the README, fed by the coverage report uploaded from CI
+        - Definitions decorated with `@abstractmethod` or `@override` are ignored by default (issue #40)
     - Bugfixes:
         - Exit with code 1 when unused code is found, so CI jobs and pre-commit hooks can fail.
         - Fix `--fix` leaving invalid or partially removed imports when unused names are deleted from parenthesized or multi-line import statements.

@@ -31,6 +31,14 @@ UNITTEST_FUNCTION_NAMES = {
     'setUpModule',
     'tearDownModule',
 }
+# Built-in interface markers: abstract and overriding definitions are never reported, no option needed.
+IGNORED_INTERFACE_DECORATOR_NAMES: set[str] = {
+    '@abstractmethod',
+    '@abc.abstractmethod',
+    '@override',
+    '@typing.override',
+    '@typing_extensions.override',
+}
 
 ERROR_CODES = {
     'variable': b'DC01',
