@@ -5,6 +5,7 @@
 <p align="center">
 <a href="https://github.com/pre-commit/pre-commit"><img src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit" alt="pre-commit" style="max-width:100%;"></a>
 <a href="https://pypi.org/project/deadcode/"><img alt="PyPI" src="https://img.shields.io/pypi/v/deadcode"></a>
+<a href="https://www.python.org/downloads/"><img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-blue"></a>
 <a href="https://pepy.tech/project/deadcode"><img alt="Downloads" src="https://static.pepy.tech/badge/deadcode"></a>
 <a href="https://github.com/albertas/deadcode/blob/main/LICENSE"><img alt="License: AGPLv3" src="https://raw.githubusercontent.com/albertas/deadcode/main/docs/_static/AGPLv3-license.svg"></a>
 <a href="https://codecov.io/gh/albertas/deadcode"><img alt="Coverage" src="https://codecov.io/gh/albertas/deadcode/branch/main/graph/badge.svg"></a>
@@ -321,6 +322,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - Names referenced from quoted type annotations (forward references) are no longer reported as unused imports.
         - Fix `--no-color` leaving colour codes in the success banner; Make `--count` count only findings reflected by `--only`; Make `--verbose` print INFO messages about ignored and scanned files
         - Rules now sit under Ignoring checks with noqa comments, the Glossary under Command line options, and Decorator matching is more concise.
+        - Python 3.10+ requirement is now shown as a badge in the README
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
