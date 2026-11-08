@@ -201,18 +201,6 @@ commits are made by the maintainer on `main`.
   Set `PYTEST_XDIST_WORKERS` to change the worker count (`make test PYTEST_XDIST_WORKERS=2`), or pass
   `PYTEST_ME_PLEASE="-n 0"` to run serially.
 
-## Documentation builds
-
-Documentation is published on [Read the Docs](https://deadcode.readthedocs.io/) and is rebuilt by `make publish`; no manual build is needed.
-
-- `make publish` builds and uploads the package, creates and pushes the `X.Y.Z` tag, then asks Read the Docs to build the released version,
-  `stable` and `latest`. `stable` therefore follows the newest release.
-- The trigger uses the Read the Docs API and needs an API token with build permissions in `READTHEDOCS_API_TOKEN`; export it before running
-  `make publish` or `make readthedocs`.
-- The Read the Docs project must stay connected to <https://github.com/albertas/deadcode>, so that the version sync sees new tags.
-- Run `make readthedocs` with the same token to rebuild the documentation of the current project version without publishing a release.
-  Build results are listed at <https://app.readthedocs.org/projects/deadcode/builds/>.
-
 ## Rationale
 [ruff](https://pypi.org/project/ruff/) and
 [flake8](https://pypi.org/project/flake8/) - don't have rules for unused global
