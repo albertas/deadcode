@@ -108,5 +108,5 @@ def test_non_matching_decorator_body_is_still_reported(virtual_file_system):
 
     # Then
     assert unused_names == (
-        'foo.py:2:0: DC02 Function `decorated` is never used\n' 'foo.py:3:4: DC01 Variable `unused_local` is never used'
+        'foo.py:2:0: DC02 Function `decorated` is never used\nfoo.py:3:4: DC01 Variable `unused_local` is never used'
     )

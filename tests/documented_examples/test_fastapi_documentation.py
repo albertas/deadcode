@@ -24,7 +24,7 @@ def fenced_blocks(language: str) -> list[str]:
     ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def project_directory(tmp_path, monkeypatch) -> Path:
     monkeypatch.chdir(tmp_path)
     shutil.copytree(FIXTURE_DIRECTORY, tmp_path / 'project')

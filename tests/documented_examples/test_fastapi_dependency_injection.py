@@ -27,7 +27,7 @@ def _findings(output: str | None) -> set[tuple[str, str, str]]:
     return findings
 
 
-@pytest.fixture()
+@pytest.fixture
 def project_directory(tmp_path, monkeypatch) -> Path:
     monkeypatch.chdir(tmp_path)
     shutil.copytree(DEPENDENCY_INJECTION_FIXTURE_DIRECTORY, tmp_path / 'project')

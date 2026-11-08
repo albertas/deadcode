@@ -75,7 +75,7 @@ def test_ignore_bodies_of_matched_by_pattern(virtual_file_system):
 
     # Then
     assert unused_names == (
-        'foo.py:1:0: DC03 Class `UnusedFirst` is never used\n' 'foo.py:5:0: DC03 Class `UnusedSecond` is never used'
+        'foo.py:1:0: DC03 Class `UnusedFirst` is never used\nfoo.py:5:0: DC03 Class `UnusedSecond` is never used'
     )
 
 

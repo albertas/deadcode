@@ -19,7 +19,7 @@ def test_unused_class_was_removed(virtual_file_system):
 
     # Then
     assert unused_names == (
-        'ignore_names_by_pattern.py:1:0: DC03 Class `UnusedClass` is never used\n\n' 'Removed 1 unused code item!'
+        'ignore_names_by_pattern.py:1:0: DC03 Class `UnusedClass` is never used\n\nRemoved 1 unused code item!'
     )
 
     virtual_file_system.assert_files(
@@ -47,7 +47,7 @@ def test_function_removal(virtual_file_system):
 
     # Then
     assert unused_names == (
-        'ignore_names_by_pattern.py:1:0: DC02 Function `foo` is never used\n\n' 'Removed 1 unused code item!'
+        'ignore_names_by_pattern.py:1:0: DC02 Function `foo` is never used\n\nRemoved 1 unused code item!'
     )
 
     virtual_file_system.assert_files(
@@ -81,7 +81,7 @@ def test_function_removal_in_the_middle(virtual_file_system):
 
     # Then
     assert unused_names == (
-        'ignore_names_by_pattern.py:3:0: DC02 Function `foo` is never used\n\n' 'Removed 1 unused code item!'
+        'ignore_names_by_pattern.py:3:0: DC02 Function `foo` is never used\n\nRemoved 1 unused code item!'
     )
 
     virtual_file_system.assert_files(

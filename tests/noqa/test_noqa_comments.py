@@ -106,7 +106,7 @@ def test_unused_variable_but_wrong_noqa_specified(virtual_file_system):
 
     # Then
     virtual_file_system.assert_files({})
-    assert unused_names == 'foo.py:1:0: DC01 Variable `unused_variable` is never used\n\n' 'Removed 1 unused code item!'
+    assert unused_names == 'foo.py:1:0: DC01 Variable `unused_variable` is never used\n\nRemoved 1 unused code item!'
 
 
 def test_unused_function(virtual_file_system):
@@ -635,4 +635,4 @@ def test_unused_decorated_function_definition_line_with_wrong_noqa_code(virtual_
 
     # Then
     virtual_file_system.assert_updated_files({'foo.py': b'value = 1\nprint(value)\n'})
-    assert unused_names == 'foo.py:2:0: DC02 Function `check` is never used\n\n' 'Removed 1 unused code item!'
+    assert unused_names == 'foo.py:2:0: DC02 Function `check` is never used\n\nRemoved 1 unused code item!'

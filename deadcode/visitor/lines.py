@@ -1,5 +1,7 @@
 import ast
 
+from typing import Any, cast
+
 
 def _get_last_child_with_lineno(node: ast.AST) -> ast.AST | None:
     """
@@ -52,14 +54,14 @@ def get_last_line_number(node: ast.AST) -> int:
     may lead to a path that ends with a node without line number.
 
     """
-    max_lineno = node.lineno
+    max_lineno = int(cast('Any', node).lineno)
     while True:
         last_child = _get_last_child_with_lineno(node)
         if last_child is None:
             return max_lineno
         else:
             try:
-                max_lineno = max(max_lineno, last_child.lineno)
+                max_lineno = max(max_lineno, int(cast('Any', last_child).lineno))
             except AttributeError:
                 pass
         node = last_child
@@ -78,4 +80,4 @@ def get_first_line_number(node: ast.AST) -> int:
     if decorators := getattr(node, 'decorator_list', []):
         lineno: int = decorators[0].lineno
         return lineno
-    return node.lineno
+    return int(cast('Any', node).lineno)

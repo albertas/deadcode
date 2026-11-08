@@ -92,7 +92,7 @@ def test_definition_imported_from_other_file(virtual_file_system):
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
     # Then
-    assert unused_names == ('bar.py:1:0: DC03 Class `MyTest` is never used\n\n' 'Removed 2 unused code items!')
+    assert unused_names == ('bar.py:1:0: DC03 Class `MyTest` is never used\n\nRemoved 2 unused code items!')
 
     virtual_file_system.assert_files({})
 
@@ -123,6 +123,6 @@ def test_methods_with_the_same_name(virtual_file_system):
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
     # Then
-    assert unused_names == ('foo.py:2:4: DC04 Method `foo` is never used\n\n' 'Removed 1 unused code item!')
+    assert unused_names == ('foo.py:2:4: DC04 Method `foo` is never used\n\nRemoved 1 unused code item!')
 
     virtual_file_system.assert_files({})

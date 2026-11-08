@@ -2,6 +2,8 @@
 #    uv pip compile --universal --all-extras pyproject.toml -o requirements-dev.txt
 anyio==4.16.0 ; sys_platform != 'emscripten'
     # via httpx2
+ast-serialize==0.13.1
+    # via mypy
 backports-tarfile==1.2.0 ; python_full_version < '3.12'
     # via jaraco-context
 backports-zstd==1.8.0 ; python_full_version < '3.14'
@@ -104,6 +106,8 @@ jinja2==3.1.6
     # via diff-cover
 keyring==25.7.0
     # via hatch
+librt==0.16.0 ; platform_python_implementation != 'PyPy'
+    # via mypy
 license-expression==30.4.4
     # via cyclonedx-python-lib
 markdown-it-py==4.2.0
@@ -122,7 +126,7 @@ more-itertools==11.2.1 ; python_full_version >= '3.11'
     #   jaraco-functools
 msgpack==1.2.4
     # via cachecontrol
-mypy==1.10.1
+mypy==2.4.1
     # via deadcode (pyproject.toml)
 mypy-extensions==1.2.0
     # via mypy
@@ -139,7 +143,9 @@ packaging==26.3
     #   pytest
     #   virtualenv
 pathspec==1.1.1
-    # via hatchling
+    # via
+    #   hatchling
+    #   mypy
 pexpect==4.9.0
     # via hatch
 pip==26.3
@@ -211,7 +217,7 @@ rich==15.0.0
     # via
     #   hatch
     #   pip-audit
-ruff==0.5.1
+ruff==0.17.4
     # via deadcode (pyproject.toml)
 secretstorage==3.5.0 ; sys_platform == 'linux'
     # via keyring

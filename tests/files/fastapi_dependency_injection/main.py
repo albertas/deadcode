@@ -112,5 +112,5 @@ async def websocket_dependency(websocket: WebSocket, user: str = Depends(get_cur
 
 
 app.include_router(router)
-app.dependency_overrides[get_database] = lambda: object()
+app.dependency_overrides[get_database] = object
 app.add_api_route('/manual', default_dependencies, methods=['GET'], dependencies=[Depends(get_current_user)])

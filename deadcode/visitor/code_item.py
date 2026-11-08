@@ -11,17 +11,17 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
     """
 
     __slots__ = (
-        'name',
-        'type_',
-        'filename',
         'code_parts',
-        'scope',
-        'inherits_from',
-        'name_line',
-        'name_column',
-        'message',
         'error_code',
+        'filename',
+        'inherits_from',
+        'message',
+        'name',
+        'name_column',
+        'name_line',
         'number_of_uses',
+        'scope',
+        'type_',
     )
 
     def __init__(

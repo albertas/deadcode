@@ -15,8 +15,8 @@ def does_include(bigger_part: Part, smaller_part: Part) -> bool:
 def sort_parts(bigger_part: Part, smaller_part: Part) -> tuple[Part, Part]:
     """Returns code part which begins first following by another code part."""
     # TODO: Column should go first (tuple comparison would be possible)
-    line_start_b, line_end_b, col_start_b, col_end_b = bigger_part
-    line_start_s, line_end_s, col_start_s, col_end_s = smaller_part
+    line_start_b, _line_end_b, col_start_b, _col_end_b = bigger_part
+    line_start_s, _line_end_s, col_start_s, _col_end_s = smaller_part
 
     # Pirmo pradžios eilutė ir stulpelis yra pirmiau.
     if (line_start_s < line_start_b) or ((line_start_s == line_start_b) and (col_start_s < col_start_b)):
@@ -27,8 +27,8 @@ def sort_parts(bigger_part: Part, smaller_part: Part) -> tuple[Part, Part]:
 def does_overlap(bigger_part: Part, smaller_part: Part) -> bool:
     bigger_part, smaller_part = sort_parts(bigger_part, smaller_part)
 
-    line_start_b, line_end_b, col_start_b, col_end_b = bigger_part
-    line_start_s, line_end_s, col_start_s, col_end_s = smaller_part
+    _line_start_b, line_end_b, _col_start_b, col_end_b = bigger_part
+    line_start_s, _line_end_s, col_start_s, _col_end_s = smaller_part
 
     # ar pirmo pabaiga perlipa antro pradžia
     return bool((line_end_b > line_start_s) or ((line_end_b == line_start_s) and (col_end_b > col_start_s)))

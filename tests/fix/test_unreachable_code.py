@@ -138,4 +138,4 @@ def test_elif_block_is_reported(virtual_file_system):
     result = main(['foo.py', '--no-color'])
 
     # Then
-    assert result == ('foo.py:3:0: DC09 Unreachable `else` block\n' 'foo.py:4:4: DC09 Unsatisfiable `if` condition')
+    assert result == ('foo.py:3:0: DC09 Unreachable `else` block\nfoo.py:4:4: DC09 Unsatisfiable `if` condition')

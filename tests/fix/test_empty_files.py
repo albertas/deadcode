@@ -16,7 +16,7 @@ def test_file_removal(virtual_file_system):
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
     # Then
-    assert unused_names == ('foo.py DC11 Empty file\n\n' 'Removed 1 unused code item!')
+    assert unused_names == ('foo.py DC11 Empty file\n\nRemoved 1 unused code item!')
 
     virtual_file_system.assert_files({}, removed=['foo.py'])
 
@@ -32,6 +32,6 @@ def test_file_removal_from_subpath(virtual_file_system):
     unused_names = main(['bar/foo.py', '--no-color', '--fix'])
 
     # Then
-    assert unused_names == ('bar/foo.py DC11 Empty file\n\n' 'Removed 1 unused code item!')
+    assert unused_names == ('bar/foo.py DC11 Empty file\n\nRemoved 1 unused code item!')
 
     virtual_file_system.assert_files({}, removed=['bar/foo.py'])
