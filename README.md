@@ -255,6 +255,7 @@ the public module-level names are exported.
     - Bugfixes:
         - Fix `--fix` leaving invalid or partially removed imports when unused names are deleted from parenthesized or multi-line import statements.
         - Fix `--fix` leaving invalid or fragmented imports when removing names from backslash-continued, semicolon-separated, or commented import statements.
+        - Fix `--fix` leaving the continuation lines of multi-line unused assignments behind and producing invalid Python (issue #26).
         - Do not crash when the terminal cannot encode CLI output, including the success message, warnings and verbose logs.
         - Exit with code 1 when unused code is found, so CI jobs and pre-commit hooks can fail.
         - Fix `deadcode --fix` removing the `f` from the `from` keyword in multi-line parenthesized imports (issue #5)
