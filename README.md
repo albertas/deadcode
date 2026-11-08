@@ -66,9 +66,6 @@ repos:
 The `rev` is the release tag, so it matches the version published on PyPI. To
 run the same hook while developing deadcode itself, use `make pre-commit`.
 
-An old `rev` can raise `UnicodeEncodeError` on Windows code pages. Updating
-`rev` to a release with the Unicode-safe output fix removes the crash.
-
 ## Command line options
 
 | Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Meaning  |
