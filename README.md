@@ -52,8 +52,8 @@ ignore-names-in-files = ["migrations"]
 
 ## Using deadcode on a FastAPI project
 
-FastAPI registers handlers through decorators, so a handler that is only referenced by a route decorator looks unused to a static analyser.
-Pydantic model fields look unused for the same reason: they are populated by the framework, not by your code. Configure deadcode like this:
+FastAPI registers handlers through decorators and populates Pydantic model fields at runtime, so both look unused to a static analyser.
+Configure deadcode like this:
 
 ```toml
 [tool.deadcode]
@@ -61,11 +61,8 @@ ignore-names-if-decorated-with = ["@app.*", "@router.*"]
 ignore-bodies-if-inherits-from = ["BaseModel"]
 ```
 
-`@app.*` covers `@app.get`, `@app.post`, `@app.put`, `@app.delete`, `@app.patch`, `@app.on_event`, and the same decorators on an
-`APIRouter`. An aliased router needs its own pattern, for example `@api.*` for `api = APIRouter()`. Pydantic model fields are suppressed by
-the `BaseModel` body rule. Arguments passed through `Depends(...)`, routers registered with `include_router(...)`, and endpoints
-registered with `add_api_route(...)` already count as usage, because they are ordinary name loads. Decorator names are rendered as dotted
-identifiers (for example `@app.get`), ignoring call arguments, so one pattern matches every path handled by the same decorator.
+Read the [FastAPI guide](https://deadcode.readthedocs.io/en/latest/fastapi.html) for common use cases, the complete example application,
+the dependency injection strategy, and the expected output with no wrong detections.
 
 ## Pre-commit hook
 Create a `.pre-commit-config.yaml` file in the root of your project directory, if it doesn't exist, and add the following to the file:
@@ -261,7 +258,9 @@ the public module-level names are exported.
         - Honour `--ignore-names-if-decorated-with` and render decorator names as dotted identifiers such as `@app.get` (see the FastAPI section).
         - Decorator names are reported as dotted identifiers such as `@app.get` instead of memory addresses
         - `--ignore-names-if-decorated-with` now suppresses decorated functions, methods, properties, and classes
-        - README explains the recommended configuration for FastAPI projects, verified by an acceptance test
+        - The FastAPI guide documents the recommended configuration, common use cases, dependency injection, and a complete example
+          application with only real findings
+        - Test suites cover common FastAPI features and every dependency injection form without reporting them as dead code
         - Print verbose log messages as readable ASCII instead of a `bytes` repr when the output stream cannot encode a character.
 - v2.5.0 (2026-11-07):
     - Bugfixes:
