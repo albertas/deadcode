@@ -29,13 +29,13 @@ test = [
     "hatch",
     "ruff",
     "mypy",
-    "pip-audit==2.10.1",
+    "pip-audit",
     "deadcode",
-    "diff-cover==10.6.0",
+    "diff-cover",
     "pre-commit",
-    "pytest==9.0.3",
-    "pytest-cov==5.0.0",
-    "pytest-xdist==3.8.0",
+    "pytest",
+    "pytest-cov",
+    "pytest-xdist",
 ]
 
 [project.scripts]
