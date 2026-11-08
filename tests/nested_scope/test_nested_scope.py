@@ -1,43 +1,40 @@
-from unittest import skip
+import pytest
 
 from deadcode.cli import main
-from deadcode.utils.base_test_case import BaseTestCase
 
 
-class TestScopeTracking(BaseTestCase):
-    def test_class_should_be_in_scope(self):
-        self.files = {
-            'foo.py': b"""
+def test_class_should_be_in_scope(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class Foo:
                     pass
                 """
-        }
+    }
 
-        unused_names = main(['foo.py', '--no-color', '--fix'])
-        self.assertEqual(
-            unused_names,
-            ('foo.py:1:0: DC03 Class `Foo` is never used\n\n' 'Removed 1 unused code item!'),
-        )
+    unused_names = main(['foo.py', '--no-color', '--fix'])
+    assert unused_names == ('foo.py:1:0: DC03 Class `Foo` is never used\n\n' 'Removed 1 unused code item!')
 
-        self.assertFiles({})
+    virtual_file_system.assert_files({})
 
-    def test_class_and_its_method_should_be_in_scope(self):
-        self.files = {
-            'foo.py': b"""
+
+def test_class_and_its_method_should_be_in_scope(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class Foo:
                     def bar(self):
                         variable = 123
                 """
-        }
+    }
 
-        main(['foo.py', '--no-color', '--fix'])
-        self.assertFiles({})
+    main(['foo.py', '--no-color', '--fix'])
+    virtual_file_system.assert_files({})
 
-        # TODO: get nested scope for testing.
+    # TODO: get nested scope for testing.
 
-    def test_name_is_overriden(self):
-        self.files = {
-            'foo.py': b"""
+
+def test_name_is_overriden(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class Foo:
                     pass
 
@@ -45,13 +42,31 @@ class TestScopeTracking(BaseTestCase):
                 class Foo:
                     pass
                 """
-        }
+    }
 
-        main(['foo.py', '--no-color', '--fix'])
-        self.assertFiles({})
+    main(['foo.py', '--no-color', '--fix'])
+    virtual_file_system.assert_files({})
 
-    def test_multi_parent_inheritance_should_be_tracked(self):
-        self.files = {
+
+def test_multi_parent_inheritance_should_be_tracked(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
+                class Foo:
+                    pass
+
+
+                class Bar(Foo):
+                    pass
+
+
+                class Spam(Bar):
+                    pass
+                """
+    }
+
+    result = main(['foo.py', '--no-color', '--fix', '--ignore-definitions-if-inherits-from=Foo'])
+    virtual_file_system.assert_files(
+        {
             'foo.py': b"""
                 class Foo:
                     pass
@@ -65,29 +80,30 @@ class TestScopeTracking(BaseTestCase):
                     pass
                 """
         }
+    )
 
-        result = main(['foo.py', '--no-color', '--fix', '--ignore-definitions-if-inherits-from=Foo'])
-        self.assertFiles(
-            {
-                'foo.py': b"""
+    assert result is None
+
+
+def test_take_parent_scopes_into_consideration_when_searching_for_definition(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class Foo:
                     pass
 
 
                 class Bar(Foo):
-                    pass
+                    class Spam(Foo):
+                        pass
 
-
-                class Spam(Bar):
-                    pass
+                    class Eggs(Spam):
+                        pass
                 """
-            }
-        )
+    }
 
-        self.assertIsNone(result)
-
-    def test_take_parent_scopes_into_consideration_when_searching_for_definition(self):
-        self.files = {
+    result = main(['foo.py', '--no-color', '--fix', '--ignore-definitions-if-inherits-from=Foo'])
+    virtual_file_system.assert_files(
+        {
             'foo.py': b"""
                 class Foo:
                     pass
@@ -101,31 +117,15 @@ class TestScopeTracking(BaseTestCase):
                         pass
                 """
         }
+    )
 
-        result = main(['foo.py', '--no-color', '--fix', '--ignore-definitions-if-inherits-from=Foo'])
-        self.assertFiles(
-            {
-                'foo.py': b"""
-                class Foo:
-                    pass
+    assert result is None
 
 
-                class Bar(Foo):
-                    class Spam(Foo):
-                        pass
-
-                    class Eggs(Spam):
-                        pass
-                """
-            }
-        )
-
-        self.assertIsNone(result)
-
-    @skip('This feature is being implemented')
-    def test_type_tracking_for_function_arguments(self):
-        self.files = {
-            'foo.py': b"""
+@pytest.mark.skip(reason='This feature is being implemented')
+def test_type_tracking_for_function_arguments(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class Foo:
                     def bar(self):
                         pass
@@ -139,16 +139,16 @@ class TestScopeTracking(BaseTestCase):
                 def bar():
                     pass
                 """
-        }
+    }
 
-        result = main(['foo.py', '--no-color', '--fix'])
+    result = main(['foo.py', '--no-color', '--fix'])
 
-        # TODO: detect eggs type inside spam function and mark Foo.bar as used in CodeItem instance.
-        # Usages should be marked directly on the CodeItem instances, not in a pool of names.
+    # TODO: detect eggs type inside spam function and mark Foo.bar as used in CodeItem instance.
+    # Usages should be marked directly on the CodeItem instances, not in a pool of names.
 
-        self.assertFiles(
-            {
-                'foo.py': b"""
+    virtual_file_system.assert_files(
+        {
+            'foo.py': b"""
                 class Foo:
                     def bar(self):
                         pass
@@ -159,22 +159,23 @@ class TestScopeTracking(BaseTestCase):
                 foo = Foo()
                 spam(foo)
                 """
-            }
-        )
+        }
+    )
 
-        self.assertIsNone(result)
+    assert result is None
 
-    @skip('>> Observed types in scope definition is still being implemented')
-    def test_scope_update_for_method_call_expression(self):
-        # >>> TODO: Mark types in scope usage correctly for method invocation
-        self.files = {
-            'foo.py': b"""
+
+@pytest.mark.skip(reason='>> Observed types in scope definition is still being implemented')
+def test_scope_update_for_method_call_expression(virtual_file_system):
+    # >>> TODO: Mark types in scope usage correctly for method invocation
+    virtual_file_system.files = {
+        'foo.py': b"""
                 Bar().spam()
                 """
-        }
+    }
 
-        result = main(['foo.py', '--no-color', '--fix'])
+    result = main(['foo.py', '--no-color', '--fix'])
 
-        self.assertFiles({'foo.py': b""""""})
+    virtual_file_system.assert_files({'foo.py': b""""""})
 
-        self.assertIsNone(result)
+    assert result is None
