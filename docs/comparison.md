@@ -63,7 +63,7 @@ It covers released versions only: unreleased changes on the `vulture` `main` bra
 
 ## Adapting suppression to a framework
 
-`deadcode` exposes suppression as a small matrix rather than a single switch. Three options select the scope — `--ignore-names`, `--ignore-bodies-of`, and
+`deadcode` provides flexible options to filter out false positive code parts. Three options select the scope — `--ignore-names`, `--ignore-bodies-of`, and
 `--ignore-definitions` — and the `-if-decorated-with` and `-if-inherits-from` qualifiers select what triggers it, with a variant for each of the three scopes.
 `--ignore-names-in-files` narrows a name ignore to matching files. All of them accept glob patterns, work from both the command line and `[tool.deadcode]`, and
 compose with per-line `# noqa` comments that accept every `DC` code. Framework-heavy code therefore needs configuration, not source changes or a hand-maintained
