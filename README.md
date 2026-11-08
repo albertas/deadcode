@@ -95,7 +95,7 @@ run the same hook while developing deadcode itself, use `make pre-commit`.
 |`--ignore-bodies-of`                       | list | Ignores body of an expression if its name matches any of the provided names. |
 |`--ignore-bodies-if-decorated-with`        | list | Ignores body of an expression if its decorated with one of the provided decorator names. |
 |`--ignore-bodies-if-inherits-from`         | list | Ignores body of a class if it inherits from any of the provided class names. The class name may be a plain name, a dotted path such as `graphene.ObjectType`, or a glob such as `*.ObjectType`; a dotted base also matches its final component (`ObjectType`). |
-|`--ignore-definitions`                     | list | Ignores definition (including name and body) if a name of an expression matches any of the provided ones. |
+|`--ignore-definitions`                     | list | Ignores definition (including name and body) if a name of an expression matches any of the provided ones. Applies to class, function, method and property definitions, not to variables, attributes or imports; use `--ignore-names` for those. |
 |`--ignore-definitions-if-inherits-from`    | list | Ignores definition (including name and body) of a class if it inherits from any of the provided class names. The class name may be a plain name, a dotted path such as `graphene.ObjectType`, or a glob such as `*.ObjectType`; a dotted base also matches its final component (`ObjectType`). |
 |`--ignore-definitions-if-decorated-with`   | list | Ignores definition (including name and body) of an expression, which is decorated with any of the provided decorator names. |
 |`--no-color`                               | -    | Removes colors from the output. |
@@ -118,7 +118,7 @@ over the cleaned tree.
 
 ##### Glossory
 - `name` - variable, function or class name.
-- `body` - code block which follows after `:` in function or class definition.
+- `body` - code block which follows after `:` in function or class definition. A body ignore suppresses every definition inside the expression, including nested classes and functions.
 - `definition` - whole class or function definition expression including its name and body.
 
 
@@ -215,15 +215,12 @@ the public module-level names are exported.
 - [ ] Add options:
     - [x] --ignore-definitions
     - [x] --ignore-definitions-if-inherits-from
-    - [ ] --ignore-definitions-if-decorated-with
-    - [ ] --ignore-names-if-inherits-from
+    - [x] --ignore-definitions-if-decorated-with
+    - [x] --ignore-names-if-inherits-from
     - [x] --ignore-names-if-decorated-with
-    - [ ] --ignore-bodies-of
-    - [ ] --ignore-bodies-if-decorated-with
+    - [x] --ignore-bodies-of
+    - [x] --ignore-bodies-if-decorated-with
     - [x] --ignore-bodies-if-inherits-from
-    - [ ] --ignore-definitions
-    - [x] --ignore-definitions-if-inherits-from
-    - [ ] --ignore-definitions-if-decorated-with
         - Question: would it be possible to ignore only certain types of checks for a body, e.g. only variable attributes of TypedDict and still check usage of methods and properties?
         - What expression would allow this type of precission?
 - [ ] Distinguish between definitions with same name, but different files.
@@ -250,8 +247,11 @@ the public module-level names are exported.
         - Add support for Python 3.13, 3.14 and 3.15.
         - Documentation is now published on Read the Docs at https://deadcode.readthedocs.io/.
         - Add `-V` as a short alias for `--version`.
-        - Document the pre-commit hook setup and usage on a separate documentation page, including why a hook run differs from `deadcode .`.
-        - Run the test suite in parallel with `pytest-xdist`, using one worker per logical CPU minus one.
+        - `--ignore-definitions-if-decorated-with` now ignores whole decorated definitions
+        - `--ignore-bodies-of` now suppresses the bodies of matching classes and functions
+        - `--ignore-bodies-if-decorated-with` now suppresses the bodies of decorated definitions
+        - `--ignore-names-if-inherits-from` now ignores class names matching a base class
+        - `--ignore-definitions` now reliably ignores function, method, property and nested class definitions; its limits are documented
     - Bugfixes:
         - Fix `--fix` leaving invalid or partially removed imports when unused names are deleted from parenthesized or multi-line import statements.
         - Do not crash when the terminal cannot encode the success message.
