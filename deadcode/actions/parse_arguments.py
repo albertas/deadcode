@@ -84,7 +84,11 @@ def parse_arguments(args: list[str] | None) -> Args:
     )
     parser.add_argument(
         '--ignore-bodies-if-inherits-from',
-        help='Ignores body of a class if it inherits from any of the provided class names.',
+        help=(
+            'Ignores body of a class if it inherits from any of the provided class names. '
+            'The class name may be a plain name, a dotted path, or a glob; '
+            'a dotted base also matches its final component.'
+        ),
         nargs='*',
         action='append',
         default=[],
@@ -105,7 +109,9 @@ def parse_arguments(args: list[str] | None) -> Args:
         '--ignore-definitions-if-inherits-from',
         help=(
             'Ignores definition (including name and body) of a class if '
-            'it inherits from any of the provided class names.'
+            'it inherits from any of the provided class names. '
+            'The class name may be a plain name, a dotted path, or a glob; '
+            'a dotted base also matches its final component.'
         ),
         nargs='*',
         action='append',
