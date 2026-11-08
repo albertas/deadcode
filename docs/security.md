@@ -16,7 +16,8 @@ It has two jobs:
 
 - `runtime-dependencies` runs on Python 3.10 and audits `requirements.txt` with `make audit-runtime`.
 - `development-dependencies` runs a matrix of Python `["3.10", "3.15"]` and audits `requirements-dev.txt` with `make audit-development`.
-  The Python 3.10 entry is `continue-on-error` because of the accepted exception described below.
+  The audit step of the Python 3.10 entry is `continue-on-error` because of the accepted exception described below, so the job and the
+  workflow run stay green while the advisories remain in the step log.
 
 ## How to read a finding
 
@@ -72,8 +73,8 @@ printf 'filelock==4.1.0\n' > /tmp/vulnerable-requirements.txt
 ## Accepted exception: filelock on Python 3.10
 
 `filelock==4.1.0` is pinned for `python_full_version < '3.11'`, and the fixed release `4.2.1` requires Python `>= 3.11`. On Python 3.10 the
-development audit therefore reports 17 advisories, and the Python 3.10 matrix entry is marked `continue-on-error`. The exception is never
-suppressed with `--ignore-vuln`. It ends when a Python 3.10-compatible fixed release exists or when Python 3.10 support is dropped.
+development audit therefore reports 17 advisories, and the audit step of the Python 3.10 matrix entry is marked `continue-on-error`. The exception is
+never suppressed with `--ignore-vuln`. It ends when a Python 3.10-compatible fixed release exists or when Python 3.10 support is dropped.
 
 ## Repository settings for maintainers
 
