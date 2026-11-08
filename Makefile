@@ -13,23 +13,23 @@ PYTEST_XDIST_WORKERS ?= $(shell .venv/bin/python -c 'import os; print(max(1, (os
 	uv pip sync requirements-dev.txt
 	uv pip install -e .[test]
 
-VERSION := $(shell .venv/bin/hatch version)
+PACKAGE_VERSION := $(shell .venv/bin/hatch version)
 
 publish: .venv
 	rm -fr dist/*
 	.venv/bin/hatch build
 	.venv/bin/uv publish
 
-	git tag -a v$(VERSION) -m "deadcode $(VERSION)"
-	git push origin tag v$(VERSION)
+	git tag -a v$(PACKAGE_VERSION) -m "deadcode $(PACKAGE_VERSION)"
+	git push origin tag v$(PACKAGE_VERSION)
 
 	$(MAKE) readthedocs
 
 # Rebuild the released version, stable and latest documentation on Read the Docs.
-readthedocs:
+readthedocs: .venv
 	@curl --fail-with-body --silent --show-error --request POST \
 		--header "Authorization: Token $(READTHEDOCS_API_TOKEN)" \
-		"https://app.readthedocs.org/api/v3/projects/deadcode/versions/v$(VERSION)/builds/" >/dev/null
+		"https://app.readthedocs.org/api/v3/projects/deadcode/versions/v$(PACKAGE_VERSION)/builds/" >/dev/null
 	@curl --fail-with-body --silent --show-error --request POST \
 		--header "Authorization: Token $(READTHEDOCS_API_TOKEN)" \
 		"https://app.readthedocs.org/api/v3/projects/deadcode/versions/stable/builds/" >/dev/null
