@@ -245,6 +245,12 @@ the public module-level names are exported.
         - Documentation is now published on Read the Docs at https://deadcode.readthedocs.io/.
         - Add `-V` as a short alias for `--version`.
         - Document the pre-commit hook setup and usage on a separate documentation page, including why a hook run differs from `deadcode .`.
+        - --ignore-definitions-if-decorated-with now ignores whole decorated definitions
+        - --ignore-bodies-of now suppresses the bodies of matching classes and functions
+        - --ignore-bodies-if-decorated-with now suppresses the bodies of decorated definitions
+        - --ignore-names-if-inherits-from now ignores class names matching a base class
+        - --ignore-definitions now reliably ignores function, method, property and nested class definitions; its limits are documented
+        - The README option checklist is deduplicated and the scope of the definition and body ignore options is documented
     - Bugfixes:
         - Fix `--fix` leaving invalid or partially removed imports when unused names are deleted from parenthesized or multi-line import statements.
         - Do not crash when the terminal cannot encode the success message.
