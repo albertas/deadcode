@@ -26,5 +26,8 @@ from deadcode.visitor.utils import get_decorator_name
     ],
 )
 def test_get_decorator_name(source: str, expected_name: str) -> None:
+    # When
     decorator = ast.parse(f'{source}\ndef function():\n    pass\n').body[0].decorator_list[0]
+
+    # Then
     assert get_decorator_name(decorator) == expected_name

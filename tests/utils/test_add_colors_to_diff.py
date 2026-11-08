@@ -3,6 +3,7 @@ from deadcode.utils.fix_indent import fix_indent
 
 
 def test_add_colors_to_diff():
+    # When
     diff = fix_indent(
         b"""\
         --- foo.py
@@ -18,6 +19,7 @@ def test_add_colors_to_diff():
 
     colorful_diff = add_colors_to_diff(diff)
 
+    # Then
     assert colorful_diff == fix_indent(
         b"""\
         \x1b[31m--- foo.py\x1b[0m

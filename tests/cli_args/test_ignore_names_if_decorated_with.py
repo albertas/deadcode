@@ -2,6 +2,7 @@ from deadcode.cli import main
 
 
 def test_exact_match(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 @deco
@@ -10,12 +11,15 @@ def test_exact_match(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--ignore-names-if-decorated-with=@deco'])
 
+    # Then
     assert unused_names is None
 
 
 def test_wildcard_call_decorator(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 @app.get("/x")
@@ -24,12 +28,15 @@ def test_wildcard_call_decorator(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--ignore-names-if-decorated-with=@app.*'])
 
+    # Then
     assert unused_names is None
 
 
 def test_async_handler(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 @app.get("/x")
@@ -38,12 +45,15 @@ def test_async_handler(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--ignore-names-if-decorated-with=@app.*'])
 
+    # Then
     assert unused_names is None
 
 
 def test_method(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class Service:
@@ -55,12 +65,15 @@ def test_method(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--ignore-names-if-decorated-with=@router.*'])
 
+    # Then
     assert unused_names is None
 
 
 def test_property(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class Model:
@@ -72,12 +85,15 @@ def test_property(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--ignore-names-if-decorated-with=@property'])
 
+    # Then
     assert unused_names is None
 
 
 def test_class(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 @decorated
@@ -86,12 +102,15 @@ def test_class(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--ignore-names-if-decorated-with=@decorated'])
 
+    # Then
     assert unused_names is None
 
 
 def test_non_matching_decorators_are_still_reported(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 def plain():
@@ -103,14 +122,17 @@ def test_non_matching_decorators_are_still_reported(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--ignore-names-if-decorated-with=@app.*'])
 
+    # Then
     assert unused_names == (
         'foo.py:1:0: DC02 Function `plain` is never used\n' 'foo.py:5:0: DC02 Function `decorated` is never used'
     )
 
 
 def test_noqa_interaction(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 @deco
@@ -125,16 +147,21 @@ def test_noqa_interaction(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color'])
 
+    # Then
     assert unused_names is None
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--ignore-names-if-decorated-with=@deco'])
 
+    # Then
     assert unused_names is None
 
 
 def test_fastapi_single_file(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'main.py': b"""
                 from fastapi import FastAPI
@@ -157,14 +184,18 @@ def test_fastapi_single_file(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['main.py', '--no-color'])
 
+    # Then
     assert unused_names == (
         'main.py:7:0: DC02 Function `index` is never used\n'
         'main.py:12:0: DC02 Function `startup` is never used\n'
         'main.py:16:0: DC02 Function `unused` is never used'
     )
 
+    # When
     unused_names = main(['main.py', '--no-color', '--ignore-names-if-decorated-with=@app.*'])
 
+    # Then
     assert unused_names == ('main.py:16:0: DC02 Function `unused` is never used')

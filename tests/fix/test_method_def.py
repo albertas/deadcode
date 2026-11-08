@@ -6,6 +6,7 @@ from deadcode.cli import main
 
 
 def test_method(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class MyTest:
@@ -17,8 +18,10 @@ def test_method(virtual_file_system):
                 """
     }
 
+    # When
     main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -33,6 +36,7 @@ def test_method(virtual_file_system):
 
 
 def test_method_at_the_end_of_file(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'bar.py': b"""
                 class MyTest:
@@ -47,8 +51,10 @@ def test_method_at_the_end_of_file(virtual_file_system):
                 """,
     }
 
+    # When
     main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'bar.py': b"""

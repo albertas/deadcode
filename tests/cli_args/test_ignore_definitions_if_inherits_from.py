@@ -4,6 +4,7 @@ from deadcode.cli import main
 
 
 def test_ignore_class_definition_if_inherits_from_base_class(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class Base:
@@ -25,8 +26,10 @@ def test_ignore_class_definition_if_inherits_from_base_class(virtual_file_system
                 """
     }
 
+    # When
     output = main(['ignore_names_by_pattern.py', '--no-color', '--ignore-definitions-if-inherits-from=Base', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -60,6 +63,7 @@ def test_ignore_class_definition_if_inherits_from_multiple_classes(virtual_file_
     # Implement class inheritance tracking, so that not only the first level of
     # inherited classes would be considered, but whole inheritance tree would be considered.
 
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class Base:
@@ -85,8 +89,10 @@ def test_ignore_class_definition_if_inherits_from_multiple_classes(virtual_file_
                 """
     }
 
+    # When
     output = main(['ignore_names_by_pattern.py', '--no-color', '--ignore-definitions-if-inherits-from=Base', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -119,6 +125,7 @@ def test_ignore_class_definition_if_inherits_from_multiple_classes(virtual_file_
 
 
 def test_ignore_class_definition_if_inherits_from_dotted_base_class(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 import graphene
@@ -136,6 +143,7 @@ def test_ignore_class_definition_if_inherits_from_dotted_base_class(virtual_file
                 """
     }
 
+    # When
     output = main(
         [
             'ignore_names_by_pattern.py',
@@ -145,6 +153,7 @@ def test_ignore_class_definition_if_inherits_from_dotted_base_class(virtual_file
         ]
     )
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -169,6 +178,7 @@ def test_ignore_class_definition_if_inherits_from_dotted_base_class(virtual_file
 
 
 def test_ignore_class_definition_if_inherits_from_final_base_class_component(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 import graphene
@@ -186,6 +196,7 @@ def test_ignore_class_definition_if_inherits_from_final_base_class_component(vir
                 """
     }
 
+    # When
     output = main(
         [
             'ignore_names_by_pattern.py',
@@ -195,6 +206,7 @@ def test_ignore_class_definition_if_inherits_from_final_base_class_component(vir
         ]
     )
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -219,6 +231,7 @@ def test_ignore_class_definition_if_inherits_from_final_base_class_component(vir
 
 
 def test_ignore_class_definition_if_inherits_from_transitive_dotted_base_class(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 import graphene
@@ -240,6 +253,7 @@ def test_ignore_class_definition_if_inherits_from_transitive_dotted_base_class(v
                 """
     }
 
+    # When
     output = main(
         [
             'ignore_names_by_pattern.py',
@@ -249,6 +263,7 @@ def test_ignore_class_definition_if_inherits_from_transitive_dotted_base_class(v
         ]
     )
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""

@@ -3,6 +3,7 @@ from deadcode.utils.fix_indent import fix_indent
 
 
 def test_output_is_provided_only_for_files_in_only_option(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class UnusedClass:
@@ -16,8 +17,10 @@ def test_output_is_provided_only_for_files_in_only_option(virtual_file_system):
                 print("Dont change this file")""",
     }
 
+    # When
     unused_names = main('. --only foo.py --no-color'.split())
 
+    # Then
     assert unused_names == fix_indent(
         """\
                 foo.py:1:0: DC03 Class `UnusedClass` is never used"""
@@ -40,6 +43,7 @@ def test_output_is_provided_only_for_files_in_only_option(virtual_file_system):
 
 
 def test_files_are_modified_only_for_files_in_only_option(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class UnusedClass:
@@ -53,8 +57,10 @@ def test_files_are_modified_only_for_files_in_only_option(virtual_file_system):
                 print("Dont change this file")""",
     }
 
+    # When
     unused_names = main('. --only foo.py --no-color --fix'.split())
 
+    # Then
     assert unused_names == fix_indent(
         """\
                 foo.py:1:0: DC03 Class `UnusedClass` is never used\n
@@ -75,6 +81,7 @@ def test_files_are_modified_only_for_files_in_only_option(virtual_file_system):
 
 
 def test_diffs_are_provided_only_for_files_in_only_option(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class UnusedClass:
@@ -88,7 +95,10 @@ def test_diffs_are_provided_only_for_files_in_only_option(virtual_file_system):
                 print("Dont change this file")""",
     }
 
+    # When
     unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--dry', '--only', 'foo.py'])
+
+    # Then
     assert unused_names == fix_indent(
         """\
                 foo.py:1:0: DC03 Class `UnusedClass` is never used

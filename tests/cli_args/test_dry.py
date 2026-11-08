@@ -3,6 +3,7 @@ from deadcode.utils.fix_indent import fix_indent
 
 
 def test_unused_class_was_reported_to_be_removed(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class UnusedClass:
@@ -11,8 +12,10 @@ def test_unused_class_was_reported_to_be_removed(virtual_file_system):
                 print("Dont change this file")"""
     }
 
+    # When
     unused_names = main('foo.py --no-color --fix --dry'.split())
 
+    # Then
     assert unused_names == (
         fix_indent(
             """\
@@ -41,6 +44,7 @@ def test_unused_class_was_reported_to_be_removed(virtual_file_system):
 
 
 def test_file_is_not_modified_if_fix_option_is_used_with_dry(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class UnusedClass:
@@ -49,7 +53,10 @@ def test_file_is_not_modified_if_fix_option_is_used_with_dry(virtual_file_system
                 print("Dont change this file")"""
     }
 
+    # When
     unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--fix', '--dry'])
+
+    # Then
     assert unused_names == (
         fix_indent(
             """\
@@ -78,6 +85,7 @@ def test_file_is_not_modified_if_fix_option_is_used_with_dry(virtual_file_system
 
 
 def test_all_files_are_reported_if_no_filenames_are_provided_for_dry_option(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class UnusedClass:
@@ -91,7 +99,10 @@ def test_all_files_are_reported_if_no_filenames_are_provided_for_dry_option(virt
                 print("Dont change this file")""",
     }
 
+    # When
     unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--dry'])
+
+    # Then
     assert unused_names == fix_indent(
         """\
                 bar.py:1:0: DC02 Function `unused_function` is never used
@@ -132,6 +143,7 @@ def test_all_files_are_reported_if_no_filenames_are_provided_for_dry_option(virt
 
 
 def test_only_provided_filenames_to_dry_option_are_reported(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class UnusedClass:
@@ -145,7 +157,10 @@ def test_only_provided_filenames_to_dry_option_are_reported(virtual_file_system)
                 print("Dont change this file")""",
     }
 
+    # When
     unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--dry', '--only', 'foo.py'])
+
+    # Then
     assert unused_names == fix_indent(
         """\
                 foo.py:1:0: DC03 Class `UnusedClass` is never used
@@ -177,6 +192,7 @@ def test_only_provided_filenames_to_dry_option_are_reported(virtual_file_system)
 
 
 def test_no_diff_is_shown_if_dry_option_filenames_are_incorrect(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class UnusedClass:
@@ -185,7 +201,10 @@ def test_no_diff_is_shown_if_dry_option_filenames_are_incorrect(virtual_file_sys
                 print("Dont change this file")"""
     }
 
+    # When
     unused_names = main('foo.py --no-color --fix --dry --only fooo.py'.split())
+
+    # Then
     assert unused_names == ''
 
     virtual_file_system.assert_files(
@@ -200,6 +219,7 @@ def test_no_diff_is_shown_if_dry_option_filenames_are_incorrect(virtual_file_sys
 
 
 def test_pattern_usage_for_filenames_provided_to_dry_option(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class UnusedClass:
@@ -208,7 +228,10 @@ def test_pattern_usage_for_filenames_provided_to_dry_option(virtual_file_system)
                 print("Dont change this file")"""
     }
 
+    # When
     unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--fix', '--dry', '--only', 'f*.py'])
+
+    # Then
     assert unused_names == (
         fix_indent(
             """\
@@ -237,6 +260,7 @@ def test_pattern_usage_for_filenames_provided_to_dry_option(virtual_file_system)
 
 
 def test_coloring_of_a_diff(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class UnusedClass:
@@ -253,7 +277,10 @@ def test_coloring_of_a_diff(virtual_file_system):
                 print("Dont change this file")""",
     }
 
+    # When
     unused_names = main(['ignore_names_by_pattern.py', '--dry'])
+
+    # Then
     assert unused_names == fix_indent(
         """\
                 bar.py:1:0: \x1b[91mDC02\x1b[0m Function `\x1b[1munused_function\x1b[0m` is never used

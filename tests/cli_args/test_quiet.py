@@ -11,7 +11,12 @@ def test_quiet_with_findings_suppresses_output(virtual_file_system, capsys):
     # Then
     assert message == ''
     assert capsys.readouterr().out == ''
-    assert print_main(['sample.py', '--quiet', '--no-color']) == 1
+
+    # When
+    result = print_main(['sample.py', '--quiet', '--no-color'])
+
+    # Then
+    assert result == 1
 
 
 def test_quiet_with_clean_file_suppresses_banner(virtual_file_system, capsys):
@@ -24,7 +29,12 @@ def test_quiet_with_clean_file_suppresses_banner(virtual_file_system, capsys):
     # Then
     assert message is None
     assert capsys.readouterr().out == ''
-    assert print_main(['sample.py', '--quiet', '--no-color']) == 0
+
+    # When
+    result = print_main(['sample.py', '--quiet', '--no-color'])
+
+    # Then
+    assert result == 0
 
 
 def test_quiet_with_count_suppresses_output(virtual_file_system, capsys):
@@ -37,4 +47,9 @@ def test_quiet_with_count_suppresses_output(virtual_file_system, capsys):
     # Then
     assert message == ''
     assert capsys.readouterr().out == ''
-    assert print_main(['sample.py', '--quiet', '--count', '--no-color']) == 1
+
+    # When
+    result = print_main(['sample.py', '--quiet', '--count', '--no-color'])
+
+    # Then
+    assert result == 1

@@ -3,74 +3,114 @@ from deadcode.cli import main
 
 def test_variable_is_imported_as_an_alias_but_unused(virtual_file_system):
     # Variable is used, because its imported in another file
+
+    # Having
     virtual_file_system.files = {
         'foo.py': b'used_var = None',
         'bar.py': b'from foo import used_var as foo_var; print(foo_var)',
     }
+
+    # When
     unused_names = main(['ignore_names_by_pattern.py', '--no-color'])
+
+    # Then
     assert unused_names is None
 
 
 def test_variable_is_used_if_its_imported_as_a_different_name(virtual_file_system):
     # Variable is used, because its imported in another file
+
+    # Having
     virtual_file_system.files = {
         'foo.py': b'used_var = None',
         'bar.py': b"""
                 from foo import used_var as foo_var
                 print(foo_var)""",
     }
+
+    # When
     unused_names = main(['ignore_names_by_pattern.py', '--no-color'])
+
+    # Then
     assert unused_names is None
 
 
 def test_module_imported_and_var_from_it_is_used(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b'used_var = None',
         'bar.py': b"""
                 import foo
                 print(foo.used_var)""",
     }
+
+    # When
     unused_names = main(['ignore_names_by_pattern.py', '--no-color'])
     # Attribute(value=Name(id='foo', ctx=Load()), attr='used_var', ctx=Load())
+
+    # Then
     assert unused_names is None
 
 
 def test_module_imported_with_alias_and_var_from_it_is_used(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b'used_var = None',
         'bar.py': b"""
                 import foo as f
                 print(f.used_var)""",
     }
+
+    # When
     unused_names = main(['ignore_names_by_pattern.py', '--no-color'])
+
+    # Then
     assert unused_names is None
 
 
 def test_relative_module_imports(virtual_file_system):
     # TODO: add more relative import tests
     # https://docs.python.org/3/tutorial/modules.html#intra-package-references
+
+    # Having
     virtual_file_system.files = {
         'eggs/foo.py': b'used_var = None',
         'eggs/spam/bar.py': b"""
                 from .. import foo as f
                 print(f.used_var)""",
     }
+
+    # When
     unused_names = main(['ignore_names_by_pattern.py', '--no-color'])
+
+    # Then
     assert unused_names is None
 
 
 def test_file_contains_syntax_error(virtual_file_system):
+    # Having
     virtual_file_system.files = {'foo.py': b'unused_var = None this is syntax error'}
+
+    # When
     unused_names = main(['foo.py', '--no-color'])
+
+    # Then
     assert unused_names is None
 
     # The same check works without a Syntax error
+
+    # Having
     virtual_file_system.files = {'foo.py': b'unused_var = None'}
+
+    # When
     unused_names = main(['foo.py', '--no-color'])
+
+    # Then
     assert unused_names == 'foo.py:1:0: DC01 Variable `unused_var` is never used'
 
 
 def test_ignore_variable_names_in_comments(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 # unused_variable is empty
@@ -78,11 +118,16 @@ def test_ignore_variable_names_in_comments(virtual_file_system):
                 # Another comment about unused variable
                 """
     }
+
+    # When
     unused_names = main(['ignore_names_by_pattern.py', '--no-color'])
+
+    # Then
     assert unused_names == 'foo.py:2:0: DC01 Variable `unused_var` is never used'
 
 
 def test_ignore_variable_names_in_strings(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 '''
@@ -92,24 +137,32 @@ def test_ignore_variable_names_in_strings(virtual_file_system):
                 print("This is another string about unused_variable")
                 """
     }
+
+    # When
     unused_names = main(['ignore_names_by_pattern.py', '--no-color'])
+
+    # Then
     assert unused_names == 'foo.py:4:0: DC01 Variable `unused_var` is never used'
 
 
 # TODO:
 def test_unused_names_found_in_subdirectories():
+    # Having
     pass
 
 
 def test_exclude_option():
+    # Having
     pass
 
 
 def test_ignore_names_in_files_option():
+    # Having
     pass
 
 
 def test_quoted_annotation_from_issue_is_used(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'quoted.py': b"""from typing import TYPE_CHECKING
 
@@ -120,10 +173,16 @@ a: "ABC | None" = None
 print(a)
 """
     }
-    assert main(['quoted.py', '--no-color']) is None
+
+    # When
+    result = main(['quoted.py', '--no-color'])
+
+    # Then
+    assert result is None
 
 
 def test_quoted_annassign_annotation_outside_guard_is_used(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""from abc import ABC
 
@@ -131,10 +190,16 @@ a: "ABC | None" = None
 print(a)
 """
     }
-    assert main(['foo.py', '--no-color']) is None
+
+    # When
+    result = main(['foo.py', '--no-color'])
+
+    # Then
+    assert result is None
 
 
 def test_quoted_parameter_annotation_is_used(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""from typing import TYPE_CHECKING
 
@@ -149,10 +214,16 @@ def handler(value: "ABC") -> None:
 print(handler)
 """
     }
-    assert main(['foo.py', '--no-color']) is None
+
+    # When
+    result = main(['foo.py', '--no-color'])
+
+    # Then
+    assert result is None
 
 
 def test_quoted_return_annotation_with_typing_guard_is_used(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""import typing
 
@@ -167,10 +238,16 @@ def handler() -> "ABC":
 print(handler)
 """
     }
-    assert main(['foo.py', '--no-color']) is None
+
+    # When
+    result = main(['foo.py', '--no-color'])
+
+    # Then
+    assert result is None
 
 
 def test_quoted_annotation_with_typing_extensions_guard_is_used(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""from typing_extensions import TYPE_CHECKING
 
@@ -181,10 +258,16 @@ a: "ABC" = None
 print(a)
 """
     }
-    assert main(['foo.py', '--no-color']) is None
+
+    # When
+    result = main(['foo.py', '--no-color'])
+
+    # Then
+    assert result is None
 
 
 def test_quoted_annotation_with_aliased_guard_is_used(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""from typing import TYPE_CHECKING as TC
 
@@ -195,10 +278,16 @@ a: "ABC" = None
 print(a)
 """
     }
-    assert main(['foo.py', '--no-color']) is None
+
+    # When
+    result = main(['foo.py', '--no-color'])
+
+    # Then
+    assert result is None
 
 
 def test_nested_quoted_annotations_are_used(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""from abc import ABC
 
@@ -213,10 +302,16 @@ print(x)
 print(handler)
 """
     }
-    assert main(['foo.py', '--no-color']) is None
+
+    # When
+    result = main(['foo.py', '--no-color'])
+
+    # Then
+    assert result is None
 
 
 def test_dotted_quoted_annotation_records_module_name(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""from helpers import mod
 
@@ -224,10 +319,16 @@ value: "mod.Type" = None
 print(value)
 """
     }
-    assert main(['foo.py', '--no-color']) is None
+
+    # When
+    result = main(['foo.py', '--no-color'])
+
+    # Then
+    assert result is None
 
 
 def test_import_not_mentioned_by_quoted_annotation_is_still_unused(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""from typing import TYPE_CHECKING
 
@@ -238,20 +339,32 @@ a: "XYZ | None" = None
 print(a)
 """
     }
-    assert main(['foo.py', '--no-color']) == 'foo.py:4:20: DC07 Import `ABC` is never used'
+
+    # When
+    result = main(['foo.py', '--no-color'])
+
+    # Then
+    assert result == 'foo.py:4:20: DC07 Import `ABC` is never used'
 
 
 def test_name_only_in_ordinary_string_is_still_unused(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""from abc import ABC
 
 print("ABC")
 """
     }
-    assert main(['foo.py', '--no-color']) == 'foo.py:1:16: DC07 Import `ABC` is never used'
+
+    # When
+    result = main(['foo.py', '--no-color'])
+
+    # Then
+    assert result == 'foo.py:1:16: DC07 Import `ABC` is never used'
 
 
 def test_unparseable_quoted_annotation_is_ignored(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""from abc import ABC
 
@@ -259,4 +372,9 @@ value: "ABC |" = None
 print(value)
 """
     }
-    assert main(['foo.py', '--no-color']) == 'foo.py:1:16: DC07 Import `ABC` is never used'
+
+    # When
+    result = main(['foo.py', '--no-color'])
+
+    # Then
+    assert result == 'foo.py:1:16: DC07 Import `ABC` is never used'

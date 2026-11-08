@@ -63,11 +63,14 @@ def documented_rule_codes() -> set[str]:
 
 @pytest.mark.parametrize('code', sorted(RULE_CASES))
 def test_documented_rule_is_emitted(code, virtual_file_system):
+    # Having
     file_content, must_contain, must_not_contain = RULE_CASES[code]
     virtual_file_system.files = {'sample.py': file_content}
 
+    # When
     output = main(['sample.py', '--no-color'])
 
+    # Then
     assert isinstance(output, str)
     for fragment in must_contain:
         assert fragment in output
@@ -76,10 +79,13 @@ def test_documented_rule_is_emitted(code, virtual_file_system):
 
 
 def test_rule_cases_match_readme_table():
+    # Then
     assert set(RULE_CASES) == documented_rule_codes()
 
 
 def test_every_error_code_is_unique():
+    # When
     error_codes = list(ERROR_TYPE_TO_ERROR_CODE.values())
 
+    # Then
     assert len(set(error_codes)) == len(error_codes)

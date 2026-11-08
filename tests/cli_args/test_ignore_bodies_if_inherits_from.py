@@ -2,6 +2,7 @@ from deadcode.cli import main
 
 
 def test_ignore_class_definition_if_inherits_from_base_class(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class Base:
@@ -23,8 +24,10 @@ def test_ignore_class_definition_if_inherits_from_base_class(virtual_file_system
                 """
     }
 
+    # When
     output = main(['ignore_names_by_pattern.py', '--no-color', '--ignore-bodies-if-inherits-from=Base', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -44,6 +47,7 @@ def test_ignore_class_definition_if_inherits_from_base_class(virtual_file_system
 
 
 def test_ignore_class_body_if_inherits_from_dotted_base_class(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 import graphene
@@ -61,6 +65,7 @@ def test_ignore_class_body_if_inherits_from_dotted_base_class(virtual_file_syste
                 """
     }
 
+    # When
     output = main(
         [
             'ignore_names_by_pattern.py',
@@ -70,6 +75,7 @@ def test_ignore_class_body_if_inherits_from_dotted_base_class(virtual_file_syste
         ]
     )
 
+    # Then
     virtual_file_system.assert_files({'foo.py': b'\nimport graphene\n'})
 
     assert output == (
@@ -82,6 +88,7 @@ def test_ignore_class_body_if_inherits_from_dotted_base_class(virtual_file_syste
 
 
 def test_ignore_class_body_if_inherits_from_final_base_class_component(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 import graphene
@@ -99,8 +106,10 @@ def test_ignore_class_body_if_inherits_from_final_base_class_component(virtual_f
                 """
     }
 
+    # When
     output = main(['ignore_names_by_pattern.py', '--no-color', '--ignore-bodies-if-inherits-from=ObjectType', '--fix'])
 
+    # Then
     virtual_file_system.assert_files({'foo.py': b'\nimport graphene\n'})
 
     assert output == (
@@ -113,6 +122,7 @@ def test_ignore_class_body_if_inherits_from_final_base_class_component(virtual_f
 
 
 def test_ignore_class_body_if_inherits_from_glob_base_class(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 import graphene
@@ -130,10 +140,12 @@ def test_ignore_class_body_if_inherits_from_glob_base_class(virtual_file_system)
                 """
     }
 
+    # When
     output = main(
         ['ignore_names_by_pattern.py', '--no-color', '--ignore-bodies-if-inherits-from=*.ObjectType', '--fix']
     )
 
+    # Then
     virtual_file_system.assert_files({'foo.py': b'\nimport graphene\n'})
 
     assert output == (

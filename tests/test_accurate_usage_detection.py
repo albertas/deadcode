@@ -14,6 +14,7 @@ def test_function_call_with_one_argument(virtual_file_system):
 
     # When new type is defined: during import or definition: scope has to be updated.
 
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class X:
@@ -29,7 +30,10 @@ def test_function_call_with_one_argument(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
+
+    # Then
     assert unused_names is None
 
     virtual_file_system.assert_files(

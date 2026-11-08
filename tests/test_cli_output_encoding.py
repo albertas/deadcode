@@ -40,27 +40,33 @@ class AsciiOnlyStringStream(io.StringIO):
 
 
 def test_main_finishes_when_stdout_cannot_encode(monkeypatch):
+    # Having
     stream = Cp1252Stream()
 
     monkeypatch.setattr('sys.stdout', stream)
     monkeypatch.setattr('deadcode.cli.find_python_filenames', MagicMock(return_value=[]))
     monkeypatch.setattr('deadcode.cli.find_unused_names', MagicMock(return_value=[]))
 
+    # When
     result = main(['tests/files/variables.py', '--no-color'])
 
+    # Then
     assert result is None
     assert 'Well done!' in stream.written_text
 
 
 def test_stringio_stdout_without_buffer_or_reconfigure(monkeypatch):
+    # Having
     stream = AsciiOnlyStringStream()
 
     monkeypatch.setattr('sys.stdout', stream)
     monkeypatch.setattr('deadcode.cli.find_python_filenames', MagicMock(return_value=[]))
     monkeypatch.setattr('deadcode.cli.find_unused_names', MagicMock(return_value=[]))
 
+    # When
     result = main(['tests/files/variables.py', '--no-color'])
 
+    # Then
     assert result is None
     assert 'Well done!' in stream.getvalue()
     assert '✨' not in stream.getvalue()
@@ -68,34 +74,43 @@ def test_stringio_stdout_without_buffer_or_reconfigure(monkeypatch):
 
 
 def test_import_does_not_rebind_stdout():
+    # Having
     original_stdout = sys.stdout
 
+    # When
     importlib.reload(deadcode.cli)
 
+    # Then
     assert sys.stdout is original_stdout
 
 
 def test_parse_warning_with_non_ascii_filename_on_cp1252_stream(virtual_file_system, monkeypatch):
+    # Having
     stream = Cp1252Stream()
 
     virtual_file_system.files = {'café.py': b'def broken(:\n'}
     monkeypatch.setattr('sys.stdout', stream)
 
+    # When
     result = main(['café.py', '--no-color'])
 
+    # Then
     assert result is None
     assert 'Failed to parse café.py' in stream.written_text
     assert 'Well done!' in stream.written_text
 
 
 def test_parse_warning_with_non_ascii_filename_on_ascii_only_stream(virtual_file_system, monkeypatch):
+    # Having
     stream = AsciiOnlyStringStream()
 
     virtual_file_system.files = {'café.py': b'def broken(:\n'}
     monkeypatch.setattr('sys.stdout', stream)
 
+    # When
     result = main(['café.py', '--no-color'])
 
+    # Then
     assert result is None
     assert 'Failed to parse caf?.py' in stream.getvalue()
     assert "b'" not in stream.getvalue()

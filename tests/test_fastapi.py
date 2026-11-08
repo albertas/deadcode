@@ -45,8 +45,10 @@ def project_directory(tmp_path, monkeypatch) -> Path:
 
 
 def test_fastapi_fixture_without_configuration(project_directory: Path) -> None:
+    # Having
     _copy_fixture(project_directory)
 
+    # Then
     assert main(['project', '--no-color']) == (
         'project/dependencies.py:8:0: DC02 Function `unused_dependency` is never used'
         '\nproject/main.py:24:0: DC02 Function `on_startup` is never used'
@@ -61,13 +63,20 @@ def test_fastapi_fixture_without_configuration(project_directory: Path) -> None:
         '\nproject/routes/users.py:15:0: DC02 Function `create_user` is never used'
         '\nproject/routes/users.py:19:0: DC02 Function `dead_route_helper` is never used'
     )
-    assert print_main(['project', '--no-color']) == 1
+
+    # When
+    result = print_main(['project', '--no-color'])
+
+    # Then
+    assert result == 1
 
 
 def test_fastapi_fixture_with_documented_configuration(project_directory: Path) -> None:
+    # Having
     _copy_fixture(project_directory)
     (project_directory / 'pyproject.toml').write_text(DOCUMENTED_CONFIGURATION)
 
+    # Then
     assert main(['project', '--no-color']) == (
         'project/dependencies.py:8:0: DC02 Function `unused_dependency` is never used'
         '\nproject/main.py:33:0: DC01 Variable `UNUSED_SETTING` is never used'
@@ -75,13 +84,20 @@ def test_fastapi_fixture_with_documented_configuration(project_directory: Path) 
         '\nproject/models.py:9:0: DC03 Class `UnusedModel` is never used'
         '\nproject/routes/users.py:19:0: DC02 Function `dead_route_helper` is never used'
     )
-    assert print_main(['project', '--no-color']) == 1
+
+    # When
+    result = print_main(['project', '--no-color'])
+
+    # Then
+    assert result == 1
 
 
 def test_fastapi_common_use_cases_with_documented_configuration(project_directory: Path) -> None:
+    # Having
     _copy_fixture(project_directory, FEATURES_FIXTURE_DIRECTORY)
     (project_directory / 'pyproject.toml').write_text(FEATURES_CONFIGURATION)
 
+    # Then
     assert _findings(main(['project', '--no-color'])) == {
         ('project/errors.py', 'DC03', 'UnusedError'),
         ('project/main.py', 'DC02', 'current_user_name'),
@@ -89,4 +105,9 @@ def test_fastapi_common_use_cases_with_documented_configuration(project_director
         ('project/models.py', 'DC03', 'UnusedModel'),
         ('project/routes/items.py', 'DC02', 'dead_route_helper'),
     }
-    assert print_main(['project', '--no-color']) == 1
+
+    # When
+    result = print_main(['project', '--no-color'])
+
+    # Then
+    assert result == 1
