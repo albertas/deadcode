@@ -22,9 +22,9 @@ It has two jobs:
 
 `pip-audit` prints one row per advisory: the distribution name, its version, the advisory ID and any alias (for example a `GHSA-…` or
 `CVE-…` identifier), and the versions that fix it. A non-zero exit status means at least one finding was reported. The affected dependency
-is pinned in `pyproject.toml` for development installations and in `requirements-dev.txt` for the locked environment.
+is pinned in `requirements-dev.txt` for the locked environment, while `pyproject.toml` declares it without a version constraint.
 
-Bump the constraint in `pyproject.toml`, then regenerate the locks and review the result:
+Regenerate the locks, which upgrades every dependency to its latest release, and review the result:
 
 ```bash
 make compile
