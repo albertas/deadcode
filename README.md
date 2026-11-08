@@ -288,7 +288,9 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - Wildcard imports now honour a module `__all__` list or tuple, so excluded names are reported as unused.
         - Wildcard imports stay unrestricted when `__all__` is dynamic or unknown, and explicit imports keep working.
         - Without `__all__`, wildcard imports expose public module-level names, and the README documents the limits.
-        - Honour `--ignore-names-if-decorated-with` and render decorator names as dotted identifiers such as `@app.get` (see the FastAPI section).
+        - Honour `--ignore-names-if-decorated-with` for dotted decorators such as `@app.route`, so route handlers are not reported as unused (issue #30).
+        - Document decorator matching rules (leading `@`, glob patterns, case sensitivity, decorator arguments, stacked decorators,
+          covered definition kinds, no alias resolution) and the `next` release status in the feature-request checklist (issue #30).
         - Decorator names are reported as dotted identifiers such as `@app.get` instead of memory addresses
         - `--ignore-names-if-decorated-with` now suppresses decorated functions, methods, properties, and classes
         - The FastAPI guide documents the recommended configuration, common use cases, dependency injection, and a complete example
