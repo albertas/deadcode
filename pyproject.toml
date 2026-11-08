@@ -4,7 +4,7 @@ version = "2.6.0"
 authors = [
     {name = "Albertas Gimbutas", email = "albertasgim@gmail.com"},
 ]
-description = "Find and remove dead code."
+description = "Find and fix unused Python code using command line."
 readme = "README.md"
 requires-python = ">= 3.10"
 classifiers = [
@@ -29,13 +29,13 @@ test = [
     "hatch",
     "ruff",
     "mypy",
-    "pip-audit==2.10.1",
+    "pip-audit",
     "deadcode",
-    "diff-cover==10.6.0",
+    "diff-cover",
     "pre-commit",
-    "pytest==9.0.3",
-    "pytest-cov==5.0.0",
-    "pytest-xdist==3.8.0",
+    "pytest",
+    "pytest-cov",
+    "pytest-xdist",
 ]
 
 [project.scripts]
