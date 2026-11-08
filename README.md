@@ -207,8 +207,8 @@ Documentation is published on [Read the Docs](https://deadcode.readthedocs.io/) 
 
 - `make publish` builds and uploads the package, creates and pushes the `X.Y.Z` tag, then asks Read the Docs to build the released version,
   `stable` and `latest`. `stable` therefore follows the newest release.
-- The trigger uses the Read the Docs API and needs an API token with build permissions in `READTHEDOCS_API_TOKEN`. Export it before running
-  `make publish`, or store it as a repository secret when the release runs in GitHub Actions.
+- The trigger uses the Read the Docs API and needs an API token with build permissions in `READTHEDOCS_API_TOKEN`; export it before running
+  `make publish` or `make readthedocs`.
 - The Read the Docs project must stay connected to <https://github.com/albertas/deadcode>, so that the version sync sees new tags.
 - Run `make readthedocs` with the same token to rebuild the documentation of the current project version without publishing a release.
   Build results are listed at <https://app.readthedocs.org/projects/deadcode/builds/>.
