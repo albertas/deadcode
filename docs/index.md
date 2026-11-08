@@ -13,7 +13,7 @@
 
 Read the {doc}`installation` page to install deadcode.
 
-Read the {doc}`usage` page for usage examples, command line options, exit status, and the glossary.
+Read the {doc}`usage` page for usage examples, command line options, the glossary, decorator matching, and exit status.
 
 Read the {doc}`rules` page for the implemented rules and for ignoring findings with `# noqa` comments.
 

@@ -8,7 +8,7 @@ from deadcode.actions.parse_arguments import parse_arguments
 README_PATH = Path(__file__).resolve().parents[2] / 'README.md'
 
 OPTIONS_SECTION_START = '## Command line options'
-OPTIONS_SECTION_END = '### Decorator matching'
+OPTIONS_SECTION_END = '### Glossary'
 
 
 def _readme_section() -> str:
