@@ -23,10 +23,7 @@ def test_ignore_names_matched_by_word_and_group_regexp_patterns(virtual_file_sys
     assert unused_names == ('ignore_names_by_pattern.py:7:0: DC03 Class `Unused` is never used')
 
 
-def test_ignore_names_matched_by_dot_regexp_pattern(virtual_file_system):
-    # TODO: README has to be updated to not use .*, use * instead.
-    # TODO: Ignoring does not work as expected: wild cards have to be used.
-
+def test_ignore_names_uses_glob_not_regexp(virtual_file_system):
     virtual_file_system.files = {
         'ignore_names_by_pattern.py': b"""
                 class MyModel:
@@ -45,6 +42,14 @@ def test_ignore_names_matched_by_dot_regexp_pattern(virtual_file_system):
     unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--ignore-names=*Model,*Ignore*'])
 
     assert unused_names == ('ignore_names_by_pattern.py:7:0: DC03 Class `Unused` is never used')
+
+    # `.*Model` is a regexp, not a glob, so it must not match any class.
+    all_unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--ignore-names=.*Model'])
+
+    assert all_unused_names is not None
+    assert all_unused_names.count('DC03') == 4
+    for class_name in ('MyModel', 'MyUserModel', 'Unused', 'ThisClassShouldBeIgnored'):
+        assert class_name in all_unused_names
 
 
 def test_ignore_names_matched_exactly(virtual_file_system):

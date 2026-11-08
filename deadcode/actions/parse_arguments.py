@@ -35,13 +35,13 @@ def parse_arguments(args: list[str] | None) -> Args:
     )
     parser.add_argument(
         '--dry',
-        help='Show changes which would be made in files with --fix option.',
+        help='Show changes which would be made in files.',
         action='store_true',
         default=False,
     )
     parser.add_argument(
         '--only',
-        help='Filenames (or path expressions), that will be reflected in the output and modified.',
+        help='Filenames (or path expressions), that will be reflected in the output (and modified if needed).',
         nargs='*',
         action='append',
         default=[],
@@ -59,7 +59,8 @@ def parse_arguments(args: list[str] | None) -> Args:
         '--ignore-names',
         help=(
             'Removes provided list of names from the output. '
-            'Regexp expressions to match multiple names can also be provided.'
+            'Glob expressions to match multiple names can also be provided, '
+            'e.g. *Mixin will match all classes ending with Mixin.'
         ),
         nargs='*',
         action='append',
