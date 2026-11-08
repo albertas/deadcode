@@ -214,7 +214,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
             except UnicodeEncodeError:
                 # Some terminals can't print Unicode symbols.
                 x = ' '.join(map(str, args))
-                print(x.encode(), file=file)
+                print(x.encode('ascii', 'replace').decode('ascii'), file=file)
 
     def _add_aliases(self, node: ast.Import | ast.ImportFrom) -> None:
         """

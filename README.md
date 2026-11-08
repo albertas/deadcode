@@ -104,6 +104,8 @@ run the same hook while developing deadcode itself, use `make pre-commit`.
 |`--no-color`                               | -    | Removes colors from the output. |
 |`--count`                                  | -    | Provides the count of the detected unused names instead of printing them all out. |
 |`--quiet`                                  | -    | Does not output anything. The command exits with code 1 if unused names are found. |
+|`-V`, `--version`                          | -    | Shows `deadcode` version. |
+|`-v`, `--verbose`                          | -    | Shows verbose logging output. |
 
 ### Exit status
 
@@ -243,6 +245,8 @@ the public module-level names are exported.
     - Features:
         - Add support for Python 3.13, 3.14 and 3.15.
         - Documentation is now published on Read the Docs at https://deadcode.readthedocs.io/.
+        - Add `-V` as a short alias for `--version`.
+        - Document the pre-commit hook setup and usage on a separate documentation page, including why a hook run differs from `deadcode .`.
     - Bugfixes:
         - Fix `--fix` leaving invalid or partially removed imports when unused names are deleted from parenthesized or multi-line import statements.
         - Do not crash when the terminal cannot encode the success message.
@@ -258,6 +262,7 @@ the public module-level names are exported.
         - Decorator names are reported as dotted identifiers such as `@app.get` instead of memory addresses
         - `--ignore-names-if-decorated-with` now suppresses decorated functions, methods, properties, and classes
         - README explains the recommended configuration for FastAPI projects, verified by an acceptance test
+        - Print verbose log messages as readable ASCII instead of a `bytes` repr when the output stream cannot encode a character.
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.

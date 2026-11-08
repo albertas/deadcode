@@ -39,3 +39,39 @@ class TestVersionCliOption(BaseTestCase):
         result = main('. --version'.split())
 
         self.assertEqual(result, __version__)
+
+    def test_show_version_with_short_option(self):
+        self.files = {
+            'foo.py': b"""
+                class UnusedClass:
+                    pass
+
+                print("Dont change this file")""",
+            'bar.py': b"""
+                def unused_function():
+                    pass
+
+                print("Dont change this file")""",
+        }
+
+        result = main('-V'.split())
+
+        self.assertEqual(result, __version__)
+
+    def test_show_version_with_short_option_when_path_provided(self):
+        self.files = {
+            'foo.py': b"""
+                class UnusedClass:
+                    pass
+
+                print("Dont change this file")""",
+            'bar.py': b"""
+                def unused_function():
+                    pass
+
+                print("Dont change this file")""",
+        }
+
+        result = main('. -V'.split())
+
+        self.assertEqual(result, __version__)
