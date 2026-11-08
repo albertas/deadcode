@@ -308,6 +308,9 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - Split the Read the Docs README page into separate Installation, Usage, Rules, Contributing, Known limitations, and Release notes pages.
         - Fix `ignore-names-if-inherits-from` having no effect when set in `pyproject.toml`; its accepted base-class forms and class-name-only scope are now documented (issue #25)
         - A scalar string in `pyproject.toml` is now honoured as one pattern instead of being split into characters
+        - Prove dotted decorators configured in pyproject.toml suppress matching names, bodies and definitions (issue #30).
+        - Document decorator matching rules for the three decorated-with options (issue #30).
+        - Mention the leading @ and glob patterns in the decorated-with option help text.
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
