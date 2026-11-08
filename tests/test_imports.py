@@ -249,3 +249,14 @@ print("ABC")
 """
     }
     assert main(['foo.py', '--no-color']) == 'foo.py:1:16: DC07 Import `ABC` is never used'
+
+
+def test_unparseable_quoted_annotation_is_ignored(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""from abc import ABC
+
+value: "ABC |" = None
+print(value)
+"""
+    }
+    assert main(['foo.py', '--no-color']) == 'foo.py:1:16: DC07 Import `ABC` is never used'
