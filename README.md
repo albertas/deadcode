@@ -115,6 +115,11 @@ run the same hook while developing deadcode itself, use `make pre-commit`.
 |`-V`, `--version`                          | -    | Shows `deadcode` version. |
 |`-v`, `--verbose`                          | -    | Shows verbose logging output. |
 
+### Glossary
+- `name` - variable, function or class name.
+- `body` - code block which follows after `:` in function or class definition. A body ignore suppresses every definition inside the expression, including nested classes and functions.
+- `definition` - whole class or function definition expression including its name and body.
+
 ### Decorator matching
 Decorator names are written as in the source, including the leading `@`; a pattern without `@` matches nothing.
 Entries are glob patterns matched with `fnmatch.fnmatchcase`, so `*`, `?` and `[seq]` apply and `*` also crosses dots
@@ -150,12 +155,6 @@ def post_tax_adder_customer():
 The status is independent of `--quiet`, `--count`, `--only`, `--dry`, and `--fix`.
 A `--fix` run exits `1` on the run that found items and `0` on a subsequent run
 over the cleaned tree.
-
-### Glossary
-- `name` - variable, function or class name.
-- `body` - code block which follows after `:` in function or class definition. A body ignore suppresses every definition inside the expression, including nested classes and functions.
-- `definition` - whole class or function definition expression including its name and body.
-
 
 ## Ignoring checks with noqa comments
 Inline `# noqa` comments can be used to ignore `deadcode` checks.
