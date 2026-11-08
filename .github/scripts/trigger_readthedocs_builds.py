@@ -32,6 +32,9 @@ VERSION_SYNC_WAIT_SECONDS = 120
 BUILD_POLL_INTERVAL_SECONDS = 10
 BUILD_TIMEOUT_SECONDS = 900
 SEMANTIC_VERSION_PATTERN = re.compile(r'^[0-9]+\.[0-9]+\.[0-9]+$')
+LATEST_HAS_NO_STABLE_REF_MESSAGE = (
+    "--expect-stable-ref requires an explicit semantic version; 'latest' has no release tag."
+)
 
 
 class ReadTheDocsError(Exception):
@@ -347,10 +350,20 @@ def build_argument_parser() -> argparse.ArgumentParser:
         '--wait-for-version',
         type=int,
         default=0,
-        help=f'Seconds to wait for a new tag version to appear (the release workflow uses {VERSION_SYNC_WAIT_SECONDS}).',
+        help=(
+            'Seconds to wait for a new tag version to appear '
+            f'(the release workflow uses {VERSION_SYNC_WAIT_SECONDS}).'
+        ),
     )
     parser.add_argument('--dry-run', action='store_true', help='Print the planned build without calling the API.')
     return parser
+
+
+def validate_stable_ref_version(arguments: argparse.Namespace) -> None:
+    """Reject a stable-ref expectation for the moving 'latest' version."""
+
+    if arguments.expect_stable_ref is not None and arguments.version == 'latest':
+        raise ReadTheDocsError(LATEST_HAS_NO_STABLE_REF_MESSAGE)
 
 
 def main(argv=None, environment=None, request_callable=None) -> int:
@@ -360,10 +373,7 @@ def main(argv=None, environment=None, request_callable=None) -> int:
     request_callable = request if request_callable is None else request_callable
     arguments = build_argument_parser().parse_args(argv)
     try:
-        if arguments.expect_stable_ref is not None and arguments.version == 'latest':
-            raise ReadTheDocsError(
-                "--expect-stable-ref requires an explicit semantic version; 'latest' has no release tag."
-            )
+        validate_stable_ref_version(arguments)
         validate_version_name(arguments.version)
         commit = resolve_commit(arguments.commit, environment)
         print(f'Read the Docs version: {arguments.version}')
@@ -385,7 +395,7 @@ def main(argv=None, environment=None, request_callable=None) -> int:
                 arguments.wait_for_version,
                 token_request,
             )
-            for version_name, finished_build in zip((arguments.version, 'stable'), finished_builds):
+            for version_name, finished_build in zip((arguments.version, 'stable'), finished_builds, strict=False):
                 build_url = BUILD_URL_TEMPLATE.format(id=finished_build.get('id'))
                 print(f'Documentation build finished for {version_name}: {build_url}')
                 append_step_summary(environment, version_name, build_url)
