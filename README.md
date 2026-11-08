@@ -322,6 +322,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - Names referenced from quoted type annotations (forward references) are no longer reported as unused imports.
         - Fix `--no-color` leaving colour codes in the success banner; Make `--count` count only findings reflected by `--only`; Make `--verbose` print INFO messages about ignored and scanned files
         - Rules now sit under Ignoring checks with noqa comments, the Glossary under Command line options, and Decorator matching is more concise.
+        - Python 3.10+ requirement is now shown as a badge in the README
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
