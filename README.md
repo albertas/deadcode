@@ -201,6 +201,36 @@ commits are made by the maintainer on `main`.
   Set `PYTEST_XDIST_WORKERS` to change the worker count (`make test PYTEST_XDIST_WORKERS=2`), or pass
   `PYTEST_ME_PLEASE="-n 0"` to run serially.
 
+## Documentation builds
+
+Documentation is published on [Read the Docs](https://deadcode.readthedocs.io/) and built automatically; no manual build is needed.
+
+- Every push or merge to `main` rebuilds the `latest` version of the documentation. The `Build documentation` workflow
+  (`.github/workflows/build-documentation.yml`) runs on the push event and reports the build URL in the workflow summary.
+- Pushing a release tag `X.Y.Z` builds that version and re-renders `stable` from it, so `stable` matches the newest release. The first
+  release with automatic documentation builds is `2.6.0`. After that release, confirm manually that the tag-push run is green and that Read
+  the Docs shows a built `2.6.0` version with `stable` at `2.6.0`; these post-release checks cannot run before the tag exists.
+- Each run reuses a running or successful build for the same commit, so rerunning a workflow does not create duplicate builds.
+
+The workflow authenticates with the repository secret `READTHEDOCS_API_TOKEN` and fails immediately when it is missing. Two prerequisites
+keep the automation working:
+
+- P1: the Read the Docs project `deadcode` must stay connected to <https://github.com/albertas/deadcode>, so Read the Docs syncs new tags
+  and can move `stable` to them.
+- P2: the `READTHEDOCS_API_TOKEN` secret must exist under `Settings -> Secrets and variables -> Actions`.
+
+To rerun a build by hand:
+
+- Run the `Build documentation` workflow from the Actions tab (`workflow_dispatch`) and, optionally, set the `version` and `commit` inputs.
+- Or run the helper locally:
+  `READTHEDOCS_API_TOKEN=... python3 .github/scripts/trigger_readthedocs_builds.py --version <version> --commit <sha>`.
+
+Build results are listed at <https://app.readthedocs.org/projects/deadcode/builds/>; the run summary links the build URL of every version it
+built.
+
+If the release job reports that `stable` still points at an older tag, sync the versions or re-point `stable` in the Read the Docs
+dashboard (<https://app.readthedocs.org/projects/deadcode/versions/>), then rerun the workflow.
+
 ## Rationale
 [ruff](https://pypi.org/project/ruff/) and
 [flake8](https://pypi.org/project/flake8/) - don't have rules for unused global
