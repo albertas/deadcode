@@ -73,3 +73,30 @@ def test_import_does_not_rebind_stdout():
     importlib.reload(deadcode.cli)
 
     assert sys.stdout is original_stdout
+
+
+def test_parse_warning_with_non_ascii_filename_on_cp1252_stream(virtual_file_system, monkeypatch):
+    stream = Cp1252Stream()
+
+    virtual_file_system.files = {'café.py': b'def broken(:\n'}
+    monkeypatch.setattr('sys.stdout', stream)
+
+    result = main(['café.py', '--no-color'])
+
+    assert result is None
+    assert 'Failed to parse café.py' in stream.written_text
+    assert 'Well done!' in stream.written_text
+
+
+def test_parse_warning_with_non_ascii_filename_on_ascii_only_stream(virtual_file_system, monkeypatch):
+    stream = AsciiOnlyStringStream()
+
+    virtual_file_system.files = {'café.py': b'def broken(:\n'}
+    monkeypatch.setattr('sys.stdout', stream)
+
+    result = main(['café.py', '--no-color'])
+
+    assert result is None
+    assert 'Failed to parse caf?.py' in stream.getvalue()
+    assert "b'" not in stream.getvalue()
+    assert 'Well done!' in stream.getvalue()

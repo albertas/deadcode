@@ -85,10 +85,10 @@ A hook run and a direct `deadcode .` run can give different results. There are t
 
 1. The hook runs the console script installed from the pinned `rev` inside pre-commit's isolated environment, not the deadcode installed in your shell. An older `rev` therefore runs an older deadcode version.
 2. The hook analyses only the files matched by `types` and `exclude`, while `deadcode .` walks the whole tree you point it at.
-3. The hook's output is a captured pipe, and its encoding follows the platform code page (the report showed `cp1252` on Windows). Older deadcode versions used a direct `print` for some messages and could not encode characters such as `✨` on that code page.
+3. The hook's output is a captured pipe, and its encoding follows the platform code page (the report showed `cp1252` on Windows). Older deadcode versions used a direct `print` for some messages and could not encode characters such as `✨` on that code page. Current versions protect all CLI output, including the parse-failure warning and verbose messages, not only the success message.
 
 ## Solving it
 
-Update `rev` to `2.5.0` or newer. Those releases contain the Unicode-safe output chain: a plain print first, then `sys.stdout.reconfigure(encoding='utf-8')`, then ASCII with `?` replacements. The crash no longer occurs.
+Update `rev` to `2.5.0` or newer. Those releases contain the Unicode-safe output chain for CLI messages in general: the success banner, findings, the parse-failure warning and verbose output use a plain print first, then `sys.stdout.reconfigure(encoding='utf-8')`, then ASCII with `?` replacements. The crash no longer occurs.
 
 Setting `PYTHONUTF8=1` in the environment is an additional user-side workaround for older pinned versions.

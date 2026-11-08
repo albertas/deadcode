@@ -254,7 +254,7 @@ the public module-level names are exported.
         - `--ignore-definitions` now reliably ignores function, method, property and nested class definitions; its limits are documented
     - Bugfixes:
         - Fix `--fix` leaving invalid or partially removed imports when unused names are deleted from parenthesized or multi-line import statements.
-        - Do not crash when the terminal cannot encode the success message.
+        - Do not crash when the terminal cannot encode CLI output, including the success message, warnings and verbose logs.
         - Exit with code 1 when unused code is found, so CI jobs and pre-commit hooks can fail.
         - Fix `deadcode --fix` removing the `f` from the `from` keyword in multi-line parenthesized imports (issue #5)
         - Remove fully unused import statements, including multi-line parenthesized ones, without leaving broken syntax behind
@@ -277,6 +277,7 @@ the public module-level names are exported.
         - The documentation home page no longer repeats the README content.
         - Stop reporting unittest lifecycle methods declared in test files as unused code (issue #21).
         - Use pytest instead of unittest.TestCase
+        - The pre-commit guide explains that the encoding-safe output chain covers all CLI messages.
         - Split the Read the Docs README page into separate Installation, Usage, Rules, Contributing, Known limitations, and Release notes pages.
 - v2.5.0 (2026-11-07):
     - Bugfixes:
