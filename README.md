@@ -277,6 +277,7 @@ the public module-level names are exported.
         - The documentation home page no longer repeats the README content.
         - Stop reporting unittest lifecycle methods declared in test files as unused code (issue #21).
         - Use pytest instead of unittest.TestCase
+        - Split the Read the Docs README page into separate Installation, Usage, Rules, Contributing, Known limitations, and Release notes pages.
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
