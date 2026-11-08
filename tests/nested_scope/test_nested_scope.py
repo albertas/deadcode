@@ -41,8 +41,6 @@ def test_class_and_its_method_should_be_in_scope(virtual_file_system):
     # Then
     virtual_file_system.assert_files({})
 
-    # TODO: get nested scope for testing.
-
 
 def test_name_is_overriden(virtual_file_system):
     # Having

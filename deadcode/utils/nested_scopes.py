@@ -31,7 +31,8 @@ class NestedScope:
                 current_scope[scope_part] = {}  # Could use None if type cannot have scope
             current_scope = current_scope[scope_part]
 
-        # > TODO: leaf should be replaced. Is it replaced with new code item?
+        # Note: assigning an equal CodeItem keeps the first inserted key object, because
+        # dictionaries keep the original key, so a redefined name resolves to the first definition.
         current_scope[code_item] = {}
 
     def get(self, name: str, scope: str) -> CodeItem | str | None:

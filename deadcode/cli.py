@@ -36,14 +36,13 @@ def run(
 
     filenames = find_python_filenames(args=args)
 
-    # TODO: rename unused_names to unused_code_items
-    unused_names = find_unused_names(filenames=filenames, args=args)
+    unused_code_items = find_unused_names(filenames=filenames, args=args)
 
     file_diff = None
-    if (args.fix or args.dry) and unused_names:
-        file_diff = fix_or_show_unused_code(unused_names, args=args)
+    if (args.fix or args.dry) and unused_code_items:
+        file_diff = fix_or_show_unused_code(unused_code_items, args=args)
 
-    if (error_message := get_unused_names_error_message(unused_names, args=args)) is not None:
+    if (error_message := get_unused_names_error_message(unused_code_items, args=args)) is not None:
         return RunResult(error_message + ('\n\n' + file_diff if file_diff else ''), 1)
 
     if not args.count and not args.quiet:

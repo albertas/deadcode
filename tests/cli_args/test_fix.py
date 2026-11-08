@@ -338,8 +338,6 @@ def test_empty_if_main_block(virtual_file_system):
     # When
     main(['.', '--fix'])
 
-    # TODO: assertion still does not work, why there is a difference in the last line?
-
     # Then
     virtual_file_system.assert_files(
         {

@@ -20,7 +20,7 @@ def fix_or_show_unused_code(unused_items: Iterable[CodeItem], args: Args) -> str
     # For each filename find file parts, which have to be fixed.
     # And fix those file parts.
     #
-    # TODO: trailing commas, trailing white spaces and empty lines
+    # TODO: remove leftover trailing commas, whitespace and empty lines for non-import expressions.
 
     filename_to_unused_items = defaultdict(list)
     for unused_item in unused_items:
@@ -66,7 +66,6 @@ def fix_or_show_unused_code(unused_items: Iterable[CodeItem], args: Args) -> str
 
                 elif args.fix:
                     with open(filename, 'wb') as f:
-                        # TODO: is there a method writelines?
                         f.write(updated_file_content)
         else:
             os.remove(filename)
@@ -74,7 +73,3 @@ def fix_or_show_unused_code(unused_items: Iterable[CodeItem], args: Args) -> str
     if result:
         return b'\n'.join(result).decode()
     return ''
-
-    # TODO: update this one: solution is to use read and write operations.
-    #
-    # Solution is to open file for reading and then for writing.

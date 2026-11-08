@@ -31,12 +31,3 @@ def find_python_filenames(args: Args) -> list[str]:
         sep = '\n  - '
         logger.info(f'Files to be checked for dead code: {sep.join(filenames)}')
     return filenames
-
-
-# Should show errors, if files do not exist.
-# Could mock directories: os.path.isfile os.walk -> replace this one with rglob
-
-# Should use list dir myself.
-
-# TODO: Whats the solution for mocking the file system checking?
-# Every single provided file is assumed to exist.

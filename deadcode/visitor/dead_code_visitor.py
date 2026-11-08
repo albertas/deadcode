@@ -717,7 +717,8 @@ class DeadCodeVisitor(ast.NodeVisitor):
             self.visit(ast.parse(type_comment, filename='<type_comment>', mode=mode))
 
         ###########
-        # TODO: for assignment statements unused_code unit should be whole assignment statement instead of a name itself
+        # Single-target assignments are removed as a whole statement via `removal_node`.
+        # Multi-target and tuple assignments still fall back to reporting the name only.
         # Note: Node is None if file is empty, contains only a docstring, a comment or has a SyntaxError.
         pushed_assignment_node: ast.Assign | ast.AnnAssign | ast.AugAssign | None = None
         if isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign)):
