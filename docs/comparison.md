@@ -60,13 +60,3 @@ It covers released versions only: unreleased changes on the `vulture` `main` bra
 | `--ignore-names-in-files` | Supported | No equivalent option |
 | `# noqa` coverage | All DC codes, `DC`, bare noqa, F401/F841, and legacy DC00x aliases | F401/F841 and bare noqa only |
 | `--config` | No equivalent option; `[tool.deadcode]` is read from `pyproject.toml` in the current directory | `--config` points at another `pyproject.toml` file |
-
-## Command line and output
-
-- `deadcode` provides `--only`, `--count`, `--quiet`, and `--no-color` output and filtering options.
-- `vulture` has none of these options.
-- `deadcode` has no confidence filter; `vulture` provides `--min-confidence` to filter findings below a threshold.
-- `deadcode` orders findings by filename and name line by default.
-- `vulture` orders by lowercased filename and first line by default and offers `--sort-by-size`.
-- For invalid input, `deadcode` exits `2` for usage errors and `1` for unexpected errors.
-- For invalid input, `vulture` exits `1` for invalid input and `2` for invalid command-line arguments.
