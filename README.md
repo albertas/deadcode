@@ -48,6 +48,7 @@ The same options can be provided in `pyproject.toml` settings file:
 exclude = ["venv", "tests"]
 ignore-names = ["BaseTestCase", "*Mixin"]
 ignore-names-in-files = ["migrations"]
+ignore-names-if-inherits-from = ["BaseModel", "*.ObjectType"]
 ```
 
 ## Using deadcode on a FastAPI project
@@ -90,7 +91,7 @@ run the same hook while developing deadcode itself, use `make pre-commit`.
 |`--exclude`                                | list | Filenames (or path expressions), which will be completely skipped without being analysed. |
 |`--ignore-names`                           | list | Removes provided list of names from the output. Regexp expressions to match multiple names can also be provided, e.g. `*Mixin` will match all classes ending with `Mixin`. |
 |`--ignore-names-in-files`                  | list | Ignores unused names in files, which filenames match provided path expressions. |
-|`--ignore-names-if-inherits-from`          | list | Ignores names of classes, which inherit from provided class names. |
+|`--ignore-names-if-inherits-from`          | list | Ignores names of classes which inherit from any of the provided class names. The class name may be a plain name, a dotted path such as `graphene.ObjectType`, or a glob such as `*.ObjectType`; a dotted base also matches its final component (`ObjectType`). Only the class name is suppressed; its members and body are controlled by `--ignore-bodies-if-inherits-from` and `--ignore-definitions-if-inherits-from`. |
 |`--ignore-names-if-decorated-with`         | list | Ignores names of an expression, which is decorated with one of the provided decorator names. |
 |`--ignore-bodies-of`                       | list | Ignores body of an expression if its name matches any of the provided names. |
 |`--ignore-bodies-if-decorated-with`        | list | Ignores body of an expression if its decorated with one of the provided decorator names. |
@@ -280,6 +281,8 @@ the public module-level names are exported.
         - Use pytest instead of unittest.TestCase
         - The pre-commit guide explains that the encoding-safe output chain covers all CLI messages.
         - Split the Read the Docs README page into separate Installation, Usage, Rules, Contributing, Known limitations, and Release notes pages.
+        - Fix `ignore-names-if-inherits-from` having no effect when set in `pyproject.toml`; its accepted base-class forms and class-name-only scope are now documented (issue #25)
+        - A scalar string in `pyproject.toml` is now honoured as one pattern instead of being split into characters
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
