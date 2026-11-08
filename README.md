@@ -105,6 +105,27 @@ run the same hook while developing deadcode itself, use `make pre-commit`.
 |`-V`, `--version`                          | -    | Shows `deadcode` version. |
 |`-v`, `--verbose`                          | -    | Shows verbose logging output. |
 
+### Decorator matching
+Decorator names are written as in the source, including the leading `@`; a pattern without `@` matches nothing.
+Entries are glob patterns matched with `fnmatch.fnmatchcase`, so `*`, `?` and `[seq]` apply and `*` also crosses dots
+(`@app.*` matches `@app.route`). Matching is case-sensitive.
+Decorator call arguments are ignored, so `@app.route("/")` is matched as `@app.route`.
+Stacked decorators match when any one decorator matches.
+These options cover classes, functions, async functions, methods and properties; variables, attributes and imports are not covered.
+Imports and aliases are not resolved, so `@aliased.route` needs `@aliased.*` rather than `@app.*`.
+The same rules apply to all three decorated-with options.
+
+```toml
+[tool.deadcode]
+ignore-names-if-decorated-with = ["@app.route"]
+```
+
+```python
+@app.route("/", methods=["POST"])
+def post_tax_adder_customer():
+    pass
+```
+
 ### Exit status
 
 - `0` — no dead code found.
@@ -232,6 +253,8 @@ Wildcard imports are resolved by module basename, without package paths, so modu
 the public module-level names are exported.
 
 ## Feature requests
+A checked entry is implemented on `main` and is included in the next release; published releases may lag behind `main`.
+
 - [x] Replace `.*` with only `*` in regexp matching.
 - [x] Add unused class method detection DC04 check.
 - [x] Add `--fix` option to automatically remove detected dead code occourencies
@@ -286,34 +309,24 @@ the public module-level names are exported.
         - `--ignore-definitions` now reliably ignores function, method, property and nested class definitions; its limits are documented
         - Add make targets to measure code coverage reproducibly
     - Bugfixes:
+        - Exit with code 1 when unused code is found, so CI jobs and pre-commit hooks can fail.
         - Fix `--fix` leaving invalid or partially removed imports when unused names are deleted from parenthesized or multi-line import statements.
         - Fix `--fix` leaving invalid or fragmented imports when removing names from backslash-continued, semicolon-separated, or commented import statements.
         - Fix `--fix` leaving the continuation lines of multi-line unused assignments behind and producing invalid Python (issue #26).
         - Do not crash when the terminal cannot encode CLI output, including the success message, warnings and verbose logs.
-        - Exit with code 1 when unused code is found, so CI jobs and pre-commit hooks can fail.
         - Fix `deadcode --fix` removing the `f` from the `from` keyword in multi-line parenthesized imports (issue #5)
         - Remove fully unused import statements, including multi-line parenthesized ones, without leaving broken syntax behind
         - Remove only the unused names from partially used import statements while keeping the used names and their order
         - Honor `# noqa` comments on the definition line of decorated functions, methods and classes.
-        - Wildcard imports now honour a module `__all__` list or tuple, so excluded names are reported as unused.
-        - Wildcard imports stay unrestricted when `__all__` is dynamic or unknown, and explicit imports keep working.
-        - Without `__all__`, wildcard imports expose public module-level names, and the README documents the limits.
-        - Honour `--ignore-names-if-decorated-with` and render decorator names as dotted identifiers such as `@app.get` (see the FastAPI section).
+        - Wildcard imports now honour a module `__all__` list or tuple, so excluded names are reported as unused. Wildcard imports stay unrestricted when `__all__` is dynamic or unknown, and explicit imports keep working. Without `__all__`, wildcard imports expose public module-level names.
+        - Honour `--ignore-names-if-decorated-with` for dotted decorators such as `@app.route`, so route handlers are not reported as unused (issue #30).
         - Decorator names are reported as dotted identifiers such as `@app.get` instead of memory addresses
         - `--ignore-names-if-decorated-with` now suppresses decorated functions, methods, properties, and classes
-        - The FastAPI guide documents the recommended configuration, common use cases, dependency injection, and a complete example
-          application with only real findings
-        - Test suites cover common FastAPI features and every dependency injection form without reporting them as dead code
         - Print verbose log messages as readable ASCII instead of a `bytes` repr when the output stream cannot encode a character.
-        - The FastAPI guide now explains dependency injection and shows feature usage examples
         - `--ignore-bodies-if-inherits-from` and `--ignore-definitions-if-inherits-from` now recognize dotted base classes such as `graphene.ObjectType` and match their final component.
         - Render decorator names deterministically, including dotted names, and stop unusual decorators such as `@Class().function()` from crashing or producing memory addresses.
-        - The README content is available again as its own page in the Read the Docs documentation.
-        - The documentation home page no longer repeats the README content.
         - Stop reporting unittest lifecycle methods declared in test files as unused code (issue #21).
         - Use pytest instead of unittest.TestCase
-        - The pre-commit guide explains that the encoding-safe output chain covers all CLI messages.
-        - Split the Read the Docs README page into separate Installation, Usage, Rules, Contributing, Known limitations, and Release notes pages.
         - Fix `ignore-names-if-inherits-from` having no effect when set in `pyproject.toml`; its accepted base-class forms and class-name-only scope are now documented (issue #25)
         - A scalar string in `pyproject.toml` is now honoured as one pattern instead of being split into characters
 - v2.5.0 (2026-11-07):

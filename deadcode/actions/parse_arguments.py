@@ -76,7 +76,10 @@ def parse_arguments(args: list[str] | None) -> Args:
     )
     parser.add_argument(
         '--ignore-bodies-if-decorated-with',
-        help='Ignores body of an expression if its decorated with one of the provided decorator names.',
+        help=(
+            'Ignores body of an expression if its decorated with one of the provided decorator names. '
+            'Decorator names include the leading @ and accept glob patterns such as @app.*.'
+        ),
         nargs='*',
         action='append',
         default=[],
@@ -122,7 +125,8 @@ def parse_arguments(args: list[str] | None) -> Args:
         '--ignore-definitions-if-decorated-with',
         help=(
             'Ignores definition (including name and body) of an expression, '
-            'which is decorated with any of the provided decorator names.'
+            'which is decorated with any of the provided decorator names. '
+            'Decorator names include the leading @ and accept glob patterns such as @app.*.'
         ),
         nargs='*',
         action='append',
@@ -157,7 +161,10 @@ def parse_arguments(args: list[str] | None) -> Args:
     )
     parser.add_argument(
         '--ignore-names-if-decorated-with',
-        help='Ignores names of an expression, which is decorated with one of the provided decorator names.',
+        help=(
+            'Ignores names of an expression, which is decorated with one of the provided decorator names. '
+            'Decorator names include the leading @ and accept glob patterns such as @app.*.'
+        ),
         nargs='*',
         action='append',
         default=[],

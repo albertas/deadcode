@@ -136,6 +136,15 @@ def test_scalar_configuration_value_is_treated_as_one_pattern(monkeypatch: pytes
     assert args.ignore_names_if_inherits_from == ['Base']
 
 
+def test_scalar_decorator_configuration_is_one_pattern(monkeypatch: pytest.MonkeyPatch):
+    mock = MagicMock(return_value={'tool': {'deadcode': {'ignore_names_if_decorated_with': '@app.route'}}})
+    monkeypatch.setattr('deadcode.actions.parse_arguments.tomllib.load', mock)
+
+    args = parse_arguments(['foo.py'])
+
+    assert args.ignore_names_if_decorated_with == ['@app.route']
+
+
 def test_calling_with_two_dry_filenames(tomllib_load_mock: MagicMock):
     options = '. --fix --dry --only foo.py bar.py'
     args = parse_arguments(options.split())
