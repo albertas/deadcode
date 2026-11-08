@@ -70,3 +70,17 @@ def test_provided_path_does_not_exist(arguments: Args, caplog: pytest.LogCapture
     # Then
     assert caplog.records[0].name == 'root'
     assert caplog.records[0].message == 'Error: path_does_not_exist could not be found.'
+
+
+def test_verbose_logs_ignored_path(arguments: Args, caplog: pytest.LogCaptureFixture):
+    # Having
+    arguments.paths = ['deadcode/cli.py']
+    arguments.exclude = ['deadcode/cli.py']
+    arguments.verbose = True
+
+    # When
+    with caplog.at_level(logging.INFO):
+        find_python_filenames(args=arguments)
+
+    # Then
+    assert 'Ignoring: deadcode/cli.py' in [record.message for record in caplog.records]

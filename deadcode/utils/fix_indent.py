@@ -12,7 +12,7 @@ def fix_indent(doc: T) -> T | None:
     if isinstance(doc, bytes):
         try:
             byte_lines = doc.expandtabs().split(b'\n')
-        except UnicodeError:
+        except UnicodeError:  # pragma: no cover
             return None
         else:
             # Find minimum indentation of any non-blank lines after first line.
@@ -37,7 +37,7 @@ def fix_indent(doc: T) -> T | None:
     if isinstance(doc, str):
         try:
             lines = doc.expandtabs().split('\n')
-        except UnicodeError:
+        except UnicodeError:  # pragma: no cover
             return None
         else:
             # Find minimum indentation of any non-blank lines after first line.

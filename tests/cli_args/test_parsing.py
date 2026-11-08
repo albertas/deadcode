@@ -2,6 +2,7 @@
 These tests should test command line value conversion into internal Args instance.
 """
 
+import sys
 from unittest.mock import MagicMock
 
 import pytest
@@ -223,3 +224,27 @@ def test_calling_with_two_dry_filenames(tomllib_load_mock: MagicMock):
     assert args.only == ['foo.py', 'bar.py']
     assert args.fix is False
     assert args.dry is True
+
+
+def test_sys_argv_used_when_no_arguments_provided(monkeypatch: pytest.MonkeyPatch, tomllib_load_mock: MagicMock):
+    # Having
+    monkeypatch.setattr(sys, 'argv', ['deadcode', 'foo.py', '--count'])
+
+    # When
+    args = parse_arguments(None)
+
+    # Then
+    assert args.paths == ['foo.py']
+    assert args.count is True
+
+
+def test_unknown_pyproject_setting_is_ignored(tmp_path, monkeypatch: pytest.MonkeyPatch):
+    # Having
+    (tmp_path / 'pyproject.toml').write_text('[tool.deadcode]\nunknown_setting = true\n')
+    monkeypatch.chdir(tmp_path)
+
+    # When
+    args = parse_arguments(['foo.py'])
+
+    # Then
+    assert args.paths == ['foo.py']
