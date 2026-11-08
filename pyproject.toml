@@ -152,8 +152,6 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = [
     "S101",  # allow assert and no docs in tests
-    "PT009",
-    "PT027",
     "ANN201",
     "D",
 ]
@@ -191,9 +189,6 @@ ignore_names = [
     "scoped_name",
     "show",
     "visit_*",
-]
-ignore_names_in_files = [
-    "deadcode/utils/base_test_case.py"
 ]
 exclude = ["tests", "docs", "docs/*"]
 

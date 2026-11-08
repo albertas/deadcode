@@ -1,13 +1,11 @@
-from unittest import skip
+import pytest
 
 from deadcode.cli import main
-from deadcode.utils.base_test_case import BaseTestCase
 
 
-class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
-    def test_ignore_class_definition_if_inherits_from_base_class(self):
-        self.files = {
-            'foo.py': b"""
+def test_ignore_class_definition_if_inherits_from_base_class(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class Base:
                     pass
 
@@ -25,15 +23,13 @@ class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
                 class AnotherUnusedClass:
                     another_unused_attribute = None
                 """
-        }
+    }
 
-        output = main(
-            ['ignore_names_by_pattern.py', '--no-color', '--ignore-definitions-if-inherits-from=Base', '--fix']
-        )
+    output = main(['ignore_names_by_pattern.py', '--no-color', '--ignore-definitions-if-inherits-from=Base', '--fix'])
 
-        self.assertFiles(
-            {
-                'foo.py': b"""
+    virtual_file_system.assert_files(
+        {
+            'foo.py': b"""
                 class Base:
                     pass
 
@@ -47,25 +43,25 @@ class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
                     class UnusedInnerClass:
                         unused_class_attribute = ""
                 """
-            }
-        )
+        }
+    )
 
-        self.assertEqual(
-            output,
-            'foo.py:15:0: DC03 Class `AnotherUnusedClass` is never used\n'
-            'foo.py:16:4: DC01 Variable `another_unused_attribute` is never used\n'
-            '\n'
-            'Removed 2 unused code items!',
-        )
+    assert output == (
+        'foo.py:15:0: DC03 Class `AnotherUnusedClass` is never used\n'
+        'foo.py:16:4: DC01 Variable `another_unused_attribute` is never used\n'
+        '\n'
+        'Removed 2 unused code items!'
+    )
 
-    @skip
-    def test_ignore_class_definition_if_inherits_from_multiple_classes(self):
-        # TODO:
-        # Implement class inheritance tracking, so that not only the first level of
-        # inherited classes would be considered, but whole inheritance tree would be considered.
 
-        self.files = {
-            'foo.py': b"""
+@pytest.mark.skip(reason='Skipped without a recorded reason before the pytest migration; behaviour preserved')
+def test_ignore_class_definition_if_inherits_from_multiple_classes(virtual_file_system):
+    # TODO:
+    # Implement class inheritance tracking, so that not only the first level of
+    # inherited classes would be considered, but whole inheritance tree would be considered.
+
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class Base:
                     pass
 
@@ -87,15 +83,13 @@ class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
                 class AnotherUnusedClass:
                     another_unused_attribute = None
                 """
-        }
+    }
 
-        output = main(
-            ['ignore_names_by_pattern.py', '--no-color', '--ignore-definitions-if-inherits-from=Base', '--fix']
-        )
+    output = main(['ignore_names_by_pattern.py', '--no-color', '--ignore-definitions-if-inherits-from=Base', '--fix'])
 
-        self.assertFiles(
-            {
-                'foo.py': b"""
+    virtual_file_system.assert_files(
+        {
+            'foo.py': b"""
                 class Base:
                     pass
 
@@ -113,20 +107,20 @@ class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
                     class UnusedInnerClass:
                         unused_class_attribute = ""
                 """
-            }
-        )
+        }
+    )
 
-        self.assertEqual(
-            output,
-            'foo.py:15:0: DC03 Class `AnotherUnusedClass` is never used\n'
-            'foo.py:16:4: DC01 Variable `another_unused_attribute` is never used\n'
-            '\n'
-            'Removed 2 unused code items!',
-        )
+    assert output == (
+        'foo.py:15:0: DC03 Class `AnotherUnusedClass` is never used\n'
+        'foo.py:16:4: DC01 Variable `another_unused_attribute` is never used\n'
+        '\n'
+        'Removed 2 unused code items!'
+    )
 
-    def test_ignore_class_definition_if_inherits_from_dotted_base_class(self):
-        self.files = {
-            'foo.py': b"""
+
+def test_ignore_class_definition_if_inherits_from_dotted_base_class(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
                 import graphene
 
 
@@ -140,20 +134,20 @@ class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
                 class AnotherUnusedClass:
                     another_unused_attribute = None
                 """
-        }
+    }
 
-        output = main(
-            [
-                'ignore_names_by_pattern.py',
-                '--no-color',
-                '--ignore-definitions-if-inherits-from=graphene.ObjectType',
-                '--fix',
-            ]
-        )
+    output = main(
+        [
+            'ignore_names_by_pattern.py',
+            '--no-color',
+            '--ignore-definitions-if-inherits-from=graphene.ObjectType',
+            '--fix',
+        ]
+    )
 
-        self.assertFiles(
-            {
-                'foo.py': b"""
+    virtual_file_system.assert_files(
+        {
+            'foo.py': b"""
                 import graphene
 
 
@@ -163,20 +157,20 @@ class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
                     def resolve_this_field_is_used(self, info):
                         return ""
                 """
-            }
-        )
+        }
+    )
 
-        self.assertEqual(
-            output,
-            'foo.py:11:0: DC03 Class `AnotherUnusedClass` is never used\n'
-            'foo.py:12:4: DC01 Variable `another_unused_attribute` is never used\n'
-            '\n'
-            'Removed 2 unused code items!',
-        )
+    assert output == (
+        'foo.py:11:0: DC03 Class `AnotherUnusedClass` is never used\n'
+        'foo.py:12:4: DC01 Variable `another_unused_attribute` is never used\n'
+        '\n'
+        'Removed 2 unused code items!'
+    )
 
-    def test_ignore_class_definition_if_inherits_from_final_base_class_component(self):
-        self.files = {
-            'foo.py': b"""
+
+def test_ignore_class_definition_if_inherits_from_final_base_class_component(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
                 import graphene
 
 
@@ -190,20 +184,20 @@ class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
                 class AnotherUnusedClass:
                     another_unused_attribute = None
                 """
-        }
+    }
 
-        output = main(
-            [
-                'ignore_names_by_pattern.py',
-                '--no-color',
-                '--ignore-definitions-if-inherits-from=ObjectType',
-                '--fix',
-            ]
-        )
+    output = main(
+        [
+            'ignore_names_by_pattern.py',
+            '--no-color',
+            '--ignore-definitions-if-inherits-from=ObjectType',
+            '--fix',
+        ]
+    )
 
-        self.assertFiles(
-            {
-                'foo.py': b"""
+    virtual_file_system.assert_files(
+        {
+            'foo.py': b"""
                 import graphene
 
 
@@ -213,20 +207,20 @@ class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
                     def resolve_this_field_is_used(self, info):
                         return ""
                 """
-            }
-        )
+        }
+    )
 
-        self.assertEqual(
-            output,
-            'foo.py:11:0: DC03 Class `AnotherUnusedClass` is never used\n'
-            'foo.py:12:4: DC01 Variable `another_unused_attribute` is never used\n'
-            '\n'
-            'Removed 2 unused code items!',
-        )
+    assert output == (
+        'foo.py:11:0: DC03 Class `AnotherUnusedClass` is never used\n'
+        'foo.py:12:4: DC01 Variable `another_unused_attribute` is never used\n'
+        '\n'
+        'Removed 2 unused code items!'
+    )
 
-    def test_ignore_class_definition_if_inherits_from_transitive_dotted_base_class(self):
-        self.files = {
-            'foo.py': b"""
+
+def test_ignore_class_definition_if_inherits_from_transitive_dotted_base_class(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
                 import graphene
 
 
@@ -244,20 +238,20 @@ class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
                 class AnotherUnusedClass:
                     another_unused_attribute = None
                 """
-        }
+    }
 
-        output = main(
-            [
-                'ignore_names_by_pattern.py',
-                '--no-color',
-                '--ignore-definitions-if-inherits-from=ObjectType',
-                '--fix',
-            ]
-        )
+    output = main(
+        [
+            'ignore_names_by_pattern.py',
+            '--no-color',
+            '--ignore-definitions-if-inherits-from=ObjectType',
+            '--fix',
+        ]
+    )
 
-        self.assertFiles(
-            {
-                'foo.py': b"""
+    virtual_file_system.assert_files(
+        {
+            'foo.py': b"""
                 import graphene
 
 
@@ -271,13 +265,12 @@ class TestIgnoreDefinitionIfInheritsFrom(BaseTestCase):
                 class UnusedQuery(Intermediate):
                     unused_attribute = None
                 """
-            }
-        )
+        }
+    )
 
-        self.assertEqual(
-            output,
-            'foo.py:15:0: DC03 Class `AnotherUnusedClass` is never used\n'
-            'foo.py:16:4: DC01 Variable `another_unused_attribute` is never used\n'
-            '\n'
-            'Removed 2 unused code items!',
-        )
+    assert output == (
+        'foo.py:15:0: DC03 Class `AnotherUnusedClass` is never used\n'
+        'foo.py:16:4: DC01 Variable `another_unused_attribute` is never used\n'
+        '\n'
+        'Removed 2 unused code items!'
+    )

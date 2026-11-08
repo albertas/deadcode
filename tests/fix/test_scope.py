@@ -2,18 +2,19 @@
 Test class def.
 """
 
-from unittest import skip
+import pytest
 
 from deadcode.cli import main
-from deadcode.utils.base_test_case import BaseTestCase
+
+pytestmark = pytest.mark.skip(
+    reason='Skipped without a recorded reason before the pytest migration; behaviour preserved'
+)
 
 
-@skip
-class TestVariableScopeTracking(BaseTestCase):
-    def test_same_variable_name_is_used_for_two_different_classes(self):
-        """Usage of the class methods should be tracked properly."""
-        self.files = {
-            'foo.py': b"""
+def test_same_variable_name_is_used_for_two_different_classes(virtual_file_system):
+    """Usage of the class methods should be tracked properly."""
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class Foo:
                     def foo(self):
                         pass
@@ -29,16 +30,17 @@ class TestVariableScopeTracking(BaseTestCase):
                 instance = Spam()
                 print(instance)
                 """
-        }
+    }
 
-        main(['foo.py', '--no-color', '--fix'])
+    main(['foo.py', '--no-color', '--fix'])
 
-        self.assertFiles({})
+    virtual_file_system.assert_files({})
 
-    def test_instance_is_being_passed_into_a_function(self):
-        """Usage of the class methods should be tracked properly."""
-        self.files = {
-            'foo.py': b"""
+
+def test_instance_is_being_passed_into_a_function(virtual_file_system):
+    """Usage of the class methods should be tracked properly."""
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class Foo:
                     def foo(self):
                         pass
@@ -48,15 +50,16 @@ class TestVariableScopeTracking(BaseTestCase):
 
                 say_foo(Foo())
                 """
-        }
+    }
 
-        main(['foo.py', '--no-color', '--fix'])
+    main(['foo.py', '--no-color', '--fix'])
 
-        self.assertFiles({})
+    virtual_file_system.assert_files({})
 
-    def test_instance_is_being_passed_into_a_function_using_args(self):
-        self.files = {
-            'foo.py': b"""
+
+def test_instance_is_being_passed_into_a_function_using_args(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class Foo:
                     def foo(self):
                         pass
@@ -67,15 +70,16 @@ class TestVariableScopeTracking(BaseTestCase):
 
                 say_foo(Foo())
                 """
-        }
+    }
 
-        main(['foo.py', '--no-color', '--fix'])
+    main(['foo.py', '--no-color', '--fix'])
 
-        self.assertFiles({})
+    virtual_file_system.assert_files({})
 
-    def test_instance_is_being_passed_into_a_function_using_kwargs(self):
-        self.files = {
-            'foo.py': b"""
+
+def test_instance_is_being_passed_into_a_function_using_kwargs(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class Foo:
                     def foo(self):
                         pass
@@ -86,15 +90,16 @@ class TestVariableScopeTracking(BaseTestCase):
 
                 say_foo(instance=Foo())
                 """
-        }
+    }
 
-        main(['foo.py', '--no-color', '--fix'])
+    main(['foo.py', '--no-color', '--fix'])
 
-        self.assertFiles({})
+    virtual_file_system.assert_files({})
 
-    def test_instance_is_being_passed_into_a_method_using_kwargs(self):
-        self.files = {
-            'foo.py': b"""
+
+def test_instance_is_being_passed_into_a_method_using_kwargs(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class Foo:
                     def foo(self):
                         pass
@@ -106,15 +111,16 @@ class TestVariableScopeTracking(BaseTestCase):
 
                 Bar().say_foo(instance=Foo())
                 """
-        }
+    }
 
-        main(['foo.py', '--no-color', '--fix'])
+    main(['foo.py', '--no-color', '--fix'])
 
-        self.assertFiles({})
+    virtual_file_system.assert_files({})
 
-    def test_instance_is_being_passed_into_a_class_method_using_kwargs(self):
-        self.files = {
-            'foo.py': b"""
+
+def test_instance_is_being_passed_into_a_class_method_using_kwargs(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class Foo:
                     def foo(self):
                         pass
@@ -127,15 +133,16 @@ class TestVariableScopeTracking(BaseTestCase):
 
                 Bar().say_foo(instance=Foo())
                 """
-        }
+    }
 
-        main(['foo.py', '--no-color', '--fix'])
+    main(['foo.py', '--no-color', '--fix'])
 
-        self.assertFiles({})
+    virtual_file_system.assert_files({})
 
-    def test_instance_is_being_passed_into_a_static_method_using_kwargs(self):
-        self.files = {
-            'foo.py': b"""
+
+def test_instance_is_being_passed_into_a_static_method_using_kwargs(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class Foo:
                     def foo(self):
                         pass
@@ -148,49 +155,52 @@ class TestVariableScopeTracking(BaseTestCase):
 
                 Bar().say_foo(instance=Foo())
                 """
-        }
+    }
 
-        main(['foo.py', '--no-color', '--fix'])
+    main(['foo.py', '--no-color', '--fix'])
 
-        self.assertFiles({})
+    virtual_file_system.assert_files({})
 
-    def test_instance_is_being_imported(self):
-        self.files = {
-            'foo.py': b"""
+
+def test_instance_is_being_imported(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class Foo:
                     def foo(self):
                         pass
                 """,
-            'bar.py': b"""
+        'bar.py': b"""
                 from foo import Foo
                 print(Foo().foo())
                 """,
-        }
+    }
 
-        main(['foo.py', '--no-color', '--fix'])
+    main(['foo.py', '--no-color', '--fix'])
 
-        self.assertFiles({})
+    virtual_file_system.assert_files({})
 
-    def test_instance_is_being_imported_with_renaming(self):
-        self.files = {
-            'foo.py': b"""
+
+def test_instance_is_being_imported_with_renaming(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class Foo:
                     def foo(self):
                         pass
                 """,
-            'bar.py': b"""
+        'bar.py': b"""
                 from foo import Foo as Bar
                 print(Bar().foo())
                 """,
-        }
+    }
 
-        main(['foo.py', '--no-color', '--fix'])
+    main(['foo.py', '--no-color', '--fix'])
 
-        self.assertFiles({})
+    virtual_file_system.assert_files({})
 
-    def test_variable_renaming(self):
-        self.files = {
-            'foo.py': b"""
+
+def test_variable_renaming(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class Foo:
                     def foo(self):
                         pass
@@ -199,15 +209,16 @@ class TestVariableScopeTracking(BaseTestCase):
                 instnace2 = instance
                 print(instnace2.foo())
                 """
-        }
+    }
 
-        main(['foo.py', '--no-color', '--fix'])
+    main(['foo.py', '--no-color', '--fix'])
 
-        self.assertFiles({})
+    virtual_file_system.assert_files({})
 
-    def test_variable_renaming_using_expansion_from_a_list(self):
-        self.files = {
-            'foo.py': b"""
+
+def test_variable_renaming_using_expansion_from_a_list(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class Foo:
                     def foo(self):
                         pass
@@ -216,15 +227,16 @@ class TestVariableScopeTracking(BaseTestCase):
                 instnace2, remaining_values* = [instance, 1, 2, 3]
                 print(instnace2.foo())
                 """,
-        }
+    }
 
-        main(['foo.py', '--no-color', '--fix'])
+    main(['foo.py', '--no-color', '--fix'])
 
-        self.assertFiles({})
+    virtual_file_system.assert_files({})
 
-    def test_function_arguments_are_being_passed_using_partial_instead_of_direct_call(self):
-        self.files = {
-            'foo.py': b"""
+
+def test_function_arguments_are_being_passed_using_partial_instead_of_direct_call(virtual_file_system):
+    virtual_file_system.files = {
+        'foo.py': b"""
                 class Foo:
                     def foo(self):
                         pass
@@ -237,8 +249,8 @@ class TestVariableScopeTracking(BaseTestCase):
                 say_foo_partial = partial(say_foo, instance=Foo())
                 say_foo_partial()
                 """
-        }
+    }
 
-        main(['foo.py', '--no-color', '--fix'])
+    main(['foo.py', '--no-color', '--fix'])
 
-        self.assertFiles({})
+    virtual_file_system.assert_files({})

@@ -1,6 +1,6 @@
 import io
-from unittest import TestCase
-from unittest.mock import patch
+
+import pytest
 
 from deadcode.utils.print_safely import print_safely
 
@@ -46,28 +46,29 @@ class NonAsciiRefusingStream:
         pass
 
 
-class PrintSafelyTests(TestCase):
-    def test_working_stream_writes_text_unchanged(self):
-        stream = io.StringIO()
+def test_working_stream_writes_text_unchanged(monkeypatch: pytest.MonkeyPatch):
+    stream = io.StringIO()
 
-        with patch('sys.stdout', stream):
-            print_safely('✨')
+    monkeypatch.setattr('sys.stdout', stream)
+    print_safely('✨')
 
-        self.assertEqual(stream.getvalue(), '✨\n')
+    assert stream.getvalue() == '✨\n'
 
-    def test_reconfigure_retry_writes_text_unchanged(self):
-        stream = WritesUnicodeAfterReconfigureStream()
 
-        with patch('sys.stdout', stream):
-            print_safely('✨')
+def test_reconfigure_retry_writes_text_unchanged(monkeypatch: pytest.MonkeyPatch):
+    stream = WritesUnicodeAfterReconfigureStream()
 
-        self.assertEqual(stream.written_text, '✨\n')
-        self.assertEqual(stream.reconfigure_calls, ['utf-8'])
+    monkeypatch.setattr('sys.stdout', stream)
+    print_safely('✨')
 
-    def test_ascii_fallback_writes_replacement_character(self):
-        stream = NonAsciiRefusingStream()
+    assert stream.written_text == '✨\n'
+    assert stream.reconfigure_calls == ['utf-8']
 
-        with patch('sys.stdout', stream):
-            print_safely('✨')
 
-        self.assertEqual(stream.written_text, '?\n')
+def test_ascii_fallback_writes_replacement_character(monkeypatch: pytest.MonkeyPatch):
+    stream = NonAsciiRefusingStream()
+
+    monkeypatch.setattr('sys.stdout', stream)
+    print_safely('✨')
+
+    assert stream.written_text == '?\n'
