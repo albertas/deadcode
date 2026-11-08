@@ -33,7 +33,7 @@ test = [
     "deadcode",
     "diff-cover==10.6.0",
     "pre-commit",
-    "pytest==9.0.3",
+    "pytest==9.2.0",
     "pytest-cov==5.0.0",
     "pytest-xdist==3.8.0",
 ]

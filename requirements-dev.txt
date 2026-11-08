@@ -192,7 +192,7 @@ pyparsing==3.3.3
     # via pip-requirements-parser
 pyproject-hooks==1.3.3
     # via hatch
-pytest==9.0.3
+pytest==9.2.0
     # via
     #   deadcode (pyproject.toml)
     #   pytest-cov
