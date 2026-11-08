@@ -278,6 +278,7 @@ the public module-level names are exported.
         - Migrate the test suite from unittest.TestCase to pytest fixtures and plain asserts
         - Add shared pytest fixtures for the virtual file system and default arguments
         - Remove the obsolete unittest test helper and its linter configuration
+        - Run the test suite in parallel with pytest-xdist, using one worker per logical CPU minus one.
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
