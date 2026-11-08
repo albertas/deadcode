@@ -262,6 +262,7 @@ the public module-level names are exported.
           application with only real findings
         - Test suites cover common FastAPI features and every dependency injection form without reporting them as dead code
         - Print verbose log messages as readable ASCII instead of a `bytes` repr when the output stream cannot encode a character.
+        - The FastAPI guide now explains dependency injection and shows feature usage examples
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
