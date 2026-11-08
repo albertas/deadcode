@@ -16,10 +16,6 @@ PYTEST_XDIST_WORKERS ?= $(shell .venv/bin/python -c 'import os; print(max(1, (os
 VERSION := $(shell .venv/bin/hatch version)
 
 publish: .venv
-	@test -n "$(READTHEDOCS_API_TOKEN)" || { \
-		echo "publish: set READTHEDOCS_API_TOKEN to a Read the Docs API token with build permissions" >&2; \
-		exit 1; \
-	}
 	rm -fr dist/*
 	.venv/bin/hatch build
 	.venv/bin/uv publish
