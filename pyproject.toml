@@ -1,6 +1,6 @@
 [project]
 name = "deadcode"
-version = "2.5.0"
+version = "2.7.7"
 authors = [
     {name = "Albertas Gimbutas", email = "albertasgim@gmail.com"},
 ]
