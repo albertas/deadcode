@@ -242,7 +242,7 @@ the public module-level names are exported.
 - [ ] Investigate ways of extracting and backporting Python3.10+ `ast` implementation to lower Python versions.
 
 ## Release notes
-- v2.5.1:
+- next:
     - Features:
         - Add support for Python 3.13, 3.14 and 3.15.
         - Documentation is now published on Read the Docs at https://deadcode.readthedocs.io/.
@@ -277,6 +277,7 @@ the public module-level names are exported.
         - The documentation home page no longer repeats the README content.
         - Stop reporting unittest lifecycle methods declared in test files as unused code (issue #21).
         - Use pytest instead of unittest.TestCase
+        - Split the Read the Docs README page into separate Installation, Usage, Rules, Contributing, Known limitations, and Release notes pages.
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
