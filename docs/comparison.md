@@ -14,7 +14,7 @@ It covers released versions only: unreleased changes on the `vulture` `main` bra
 - Whitelist mechanism: `deadcode` has no whitelist file and relies on ignore options and `# noqa`;
   `vulture` generates whitelist files with `--make-whitelist` and loads bundled whitelists for imported modules.
 - Argument reporting: `deadcode` does not report unused function arguments; `vulture` reports them at 100% confidence.
-- Test coverage: `deadcode` maintains 100% line coverage of the package with its test suite.
+- Test coverage: `deadcode` maintains 100% test coverage.
 
 ## At a glance
 
@@ -60,3 +60,34 @@ It covers released versions only: unreleased changes on the `vulture` `main` bra
 | `--ignore-names-in-files` | Supported | No equivalent option |
 | `# noqa` coverage | All DC codes, `DC`, bare noqa, F401/F841, and legacy DC00x aliases | F401/F841 and bare noqa only |
 | `--config` | No equivalent option; `[tool.deadcode]` is read from `pyproject.toml` in the current directory | `--config` points at another `pyproject.toml` file |
+
+## Adapting suppression to a framework
+
+`deadcode` provides flexible options to filter out false positive code parts. Three options select the scope — `--ignore-names`, `--ignore-bodies-of`, and
+`--ignore-definitions` — and the `-if-decorated-with` and `-if-inherits-from` qualifiers select what triggers it, with a variant for each of the three scopes.
+`--ignore-names-in-files` narrows a name ignore to matching files. All of them accept glob patterns, work from both the command line and `[tool.deadcode]`, and
+compose with per-line `# noqa` comments that accept every `DC` code. Framework-heavy code therefore needs configuration, not source changes or a hand-maintained
+allowlist.
+
+FastAPI is the documented example: the whole guide reduces to two settings, one for the route, event, middleware, and exception-handler decorators and one for the
+Pydantic model base class.
+
+```toml
+[tool.deadcode]
+ignore-names-if-decorated-with = ["@app.*", "@router.*"]
+ignore-bodies-if-inherits-from = ["BaseModel"]
+```
+
+Because `deadcode` parses source and never imports it, the same mechanism generalises: any library that marks live code with a decorator or a base class can be adapted
+by naming that decorator or base class, and unrelated code stays under full analysis.
+
+`vulture` offers one decorator option, `--ignore-decorators`, which suppresses the decorated function or class name but not its body and has no inheritance-based
+counterpart. The FastAPI cases that `deadcode` covers in two lines need individual `--ignore-names` patterns or a whitelist module in `vulture`, and the recommended
+whitelist mechanism marks names as used across the whole code base, so adapting the tool to a framework can also hide genuine dead code.
+
+| Adaptation need | deadcode | vulture |
+|---|---|---|
+| Framework-decorated handlers, such as FastAPI `@app.*` and `@router.*` | Name, body, or definition suppression matched by decorator glob | `--ignore-decorators`, which covers names only |
+| Members of a framework base class, such as Pydantic `BaseModel` fields and validators | Name, body, or definition suppression matched by base class name, dotted path, or glob | No equivalent; list every name or add a whitelist entry |
+| A name that is safe only in one file | `--ignore-names-in-files` | A whitelist entry, which applies to the whole code base |
+| A single finding | `# noqa` with any `DC` code | `# noqa` for F401/F841 only, otherwise a whitelist entry |
