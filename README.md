@@ -294,6 +294,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
     - Features:
         - Audit runtime and development dependencies for known vulnerabilities in CI on every pull request and weekly.
         - Add a vulture comparison page to the published documentation covering versions and feature differences.
+        - Declare the package development status as Beta.
 - **v2.6.0** `2026-11-08`:
     - Features:
         - Add support for Python 3.13, 3.14 and 3.15.

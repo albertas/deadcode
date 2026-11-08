@@ -23,7 +23,7 @@ It covers released versions only: unreleased changes on the `vulture` `main` bra
 | Version | 2.6.0 | 2.16 |
 | Release date | 2026-11-08 | 2026-03-25 |
 | Licence | AGPLv3 | MIT |
-| Development status | 3 - Alpha | 5 - Production/Stable |
+| Development status | 4 - Beta | 5 - Production/Stable |
 | Python support | `>=3.10` | `>=3.9` |
 | Runtime dependency | `tomli>=2.0.1` on Python < 3.11 | `tomli>=1.1.0` on Python < 3.11 |
 | Console command | `deadcode` | `vulture` |
