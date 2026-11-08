@@ -51,6 +51,40 @@ def _find_comma_between(
     return None
 
 
+def _end_of_line_content(content_lines: list[bytes], line_number: int) -> int:
+    """Returns the length of a line without its trailing line terminator."""
+    line = _line_bytes(content_lines, line_number)
+    for terminator in (b'\r\n', b'\n', b'\r'):
+        if line.endswith(terminator):
+            return len(line) - len(terminator)
+    return len(line)
+
+
+def _first_non_whitespace_column(content_lines: list[bytes], line_number: int, start_column: int) -> int | None:
+    """Returns the first non-whitespace column at or after ``start_column``."""
+    line = _line_bytes(content_lines, line_number)
+    end_column = _end_of_line_content(content_lines, line_number)
+    for column in range(start_column, end_column):
+        if line[column : column + 1] not in (b' ', b'\t'):
+            return column
+    return None
+
+
+def _last_non_whitespace_column_before(content_lines: list[bytes], line_number: int, end_column: int) -> int | None:
+    """Returns the last non-whitespace column strictly before ``end_column``."""
+    line = _line_bytes(content_lines, line_number)
+    for column in range(end_column - 1, -1, -1):
+        if line[column : column + 1] not in (b' ', b'\t'):
+            return column
+    return None
+
+
+def _is_only_whitespace_or_comment(remainder: bytes) -> bool:
+    """Returns whether the remainder is whitespace or a trailing comment."""
+    stripped_remainder = remainder.strip()
+    return not stripped_remainder or stripped_remainder.startswith(b'#')
+
+
 def _end_of_whitespace_after_comma(content_lines: list[bytes], comma: tuple[int, int]) -> int:
     line = _line_bytes(content_lines, comma[0])
     end_col = comma[1] + 1
@@ -94,7 +128,32 @@ def get_unused_import_parts(content: bytes, unused_import_items: Iterable[CodeIt
         if all(key in removable_keys for key in alias_keys):
             if node.end_lineno is None or node.end_col_offset is None:
                 continue
-            import_parts.append(Part(node.lineno, node.end_lineno, node.col_offset, node.end_col_offset))
+
+            start_column = node.col_offset
+            end_column = node.end_col_offset
+            following_column = _first_non_whitespace_column(content_lines, node.end_lineno, end_column)
+            if (
+                following_column is not None
+                and _line_bytes(content_lines, node.end_lineno)[following_column : following_column + 1] == b';'
+            ):
+                end_column = following_column + 1
+                after_separator_column = _first_non_whitespace_column(content_lines, node.end_lineno, end_column)
+                if after_separator_column is not None:
+                    end_column = after_separator_column
+            else:
+                preceding_column = _last_non_whitespace_column_before(content_lines, node.lineno, node.col_offset)
+                if (
+                    preceding_column is not None
+                    and _line_bytes(content_lines, node.lineno)[preceding_column : preceding_column + 1] == b';'
+                ):
+                    start_column = preceding_column
+
+            line_content_end = _end_of_line_content(content_lines, node.end_lineno)
+            remainder = _line_bytes(content_lines, node.end_lineno)[end_column:line_content_end]
+            if _is_only_whitespace_or_comment(remainder):
+                end_column = line_content_end
+
+            import_parts.append(Part(node.lineno, node.end_lineno, start_column, end_column))
             matched_keys.update(alias_keys)
             continue
 
@@ -111,10 +170,10 @@ def get_unused_import_parts(content: bytes, unused_import_items: Iterable[CodeIt
                     (next_alias.lineno, next_alias.col_offset),
                 )
                 if comma is None:
-                    import_parts.append(Part(alias.lineno, alias.end_lineno, alias.col_offset, alias.end_col_offset))
-                else:
-                    end_col = _end_of_whitespace_after_comma(content_lines, comma)
-                    import_parts.append(Part(alias.lineno, comma[0], alias.col_offset, end_col))
+                    matched_keys.add(key)
+                    continue
+                end_col = _end_of_whitespace_after_comma(content_lines, comma)
+                import_parts.append(Part(alias.lineno, comma[0], alias.col_offset, end_col))
             else:
                 previous_alias = aliases[index - 1]
                 if previous_alias.end_lineno is None or previous_alias.end_col_offset is None:
@@ -126,9 +185,13 @@ def get_unused_import_parts(content: bytes, unused_import_items: Iterable[CodeIt
                         (alias.lineno, alias.col_offset),
                     )
                     if comma is None:
+                        matched_keys.add(key)
+                        continue
+                    if previous_alias.end_lineno != alias.lineno:
                         import_parts.append(
-                            Part(alias.lineno, alias.end_lineno, alias.col_offset, alias.end_col_offset)
+                            Part(comma[0], comma[0], comma[1], _end_of_line_content(content_lines, comma[0]))
                         )
+                        import_parts.append(Part(alias.lineno, alias.end_lineno, 0, alias.end_col_offset))
                     else:
                         import_parts.append(Part(comma[0], alias.end_lineno, comma[1], alias.end_col_offset))
 
