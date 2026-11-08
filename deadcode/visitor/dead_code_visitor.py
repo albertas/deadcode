@@ -85,6 +85,8 @@ class DeadCodeVisitor(ast.NodeVisitor):
         self.noqa_lines: dict[bytes, set[int]] = {}
         self.scopes = NestedScope()
 
+        self._assignment_nodes: list[ast.Assign | ast.AnnAssign | ast.AugAssign] = []
+
     @property
     def scope(self) -> str:
         return '.'.join(self.scope_parts)
@@ -279,6 +281,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
         ignore: Callable[[Path, str], bool] | None = None,
         *,
         decorator_names: Iterable[str] = (),
+        removal_node: ast.AST | None = None,
     ) -> None:
         def ignored(linenos: Iterable[int], type_: UnusedCodeType) -> bool:
             return bool(
@@ -299,12 +302,24 @@ class DeadCodeVisitor(ast.NodeVisitor):
         last_lineno = lines.get_last_line_number(last_node)
         name_line = last_node.lineno
 
+        removal_node_end_lineno = getattr(removal_node, 'end_lineno', None)
+        if removal_node is not None and removal_node_end_lineno is not None:
+            line_start = lines.get_first_line_number(removal_node)
+            line_end = removal_node_end_lineno
+            col_start = removal_node.col_offset
+            col_end = removal_node.end_col_offset or 0
+        else:
+            line_start = first_lineno
+            line_end = last_lineno
+            col_start = last_node.col_offset
+            col_end = last_node.end_col_offset or 0
+
         inherits_from = getattr(first_node, 'inherits_from', None)
         code_item = CodeItem(
             name=name,
             type_=type_,
             filename=self.filename,
-            code_parts=[Part(first_lineno, last_lineno, last_node.col_offset, last_node.end_col_offset or 0)],
+            code_parts=[Part(line_start, line_end, col_start, col_end)],
             scope=self.scope,
             name_line=name_line,  # TODO: Maybe this should be a property?
             name_column=last_node.col_offset,  # TODO: Maybe this should be a property?
@@ -319,12 +334,30 @@ class DeadCodeVisitor(ast.NodeVisitor):
         else:
             collection.append(code_item)
 
+    def _get_assignment_removal_node(self, target: ast.AST) -> ast.AST | None:
+        if not self._assignment_nodes:
+            return None
+
+        statement = self._assignment_nodes[-1]
+        if statement.end_lineno is None or statement.end_lineno <= statement.lineno:
+            return None
+
+        if isinstance(statement, ast.Assign):
+            if len(statement.targets) == 1 and statement.targets[0] is target:
+                return statement
+        elif isinstance(statement, (ast.AnnAssign, ast.AugAssign)):
+            if statement.target is target:
+                return statement
+
+        return None
+
     def _define_variable(self, name: str, node: ast.AST) -> None:
         self._define(
             self.defined_vars,
             name,
             node,
             ignore=_ignore_variable,
+            removal_node=self._get_assignment_removal_node(node),
         )
 
     # def visit_arg(self, node: ast.AST) -> None:
@@ -580,15 +613,23 @@ class DeadCodeVisitor(ast.NodeVisitor):
         # """Called if no explicit visitor function exists for a node."""
         # TODO: for assignment statements unused_code unit should be whole assignment statement instead of a name itself
         # Note: Node is None if file is empty, contains only a docstring, a comment or has a SyntaxError.
-        if node:
-            for _, value in ast.iter_fields(node):
-                if isinstance(value, list):
-                    self._handle_ast_list(value)
-                    for item in value:
-                        if isinstance(item, ast.AST):
-                            self.visit(item)
-                elif isinstance(value, ast.AST):
-                    self.visit(value)
+        pushed_assignment_node: ast.Assign | ast.AnnAssign | ast.AugAssign | None = None
+        if isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign)):
+            pushed_assignment_node = node
+            self._assignment_nodes.append(node)
+        try:
+            if node:
+                for _, value in ast.iter_fields(node):
+                    if isinstance(value, list):
+                        self._handle_ast_list(value)
+                        for item in value:
+                            if isinstance(item, ast.AST):
+                                self.visit(item)
+                    elif isinstance(value, ast.AST):
+                        self.visit(value)
+        finally:
+            if pushed_assignment_node is not None:
+                self._assignment_nodes.pop()
 
         # TODO: use decorator for this code chunk
         if should_turn_off_ignore_new_definitions:
