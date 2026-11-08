@@ -270,6 +270,8 @@ the public module-level names are exported.
         - --ignore-bodies-if-inherits-from and --ignore-definitions-if-inherits-from now recognize dotted base classes such as graphene.ObjectType and match their final component.
         - The option help text and README document the accepted plain, dotted and glob base-name forms.
         - Render decorator names deterministically, including dotted names, and stop unusual decorators such as `@Class().function()` from crashing or producing memory addresses.
+        - The README content is available again as its own page in the Read the Docs documentation.
+        - The documentation home page no longer repeats the README content.
         - Stop reporting unittest lifecycle methods declared in test files as unused code (issue #21).
         - Migrate the test suite from unittest.TestCase to pytest fixtures and plain asserts
         - Add shared pytest fixtures for the virtual file system and default arguments
