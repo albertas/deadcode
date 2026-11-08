@@ -52,8 +52,8 @@ RULE_CASES: dict[str, tuple[bytes, tuple[str, ...], tuple[str, ...]]] = {
 
 def readme_rules_section() -> str:
     readme_text = README_PATH.read_text(encoding='utf-8')
-    rules_start = readme_text.index('## Rules')
-    rules_end = readme_text.index('## Ignoring checks with noqa comments')
+    rules_start = readme_text.index('### Rules')
+    rules_end = readme_text.index('## Ignoring unittest lifecycle methods')
     return readme_text[rules_start:rules_end]
 
 

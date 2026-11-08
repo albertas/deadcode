@@ -9,5 +9,5 @@
 
 ```{include} ../README.md
 :start-after: "## Command line options"
-:end-before: "## Rules"
+:end-before: "## Ignoring checks with noqa comments"
 ```

@@ -39,8 +39,8 @@ for every row.
 | `-v` / `--verbose` | `## Command line options` | `deadcode/actions/find_python_filenames.py` | `tests/cli_args/test_verbose.py`, `tests/cli/test_verbose_output_encoding.py` | 3 |
 | Decorator matching rules | `### Decorator matching` | `deadcode/visitor/utils.py`, `deadcode/visitor/dead_code_visitor.py` | `tests/cli_args/test_ignore_names_if_decorated_with.py`, `tests/visitor/test_ignore_interface_decorators.py` | 3 |
 | Exit status | `### Exit status` | `deadcode/cli.py` | `tests/cli/test_cli_exit_status.py` | 3 |
-| Rules `DC01`-`DC09`, `DC11`-`DC13`, `DC` | `## Rules` | `deadcode/constants.py`, `deadcode/visitor/dead_code_visitor.py` | `tests/documented_examples/test_documented_rules.py`, `tests/noqa/test_noqa_comments.py` | 3 |
-| Per-rule fixing | `## Rules` | `deadcode/actions/remove_file_parts_from_content.py` | `tests/fix/test_unused_imports.py`, `tests/fix/test_assign.py` | 3 |
+| Rules `DC01`-`DC09`, `DC11`-`DC13`, `DC` | `### Rules` | `deadcode/constants.py`, `deadcode/visitor/dead_code_visitor.py` | `tests/documented_examples/test_documented_rules.py`, `tests/noqa/test_noqa_comments.py` | 3 |
+| Per-rule fixing | `### Rules` | `deadcode/actions/remove_file_parts_from_content.py` | `tests/fix/test_unused_imports.py`, `tests/fix/test_assign.py` | 3 |
 | `# noqa` comments | `## Ignoring checks with noqa comments` | `deadcode/visitor/noqa.py` | `tests/noqa/test_noqa_comments.py` | 3 |
 | Unittest lifecycle methods | `## Ignoring unittest lifecycle methods` | `deadcode/visitor/ignore.py` | `tests/visitor/test_unittest_lifecycle_methods.py` | 3 |
 | FastAPI guide | `## Using deadcode on a FastAPI project` | `deadcode/actions/parse_arguments.py` | `tests/documented_examples/test_fastapi.py`, `tests/documented_examples/test_fastapi_documentation.py` | 3 |
