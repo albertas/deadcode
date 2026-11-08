@@ -49,6 +49,25 @@ def test_noqa_all(virtual_file_system):
     assert unused_names is None
 
 
+def test_noqa_dc_suppresses_every_check_on_the_line(virtual_file_system):
+    # Having
+    virtual_file_system.files = {
+        'foo.py': b"""
+                class MyTest:  # noqa: DC
+                    pass
+
+                unused_variable = 1  # noqa: DC
+                unused_other = 2
+                """
+    }
+
+    # When
+    unused_names = main(['foo.py', '--no-color'])
+
+    # Then
+    assert unused_names == 'foo.py:5:0: DC01 Variable `unused_other` is never used'
+
+
 def test_unused_variable(virtual_file_system):
     # Having
     virtual_file_system.files = {
