@@ -299,9 +299,7 @@ def test_multiline_assignment_inside_class(virtual_file_system):
     }
 
     unused_names = main(['foo.py', '--no-color', '--fix'])
-    assert unused_names == (
-        'foo.py:2:4: DC01 Variable `unused_variable` is never used\n\n' 'Removed 1 unused code item!'
-    )
+    assert unused_names == ('foo.py:2:4: DC06 Name `unused_variable` is never used\n\n' 'Removed 1 unused code item!')
 
     virtual_file_system.assert_files(
         {

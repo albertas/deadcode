@@ -31,7 +31,7 @@ def fix_indent(doc: T) -> T | None:
 
             ## Do not remove trailing lines
             # while lines and not lines[-1]:
-            #     lines.pop()
+            #     lines.pop()  # noqa: DC12
 
             ## Remove any leading blank lines.
             while byte_lines and not byte_lines[0]:
@@ -60,7 +60,7 @@ def fix_indent(doc: T) -> T | None:
 
             ## Do not remove trailing lines
             # while lines and not lines[-1]:
-            #     lines.pop()
+            #     lines.pop()  # noqa: DC12
 
             ## Remove any leading blank lines.
             while lines and not lines[0]:

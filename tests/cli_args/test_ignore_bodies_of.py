@@ -24,7 +24,7 @@ def test_ignore_class_body_by_name(virtual_file_system):
     assert unused_names == (
         'foo.py:1:0: DC03 Class `UnusedClass` is never used\n'
         'foo.py:11:0: DC03 Class `AnotherUnusedClass` is never used\n'
-        'foo.py:12:4: DC01 Variable `another_unused_attribute` is never used'
+        'foo.py:12:4: DC06 Name `another_unused_attribute` is never used'
     )
 
 
@@ -85,7 +85,7 @@ def test_non_matching_name_is_still_fully_reported(virtual_file_system):
 
     assert unused_names == (
         'foo.py:1:0: DC03 Class `UnusedClass` is never used\n'
-        'foo.py:2:4: DC01 Variable `unused_attribute` is never used\n'
+        'foo.py:2:4: DC06 Name `unused_attribute` is never used\n'
         'foo.py:4:4: DC04 Method `unused_method` is never used\n'
         'foo.py:5:8: DC01 Variable `unused_local_var` is never used'
     )

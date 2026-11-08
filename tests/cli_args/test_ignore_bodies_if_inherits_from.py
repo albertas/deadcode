@@ -37,7 +37,7 @@ def test_ignore_class_definition_if_inherits_from_base_class(virtual_file_system
     assert output == (
         'foo.py:5:0: DC03 Class `UnusedClass` is never used\n'
         'foo.py:15:0: DC03 Class `AnotherUnusedClass` is never used\n'
-        'foo.py:16:4: DC01 Variable `another_unused_attribute` is never used\n'
+        'foo.py:16:4: DC06 Name `another_unused_attribute` is never used\n'
         '\n'
         'Removed 3 unused code items!'
     )
@@ -75,7 +75,7 @@ def test_ignore_class_body_if_inherits_from_dotted_base_class(virtual_file_syste
     assert output == (
         'foo.py:4:0: DC03 Class `UnusedQuery` is never used\n'
         'foo.py:11:0: DC03 Class `AnotherUnusedClass` is never used\n'
-        'foo.py:12:4: DC01 Variable `another_unused_attribute` is never used\n'
+        'foo.py:12:4: DC06 Name `another_unused_attribute` is never used\n'
         '\n'
         'Removed 3 unused code items!'
     )
@@ -106,7 +106,7 @@ def test_ignore_class_body_if_inherits_from_final_base_class_component(virtual_f
     assert output == (
         'foo.py:4:0: DC03 Class `UnusedQuery` is never used\n'
         'foo.py:11:0: DC03 Class `AnotherUnusedClass` is never used\n'
-        'foo.py:12:4: DC01 Variable `another_unused_attribute` is never used\n'
+        'foo.py:12:4: DC06 Name `another_unused_attribute` is never used\n'
         '\n'
         'Removed 3 unused code items!'
     )
@@ -139,7 +139,7 @@ def test_ignore_class_body_if_inherits_from_glob_base_class(virtual_file_system)
     assert output == (
         'foo.py:4:0: DC03 Class `UnusedQuery` is never used\n'
         'foo.py:11:0: DC03 Class `AnotherUnusedClass` is never used\n'
-        'foo.py:12:4: DC01 Variable `another_unused_attribute` is never used\n'
+        'foo.py:12:4: DC06 Name `another_unused_attribute` is never used\n'
         '\n'
         'Removed 3 unused code items!'
     )

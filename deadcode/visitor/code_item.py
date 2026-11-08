@@ -7,11 +7,11 @@
 # name_line: IndexInt
 # name_column: IndexInt
 # expression_line_start: IndexInt
-# expression_line_end: Optional[IndexInt]
+# expression_line_end: Optional[IndexInt]  # noqa: DC12
 # expression_column_start: IndexInt
-# expression_column_end: Optional[IndexInt]
+# expression_column_end: Optional[IndexInt]  # noqa: DC12
 # variable_type: VariableTypes
-# usage_count: int = 0
+# usage_count: int = 0  # noqa: DC12
 
 
 # @dataclass
@@ -21,11 +21,11 @@
 #     name_line: IndexInt
 #     name_column: IndexInt
 #     expression_line_start: IndexInt
-#     expression_line_end: Optional[IndexInt]
+#     expression_line_end: Optional[IndexInt]  # noqa: DC12
 #     expression_column_start: IndexInt
-#     expression_column_end: Optional[IndexInt]
+#     expression_column_end: Optional[IndexInt]  # noqa: DC12
 #     variable_type: VariableTypes
-#     usage_count: int = 0
+#     usage_count: int = 0  # noqa: DC12
 
 
 from pathlib import Path
@@ -100,29 +100,31 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
 
     # @property
     # def size(self) -> int:
-    #     assert self.last_lineno >= self.first_lineno
-    #     return self.last_lineno - self.first_lineno + 1
+    #     assert self.last_lineno >= self.first_lineno  # noqa: DC12
+    #     return self.last_lineno - self.first_lineno + 1  # noqa: DC12
 
     # def get_report(self) -> str:
-    #     from deadcode.visitor.utils import format_path
+    #     from deadcode.visitor.utils import format_path  # noqa: DC12
 
     #     return "{}:{:d}: {}".format(
-    #         format_path(self.filename),
+    #         format_path(self.filename),  # noqa: DC12
     #         self.first_lineno,
     #         self.message,
     #     )
 
     # def get_whitelist_string(self) -> str:
-    #     from deadcode.visitor.utils import format_path
+    #     from deadcode.visitor.utils import format_path  # noqa: DC12
 
-    #     filename = format_path(self.filename)
+    #     filename = format_path(self.filename)  # noqa: DC12
     #     if self.type_ == "unreachable_code":
-    #         return f"# {self.message} ({filename}:{self.first_lineno})"
+    #         return f"# {self.message} ({filename}:{self.first_lineno})"  # noqa: DC12
     #     else:
-    #         prefix = ""
+    #         prefix = ""  # noqa: DC12
     #         if self.type_ in ["attribute", "method", "property"]:
-    #             prefix = "_."
-    #         return "{}{}  # unused {} ({}:{:d})".format(prefix, self.name, self.type_, filename, self.first_lineno)
+    #             prefix = "_."  # noqa: DC12
+    #         return "{}{}  # unused {} ({}:{:d})".format(  # noqa: DC12
+    #             prefix, self.name, self.type_, filename, self.first_lineno  # noqa: DC12
+    #         )  # noqa: DC12
 
     def __repr__(self) -> str:
         return repr(self.name)

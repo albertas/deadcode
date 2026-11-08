@@ -222,7 +222,7 @@ def test_conditional_all_does_not_restrict(virtual_file_system):
             """,
     }
     unused_names = main(['foo.py', 'bar.py', '--no-color'])
-    assert unused_names is None
+    assert unused_names == 'foo.py:1:0: DC09 Redundant `if` condition'
 
 
 def test_explicitly_imported_name_is_used_despite_wildcard_import(virtual_file_system):

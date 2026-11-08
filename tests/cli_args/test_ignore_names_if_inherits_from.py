@@ -143,9 +143,9 @@ def test_ignored_class_body_is_still_reported_and_fixed(virtual_file_system):
     )
 
     assert unused_names == (
-        'foo.py:8:4: DC01 Variable `inner` is never used\n'
+        'foo.py:8:4: DC06 Name `inner` is never used\n'
         'foo.py:11:0: DC03 Class `AnotherUnusedClass` is never used\n'
-        'foo.py:14:4: DC01 Variable `another_unused_attribute` is never used\n'
+        'foo.py:14:4: DC06 Name `another_unused_attribute` is never used\n'
         '\n'
         'Removed 3 unused code items!'
     )

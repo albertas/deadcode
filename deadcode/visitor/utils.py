@@ -68,10 +68,10 @@ def collect_names_from_annotation_strings(annotation: ast.AST | None, max_depth:
 
 # def format_path(path: pathlib.Path) -> pathlib.Path:
 #     try:
-#         return path.relative_to(pathlib.Path.cwd())
+#         return path.relative_to(pathlib.Path.cwd())  # noqa: DC12
 #     except ValueError:
 #         # Path is not below the current directory.
-#         return path
+#         return path  # noqa: DC12
 
 
 def get_decorator_name(decorator: ast.AST) -> str:

@@ -17,7 +17,8 @@ def test_unused_function_name_found():
     assert unused_names == (
         'tests/files/functions.py:1:0: DC02 Function `unused_function` is never used\n'
         'tests/files/functions.py:13:0: DC02 Function `another_unused_function` is never used\n'
-        'tests/files/functions.py:14:4: DC02 Function `this_is_unused_closure` is never used'
+        'tests/files/functions.py:14:4: DC02 Function `this_is_unused_closure` is never used\n'
+        'tests/files/functions.py:21:0: DC12 Commented out code'
     )
 
 

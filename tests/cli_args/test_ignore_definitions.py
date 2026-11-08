@@ -232,7 +232,7 @@ def test_ignore_definitions_does_not_ignore_class_attribute(virtual_file_system)
     }
     unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--ignore-definitions=unused_attribute'])
 
-    assert unused_names == ('foo.py:2:4: DC01 Variable `unused_attribute` is never used')
+    assert unused_names == ('foo.py:2:4: DC06 Name `unused_attribute` is never used')
 
 
 def test_ignore_definitions_does_not_ignore_import(virtual_file_system):

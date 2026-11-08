@@ -1,5 +1,3 @@
-import pytest
-
 from deadcode.cli import main
 
 
@@ -160,7 +158,6 @@ def test_unused_attribute(virtual_file_system):
     assert unused_names is None
 
 
-@pytest.mark.skip(reason='DC06 is a planned rule and is not implemented yet')
 def test_unused_name(virtual_file_system):
     virtual_file_system.files = {
         'foo.py': b"""
@@ -237,7 +234,6 @@ def test_unused_property(virtual_file_system):
     assert unused_names is None
 
 
-@pytest.mark.skip(reason='DC09 is a planned rule and is not reported yet')
 def test_unreachable_code(virtual_file_system):
     virtual_file_system.files = {
         'foo.py': b"""
@@ -285,7 +281,6 @@ def test_empty_file(virtual_file_system):
     assert unused_names is None
 
 
-@pytest.mark.skip(reason='DC12 is a planned rule and is not implemented yet')
 def test_commented_out_code(virtual_file_system):
     virtual_file_system.files = {
         'foo.py': b"""
@@ -306,33 +301,28 @@ def test_commented_out_code(virtual_file_system):
     assert unused_names is None
 
 
-@pytest.mark.skip(reason='DC13 is a planned rule and is not implemented yet')
-def test_ignore_expression(virtual_file_system):
+def test_unreachable_code_after_return(virtual_file_system):
     virtual_file_system.files = {
         'foo.py': b"""
-                class Foo:  # noqa: DC13
-                    this_attiribute_is_unused = True
-
-                    def this_method_is_not_used_as_well(self):
-                        pass
+                def unused_function():
+                    return 1
+                    print("Hello world")  # noqa: DC13
                 """
     }
 
-    unused_names = main(['foo.py', '--no-color', '--fix'])
+    unused_names = main(['foo.py', '--no-color'])
 
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
-                class Foo:  # noqa: DC13
-                    this_attiribute_is_unused = True
-
-                    def this_method_is_not_used_as_well(self):
-                        pass
+                def unused_function():
+                    return 1
+                    print("Hello world")  # noqa: DC13
                 """
         }
     )
 
-    assert unused_names is None
+    assert unused_names == 'foo.py:1:0: DC02 Function `unused_function` is never used'
 
 
 def test_unused_decorated_function_definition_line_with_alias(virtual_file_system):

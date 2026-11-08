@@ -48,7 +48,7 @@ def test_ignore_class_definition_if_inherits_from_base_class(virtual_file_system
 
     assert output == (
         'foo.py:15:0: DC03 Class `AnotherUnusedClass` is never used\n'
-        'foo.py:16:4: DC01 Variable `another_unused_attribute` is never used\n'
+        'foo.py:16:4: DC06 Name `another_unused_attribute` is never used\n'
         '\n'
         'Removed 2 unused code items!'
     )
@@ -112,7 +112,7 @@ def test_ignore_class_definition_if_inherits_from_multiple_classes(virtual_file_
 
     assert output == (
         'foo.py:15:0: DC03 Class `AnotherUnusedClass` is never used\n'
-        'foo.py:16:4: DC01 Variable `another_unused_attribute` is never used\n'
+        'foo.py:16:4: DC06 Name `another_unused_attribute` is never used\n'
         '\n'
         'Removed 2 unused code items!'
     )
@@ -162,7 +162,7 @@ def test_ignore_class_definition_if_inherits_from_dotted_base_class(virtual_file
 
     assert output == (
         'foo.py:11:0: DC03 Class `AnotherUnusedClass` is never used\n'
-        'foo.py:12:4: DC01 Variable `another_unused_attribute` is never used\n'
+        'foo.py:12:4: DC06 Name `another_unused_attribute` is never used\n'
         '\n'
         'Removed 2 unused code items!'
     )
@@ -212,7 +212,7 @@ def test_ignore_class_definition_if_inherits_from_final_base_class_component(vir
 
     assert output == (
         'foo.py:11:0: DC03 Class `AnotherUnusedClass` is never used\n'
-        'foo.py:12:4: DC01 Variable `another_unused_attribute` is never used\n'
+        'foo.py:12:4: DC06 Name `another_unused_attribute` is never used\n'
         '\n'
         'Removed 2 unused code items!'
     )
@@ -270,7 +270,7 @@ def test_ignore_class_definition_if_inherits_from_transitive_dotted_base_class(v
 
     assert output == (
         'foo.py:15:0: DC03 Class `AnotherUnusedClass` is never used\n'
-        'foo.py:16:4: DC01 Variable `another_unused_attribute` is never used\n'
+        'foo.py:16:4: DC06 Name `another_unused_attribute` is never used\n'
         '\n'
         'Removed 2 unused code items!'
     )
