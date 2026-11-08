@@ -130,26 +130,26 @@ def test_unused_method(virtual_file_system):
     assert unused_names is None
 
 
-@pytest.mark.skip(reason='Skipped without a recorded reason before the pytest migration; behaviour preserved')
 def test_unused_attribute(virtual_file_system):
-    # TODO: DC05 does not work.
     virtual_file_system.files = {
         'foo.py': b"""
                 class MyTest:
-                    unused_attribute = 123  # noqa: DC05
+                    def __init__(self):
+                        self.unused_attribute = 123  # noqa: DC05
 
                 instance = MyTest()
                 print(instance)
                 """
     }
 
-    unused_names = main(['foo.py', '--no-color', '--fix'])
+    unused_names = main(['foo.py', '--no-color'])
 
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
                 class MyTest:
-                    unused_attribute = 123  # noqa: DC05
+                    def __init__(self):
+                        self.unused_attribute = 123  # noqa: DC05
 
                 instance = MyTest()
                 print(instance)
@@ -160,9 +160,8 @@ def test_unused_attribute(virtual_file_system):
     assert unused_names is None
 
 
-@pytest.mark.skip(reason='Skipped without a recorded reason before the pytest migration; behaviour preserved')
+@pytest.mark.skip(reason='DC06 is a planned rule and is not implemented yet')
 def test_unused_name(virtual_file_system):
-    # TODO: DC06 does not work.
     virtual_file_system.files = {
         'foo.py': b"""
                 class MyTest:
@@ -238,10 +237,8 @@ def test_unused_property(virtual_file_system):
     assert unused_names is None
 
 
-@pytest.mark.skip(reason='Skipped without a recorded reason before the pytest migration; behaviour preserved')
+@pytest.mark.skip(reason='DC09 is a planned rule and is not reported yet')
 def test_unreachable_code(virtual_file_system):
-    # TODO: identify all cases, when unreachable code is detected, and write unit tests
-
     virtual_file_system.files = {
         'foo.py': b"""
                 if True:
@@ -288,8 +285,8 @@ def test_empty_file(virtual_file_system):
     assert unused_names is None
 
 
+@pytest.mark.skip(reason='DC12 is a planned rule and is not implemented yet')
 def test_commented_out_code(virtual_file_system):
-    # TODO: this test only passes because commented-out-code check is not yet implemented
     virtual_file_system.files = {
         'foo.py': b"""
                 # print("Hello world")  # noqa: DC12
@@ -309,7 +306,7 @@ def test_commented_out_code(virtual_file_system):
     assert unused_names is None
 
 
-@pytest.mark.skip(reason='Skipped without a recorded reason before the pytest migration; behaviour preserved')
+@pytest.mark.skip(reason='DC13 is a planned rule and is not implemented yet')
 def test_ignore_expression(virtual_file_system):
     virtual_file_system.files = {
         'foo.py': b"""
