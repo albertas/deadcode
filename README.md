@@ -203,33 +203,15 @@ commits are made by the maintainer on `main`.
 
 ## Documentation builds
 
-Documentation is published on [Read the Docs](https://deadcode.readthedocs.io/) and built automatically; no manual build is needed.
+Documentation is published on [Read the Docs](https://deadcode.readthedocs.io/) and is rebuilt by `make publish`; no manual build is needed.
 
-- Every push or merge to `main` rebuilds the `latest` version of the documentation. The `Build documentation` workflow
-  (`.github/workflows/build-documentation.yml`) runs on the push event and reports the build URL in the workflow summary.
-- Pushing a release tag `X.Y.Z` builds that version and re-renders `stable` from it, so `stable` matches the newest release. The first
-  release with automatic documentation builds is `2.6.0`. After that release, confirm manually that the tag-push run is green and that Read
-  the Docs shows a built `2.6.0` version with `stable` at `2.6.0`; these post-release checks cannot run before the tag exists.
-- Each run reuses a running or successful build for the same commit, so rerunning a workflow does not create duplicate builds.
-
-The workflow authenticates with the repository secret `READTHEDOCS_API_TOKEN` and fails immediately when it is missing. Two prerequisites
-keep the automation working:
-
-- P1: the Read the Docs project `deadcode` must stay connected to <https://github.com/albertas/deadcode>, so Read the Docs syncs new tags
-  and can move `stable` to them.
-- P2: the `READTHEDOCS_API_TOKEN` secret must exist under `Settings -> Secrets and variables -> Actions`.
-
-To rerun a build by hand:
-
-- Run the `Build documentation` workflow from the Actions tab (`workflow_dispatch`) and, optionally, set the `version` and `commit` inputs.
-- Or run the helper locally:
-  `READTHEDOCS_API_TOKEN=... python3 .github/scripts/trigger_readthedocs_builds.py --version <version> --commit <sha>`.
-
-Build results are listed at <https://app.readthedocs.org/projects/deadcode/builds/>; the run summary links the build URL of every version it
-built.
-
-If the release job reports that `stable` still points at an older tag, sync the versions or re-point `stable` in the Read the Docs
-dashboard (<https://app.readthedocs.org/projects/deadcode/versions/>), then rerun the workflow.
+- `make publish` builds and uploads the package, creates and pushes the `X.Y.Z` tag, then asks Read the Docs to build the released version,
+  `stable` and `latest`. `stable` therefore follows the newest release.
+- The trigger uses the Read the Docs API and needs an API token with build permissions in `READTHEDOCS_API_TOKEN`. Export it before running
+  `make publish`, or store it as a repository secret when the release runs in GitHub Actions.
+- The Read the Docs project must stay connected to <https://github.com/albertas/deadcode>, so that the version sync sees new tags.
+- Run `make readthedocs` with the same token to rebuild the documentation of the current project version without publishing a release.
+  Build results are listed at <https://app.readthedocs.org/projects/deadcode/builds/>.
 
 ## Rationale
 [ruff](https://pypi.org/project/ruff/) and
@@ -317,7 +299,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - Add a code coverage badge to the README, fed by the coverage report uploaded from CI
         - Definitions decorated with `@abstractmethod` or `@override` are ignored by default (issue #40)
         - Implement DC06 unused names, DC09 unreachable bodies, DC12 commented-out code and DC13 unreachable code rules.
-        - Build the latest documentation automatically on merge to main and the version plus stable docs on release tags
+        - Build the released version, stable and latest documentation automatically when `make publish` publishes a release
     - Bugfixes:
         - Exit with code 1 when unused code is found, so CI jobs and pre-commit hooks can fail.
         - Fix `--fix` leaving invalid or partially removed imports when unused names are deleted from parenthesized or multi-line import statements.
