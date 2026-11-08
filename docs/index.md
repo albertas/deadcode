@@ -28,6 +28,8 @@ Read the {doc}`known_limitations` page for the analyser's known limitations.
 
 Read the {doc}`release_notes` page for the release history.
 
+Read the {doc}`features` page for the checked map of README features to source files, tests, and minimum test cases.
+
 ```{toctree}
 :maxdepth: 2
 
@@ -39,4 +41,5 @@ pre_commit
 contributing
 known_limitations
 release_notes
+features
 ```

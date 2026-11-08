@@ -156,10 +156,10 @@ project/main.py:24:0: DC02 Function `on_startup` is never used
 project/main.py:29:0: DC02 Function `read_me` is never used
 project/main.py:33:0: DC01 Variable `UNUSED_SETTING` is never used
 project/main.py:36:0: DC02 Function `unused_handler` is never used
-project/models.py:5:4: DC01 Variable `name` is never used
-project/models.py:6:4: DC01 Variable `email` is never used
+project/models.py:5:4: DC06 Name `name` is never used
+project/models.py:6:4: DC06 Name `email` is never used
 project/models.py:9:0: DC03 Class `UnusedModel` is never used
-project/models.py:10:4: DC01 Variable `value` is never used
+project/models.py:10:4: DC06 Name `value` is never used
 project/routes/users.py:10:0: DC02 Function `read_user` is never used
 project/routes/users.py:15:0: DC02 Function `create_user` is never used
 project/routes/users.py:19:0: DC02 Function `dead_route_helper` is never used
