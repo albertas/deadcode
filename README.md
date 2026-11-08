@@ -13,12 +13,19 @@
 </p>
 
 
+<p align="center">
+<a href="https://deadcode.readthedocs.io/"><img src="https://img.shields.io/badge/docs-Read%20the%20Docs-blue?style=for-the-badge&logo=readthedocs&logoColor=white" alt="Documentation" height="40"></a>
+</p>
+
 ## Installation
 ```shell
 pip install deadcode
 ```
 
 ## Usage
+
+**Full documentation:** [deadcode.readthedocs.io](https://deadcode.readthedocs.io/) covers installation, the command line reference, rules, and the FastAPI guide.
+
 To see unused code findings:
 ```shell
 deadcode .
