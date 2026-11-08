@@ -206,7 +206,6 @@ class TestNoqaComments(BaseTestCase):
 
         self.assertEqual(unused_names, None)
 
-    @skip
     def test_unused_property(self):
         self.files = {
             'foo.py': b"""
@@ -214,6 +213,7 @@ class TestNoqaComments(BaseTestCase):
                     @property
                     def bar(self):  # noqa: DC08
                         return None
+                Foo()
                 """
         }
 
@@ -226,6 +226,7 @@ class TestNoqaComments(BaseTestCase):
                     @property
                     def bar(self):  # noqa: DC08
                         return None
+                Foo()
                 """
             }
         )
