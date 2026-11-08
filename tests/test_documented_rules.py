@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from deadcode.cli import main
+from deadcode.constants import ERROR_TYPE_TO_ERROR_CODE
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 README_PATH = REPOSITORY_ROOT / 'README.md'
@@ -76,3 +77,9 @@ def test_documented_rule_is_emitted(code, virtual_file_system):
 
 def test_rule_cases_match_readme_table():
     assert set(RULE_CASES) == documented_rule_codes()
+
+
+def test_every_error_code_is_unique():
+    error_codes = list(ERROR_TYPE_TO_ERROR_CODE.values())
+
+    assert len(set(error_codes)) == len(error_codes)

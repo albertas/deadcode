@@ -19,6 +19,7 @@ UnusedCodeType = Literal[
 
 
 UnusedCodeErrorCode = Literal[
+    'DC',
     'DC01',
     'DC02',
     'DC03',
@@ -46,6 +47,6 @@ ERROR_TYPE_TO_ERROR_CODE: dict[UnusedCodeType, UnusedCodeErrorCode] = {
     'unreachable_body': 'DC09',
     'unused_file': 'DC11',
     'commented_out_code': 'DC12',
-    'ignore_expression': 'DC13',
+    'ignore_expression': 'DC',
     'unreachable_code': 'DC13',
 }

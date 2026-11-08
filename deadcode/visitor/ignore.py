@@ -52,7 +52,7 @@ ERROR_CODES = {
     'unreachable_body': b'DC09',
     'empty_file': b'DC11',
     'commented_out_code': b'DC12',
-    'ignore_expression': b'DC13',
+    'ignore_expression': b'DC',
     'unreachable_code': b'DC13',
 }
 
