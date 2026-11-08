@@ -8,6 +8,7 @@
 <a href="https://pepy.tech/project/deadcode"><img alt="Downloads" src="https://static.pepy.tech/badge/deadcode"></a>
 <a href="https://github.com/albertas/deadcode/blob/main/LICENSE"><img alt="License: AGPLv3" src="https://raw.githubusercontent.com/albertas/deadcode/main/docs/_static/AGPLv3-license.svg"></a>
 <a href="https://codecov.io/gh/albertas/deadcode"><img alt="Coverage" src="https://codecov.io/gh/albertas/deadcode/branch/main/graph/badge.svg"></a>
+<a href="https://github.com/albertas/deadcode/actions/workflows/test.yml"><img alt="CI" src="https://github.com/albertas/deadcode/actions/workflows/test.yml/badge.svg?branch=main"></a>
 <br/><a href='https://ko-fi.com/V7V21681GD' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi3.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 </p>
 
@@ -285,6 +286,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - `--ignore-names-if-inherits-from` now ignores class names matching a base class
         - `--ignore-definitions` now reliably ignores function, method, property and nested class definitions; its limits are documented
         - Add a code coverage badge to the README, fed by the coverage report uploaded from CI
+        - Add a CI status badge for the test workflow to the README
         - Definitions decorated with `@abstractmethod` or `@override` are ignored by default (issue #40)
         - Implement DC06 unused names, DC09 unreachable bodies, DC12 commented-out code and DC13 unreachable code rules.
         - Enforce 100% line coverage of the `deadcode` package and keep every documented feature mapped to its source and tests.
