@@ -271,6 +271,9 @@ the public module-level names are exported.
         - The option help text and README document the accepted plain, dotted and glob base-name forms.
         - Render decorator names deterministically, including dotted names, and stop unusual decorators such as `@Class().function()` from crashing or producing memory addresses.
         - Stop reporting unittest lifecycle methods declared in test files as unused code (issue #21).
+        - Migrate the test suite from unittest.TestCase to pytest fixtures and plain asserts
+        - Add shared pytest fixtures for the virtual file system and default arguments
+        - Remove the obsolete unittest test helper and its linter configuration
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
