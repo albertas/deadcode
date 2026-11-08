@@ -120,14 +120,13 @@ Entries are glob patterns matched with `fnmatch.fnmatchcase`, so `*`, `?` and `[
 (`@app.*` matches `@app.route`). Matching is case-sensitive.
 Decorator call arguments are ignored, so `@app.route("/")` is matched as `@app.route`.
 Stacked decorators match when any one decorator matches.
-These options cover classes, functions, async functions, methods and properties; variables, attributes and imports are not covered.
-Imports and aliases are not resolved, so `@aliased.route` needs `@aliased.*` rather than `@app.*`.
-The same rules apply to all three decorated-with options.
-Definitions decorated with `@abstractmethod` or `@override` are always ignored, with no option needed (issue #40).
+All three decorated-with options behave the same way, covering classes, functions, async functions, methods and properties;
+variables, attributes and imports are not covered.
+Definitions decorated with `@abstractmethod` or `@override` are always ignored, with no option needed.
 The recognized spellings are `@abstractmethod`, `@abc.abstractmethod`, `@override`, `@typing.override` and `@typing_extensions.override`.
-This applies to every definition kind that renders decorator names (classes, functions, async functions, methods and properties),
-matches the decorator name only, and still analyses the decorated body for its own unused code.
-Imports and aliases are not resolved, so `from abc import abstractmethod as abstract` renders `@abstract` and is not ignored.
+The built-in markers match the decorator name only and, like the options, still analyse the decorated body for its own unused code.
+Imports and aliases are not resolved, so `@aliased.route` needs `@aliased.*` rather than `@app.*`, and
+`from abc import abstractmethod as abstract` renders `@abstract` and is not ignored.
 
 ```toml
 [tool.deadcode]
@@ -151,29 +150,11 @@ The status is independent of `--quiet`, `--count`, `--only`, `--dry`, and `--fix
 A `--fix` run exits `1` on the run that found items and `0` on a subsequent run
 over the cleaned tree.
 
-
-##### Glossory
+### Glossary
 - `name` - variable, function or class name.
 - `body` - code block which follows after `:` in function or class definition. A body ignore suppresses every definition inside the expression, including nested classes and functions.
 - `definition` - whole class or function definition expression including its name and body.
 
-
-## Rules
-| Code   | Name               | Message        |
-|--------|--------------------|----------------|
-| DC01  | unused-variable      | Variable `{name}` is never used
-| DC02  | unused-function      | Function `{name}` is never used
-| DC03  | unused-class         | Class `{name}` is never used
-| DC04  | unused-method        | Method `{name}` is never used
-| DC05  | unused-attribute     | Attribute `{name}` is never used
-| DC06  | unused-name          | Name `{name}` is never used
-| DC07  | unused-import        | Import `{name}` is never used
-| DC08  | unused-property      | Property `{name}` is never used
-| DC09  | unreachable-body     | Unreachable body of a conditional statement or loop
-| DC11  | empty-file           | Empty Python file
-| DC12  | commented-out-code   | Commented out code
-| DC13  | unreachable-code     | Code after terminal statement, e.g. `return`, `raise`, `continue`, `break`
-| DC    | ignore-expression    | Do not show any findings for an expression, which starts on current line (this code can only be used in `# noqa: DC` comments)
 
 ## Ignoring checks with noqa comments
 Inline `# noqa` comments can be used to ignore `deadcode` checks.
@@ -193,6 +174,23 @@ def foo():  # noqa: DC02
 ```
 
 A comment on the first decorator line is still accepted.
+
+### Rules
+| Code   | Name               | Message        |
+|--------|--------------------|----------------|
+| DC01  | unused-variable      | Variable `{name}` is never used
+| DC02  | unused-function      | Function `{name}` is never used
+| DC03  | unused-class         | Class `{name}` is never used
+| DC04  | unused-method        | Method `{name}` is never used
+| DC05  | unused-attribute     | Attribute `{name}` is never used
+| DC06  | unused-name          | Name `{name}` is never used
+| DC07  | unused-import        | Import `{name}` is never used
+| DC08  | unused-property      | Property `{name}` is never used
+| DC09  | unreachable-body     | Unreachable body of a conditional statement or loop
+| DC11  | empty-file           | Empty Python file
+| DC12  | commented-out-code   | Commented out code
+| DC13  | unreachable-code     | Code after terminal statement, e.g. `return`, `raise`, `continue`, `break`
+| DC    | ignore-expression    | Do not show any findings for an expression, which starts on current line (this code can only be used in `# noqa: DC` comments)
 
 ## Ignoring unittest lifecycle methods
 `unittest` lifecycle methods (`setUp`, `tearDown`, `setUpClass`, `tearDownClass`, `asyncSetUp`, `asyncTearDown`, `setUpModule`, `tearDownModule`) declared in test files are ignored by default, alongside the existing pytest hooks.
