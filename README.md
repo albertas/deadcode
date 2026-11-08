@@ -281,7 +281,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
 - [ ] Investigate ways of extracting and backporting Python3.10+ `ast` implementation to lower Python versions.
 
 ## Release notes
-- **v2.6.0**:
+- **v2.6.0** `2026-11-08`:
     - Features:
         - Add support for Python 3.13, 3.14 and 3.15.
         - Documentation is now published on Read the Docs at https://deadcode.readthedocs.io/.
