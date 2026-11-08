@@ -20,6 +20,7 @@ from deadcode.utils.nested_scopes import NestedScope
 
 from deadcode.visitor import noqa
 from deadcode.utils.print_ast import print_ast as show  # noqa: F401
+from deadcode.utils.print_safely import print_safely
 from deadcode.visitor import lines
 from deadcode.visitor.module_exports import collect_module_exports
 from deadcode.visitor.ignore import (
@@ -209,12 +210,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
     def _log(self, *args, file: TextIO | None = None, force: bool = False) -> None:  # type: ignore
         if self.verbose or force:
             file = file or sys.stdout
-            try:
-                print(*args, file=file)
-            except UnicodeEncodeError:
-                # Some terminals can't print Unicode symbols.
-                x = ' '.join(map(str, args))
-                print(x.encode('ascii', 'replace').decode('ascii'), file=file)
+            print_safely(' '.join(map(str, args)), file=file)
 
     def _add_aliases(self, node: ast.Import | ast.ImportFrom) -> None:
         """

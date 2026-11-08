@@ -2,6 +2,7 @@ import ast
 
 from deadcode.visitor.code_item import CodeItem
 from deadcode.constants import UnusedCodeType
+from deadcode.utils.print_safely import print_safely
 
 
 def _safe_eval(node: ast.AST, default: bool) -> bool:
@@ -77,7 +78,7 @@ class LoggingList(list):  # type: ignore
 
     def append(self, item: CodeItem) -> None:
         if self._verbose:
-            print(f'define {self.type_} "{item.name}"')
+            print_safely(f'define {self.type_} "{item.name}"')
         super().append(item)
 
 
@@ -89,5 +90,5 @@ class LoggingSet(set):  # type: ignore
 
     def add(self, name: str) -> None:
         if self._verbose:
-            print(f'use {self.type_} "{name}"')
+            print_safely(f'use {self.type_} "{name}"')
         super().add(name)
