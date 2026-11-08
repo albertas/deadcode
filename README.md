@@ -281,6 +281,7 @@ the public module-level names are exported.
         - The pre-commit guide explains that the encoding-safe output chain covers all CLI messages.
         - Split the Read the Docs README page into separate Installation, Usage, Rules, Contributing, Known limitations, and Release notes pages.
         - Fix `ignore-names-if-inherits-from` having no effect when set in `pyproject.toml`; its accepted base-class forms and class-name-only scope are now documented (issue #25)
+        - A scalar string in `pyproject.toml` is now honoured as one pattern instead of being split into characters
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
