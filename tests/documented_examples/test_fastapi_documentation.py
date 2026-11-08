@@ -8,7 +8,7 @@ import pytest
 from deadcode.cli import main
 from test_fastapi import DOCUMENTED_CONFIGURATION
 
-REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 FASTAPI_DOCUMENTATION_PATH = REPOSITORY_ROOT / 'docs' / 'fastapi.md'
 FIXTURE_DIRECTORY = REPOSITORY_ROOT / 'tests' / 'files' / 'fastapi'
 

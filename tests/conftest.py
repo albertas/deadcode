@@ -100,3 +100,9 @@ def virtual_file_system(monkeypatch: pytest.MonkeyPatch) -> VirtualFileSystem:
 @pytest.fixture()
 def arguments() -> Args:
     return Args()
+
+
+@pytest.fixture()
+def project_directory(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    monkeypatch.chdir(tmp_path)
+    return tmp_path

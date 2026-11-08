@@ -2,7 +2,7 @@ import re
 
 from pathlib import Path
 
-README_PATH = Path(__file__).resolve().parents[1] / 'README.md'
+README_PATH = Path(__file__).resolve().parents[2] / 'README.md'
 
 CODECOV_LINK = 'https://codecov.io/gh/albertas/deadcode'
 CODECOV_IMAGE = 'https://codecov.io/gh/albertas/deadcode/branch/main/graph/badge.svg'

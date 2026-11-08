@@ -1,7 +1,7 @@
 # Features
 
 This page maps every behaviour that the README advertises to the source code that implements it and to the pytest files that cover it.
-The map is a contract: `tests/test_documented_features.py` parses the table below and fails when a documented option, rule, feature, source
+The map is a contract: `tests/documented_examples/test_documented_features.py` parses the table below and fails when a documented option, rule, feature, source
 path, or test path disappears, when a feature name is duplicated, when a cell is empty, or when a row has fewer than its declared minimum
 number of test cases.
 
@@ -16,7 +16,7 @@ for every row.
 
 | Feature | README | Source | Tests | Minimum test cases |
 |---|---|---|---|---|
-| Detection and usage examples | `## Usage` | `deadcode/cli.py`, `deadcode/actions/find_unused_names.py` | `tests/test_deadcode.py`, `tests/test_output.py` | 3 |
+| Detection and usage examples | `## Usage` | `deadcode/cli.py`, `deadcode/actions/find_unused_names.py` | `tests/cli/test_deadcode.py`, `tests/cli/test_output.py` | 3 |
 | `--fix` | `## Command line options` | `deadcode/actions/fix_or_show_unused_code.py` | `tests/cli_args/test_fix.py`, `tests/fix/test_assign.py` | 3 |
 | `--dry` | `## Command line options` | `deadcode/actions/fix_or_show_unused_code.py`, `deadcode/actions/parse_arguments.py` | `tests/cli_args/test_dry.py` | 3 |
 | `--only` | `## Command line options` | `deadcode/actions/get_unused_names_error_message.py` | `tests/cli_args/test_only.py` | 3 |
@@ -31,24 +31,24 @@ for every row.
 | `--ignore-definitions` | `## Command line options` | `deadcode/visitor/dead_code_visitor.py` | `tests/cli_args/test_ignore_definitions.py` | 3 |
 | `--ignore-definitions-if-inherits-from` | `## Command line options` | `deadcode/visitor/dead_code_visitor.py` | `tests/cli_args/test_ignore_definitions_if_inherits_from.py` | 3 |
 | `--ignore-definitions-if-decorated-with` | `## Command line options` | `deadcode/visitor/dead_code_visitor.py` | `tests/cli_args/test_ignore_definitions_if_decorated_with.py` | 3 |
-| `[tool.deadcode]` settings | `## Usage` | `deadcode/actions/parse_arguments.py` | `tests/cli_args/test_parsing.py`, `tests/test_decorator_pyproject_configuration.py` | 3 |
-| `--no-color` | `## Command line options` | `deadcode/utils/add_colors_to_diff.py` | `tests/cli_args/test_no_color.py`, `tests/test_output.py` | 3 |
+| `[tool.deadcode]` settings | `## Usage` | `deadcode/actions/parse_arguments.py` | `tests/cli_args/test_parsing.py`, `tests/configuration/test_decorator_pyproject_configuration.py` | 3 |
+| `--no-color` | `## Command line options` | `deadcode/utils/add_colors_to_diff.py` | `tests/cli_args/test_no_color.py`, `tests/cli/test_output.py` | 3 |
 | `--count` | `## Command line options` | `deadcode/actions/get_unused_names_error_message.py` | `tests/cli_args/test_count.py` | 3 |
 | `--quiet` | `## Command line options` | `deadcode/actions/get_unused_names_error_message.py` | `tests/cli_args/test_quiet.py` | 3 |
 | `-V` / `--version` | `## Command line options` | `deadcode/cli.py`, `deadcode/__init__.py` | `tests/cli_args/test_version.py` | 3 |
-| `-v` / `--verbose` | `## Command line options` | `deadcode/actions/find_python_filenames.py` | `tests/cli_args/test_verbose.py`, `tests/test_verbose_output_encoding.py` | 3 |
-| Decorator matching rules | `### Decorator matching` | `deadcode/visitor/utils.py`, `deadcode/visitor/dead_code_visitor.py` | `tests/cli_args/test_ignore_names_if_decorated_with.py`, `tests/test_ignore_interface_decorators.py` | 3 |
-| Exit status | `### Exit status` | `deadcode/cli.py` | `tests/test_cli_exit_status.py` | 3 |
-| Rules `DC01`-`DC09`, `DC11`-`DC13`, `DC` | `## Rules` | `deadcode/constants.py`, `deadcode/visitor/dead_code_visitor.py` | `tests/test_documented_rules.py`, `tests/noqa/test_noqa_comments.py` | 3 |
+| `-v` / `--verbose` | `## Command line options` | `deadcode/actions/find_python_filenames.py` | `tests/cli_args/test_verbose.py`, `tests/cli/test_verbose_output_encoding.py` | 3 |
+| Decorator matching rules | `### Decorator matching` | `deadcode/visitor/utils.py`, `deadcode/visitor/dead_code_visitor.py` | `tests/cli_args/test_ignore_names_if_decorated_with.py`, `tests/visitor/test_ignore_interface_decorators.py` | 3 |
+| Exit status | `### Exit status` | `deadcode/cli.py` | `tests/cli/test_cli_exit_status.py` | 3 |
+| Rules `DC01`-`DC09`, `DC11`-`DC13`, `DC` | `## Rules` | `deadcode/constants.py`, `deadcode/visitor/dead_code_visitor.py` | `tests/documented_examples/test_documented_rules.py`, `tests/noqa/test_noqa_comments.py` | 3 |
 | Per-rule fixing | `## Rules` | `deadcode/actions/remove_file_parts_from_content.py` | `tests/fix/test_unused_imports.py`, `tests/fix/test_assign.py` | 3 |
 | `# noqa` comments | `## Ignoring checks with noqa comments` | `deadcode/visitor/noqa.py` | `tests/noqa/test_noqa_comments.py` | 3 |
-| Unittest lifecycle methods | `## Ignoring unittest lifecycle methods` | `deadcode/visitor/ignore.py` | `tests/test_unittest_lifecycle_methods.py` | 3 |
-| FastAPI guide | `## Using deadcode on a FastAPI project` | `deadcode/actions/parse_arguments.py` | `tests/test_fastapi.py`, `tests/test_fastapi_documentation.py` | 3 |
-| Pre-commit hook | `## Pre-commit hook` | `.pre-commit-hooks.yaml` | `tests/test_pre_commit_hook_configuration.py` | 3 |
-| Wildcard imports and `__all__` | `## Known limitations` | `deadcode/visitor/module_exports.py` | `tests/test_wildcard_imports.py` | 3 |
-| Syntax-error files | `## Known limitations` | `deadcode/actions/parse_abstract_syntax_tree.py` | `tests/test_imports.py`, `tests/test_deadcode.py` | 3 |
-| Quoted annotations | `## Release notes` | `deadcode/visitor/utils.py` | `tests/test_imports.py` | 3 |
-| Coverage badge | badge block | `.github/workflows/test.yml` | `tests/test_documented_features.py` | 3 |
+| Unittest lifecycle methods | `## Ignoring unittest lifecycle methods` | `deadcode/visitor/ignore.py` | `tests/visitor/test_unittest_lifecycle_methods.py` | 3 |
+| FastAPI guide | `## Using deadcode on a FastAPI project` | `deadcode/actions/parse_arguments.py` | `tests/documented_examples/test_fastapi.py`, `tests/documented_examples/test_fastapi_documentation.py` | 3 |
+| Pre-commit hook | `## Pre-commit hook` | `.pre-commit-hooks.yaml` | `tests/documented_examples/test_pre_commit_hook_configuration.py` | 3 |
+| Wildcard imports and `__all__` | `## Known limitations` | `deadcode/visitor/module_exports.py` | `tests/visitor/test_wildcard_imports.py` | 3 |
+| Syntax-error files | `## Known limitations` | `deadcode/actions/parse_abstract_syntax_tree.py` | `tests/visitor/test_imports.py`, `tests/cli/test_deadcode.py` | 3 |
+| Quoted annotations | `## Release notes` | `deadcode/visitor/utils.py` | `tests/visitor/test_imports.py` | 3 |
+| Coverage badge | badge block | `.github/workflows/test.yml` | `tests/documented_examples/test_documented_features.py` | 3 |
 
 ## Not behaviour
 

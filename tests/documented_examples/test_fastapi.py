@@ -3,12 +3,10 @@ import shutil
 
 from pathlib import Path
 
-import pytest
-
 from deadcode.cli import main, print_main
 
-FIXTURE_DIRECTORY = Path(__file__).parent / 'files' / 'fastapi'
-FEATURES_FIXTURE_DIRECTORY = Path(__file__).parent / 'files' / 'fastapi_features'
+FIXTURE_DIRECTORY = Path(__file__).resolve().parents[1] / 'files' / 'fastapi'
+FEATURES_FIXTURE_DIRECTORY = Path(__file__).resolve().parents[1] / 'files' / 'fastapi_features'
 
 DOCUMENTED_CONFIGURATION = """[tool.deadcode]
 ignore-names-if-decorated-with = ["@app.*", "@router.*"]
@@ -36,12 +34,6 @@ def _findings(output: str | None) -> set[tuple[str, str, str]]:
         assert match is not None, line
         findings.add((match.group('path'), match.group('code'), match.group('name')))
     return findings
-
-
-@pytest.fixture()
-def project_directory(tmp_path, monkeypatch) -> Path:
-    monkeypatch.chdir(tmp_path)
-    return tmp_path
 
 
 def test_fastapi_fixture_without_configuration(project_directory: Path) -> None:

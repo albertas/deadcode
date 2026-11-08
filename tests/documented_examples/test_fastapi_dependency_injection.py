@@ -7,7 +7,7 @@ import pytest
 
 from deadcode.cli import main, print_main
 
-DEPENDENCY_INJECTION_FIXTURE_DIRECTORY = Path(__file__).parent / 'files' / 'fastapi_dependency_injection'
+DEPENDENCY_INJECTION_FIXTURE_DIRECTORY = Path(__file__).resolve().parents[1] / 'files' / 'fastapi_dependency_injection'
 
 DOCUMENTED_CONFIGURATION = """[tool.deadcode]
 ignore-names-if-decorated-with = ["@app.*", "@router.*"]

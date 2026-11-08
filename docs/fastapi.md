@@ -205,7 +205,7 @@ Function arguments are not treated as variables by deadcode, so injected paramet
 2. Keep registering dependencies through names, `Annotated`, or decorator arguments. All of those are visible to the parser.
 3. Leave provider bodies analysable. Unlike decorator-name suppression, dependency injection does not need to skip a whole definition.
 
-The separate suite in `tests/test_fastapi_dependency_injection.py` exercises function, async, generator, async generator, class, callable
+The separate suite in `tests/documented_examples/test_fastapi_dependency_injection.py` exercises function, async, generator, async generator, class, callable
 instance, `Annotated`, type-alias, `Security`, router-level, application-level, path-operation-level, `add_api_route`, override, `use_cache`,
 WebSocket, `Request`, `BackgroundTasks`, and HTTP security dependency forms. It asserts that the only reported name is the intentionally unused
 provider.

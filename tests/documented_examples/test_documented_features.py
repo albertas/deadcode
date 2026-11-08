@@ -5,7 +5,7 @@ from pathlib import Path
 from test_documented_options import documented_options
 from test_documented_rules import documented_rule_codes
 
-REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 FEATURES_PATH = REPOSITORY_ROOT / 'docs' / 'features.md'
 README_PATH = REPOSITORY_ROOT / 'README.md'
 

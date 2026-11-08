@@ -1,7 +1,5 @@
 from pathlib import Path
 
-import pytest
-
 from deadcode.cli import main, print_main
 
 NAMES_CONFIGURATION = '[tool.deadcode]\nexclude = [".venv"]\nignore-names-if-decorated-with = ["@app.route"]\n'
@@ -38,12 +36,6 @@ def get_customer():
 def write_project(directory: Path, configuration: str, source: str) -> None:
     (directory / 'pyproject.toml').write_text(configuration, encoding='utf-8')
     (directory / 'service.py').write_text(source, encoding='utf-8')
-
-
-@pytest.fixture()
-def project_directory(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    monkeypatch.chdir(tmp_path)
-    return tmp_path
 
 
 def test_ignore_names_if_decorated_with_from_pyproject_toml(project_directory: Path) -> None:
