@@ -17,6 +17,21 @@ def test_no_overlaping_parts():
     assert non_overlaping_file_parts == expected_result
 
 
+def test_part_included_in_already_merged_part_is_skipped():
+    # Having
+    overlaping_file_parts = [
+        (1, 2, 0, 1),
+        (1, 2, 0, 1),
+    ]
+    expected_result = [(1, 2, 0, 1)]
+
+    # When
+    non_overlaping_file_parts = merge_overlaping_file_parts(overlaping_file_parts)
+
+    # Then
+    assert non_overlaping_file_parts == expected_result
+
+
 def test_overlaping_lines():
     # Having
     overlaping_file_parts = [

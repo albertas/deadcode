@@ -6,7 +6,7 @@ import pytest
 from deadcode.cli import main
 from deadcode.constants import ERROR_TYPE_TO_ERROR_CODE
 
-REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 README_PATH = REPOSITORY_ROOT / 'README.md'
 
 RULE_CASES: dict[str, tuple[bytes, tuple[str, ...], tuple[str, ...]]] = {

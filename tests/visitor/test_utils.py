@@ -2,7 +2,12 @@ import ast
 
 import pytest
 
-from deadcode.visitor.utils import get_decorator_name
+from deadcode.visitor.utils import (
+    condition_is_always_false,
+    condition_is_always_true,
+    get_base_class_names,
+    get_decorator_name,
+)
 
 
 @pytest.mark.parametrize(
@@ -31,3 +36,37 @@ def test_get_decorator_name(source: str, expected_name: str) -> None:
 
     # Then
     assert get_decorator_name(decorator) == expected_name
+
+
+@pytest.mark.parametrize(
+    ('source', 'expected_true', 'expected_false'),
+    [
+        ('True and True', True, False),
+        ('True or False', True, False),
+        ('False and True', False, True),
+        ('False or False', False, True),
+    ],
+)
+def test_bool_operator_conditions_are_evaluated(source: str, expected_true: bool, expected_false: bool) -> None:
+    # Having
+    condition = ast.parse(source, mode='eval').body
+
+    # When
+    is_always_true = condition_is_always_true(condition)
+    is_always_false = condition_is_always_false(condition)
+
+    # Then
+    assert is_always_true is expected_true
+    assert is_always_false is expected_false
+
+
+@pytest.mark.parametrize('base', ['factory()', 'Generic[int]'])
+def test_get_base_class_names_returns_empty_list_for_non_name_bases(base: str) -> None:
+    # Having
+    node = ast.parse(f'class A({base}):\n    pass\n').body[0].bases[0]
+
+    # When
+    names = get_base_class_names(node)
+
+    # Then
+    assert names == []

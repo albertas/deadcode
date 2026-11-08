@@ -195,4 +195,4 @@ ignore_names = [
 exclude = ["tests", "docs", "docs/*"]
 
 [tool.pytest.ini_options]
-addopts = "--cov=. --no-cov-on-fail --cov-fail-under=88.0"
+addopts = "--cov=deadcode --no-cov-on-fail --cov-fail-under=100.0"

@@ -1,7 +1,5 @@
 from pathlib import Path
 
-import pytest
-
 from deadcode.cli import main
 
 
@@ -170,12 +168,6 @@ def test_ignored_class_body_is_still_reported_and_fixed(virtual_file_system):
         '\n'
         'Removed 3 unused code items!'
     )
-
-
-@pytest.fixture()
-def project_directory(tmp_path, monkeypatch) -> Path:
-    monkeypatch.chdir(tmp_path)
-    return tmp_path
 
 
 def test_configuration_in_pyproject_toml_ignores_base_class_names(project_directory: Path, virtual_file_system) -> None:
