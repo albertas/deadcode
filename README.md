@@ -169,6 +169,9 @@ wait for review. Do not commit feature changes directly to `main`; release
 commits are made by the maintainer on `main`.
 
 - `make check` - runs unit tests and other checks using virtual environment.
+- `make test` - runs the test suite in parallel with `pytest-xdist`, using one worker per logical CPU minus one.
+  Set `PYTEST_XDIST_WORKERS` to change the worker count (`make test PYTEST_XDIST_WORKERS=2`), or pass
+  `PYTEST_ME_PLEASE="-n 0"` to run serially.
 
 ## Rationale
 [ruff](https://pypi.org/project/ruff/) and
@@ -248,6 +251,7 @@ the public module-level names are exported.
         - Documentation is now published on Read the Docs at https://deadcode.readthedocs.io/.
         - Add `-V` as a short alias for `--version`.
         - Document the pre-commit hook setup and usage on a separate documentation page, including why a hook run differs from `deadcode .`.
+        - Run the test suite in parallel with `pytest-xdist`, using one worker per logical CPU minus one.
     - Bugfixes:
         - Fix `--fix` leaving invalid or partially removed imports when unused names are deleted from parenthesized or multi-line import statements.
         - Do not crash when the terminal cannot encode the success message.
