@@ -33,49 +33,15 @@ publish: .venv
 
 # Rebuild the released version, stable and latest documentation on Read the Docs.
 readthedocs:
-	@test -n "$(READTHEDOCS_API_TOKEN)" || { \
-		echo "readthedocs: set READTHEDOCS_API_TOKEN to a Read the Docs API token with build permissions" >&2; \
-		exit 1; \
-	}
-	@set -e; \
-	api="$(READTHEDOCS_API_URL)"; \
-	auth="Authorization: Token $(READTHEDOCS_API_TOKEN)"; \
-	request() { \
-		curl --fail-with-body --silent --show-error \
-			--header "$$auth" "$$@"; \
-		sleep 2; \
-	}; \
-	request --request POST "$$api/sync-versions/" >/dev/null; \
-	delay=2; \
-	for attempt in 1 2 3 4 5 6; do \
-		if request "$$api/versions/$(VERSION)/" >/dev/null 2>&1; then break; fi; \
-		if [ "$$attempt" -eq 6 ]; then \
-			echo "readthedocs: version $(VERSION) did not appear; check the Read the Docs Git integration" >&2; \
-			exit 1; \
-		fi; \
-		echo "readthedocs: waiting $${delay}s for version $(VERSION)" >&2; \
-		sleep "$$delay"; \
-		delay=$$((delay * 2)); \
-	done; \
-	if request "$$api/versions/$(VERSION)/" | grep -q '"active": true'; then \
-		request --request POST "$$api/versions/$(VERSION)/builds/" >/dev/null; \
-	else \
-		request --request PATCH --header 'Content-Type: application/json' \
-			--data '{"active": true}' "$$api/versions/$(VERSION)/" >/dev/null; \
-	fi; \
-	delay=2; \
-	for attempt in 1 2 3 4 5 6; do \
-		if request "$$api/versions/stable/" | grep -q "\"ref\": \"$(VERSION)\""; then break; fi; \
-		if [ "$$attempt" -eq 6 ]; then \
-			echo "readthedocs: stable does not point at $(VERSION)" >&2; \
-			exit 1; \
-		fi; \
-		sleep "$$delay"; \
-		delay=$$((delay * 2)); \
-	done; \
-	request --request POST "$$api/versions/stable/builds/" >/dev/null; \
-	request --request POST "$$api/versions/latest/builds/" >/dev/null; \
-	echo "readthedocs: triggered builds for $(VERSION), stable and latest"
+	@curl --fail-with-body --silent --show-error --request POST \
+		--header "Authorization: Token $(READTHEDOCS_API_TOKEN)" \
+		"$(READTHEDOCS_API_URL)/versions/$(VERSION)/builds/"
+	@curl --fail-with-body --silent --show-error --request POST \
+		--header "Authorization: Token $(READTHEDOCS_API_TOKEN)" \
+		"$(READTHEDOCS_API_URL)/versions/stable/builds/"
+	@curl --fail-with-body --silent --show-error --request POST \
+		--header "Authorization: Token $(READTHEDOCS_API_TOKEN)" \
+		"$(READTHEDOCS_API_URL)/versions/latest/builds/"
 
 test: .venv
 	.venv/bin/pytest -vv -n $(PYTEST_XDIST_WORKERS) $(PYTEST_ME_PLEASE)
