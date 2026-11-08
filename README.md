@@ -265,6 +265,7 @@ the public module-level names are exported.
         - The FastAPI guide now explains dependency injection and shows feature usage examples
         - --ignore-bodies-if-inherits-from and --ignore-definitions-if-inherits-from now recognize dotted base classes such as graphene.ObjectType and match their final component.
         - The option help text and README document the accepted plain, dotted and glob base-name forms.
+        - Render decorator names deterministically, including dotted names, and stop unusual decorators such as `@Class().function()` from crashing or producing memory addresses.
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
