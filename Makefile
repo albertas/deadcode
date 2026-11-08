@@ -1,9 +1,10 @@
-.PHONY: compile publish check fix lint fixlint format mypy deadcode audit test pre-commit hook-test
+.PHONY: compile publish check fix lint fixlint format mypy deadcode audit test coverage-new pre-commit hook-test
 
 check: test lint mypy deadcode
 fix: format fixlint
 
 PYTHON_VERSION ?= 3.10
+BASE_BRANCH ?= origin/main
 PYTEST_XDIST_WORKERS ?= $(shell .venv/bin/python -c 'import os; print(max(1, (os.cpu_count() or 2) - 1))')
 
 .venv:
@@ -24,6 +25,20 @@ publish: .venv
 
 test: .venv
 	.venv/bin/pytest -vv -n $(PYTEST_XDIST_WORKERS) $(PYTEST_ME_PLEASE)
+
+# Require 100% coverage for every line added or changed against the base branch.
+coverage-new: test
+	set -e; \
+	merge_base=$$(git merge-base "$(BASE_BRANCH)" HEAD) || { \
+		echo "coverage-new: $(BASE_BRANCH) is not available; fetch it first" >&2; \
+		exit 1; \
+	}; \
+	git ls-files -z --others --exclude-standard -- deadcode | xargs -0 -r git add -N --; \
+	diff_file=$$(mktemp); \
+	trap 'rm -f "$$diff_file"' EXIT; \
+	git diff "$$merge_base" > "$$diff_file"; \
+	.venv/bin/python -m coverage xml --include='deadcode/*' -o coverage-new.xml; \
+	.venv/bin/diff-cover coverage-new.xml --diff-file "$$diff_file" --fail-under=100
 
 pre-commit: .venv
 	.venv/bin/pre-commit run --all-files
