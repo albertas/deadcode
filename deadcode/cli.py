@@ -17,10 +17,16 @@ class RunResult(NamedTuple):
     exit_status: int
 
 
+VERSION_OPTIONS = ('--version', '-V')
+
+
 def run(
     command_line_args: list[str] | None = None,
 ) -> RunResult:
-    if command_line_args and '--version' in command_line_args or '--version' in sys.argv:
+    version_requested = any(option in sys.argv for option in VERSION_OPTIONS) or (
+        command_line_args is not None and any(option in command_line_args for option in VERSION_OPTIONS)
+    )
+    if version_requested:
         return RunResult(__version__, 0)
 
     args = parse_arguments(command_line_args)

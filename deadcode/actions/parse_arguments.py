@@ -195,6 +195,7 @@ def parse_arguments(args: list[str] | None) -> Args:
         default=False,
     )
     parser.add_argument(
+        '-V',
         '--version',
         help='Shows deadcode version',
         action='store_true',
