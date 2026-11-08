@@ -191,7 +191,7 @@ pytest==9.0.3
     #   deadcode (pyproject.toml)
     #   pytest-cov
     #   pytest-xdist
-pytest-cov==5.0.0
+pytest-cov==7.1.0
     # via deadcode (pyproject.toml)
 pytest-xdist==3.8.0
     # via deadcode (pyproject.toml)
