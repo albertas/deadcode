@@ -158,6 +158,10 @@ def foo():  # noqa: DC02
 
 A comment on the first decorator line is still accepted.
 
+## Ignoring unittest lifecycle methods
+`unittest` lifecycle methods (`setUp`, `tearDown`, `setUpClass`, `tearDownClass`, `asyncSetUp`, `asyncTearDown`, `setUpModule`, `tearDownModule`) declared in test files are ignored by default, alongside the existing pytest hooks.
+Declarations with those names outside test files are still reported as unused code.
+
 ## Contributing
 
 Create a feature branch from `main`, open a pull request targeting `main`, and
@@ -266,6 +270,7 @@ the public module-level names are exported.
         - --ignore-bodies-if-inherits-from and --ignore-definitions-if-inherits-from now recognize dotted base classes such as graphene.ObjectType and match their final component.
         - The option help text and README document the accepted plain, dotted and glob base-name forms.
         - Render decorator names deterministically, including dotted names, and stop unusual decorators such as `@Class().function()` from crashing or producing memory addresses.
+        - Stop reporting unittest lifecycle methods declared in test files as unused code (issue #21).
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
