@@ -4,6 +4,7 @@ from deadcode.cli import main
 
 
 def test_unused_class_was_removed(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'ignore_names_by_pattern.py': b"""
                 class UnusedClass:
@@ -13,7 +14,10 @@ def test_unused_class_was_removed(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--fix'])
+
+    # Then
     assert unused_names == (
         'ignore_names_by_pattern.py:1:0: DC03 Class `UnusedClass` is never used\n\n' 'Removed 1 unused code item!'
     )
@@ -28,6 +32,7 @@ def test_unused_class_was_removed(virtual_file_system):
 
 
 def test_function_removal(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'ignore_names_by_pattern.py': b"""
                 def foo(bar: str = "Bar") -> str:
@@ -37,7 +42,10 @@ def test_function_removal(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--fix'])
+
+    # Then
     assert unused_names == (
         'ignore_names_by_pattern.py:1:0: DC02 Function `foo` is never used\n\n' 'Removed 1 unused code item!'
     )
@@ -55,6 +63,7 @@ def test_function_removal(virtual_file_system):
 
 
 def test_function_removal_in_the_middle(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'ignore_names_by_pattern.py': b"""
                 used_variable = "one"
@@ -67,7 +76,10 @@ def test_function_removal_in_the_middle(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--fix'])
+
+    # Then
     assert unused_names == (
         'ignore_names_by_pattern.py:3:0: DC02 Function `foo` is never used\n\n' 'Removed 1 unused code item!'
     )
@@ -85,6 +97,7 @@ def test_function_removal_in_the_middle(virtual_file_system):
 
 
 def test_function_removal_of_several_items(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'ignore_names_by_pattern.py': b"""
                 used_variable = "one"
@@ -99,7 +112,10 @@ def test_function_removal_of_several_items(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['ignore_names_by_pattern.py', '--no-color', '--fix'])
+
+    # Then
     assert unused_names == (
         'ignore_names_by_pattern.py:3:0: DC01 Variable `unused_variable` is never used\n'
         'ignore_names_by_pattern.py:5:0: DC02 Function `unused_function` is never used\n\n'
@@ -119,6 +135,7 @@ def test_function_removal_of_several_items(virtual_file_system):
 
 
 def test_empty_lines_are_removed_properly_indented(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                     name = "World"
@@ -158,8 +175,10 @@ def test_empty_lines_are_removed_properly_indented(virtual_file_system):
                 """
     }
 
+    # When
     main(['ignore_names_by_pattern.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -186,6 +205,7 @@ def test_empty_lines_are_removed_properly_indented(virtual_file_system):
 
 
 def test_empty_lines_are_removed_properly(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 NAME = "World"
@@ -219,8 +239,10 @@ def test_empty_lines_are_removed_properly(virtual_file_system):
                 """
     }
 
+    # When
     main(['ignore_names_by_pattern.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -246,6 +268,7 @@ def test_empty_lines_are_removed_properly(virtual_file_system):
 
 
 def test_empty_class_block(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
             class Example:
@@ -257,8 +280,10 @@ def test_empty_class_block(virtual_file_system):
             """
     }
 
+    # When
     main(['.', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -273,6 +298,7 @@ def test_empty_class_block(virtual_file_system):
 
 
 def test_empty_function_block(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
             def foo():
@@ -282,8 +308,10 @@ def test_empty_function_block(virtual_file_system):
             """
     }
 
+    # When
     main(['.', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -297,6 +325,7 @@ def test_empty_function_block(virtual_file_system):
 
 
 def test_empty_if_main_block(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
             import sys
@@ -306,9 +335,12 @@ def test_empty_if_main_block(virtual_file_system):
             """
     }
 
+    # When
     main(['.', '--fix'])
 
     # TODO: assertion still does not work, why there is a difference in the last line?
+
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -322,6 +354,7 @@ def test_empty_if_main_block(virtual_file_system):
 
 
 def test_empty_if_else_block(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
             if spam:
@@ -332,8 +365,10 @@ def test_empty_if_else_block(virtual_file_system):
             """
     }
 
+    # When
     main(['.', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -349,6 +384,7 @@ def test_empty_if_else_block(virtual_file_system):
 
 @pytest.mark.skip(reason='Skipped without a recorded reason before the pytest migration; behaviour preserved')
 def test_empty_if_statement_else_block(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
             if spam:
@@ -359,8 +395,10 @@ def test_empty_if_statement_else_block(virtual_file_system):
             """
     }
 
+    # When
     main(['.', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -374,6 +412,7 @@ def test_empty_if_statement_else_block(virtual_file_system):
 
 @pytest.mark.skip(reason='Skipped without a recorded reason before the pytest migration; behaviour preserved')
 def test_if_is_not_fixed_correctly_when_branch_is_unreachable(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
             if False:
@@ -384,8 +423,10 @@ def test_if_is_not_fixed_correctly_when_branch_is_unreachable(virtual_file_syste
             """
     }
 
+    # When
     main(['.', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -397,6 +438,7 @@ def test_if_is_not_fixed_correctly_when_branch_is_unreachable(virtual_file_syste
 
 
 def test_empty_with_block(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
             with open("tmp.txt") as f:
@@ -404,8 +446,10 @@ def test_empty_with_block(virtual_file_system):
             """
     }
 
+    # When
     main(['.', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -417,14 +461,17 @@ def test_empty_with_block(virtual_file_system):
 
 
 def test_empty_block_is_at_the_end_of_file():
+    # Having
     pass  # tested by test_empty_with_block
 
 
 def test_some_code_follows_empty_block():
+    # Having
     pass  # tested by test_empty_class_block
 
 
 def test_space_is_kept_after_whole_class_block_removal(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
             class Example:
@@ -436,8 +483,10 @@ def test_space_is_kept_after_whole_class_block_removal(virtual_file_system):
             """
     }
 
+    # When
     main(['.', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -452,6 +501,7 @@ def test_space_is_kept_after_whole_class_block_removal(virtual_file_system):
 
 
 def test_two_spaces_are_kept_after_whole_class_block_removal(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
             class Example:
@@ -464,8 +514,10 @@ def test_two_spaces_are_kept_after_whole_class_block_removal(virtual_file_system
             """
     }
 
+    # When
     main(['.', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -481,6 +533,7 @@ def test_two_spaces_are_kept_after_whole_class_block_removal(virtual_file_system
 
 
 def test_two_spaces_are_kept_after_one_method_removal(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
             class Example:
@@ -496,8 +549,10 @@ def test_two_spaces_are_kept_after_one_method_removal(virtual_file_system):
             """
     }
 
+    # When
     main(['.', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -514,6 +569,7 @@ def test_two_spaces_are_kept_after_one_method_removal(virtual_file_system):
 
 
 def test_assignment(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
             bar = 1
@@ -521,8 +577,10 @@ def test_assignment(virtual_file_system):
             """
     }
 
+    # When
     main(['.', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""

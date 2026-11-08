@@ -2,6 +2,7 @@ from deadcode.cli import main
 
 
 def test_issue_example_reports_name_excluded_by_all(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 __all__ = ['foo', 'bar']
@@ -18,11 +19,16 @@ def test_issue_example_reports_name_excluded_by_all(virtual_file_system):
                 print(spam)
             """,
     }
+
+    # When
     unused_names = main(['foo.py', 'bar.py', '--no-color'])
+
+    # Then
     assert unused_names == 'foo.py:5:0: DC01 Variable `spam` is never used'
 
 
 def test_name_exported_by_all_is_not_reported(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 __all__ = ['foo', 'bar']
@@ -37,11 +43,16 @@ def test_name_exported_by_all_is_not_reported(virtual_file_system):
                 print(bar)
             """,
     }
+
+    # When
     unused_names = main(['foo.py', 'bar.py', '--no-color'])
+
+    # Then
     assert unused_names is None
 
 
 def test_name_excluded_by_all_is_reported_for_variables_and_functions(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 __all__ = ['exported']
@@ -58,13 +69,18 @@ def test_name_excluded_by_all_is_reported_for_variables_and_functions(virtual_fi
                 print(exported)
             """,
     }
+
+    # When
     unused_names = main(['foo.py', 'bar.py', '--no-color'])
+
+    # Then
     assert unused_names == (
         'foo.py:3:0: DC01 Variable `hidden` is never used\n' 'foo.py:6:0: DC02 Function `hidden_function` is never used'
     )
 
 
 def test_wildcard_import_from_unanalysed_module_keeps_current_behaviour(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'bar.py': b"""
                 from external_module import *
@@ -72,11 +88,16 @@ def test_wildcard_import_from_unanalysed_module_keeps_current_behaviour(virtual_
                 print(anything)
             """,
     }
+
+    # When
     unused_names = main(['bar.py', '--no-color'])
+
+    # Then
     assert unused_names is None
 
 
 def test_wildcard_import_itself_is_not_reported(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 __all__ = ['foo']
@@ -85,11 +106,16 @@ def test_wildcard_import_itself_is_not_reported(virtual_file_system):
             """,
         'bar.py': b'from foo import *',
     }
+
+    # When
     unused_names = main(['foo.py', 'bar.py', '--no-color'])
+
+    # Then
     assert unused_names is None
 
 
 def test_attribute_access_still_suppresses_name_excluded_by_all(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 __all__ = ['foo']
@@ -103,11 +129,16 @@ def test_attribute_access_still_suppresses_name_excluded_by_all(virtual_file_sys
                 print(foo.spam)
             """,
     }
+
+    # When
     unused_names = main(['foo.py', 'bar.py', '--no-color'])
+
+    # Then
     assert unused_names is None
 
 
 def test_bare_name_used_in_defining_module_is_not_reported(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 __all__ = ['foo']
@@ -118,11 +149,16 @@ def test_bare_name_used_in_defining_module_is_not_reported(virtual_file_system):
             """,
         'bar.py': b'from foo import *',
     }
+
+    # When
     unused_names = main(['foo.py', 'bar.py', '--no-color'])
+
+    # Then
     assert unused_names is None
 
 
 def test_all_built_by_concatenation_does_not_restrict(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 base = ['foo']
@@ -140,11 +176,16 @@ def test_all_built_by_concatenation_does_not_restrict(virtual_file_system):
                 print(spam)
             """,
     }
+
+    # When
     unused_names = main(['foo.py', 'bar.py', '--no-color'])
+
+    # Then
     assert unused_names is None
 
 
 def test_all_augmented_assignment_does_not_restrict(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 __all__ = ['foo']
@@ -162,11 +203,16 @@ def test_all_augmented_assignment_does_not_restrict(virtual_file_system):
                 print(spam)
             """,
     }
+
+    # When
     unused_names = main(['foo.py', 'bar.py', '--no-color'])
+
+    # Then
     assert unused_names is None
 
 
 def test_all_comprehension_does_not_restrict(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 __all__ = [name for name in ['foo']]
@@ -181,11 +227,16 @@ def test_all_comprehension_does_not_restrict(virtual_file_system):
                 print(spam)
             """,
     }
+
+    # When
     unused_names = main(['foo.py', 'bar.py', '--no-color'])
+
+    # Then
     assert unused_names is None
 
 
 def test_non_string_all_element_does_not_restrict(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 name = 'foo'
@@ -201,11 +252,16 @@ def test_non_string_all_element_does_not_restrict(virtual_file_system):
                 print(spam)
             """,
     }
+
+    # When
     unused_names = main(['foo.py', 'bar.py', '--no-color'])
+
+    # Then
     assert unused_names is None
 
 
 def test_conditional_all_does_not_restrict(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 if True:
@@ -221,11 +277,16 @@ def test_conditional_all_does_not_restrict(virtual_file_system):
                 print(spam)
             """,
     }
+
+    # When
     unused_names = main(['foo.py', 'bar.py', '--no-color'])
-    assert unused_names is None
+
+    # Then
+    assert unused_names == 'foo.py:1:0: DC09 Redundant `if` condition'
 
 
 def test_explicitly_imported_name_is_used_despite_wildcard_import(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 __all__ = ['foo']
@@ -240,11 +301,16 @@ def test_explicitly_imported_name_is_used_despite_wildcard_import(virtual_file_s
                 print(_private)
             """,
     }
+
+    # When
     unused_names = main(['foo.py', 'bar.py', '--no-color'])
+
+    # Then
     assert unused_names is None
 
 
 def test_module_without_all_is_still_unrestricted(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 foo = 1
@@ -257,11 +323,16 @@ def test_module_without_all_is_still_unrestricted(virtual_file_system):
                 print(spam)
             """,
     }
+
+    # When
     unused_names = main(['foo.py', 'bar.py', '--no-color'])
+
+    # Then
     assert unused_names is None
 
 
 def test_private_function_excluded_from_wildcard_is_reported(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 def public_function(): ...
@@ -273,11 +344,16 @@ def test_private_function_excluded_from_wildcard_is_reported(virtual_file_system
                 public_function()
             """,
     }
+
+    # When
     unused_names = main(['foo.py', 'bar.py', '--no-color'])
+
+    # Then
     assert unused_names == 'foo.py:2:0: DC02 Function `_private_function` is never used'
 
 
 def test_public_function_used_only_through_wildcard_is_not_reported(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 def public_function(): ...
@@ -288,11 +364,16 @@ def test_public_function_used_only_through_wildcard_is_not_reported(virtual_file
                 public_function()
             """,
     }
+
+    # When
     unused_names = main(['foo.py', 'bar.py', '--no-color'])
+
+    # Then
     assert unused_names is None
 
 
 def test_empty_all_reports_every_other_name(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 __all__ = []
@@ -306,13 +387,18 @@ def test_empty_all_reports_every_other_name(virtual_file_system):
                 print(bar)
             """,
     }
+
+    # When
     unused_names = main(['foo.py', 'bar.py', '--no-color'])
+
+    # Then
     assert unused_names == (
         'foo.py:2:0: DC01 Variable `foo` is never used\n' 'foo.py:3:0: DC01 Variable `bar` is never used'
     )
 
 
 def test_names_not_defined_at_module_level_are_not_exported(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 def public_function():
@@ -325,11 +411,16 @@ def test_names_not_defined_at_module_level_are_not_exported(virtual_file_system)
                 public_function()
             """,
     }
+
+    # When
     unused_names = main(['foo.py', 'bar.py', '--no-color'])
+
+    # Then
     assert unused_names is None
 
 
 def test_attribute_access_still_suppresses_name_excluded_by_empty_all(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 __all__ = []
@@ -341,11 +432,16 @@ def test_attribute_access_still_suppresses_name_excluded_by_empty_all(virtual_fi
                 print(foo.spam)
             """,
     }
+
+    # When
     unused_names = main(['foo.py', 'bar.py', '--no-color'])
+
+    # Then
     assert unused_names is None
 
 
 def test_issue_example_still_reports_only_spam(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 __all__ = ['foo', 'bar']
@@ -362,5 +458,9 @@ def test_issue_example_still_reports_only_spam(virtual_file_system):
                 print(spam)
             """,
     }
+
+    # When
     unused_names = main(['foo.py', 'bar.py', '--no-color'])
+
+    # Then
     assert unused_names == 'foo.py:5:0: DC01 Variable `spam` is never used'

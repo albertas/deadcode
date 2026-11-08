@@ -2,6 +2,7 @@ from deadcode.cli import main
 
 
 def test_string_nodes_use_ast_constant(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'python314_string_nodes.py': b"""
                 exported_name = 'exported'
@@ -17,8 +18,10 @@ def test_string_nodes_use_ast_constant(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['python314_string_nodes.py', '--no-color'])
 
+    # Then
     assert unused_names == (
         'python314_string_nodes.py:8:0: DC01 Variable `old_format_result` is never used\n'
         'python314_string_nodes.py:9:0: DC01 Variable `getattr_result` is never used\n'

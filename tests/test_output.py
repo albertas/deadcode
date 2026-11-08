@@ -92,6 +92,7 @@ def test_quiet_option_variables_function_and_class(virtual_file_system):
 
 
 def test_colorful_output(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'tests/files/variables.py': b"""
                 unused_global_variable = True
@@ -100,8 +101,11 @@ def test_colorful_output(virtual_file_system):
                 THIS_ONE_IS_USED = "World"
                 print(THIS_ONE_IS_USED)"""
     }
+
+    # When
     unused_names = main(['tests/files/variables.py'])
 
+    # Then
     assert unused_names == (
         'tests/files/variables.py:1:0: \x1b[91mDC01\x1b[0m Variable '
         '`\x1b[1munused_global_variable\x1b[0m` is never used\n'
@@ -113,6 +117,7 @@ def test_colorful_output(virtual_file_system):
 
 
 def test_no_color_option(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'tests/files/variables.py': b"""
                 unused_global_variable = True
@@ -121,8 +126,11 @@ def test_no_color_option(virtual_file_system):
                 THIS_ONE_IS_USED = "World"
                 print(THIS_ONE_IS_USED)"""
     }
+
+    # When
     unused_names = main(['tests/files/variables.py', '--no-color'])
 
+    # Then
     assert unused_names == (
         'tests/files/variables.py:1:0: DC01 Variable `unused_global_variable` is never used\n'
         'tests/files/variables.py:2:0: DC01 Variable `ANOTHER_GLOBAL_VARIABLE` is never used\n'

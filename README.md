@@ -90,7 +90,7 @@ run the same hook while developing deadcode itself, use `make pre-commit`.
 |`--dry`                                    | -    | Show changes which would be made in files. |
 |`--only`                                   | list | Filenames (or path expressions), that will be reflected in the output (and modified if needed). |
 |`--exclude`                                | list | Filenames (or path expressions), which will be completely skipped without being analysed. |
-|`--ignore-names`                           | list | Removes provided list of names from the output. Regexp expressions to match multiple names can also be provided, e.g. `*Mixin` will match all classes ending with `Mixin`. |
+|`--ignore-names`                           | list | Removes provided list of names from the output. Glob expressions to match multiple names can also be provided, e.g. `*Mixin` will match all classes ending with `Mixin`. |
 |`--ignore-names-in-files`                  | list | Ignores unused names in files, which filenames match provided path expressions. |
 |`--ignore-names-if-inherits-from`          | list | Ignores names of classes which inherit from any of the provided class names. The class name may be a plain name, a dotted path such as `graphene.ObjectType`, or a glob such as `*.ObjectType`; a dotted base also matches its final component (`ObjectType`). Only the class name is suppressed; its members and body are controlled by `--ignore-bodies-if-inherits-from` and `--ignore-definitions-if-inherits-from`. |
 |`--ignore-names-if-decorated-with`         | list | Ignores names of an expression, which is decorated with one of the provided decorator names. |
@@ -161,7 +161,7 @@ over the cleaned tree.
 | DC06  | unused-name          | Name `{name}` is never used
 | DC07  | unused-import        | Import `{name}` is never used
 | DC08  | unused-property      | Property `{name}` is never used
-| DC09  | unreachable-if-block | Unreachable conditional statement block
+| DC09  | unreachable-body     | Unreachable body of a conditional statement or loop
 | DC11  | empty-file           | Empty Python file
 | DC12  | commented-out-code   | Commented out code
 | DC13  | unreachable-code     | Code after terminal statement, e.g. `return`, `raise`, `continue`, `break`
@@ -239,7 +239,9 @@ A checked entry is implemented on `main` and is included in the next release; pu
     - [ ] Allow to disable each check separately using:
         - [ ] inline comment.
         - [ ] pyproject.toml file
-- [ ] Add a check for code in comments.
+- [x] Add a check for code in comments.
+- [x] DC06: detect an unused name.
+- [x] DC09: report an unreachable body, e.g. an `if` or `while` block that cannot run.
 - [ ] Add target python version option, if specified it will be used for code base check.
 - [ ] Add a `--depth` parameter to ignore nested code.. (To only check global scope use 0).
 - [ ] Add options:
@@ -255,13 +257,13 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - What expression would allow this type of precission?
 - [ ] Distinguish between definitions with same name, but different files.
 - [ ] Repeated application of `deadcode` till the output stops changing.
-- [ ] Unreachable code detection and fixing: this should only be scoped for if statements and only limited to primitive variables.
+- [x] Unreachable code detection and fixing: this should only be scoped for if statements and only limited to primitive variables.
 - [ ] Benchmarking performance with larger projects (time, CPU and memory consumption) in order to optimize.
 - [ ] `--fix` could accept a list of filenames as well (only those files would be changed, but the summary could would be full).
     (This might be confusing, because filenames, which have to be considered are provided without any flag, --fix is expected to not accept arguments)
 - [ ] pre-commit-hook.
 - [ ] language server.
-- [ ] DC10: remove code after terminal statements like `raise`, `return`, `break`, `continue` and comes in the same scope.
+- [x] DC13: remove code after terminal statements like `raise`, `return`, `break`, `continue` and comes in the same scope.
 - [ ] Add `ignore` and `per-file-ignores` command line and pyproject.toml options, which allows to skip some rules.
 - [ ] Make sure that all rules are being skipped by `noqa` comment and all rules react to `noqa: rule_id` comments.
 - [ ] Include package names into code item scope (dot-separated path), e.g. "package1.package2.module.class.method.variable".
@@ -284,6 +286,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - `--ignore-definitions` now reliably ignores function, method, property and nested class definitions; its limits are documented
         - Add a code coverage badge to the README, fed by the coverage report uploaded from CI
         - Definitions decorated with `@abstractmethod` or `@override` are ignored by default (issue #40)
+        - Implement DC06 unused names, DC09 unreachable bodies, DC12 commented-out code and DC13 unreachable code rules.
     - Bugfixes:
         - Exit with code 1 when unused code is found, so CI jobs and pre-commit hooks can fail.
         - Fix `--fix` leaving invalid or partially removed imports when unused names are deleted from parenthesized or multi-line import statements.
@@ -306,6 +309,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - Fix `ignore-names-if-inherits-from` having no effect when set in `pyproject.toml`; its accepted base-class forms and class-name-only scope are now documented (issue #25)
         - A scalar string in `pyproject.toml` is now honoured as one pattern instead of being split into characters
         - Names referenced from quoted type annotations (forward references) are no longer reported as unused imports.
+        - Fix `--no-color` leaving colour codes in the success banner; Make `--count` count only findings reflected by `--only`; Make `--verbose` print INFO messages about ignored and scanned files
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.

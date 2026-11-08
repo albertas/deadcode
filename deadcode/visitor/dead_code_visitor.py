@@ -1,9 +1,11 @@
 import ast
 from itertools import chain
+import io
 import os
 import re
 import string
 import sys
+import tokenize
 from logging import getLogger
 
 from pathlib import Path
@@ -52,7 +54,6 @@ class DeadCodeVisitor(ast.NodeVisitor):
         self.ignore_decorators: list[str] = []
 
         verbose = False
-        # verbose = args.verbose
         self.verbose = verbose
 
         self.defined_attrs: list[CodeItem] = LoggingList('attribute', verbose)
@@ -62,8 +63,11 @@ class DeadCodeVisitor(ast.NodeVisitor):
         self.defined_methods: list[CodeItem] = LoggingList('method', verbose)
         self.defined_props: list[CodeItem] = LoggingList('property', verbose)
         self.defined_vars: list[CodeItem] = LoggingList('variable', verbose)
+        self.defined_names: list[CodeItem] = LoggingList('name', verbose)
         self.unused_file: list[CodeItem] = LoggingList('unused_file', verbose)
+        self.unreachable_body: list[CodeItem] = LoggingList('unreachable_body', verbose)
         self.unreachable_code: list[CodeItem] = LoggingList('unreachable_code', verbose)
+        self.commented_out_code: list[CodeItem] = LoggingList('commented_out_code', verbose)
 
         self.used_names: set[str] = LoggingSet('name', self.verbose)
 
@@ -75,6 +79,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
         self.filename = Path()
         self.code: list[str] = []
+        self.scope_kinds: list[str] = []
 
         # Note: scope is a stack containing current module name, class names, function names
         self.scope_parts: list[str] = []
@@ -152,6 +157,8 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
                     node = parse_abstract_syntax_tree(file_content, args=self.args, filename=file_path)
                     self.filename = Path(file_path)
+                    self.code = file_content.decode('utf-8', errors='replace').splitlines()
+                    self._collect_commented_out_code(file_content)
                     self.visit(node)
                 else:
                     self.unused_file.append(
@@ -176,7 +183,10 @@ class DeadCodeVisitor(ast.NodeVisitor):
             self.unused_methods,
             self.unused_props,
             self.unused_vars,
-            # self.unreachable_code,  # TODO: removal of unreachable_code has a lot of edge cases
+            self.unused_names,
+            self.unreachable_body,
+            self.unreachable_code,
+            self.commented_out_code,
             self.unused_file,
         )
 
@@ -210,6 +220,10 @@ class DeadCodeVisitor(ast.NodeVisitor):
     def unused_attrs(self) -> Iterable[CodeItem]:
         return _get_unused_items(self.defined_attrs, self.used_names, is_used=self._is_item_used)
 
+    @property
+    def unused_names(self) -> Iterable[CodeItem]:
+        return _get_unused_items(self.defined_names, self.used_names, is_used=self._is_item_used)
+
     def _log(self, *args, file: TextIO | None = None, force: bool = False) -> None:  # type: ignore
         if self.verbose or force:
             file = file or sys.stdout
@@ -237,40 +251,122 @@ class DeadCodeVisitor(ast.NodeVisitor):
             if alias is not None:
                 self.add_used_name(name_and_alias.name)
 
+    def _collect_commented_out_code(self, file_content: bytes) -> None:
+        """Collect comments whose text parses as Python code."""
+        try:
+            tokens = list(tokenize.tokenize(io.BytesIO(file_content).readline))
+        except (tokenize.TokenError, IndentationError):
+            return
+        for token in tokens:
+            if token.type != tokenize.COMMENT:
+                continue
+            comment_text = token.string[1:]
+            code_text = re.sub(r'#\s*noqa.*$', '', comment_text, flags=re.IGNORECASE).strip()
+            if not self._is_commented_out_code(code_text):
+                continue
+            lineno, column = token.start
+            if noqa.ignore_line(self.noqa_lines, lineno, ERROR_CODES['commented_out_code']):
+                continue
+            line = file_content.splitlines(keepends=True)[lineno - 1]
+            prefix = line.decode('utf-8', errors='replace')[:column]
+            comment_byte_end = len(prefix.encode('utf-8')) + len(token.string.encode('utf-8'))
+            removal_start = len(prefix.rstrip().encode('utf-8'))
+            self.commented_out_code.append(
+                CodeItem(
+                    name=code_text,
+                    type_='commented_out_code',
+                    filename=self.filename,
+                    code_parts=[Part(lineno, lineno, removal_start, comment_byte_end)],
+                    name_line=lineno,
+                    name_column=column,
+                    message='Commented out code',
+                )
+            )
+
+    @staticmethod
+    def _is_commented_out_code(code_text: str) -> bool:
+        """Return True when a comment text looks like a Python expression or statement."""
+        statement_keywords = (
+            'import ',
+            'from ',
+            'def ',
+            'class ',
+            'return',
+            'raise',
+            'break',
+            'continue',
+            'pass',
+            'if ',
+            'for ',
+            'while ',
+            'with ',
+            'try:',
+            'except',
+            'elif ',
+            'else:',
+        )
+        has_code_marker = any(marker in code_text for marker in ('(', '=', '[', '{'))
+        if not has_code_marker and not code_text.startswith(statement_keywords):
+            return False
+        try:
+            expression = ast.parse(code_text, mode='eval')
+        except SyntaxError:
+            expression = None
+        if expression is not None and not isinstance(expression.body, (ast.Constant, ast.Name)):
+            return True
+        try:
+            module = ast.parse(code_text)
+        except SyntaxError:
+            return False
+        return any(
+            not isinstance(node, ast.Expr) or not isinstance(node.value, (ast.Constant, ast.Name))
+            for node in module.body
+        )
+
     def _handle_conditional_node(self, node: ast.If | ast.IfExp | ast.While, name: str) -> None:
         if utils.condition_is_always_false(node.test):
             self._define(
-                self.unreachable_code,
+                self.unreachable_body,
                 name,
                 node,
                 last_node=node.body if isinstance(node, ast.IfExp) else node.body[-1],
                 message=f'Unsatisfiable `{name}` condition',
+                removal_node=node,
             )
         elif utils.condition_is_always_true(node.test):
             else_body = node.orelse
             if name == 'ternary':
                 self._define(
-                    self.unreachable_code,
+                    self.unreachable_body,
                     name,
                     else_body,  # type: ignore
                     message='Unreachable `else` expression',
                 )
             elif else_body:
                 self._define(
-                    self.unreachable_code,
+                    self.unreachable_body,
                     'else',
                     else_body[0],  # type: ignore
                     last_node=else_body[-1],  # type: ignore
                     message='Unreachable `else` block',
+                    ignore_linenos=self._get_else_linenos(node, else_body[0]),  # type: ignore
                 )
             elif name == 'if':
                 # Redundant if-condition without else block.
                 self._define(
-                    self.unreachable_code,
+                    self.unreachable_body,
                     name,
                     node,
                     message='Redundant `if` condition',
+                    removal_node=node,
                 )
+
+    def _get_else_linenos(self, node: ast.If | ast.IfExp | ast.While, first_else_node: ast.AST) -> tuple[int, ...]:
+        """Return line numbers of the `else` keyword preceding the first else statement."""
+        for lineno in range(first_else_node.lineno - 1, node.lineno, -1):
+            if 0 < lineno <= len(self.code) and self.code[lineno - 1].strip().startswith('else:'):
+                return (lineno,)
+        return ()
 
     def _define(
         self,
@@ -283,6 +379,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
         *,
         decorator_names: Iterable[str] = (),
         removal_node: ast.AST | None = None,
+        ignore_linenos: Iterable[int] = (),
     ) -> None:
         def ignored(linenos: Iterable[int], type_: UnusedCodeType) -> bool:
             return bool(
@@ -331,7 +428,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
         self.scopes.add(code_item)
 
-        if ignored((first_lineno, name_line), type_=type_):
+        if ignored((first_lineno, name_line, *ignore_linenos), type_=type_):
             self._log(f'Ignoring {type_} "{name}"')
         else:
             collection.append(code_item)
@@ -354,8 +451,9 @@ class DeadCodeVisitor(ast.NodeVisitor):
         return None
 
     def _define_variable(self, name: str, node: ast.AST) -> None:
+        collection = self.defined_names if self.scope_kinds and self.scope_kinds[-1] == 'class' else self.defined_vars
         self._define(
-            self.defined_vars,
+            collection,
             name,
             node,
             ignore=_ignore_variable,
@@ -403,7 +501,6 @@ class DeadCodeVisitor(ast.NodeVisitor):
                 self.add_used_name(attr_name_arg.value)
 
         # Parse variable names in new format strings:
-        # "{my_var}".format(**locals())
         if (
             isinstance(node.func, ast.Attribute)
             and isinstance(node.func.value, ast.Constant)
@@ -540,7 +637,6 @@ class DeadCodeVisitor(ast.NodeVisitor):
     def visit_While(self, node: ast.While) -> None:
         self._handle_conditional_node(node, 'while')
 
-    # def visit_MatchClass(self, node: ast.MatchClass) -> None:  # type: ignore
     def visit_MatchClass(self, node) -> None:  # type: ignore
         for kwd_attr in node.kwd_attrs:
             self.add_used_name(kwd_attr)
@@ -588,8 +684,10 @@ class DeadCodeVisitor(ast.NodeVisitor):
         was_scope_increased = True
         if isinstance(node, ast.ClassDef):
             self.scope_parts.append(node.name)
+            self.scope_kinds.append('class')
         elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             self.scope_parts.append(node.name)
+            self.scope_kinds.append('function')
         else:
             was_scope_increased = False
 
@@ -619,7 +717,6 @@ class DeadCodeVisitor(ast.NodeVisitor):
             self.visit(ast.parse(type_comment, filename='<type_comment>', mode=mode))
 
         ###########
-        # """Called if no explicit visitor function exists for a node."""
         # TODO: for assignment statements unused_code unit should be whole assignment statement instead of a name itself
         # Note: Node is None if file is empty, contains only a docstring, a comment or has a SyntaxError.
         pushed_assignment_node: ast.Assign | ast.AnnAssign | ast.AugAssign | None = None
@@ -647,6 +744,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
         # TODO: use decorator for this code chunk
         if was_scope_increased:
             self.scope_parts.pop()
+            self.scope_kinds.pop()
 
     def _handle_ast_list(self, ast_list: list[ast.AST]) -> None:
         """

@@ -2,8 +2,10 @@ from deadcode.cli import main
 
 
 def test_unused_variable_name_found_successfully():
+    # When
     unused_names = main(['tests/files/variables.py', '--no-color'])
 
+    # Then
     assert unused_names == (
         'tests/files/variables.py:1:0: DC01 Variable `unused_global_variable` is never used\n'
         'tests/files/variables.py:3:0: DC01 Variable `ANOTHER_GLOBAL_VARIABLE` is never used\n'
@@ -12,20 +14,26 @@ def test_unused_variable_name_found_successfully():
 
 
 def test_unused_function_name_found():
+    # When
     unused_names = main(['tests/files/functions.py', '--no-color'])
 
+    # Then
     assert unused_names == (
         'tests/files/functions.py:1:0: DC02 Function `unused_function` is never used\n'
         'tests/files/functions.py:13:0: DC02 Function `another_unused_function` is never used\n'
-        'tests/files/functions.py:14:4: DC02 Function `this_is_unused_closure` is never used'
+        'tests/files/functions.py:14:4: DC02 Function `this_is_unused_closure` is never used\n'
+        'tests/files/functions.py:21:0: DC12 Commented out code'
     )
 
 
 def test_unused_class_name_found():
+    # When
     unused_names = main(['tests/files/classes.py', '--no-color'])
 
     # TODO: Scope of a variable in the output would be really helpful (class name, function)
     # - dotted notation would suite perfectly
+
+    # Then
     assert unused_names == (
         'tests/files/classes.py:1:0: DC03 Class `UnusedClass` is never used\n'
         'tests/files/classes.py:13:0: DC03 Class `AnotherUnusedClass` is never used'
@@ -33,6 +41,7 @@ def test_unused_class_name_found():
 
 
 def test_run_dead_code_finder_with_a_subprocess_in_a_right_directory_main():
+    # When
     unused_names = main(
         [
             'tests/files/variables.py',
@@ -40,6 +49,8 @@ def test_run_dead_code_finder_with_a_subprocess_in_a_right_directory_main():
             '--no-color',
         ]
     )
+
+    # Then
     assert unused_names == (
         'tests/files/variables.py:1:0: DC01 Variable `unused_global_variable` is never used\n'
         'tests/files/variables.py:3:0: DC01 Variable `ANOTHER_GLOBAL_VARIABLE` is never used\n'
@@ -48,7 +59,11 @@ def test_run_dead_code_finder_with_a_subprocess_in_a_right_directory_main():
 
 
 def test_invalid_python_file_found(virtual_file_system):
+    # Having
     virtual_file_system.files = {'tests/files/invalid_file.py': b"""This is invalid python file content."""}
+
+    # When
     unused_names = main(['tests/files/invalid_file.py', '--no-color'])
 
+    # Then
     assert unused_names is None

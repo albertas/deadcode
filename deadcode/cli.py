@@ -1,4 +1,5 @@
 from typing import NamedTuple
+import logging
 import sys
 
 from deadcode import __version__
@@ -30,6 +31,8 @@ def run(
         return RunResult(__version__, 0)
 
     args = parse_arguments(command_line_args)
+    if args.verbose:
+        logging.basicConfig(level=logging.INFO)
 
     filenames = find_python_filenames(args=args)
 
@@ -44,7 +47,7 @@ def run(
         return RunResult(error_message + ('\n\n' + file_diff if file_diff else ''), 1)
 
     if not args.count and not args.quiet:
-        print_safely('\033[1mWell done!\033[0m ✨ 🚀 ✨')
+        print_safely('Well done! ✨ 🚀 ✨' if args.no_color else '\033[1mWell done!\033[0m ✨ 🚀 ✨')
     return RunResult(None, 0)
 
 

@@ -13,6 +13,8 @@ pytestmark = pytest.mark.skip(
 
 def test_same_variable_name_is_used_for_two_different_classes(virtual_file_system):
     """Usage of the class methods should be tracked properly."""
+
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class Foo:
@@ -32,13 +34,17 @@ def test_same_variable_name_is_used_for_two_different_classes(virtual_file_syste
                 """
     }
 
+    # When
     main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files({})
 
 
 def test_instance_is_being_passed_into_a_function(virtual_file_system):
     """Usage of the class methods should be tracked properly."""
+
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class Foo:
@@ -52,12 +58,15 @@ def test_instance_is_being_passed_into_a_function(virtual_file_system):
                 """
     }
 
+    # When
     main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files({})
 
 
 def test_instance_is_being_passed_into_a_function_using_args(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class Foo:
@@ -72,12 +81,15 @@ def test_instance_is_being_passed_into_a_function_using_args(virtual_file_system
                 """
     }
 
+    # When
     main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files({})
 
 
 def test_instance_is_being_passed_into_a_function_using_kwargs(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class Foo:
@@ -92,12 +104,15 @@ def test_instance_is_being_passed_into_a_function_using_kwargs(virtual_file_syst
                 """
     }
 
+    # When
     main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files({})
 
 
 def test_instance_is_being_passed_into_a_method_using_kwargs(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class Foo:
@@ -113,12 +128,15 @@ def test_instance_is_being_passed_into_a_method_using_kwargs(virtual_file_system
                 """
     }
 
+    # When
     main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files({})
 
 
 def test_instance_is_being_passed_into_a_class_method_using_kwargs(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class Foo:
@@ -135,12 +153,15 @@ def test_instance_is_being_passed_into_a_class_method_using_kwargs(virtual_file_
                 """
     }
 
+    # When
     main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files({})
 
 
 def test_instance_is_being_passed_into_a_static_method_using_kwargs(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class Foo:
@@ -157,12 +178,15 @@ def test_instance_is_being_passed_into_a_static_method_using_kwargs(virtual_file
                 """
     }
 
+    # When
     main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files({})
 
 
 def test_instance_is_being_imported(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class Foo:
@@ -175,12 +199,15 @@ def test_instance_is_being_imported(virtual_file_system):
                 """,
     }
 
+    # When
     main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files({})
 
 
 def test_instance_is_being_imported_with_renaming(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class Foo:
@@ -193,12 +220,15 @@ def test_instance_is_being_imported_with_renaming(virtual_file_system):
                 """,
     }
 
+    # When
     main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files({})
 
 
 def test_variable_renaming(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class Foo:
@@ -211,12 +241,15 @@ def test_variable_renaming(virtual_file_system):
                 """
     }
 
+    # When
     main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files({})
 
 
 def test_variable_renaming_using_expansion_from_a_list(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class Foo:
@@ -229,12 +262,15 @@ def test_variable_renaming_using_expansion_from_a_list(virtual_file_system):
                 """,
     }
 
+    # When
     main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files({})
 
 
 def test_function_arguments_are_being_passed_using_partial_instead_of_direct_call(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class Foo:
@@ -251,6 +287,8 @@ def test_function_arguments_are_being_passed_using_partial_instead_of_direct_cal
                 """
     }
 
+    # When
     main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files({})

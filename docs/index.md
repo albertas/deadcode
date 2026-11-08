@@ -15,7 +15,7 @@ Read the {doc}`installation` page to install deadcode.
 
 Read the {doc}`usage` page for usage examples, command line options, exit status, and the glossary.
 
-Read the {doc}`rules` page for the DC01-DC13 checks and for ignoring findings with `# noqa` comments.
+Read the {doc}`rules` page for the implemented rules and for ignoring findings with `# noqa` comments.
 
 Read the {doc}`fastapi` page for running deadcode on a FastAPI project, including common use cases, dependency injection, and a complete
 example application.

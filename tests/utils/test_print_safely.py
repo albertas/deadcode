@@ -47,45 +47,63 @@ class NonAsciiRefusingStream:
 
 
 def test_working_stream_writes_text_unchanged(monkeypatch: pytest.MonkeyPatch):
+    # Having
     stream = io.StringIO()
 
     monkeypatch.setattr('sys.stdout', stream)
+
+    # When
     print_safely('✨')
 
+    # Then
     assert stream.getvalue() == '✨\n'
 
 
 def test_reconfigure_retry_writes_text_unchanged(monkeypatch: pytest.MonkeyPatch):
+    # Having
     stream = WritesUnicodeAfterReconfigureStream()
 
     monkeypatch.setattr('sys.stdout', stream)
+
+    # When
     print_safely('✨')
 
+    # Then
     assert stream.written_text == '✨\n'
     assert stream.reconfigure_calls == ['utf-8']
 
 
 def test_ascii_fallback_writes_replacement_character(monkeypatch: pytest.MonkeyPatch):
+    # Having
     stream = NonAsciiRefusingStream()
 
     monkeypatch.setattr('sys.stdout', stream)
+
+    # When
     print_safely('✨')
 
+    # Then
     assert stream.written_text == '?\n'
 
 
 def test_custom_file_target_uses_reconfigure():
+    # Having
     stream = WritesUnicodeAfterReconfigureStream()
 
+    # When
     print_safely('✨', file=stream)
 
+    # Then
     assert stream.written_text == '✨\n'
     assert stream.reconfigure_calls == ['utf-8']
 
 
 def test_custom_file_target_uses_ascii_fallback():
+    # Having
     stream = NonAsciiRefusingStream()
 
+    # When
     print_safely('✨', file=stream)
 
+    # Then
     assert stream.written_text == '?\n'

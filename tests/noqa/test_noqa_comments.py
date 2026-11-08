@@ -1,9 +1,8 @@
-import pytest
-
 from deadcode.cli import main
 
 
 def test_unused_class_is_unchanged_if_noqa_comment_is_provided(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class MyTest:  # noqa: DC03
@@ -11,8 +10,10 @@ def test_unused_class_is_unchanged_if_noqa_comment_is_provided(virtual_file_syst
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -26,14 +27,17 @@ def test_unused_class_is_unchanged_if_noqa_comment_is_provided(virtual_file_syst
 
 
 def test_noqa_all(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 instance = "labas"  # noqa
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -46,6 +50,7 @@ def test_noqa_all(virtual_file_system):
 
 
 def test_unused_variable(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 unused_variable = "Hello"  # noqa: DC01
@@ -53,7 +58,10 @@ def test_unused_variable(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
+
+    # Then
     assert unused_names is None
 
     virtual_file_system.assert_files(
@@ -67,19 +75,23 @@ def test_unused_variable(virtual_file_system):
 
 
 def test_unused_variable_but_wrong_noqa_specified(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 unused_variable = "Hello"  # noqa: DC02
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files({})
     assert unused_names == 'foo.py:1:0: DC01 Variable `unused_variable` is never used\n\n' 'Removed 1 unused code item!'
 
 
 def test_unused_function(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 def unused_function():  # noqa: DC02
@@ -87,7 +99,10 @@ def test_unused_function(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
+
+    # Then
     assert unused_names is None
 
     virtual_file_system.assert_files(
@@ -101,6 +116,7 @@ def test_unused_function(virtual_file_system):
 
 
 def test_unused_method(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class MyTest:
@@ -112,8 +128,10 @@ def test_unused_method(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -130,26 +148,29 @@ def test_unused_method(virtual_file_system):
     assert unused_names is None
 
 
-@pytest.mark.skip(reason='Skipped without a recorded reason before the pytest migration; behaviour preserved')
 def test_unused_attribute(virtual_file_system):
-    # TODO: DC05 does not work.
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class MyTest:
-                    unused_attribute = 123  # noqa: DC05
+                    def __init__(self):
+                        self.unused_attribute = 123  # noqa: DC05
 
                 instance = MyTest()
                 print(instance)
                 """
     }
 
-    unused_names = main(['foo.py', '--no-color', '--fix'])
+    # When
+    unused_names = main(['foo.py', '--no-color'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
                 class MyTest:
-                    unused_attribute = 123  # noqa: DC05
+                    def __init__(self):
+                        self.unused_attribute = 123  # noqa: DC05
 
                 instance = MyTest()
                 print(instance)
@@ -160,9 +181,8 @@ def test_unused_attribute(virtual_file_system):
     assert unused_names is None
 
 
-@pytest.mark.skip(reason='Skipped without a recorded reason before the pytest migration; behaviour preserved')
 def test_unused_name(virtual_file_system):
-    # TODO: DC06 does not work.
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class MyTest:
@@ -173,8 +193,10 @@ def test_unused_name(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -191,14 +213,17 @@ def test_unused_name(virtual_file_system):
 
 
 def test_unused_import(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 from typing import Optional  # noqa: DC07
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -211,6 +236,7 @@ def test_unused_import(virtual_file_system):
 
 
 def test_unused_property(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class Foo:
@@ -221,8 +247,10 @@ def test_unused_property(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -238,10 +266,8 @@ def test_unused_property(virtual_file_system):
     assert unused_names is None
 
 
-@pytest.mark.skip(reason='Skipped without a recorded reason before the pytest migration; behaviour preserved')
 def test_unreachable_code(virtual_file_system):
-    # TODO: identify all cases, when unreachable code is detected, and write unit tests
-
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 if True:
@@ -251,8 +277,10 @@ def test_unreachable_code(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -269,14 +297,18 @@ def test_unreachable_code(virtual_file_system):
 
 def test_empty_file(virtual_file_system):
     # TODO: this test passes only because comment is treated as non empty file content
+
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 # noqa: DC11
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -289,15 +321,17 @@ def test_empty_file(virtual_file_system):
 
 
 def test_commented_out_code(virtual_file_system):
-    # TODO: this test only passes because commented-out-code check is not yet implemented
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 # print("Hello world")  # noqa: DC12
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -309,36 +343,35 @@ def test_commented_out_code(virtual_file_system):
     assert unused_names is None
 
 
-@pytest.mark.skip(reason='Skipped without a recorded reason before the pytest migration; behaviour preserved')
-def test_ignore_expression(virtual_file_system):
+def test_unreachable_code_after_return(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
-                class Foo:  # noqa: DC13
-                    this_attiribute_is_unused = True
-
-                    def this_method_is_not_used_as_well(self):
-                        pass
+                def unused_function():
+                    return 1
+                    print("Hello world")  # noqa: DC13
                 """
     }
 
-    unused_names = main(['foo.py', '--no-color', '--fix'])
+    # When
+    unused_names = main(['foo.py', '--no-color'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
-                class Foo:  # noqa: DC13
-                    this_attiribute_is_unused = True
-
-                    def this_method_is_not_used_as_well(self):
-                        pass
+                def unused_function():
+                    return 1
+                    print("Hello world")  # noqa: DC13
                 """
         }
     )
 
-    assert unused_names is None
+    assert unused_names == 'foo.py:1:0: DC02 Function `unused_function` is never used'
 
 
 def test_unused_decorated_function_definition_line_with_alias(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 @cache
@@ -347,8 +380,10 @@ def test_unused_decorated_function_definition_line_with_alias(virtual_file_syste
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -363,6 +398,7 @@ def test_unused_decorated_function_definition_line_with_alias(virtual_file_syste
 
 
 def test_unused_decorated_function_stacked_decorators(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 @first
@@ -373,8 +409,10 @@ def test_unused_decorated_function_stacked_decorators(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -391,6 +429,7 @@ def test_unused_decorated_function_stacked_decorators(virtual_file_system):
 
 
 def test_unused_decorated_function_decorator_with_arguments(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 @cache(maxsize=None)
@@ -399,8 +438,10 @@ def test_unused_decorated_function_decorator_with_arguments(virtual_file_system)
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -415,6 +456,7 @@ def test_unused_decorated_function_decorator_with_arguments(virtual_file_system)
 
 
 def test_unused_decorated_async_function(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 @cache
@@ -423,8 +465,10 @@ def test_unused_decorated_async_function(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -439,6 +483,7 @@ def test_unused_decorated_async_function(virtual_file_system):
 
 
 def test_unused_decorated_function_bare_noqa(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 @cache
@@ -447,8 +492,10 @@ def test_unused_decorated_function_bare_noqa(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -463,6 +510,7 @@ def test_unused_decorated_function_bare_noqa(virtual_file_system):
 
 
 def test_unused_decorated_function_noqa_on_first_decorator_line(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 @cache  # noqa: DC02
@@ -471,8 +519,10 @@ def test_unused_decorated_function_noqa_on_first_decorator_line(virtual_file_sys
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -487,6 +537,7 @@ def test_unused_decorated_function_noqa_on_first_decorator_line(virtual_file_sys
 
 
 def test_unused_decorated_class_definition_line(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 @cache
@@ -495,8 +546,10 @@ def test_unused_decorated_class_definition_line(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -511,6 +564,7 @@ def test_unused_decorated_class_definition_line(virtual_file_system):
 
 
 def test_unused_decorated_method_definition_line(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class MyTest:
@@ -523,8 +577,10 @@ def test_unused_decorated_method_definition_line(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_files(
         {
             'foo.py': b"""
@@ -543,6 +599,7 @@ def test_unused_decorated_method_definition_line(virtual_file_system):
 
 
 def test_unused_decorated_function_definition_line_with_wrong_noqa_code(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 @cache
@@ -554,7 +611,9 @@ def test_unused_decorated_function_definition_line_with_wrong_noqa_code(virtual_
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--fix'])
 
+    # Then
     virtual_file_system.assert_updated_files({'foo.py': b'value = 1\nprint(value)\n'})
     assert unused_names == 'foo.py:2:0: DC02 Function `check` is never used\n\n' 'Removed 1 unused code item!'

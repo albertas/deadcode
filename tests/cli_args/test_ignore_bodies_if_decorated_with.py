@@ -2,6 +2,7 @@ from deadcode.cli import main
 
 
 def test_decorated_class_body_is_ignored(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 @deco
@@ -13,12 +14,15 @@ def test_decorated_class_body_is_ignored(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--ignore-bodies-if-decorated-with=@deco'])
 
+    # Then
     assert unused_names == ('foo.py:2:0: DC03 Class `Handler` is never used')
 
 
 def test_decorated_function_body_is_ignored(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 @deco
@@ -28,12 +32,15 @@ def test_decorated_function_body_is_ignored(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--ignore-bodies-if-decorated-with=@deco'])
 
+    # Then
     assert unused_names == ('foo.py:2:0: DC02 Function `handler` is never used')
 
 
 def test_decorated_method_and_property_inside_used_class(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 class Service:
@@ -52,6 +59,7 @@ def test_decorated_method_and_property_inside_used_class(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(
         [
             'foo.py',
@@ -61,6 +69,7 @@ def test_decorated_method_and_property_inside_used_class(virtual_file_system):
         ]
     )
 
+    # Then
     assert unused_names == (
         'foo.py:3:4: DC04 Method `unused_method` is never used\n'
         'foo.py:7:4: DC08 Property `unused_property` is never used'
@@ -68,6 +77,7 @@ def test_decorated_method_and_property_inside_used_class(virtual_file_system):
 
 
 def test_wildcard_call_decorator(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 @app.get("/x")
@@ -76,12 +86,15 @@ def test_wildcard_call_decorator(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--ignore-bodies-if-decorated-with=@app.*'])
 
+    # Then
     assert unused_names == ('foo.py:2:0: DC02 Function `handler` is never used')
 
 
 def test_non_matching_decorator_body_is_still_reported(virtual_file_system):
+    # Having
     virtual_file_system.files = {
         'foo.py': b"""
                 @other
@@ -90,8 +103,10 @@ def test_non_matching_decorator_body_is_still_reported(virtual_file_system):
                 """
     }
 
+    # When
     unused_names = main(['foo.py', '--no-color', '--ignore-bodies-if-decorated-with=@app.*'])
 
+    # Then
     assert unused_names == (
         'foo.py:2:0: DC02 Function `decorated` is never used\n' 'foo.py:3:4: DC01 Variable `unused_local` is never used'
     )

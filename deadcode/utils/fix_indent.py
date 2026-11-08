@@ -29,10 +29,6 @@ def fix_indent(doc: T) -> T | None:
                 for i in range(1, len(byte_lines)):
                     byte_lines[i] = byte_lines[i][margin:]
 
-            ## Do not remove trailing lines
-            # while lines and not lines[-1]:
-            #     lines.pop()
-
             ## Remove any leading blank lines.
             while byte_lines and not byte_lines[0]:
                 byte_lines.pop(0)
@@ -57,10 +53,6 @@ def fix_indent(doc: T) -> T | None:
             if margin < sys.maxsize:
                 for i in range(1, len(lines)):
                     lines[i] = lines[i][margin:]
-
-            ## Do not remove trailing lines
-            # while lines and not lines[-1]:
-            #     lines.pop()
 
             ## Remove any leading blank lines.
             while lines and not lines[0]:

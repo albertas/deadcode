@@ -36,15 +36,23 @@ def project_directory(tmp_path, monkeypatch) -> Path:
 
 
 def test_all_dependency_injection_forms_are_supported(project_directory: Path) -> None:
+    # Then
     assert _findings(main(['project', '--no-color'])) == {
         ('project/dependencies.py', 'DC02', 'unused_dependency'),
     }
-    assert print_main(['project', '--no-color']) == 1
+
+    # When
+    result = print_main(['project', '--no-color'])
+
+    # Then
+    assert result == 1
 
 
 def test_dependency_injection_providers_are_not_reported(project_directory: Path) -> None:
+    # When
     output = main(['project', '--no-color'])
 
+    # Then
     assert output is not None
     for provider in (
         'Settings',
