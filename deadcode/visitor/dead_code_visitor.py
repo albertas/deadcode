@@ -284,19 +284,14 @@ class DeadCodeVisitor(ast.NodeVisitor):
         *,
         decorator_names: Iterable[str] = (),
     ) -> None:
-        # TODO: add support for ignore_definitions, ignore_definitions_if_inherits_from options
-        self._log(
-            f'Options ignore_definitions, ignore_definitions_if_inherits_from not implemented yet. '
-            f'Got these values: ignore_definitions={self.args.ignore_definitions}, '
-            f'ignore_definitions_if_inherits_from={self.args.ignore_definitions_if_inherits_from}'
-        )
-
         def ignored(linenos: Iterable[int], type_: UnusedCodeType) -> bool:
             return bool(
                 (ignore and ignore(self.filename, name))
                 or _match(name, self.args.ignore_names)
                 or _match(self.filename, self.args.ignore_names_in_files)
                 or _match_many(decorator_names, self.args.ignore_names_if_decorated_with)
+                or (item_inherits_from := getattr(first_node, 'inherits_from', None))
+                and _match_many(item_inherits_from, self.args.ignore_names_if_inherits_from)
                 or self.should_ignore_new_definitions
                 or any(noqa.ignore_line(self.noqa_lines, lineno, ERROR_CODES[type_]) for lineno in linenos)
             )
@@ -414,6 +409,10 @@ class DeadCodeVisitor(ast.NodeVisitor):
             and not node.keywords
         )
 
+    def _get_decorator_names(self, node: ast.AST) -> list[str]:
+        """Returns decorator names of the given node."""
+        return [utils.get_decorator_name(decorator) for decorator in getattr(node, 'decorator_list', ())]
+
     def get_inherits_from(self, node: ast.AST) -> list[str] | None:
         """Returns a set of base classes from any level in inheritance tree."""
 
@@ -520,13 +519,22 @@ class DeadCodeVisitor(ast.NodeVisitor):
         if inherits_from := self.get_inherits_from(node):
             node.inherits_from = inherits_from  # type: ignore
 
+        decorator_names = self._get_decorator_names(node)
+
         should_turn_off_ignore_new_definitions = False
         if (
-            # Name is in ignore_definitions
-            node_name and _match(node_name, self.args.ignore_definitions)
-        ) or (
-            # Class inherits from ignore_definitions_if_inherits_from
-            inherits_from and _match_many(inherits_from, self.args.ignore_definitions_if_inherits_from)
+            (
+                # Name is in ignore_definitions
+                node_name and _match(node_name, self.args.ignore_definitions)
+            )
+            or (
+                # Class inherits from ignore_definitions_if_inherits_from
+                inherits_from and _match_many(inherits_from, self.args.ignore_definitions_if_inherits_from)
+            )
+            or (
+                # Definition is decorated with ignore_definitions_if_decorated_with
+                decorator_names and _match_many(decorator_names, self.args.ignore_definitions_if_decorated_with)
+            )
         ):
             if not self.should_ignore_new_definitions:
                 self.should_ignore_new_definitions = True
@@ -549,6 +557,18 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
         # Class inherits from ignore_bodies_if_inherits_from
         if inherits_from and _match_many(inherits_from, self.args.ignore_bodies_if_inherits_from):
+            if not self.should_ignore_new_definitions:
+                self.should_ignore_new_definitions = True
+                should_turn_off_ignore_new_definitions = True
+
+        # Name is in ignore_bodies_of
+        if node_name and _match(node_name, self.args.ignore_bodies_of):
+            if not self.should_ignore_new_definitions:
+                self.should_ignore_new_definitions = True
+                should_turn_off_ignore_new_definitions = True
+
+        # Definition is decorated with ignore_bodies_if_decorated_with
+        if decorator_names and _match_many(decorator_names, self.args.ignore_bodies_if_decorated_with):
             if not self.should_ignore_new_definitions:
                 self.should_ignore_new_definitions = True
                 should_turn_off_ignore_new_definitions = True
