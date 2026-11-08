@@ -24,7 +24,7 @@ pip install deadcode
 
 ## Usage
 
-> **Full documentation:** [deadcode.readthedocs.io](https://deadcode.readthedocs.io/) covers installation, the command line reference, rules, and the FastAPI guide.
+> **Full documentation:** [deadcode.readthedocs.io](https://deadcode.readthedocs.io/)
 
 To see unused code findings:
 ```shell
