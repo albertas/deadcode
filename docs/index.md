@@ -32,6 +32,9 @@ Read the {doc}`release_notes` page for the release history.
 
 Read the {doc}`features` page for the checked map of README features to source files, tests, and minimum test cases.
 
+Read the {doc}`comparison` page for a sourced comparison of deadcode with vulture, including the features that matter most when choosing, each
+package's pros and cons, and every source used.
+
 ```{toctree}
 :maxdepth: 2
 
@@ -45,4 +48,5 @@ security
 known_limitations
 release_notes
 features
+comparison
 ```
