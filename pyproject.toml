@@ -4,7 +4,7 @@ version = "2.6.0"
 authors = [
     {name = "Albertas Gimbutas", email = "albertasgim@gmail.com"},
 ]
-description = "Find and remove dead code."
+description = "Find and fix unused Python code using command line."
 readme = "README.md"
 requires-python = ">= 3.10"
 classifiers = [
