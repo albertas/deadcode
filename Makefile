@@ -29,7 +29,7 @@ publish: .venv
 readthedocs:
 	@curl --fail-with-body --silent --show-error --request POST \
 		--header "Authorization: Token $(READTHEDOCS_API_TOKEN)" \
-		"https://app.readthedocs.org/api/v3/projects/deadcode/versions/$(VERSION)/builds/" >/dev/null
+		"https://app.readthedocs.org/api/v3/projects/deadcode/versions/v$(VERSION)/builds/" >/dev/null
 	@curl --fail-with-body --silent --show-error --request POST \
 		--header "Authorization: Token $(READTHEDOCS_API_TOKEN)" \
 		"https://app.readthedocs.org/api/v3/projects/deadcode/versions/stable/builds/" >/dev/null
