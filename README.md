@@ -50,6 +50,23 @@ ignore-names = ["BaseTestCase", "*Mixin"]
 ignore-names-in-files = ["migrations"]
 ```
 
+## Using deadcode on a FastAPI project
+
+FastAPI registers handlers through decorators, so a handler that is only referenced by a route decorator looks unused to a static analyser.
+Pydantic model fields look unused for the same reason: they are populated by the framework, not by your code. Configure deadcode like this:
+
+```toml
+[tool.deadcode]
+ignore-names-if-decorated-with = ["@app.*", "@router.*"]
+ignore-bodies-if-inherits-from = ["BaseModel"]
+```
+
+`@app.*` covers `@app.get`, `@app.post`, `@app.put`, `@app.delete`, `@app.patch`, `@app.on_event`, and the same decorators on an
+`APIRouter`. An aliased router needs its own pattern, for example `@api.*` for `api = APIRouter()`. Pydantic model fields are suppressed by
+the `BaseModel` body rule. Arguments passed through `Depends(...)`, routers registered with `include_router(...)`, and endpoints
+registered with `add_api_route(...)` already count as usage, because they are ordinary name loads. Decorator names are rendered as dotted
+identifiers (for example `@app.get`), ignoring call arguments, so one pattern matches every path handled by the same decorator.
+
 ## Pre-commit hook
 Create a `.pre-commit-config.yaml` file in the root of your project directory, if it doesn't exist, and add the following to the file:
 
@@ -194,7 +211,7 @@ the public module-level names are exported.
     - [x] --ignore-definitions-if-inherits-from
     - [ ] --ignore-definitions-if-decorated-with
     - [ ] --ignore-names-if-inherits-from
-    - [ ] --ignore-names-if-decorated-with
+    - [x] --ignore-names-if-decorated-with
     - [ ] --ignore-bodies-of
     - [ ] --ignore-bodies-if-decorated-with
     - [ ] --ignore-bodies-if-inherits-from
@@ -237,6 +254,7 @@ the public module-level names are exported.
         - Wildcard imports now honour a module `__all__` list or tuple, so excluded names are reported as unused.
         - Wildcard imports stay unrestricted when `__all__` is dynamic or unknown, and explicit imports keep working.
         - Without `__all__`, wildcard imports expose public module-level names, and the README documents the limits.
+        - Honour `--ignore-names-if-decorated-with` and render decorator names as dotted identifiers such as `@app.get` (see the FastAPI section).
 - v2.5.0 (2026-11-07):
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
