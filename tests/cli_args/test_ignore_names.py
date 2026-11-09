@@ -77,3 +77,22 @@ class IgnoreNamesByPatternTests(BaseTestCase):
             unused_names,
             ('ignore_names_by_pattern.py:7:0: DC03 Class `Unused` is never used'),
         )
+    def test_ignore_names_if_decorated_with(self):
+        self.files = {
+            'decorated_routes.py': b"""
+                @app.route("/api/v1")
+                def handler():
+                    pass
+
+                def unused_func():
+                    pass
+                """
+        }
+        unused_names = main(
+            ['decorated_routes.py', '--no-color', '--ignore-names-if-decorated-with=@app.route']
+        )
+
+        self.assertEqual(
+            unused_names,
+            ('decorated_routes.py:5:0: DC02 Function `unused_func` is never used'),
+        )

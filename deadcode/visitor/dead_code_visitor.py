@@ -46,7 +46,16 @@ class DeadCodeVisitor(ast.NodeVisitor):
 
         self.args = args
 
-        self.ignore_decorators: list[str] = []
+        patterns: list[str] = []
+        for pat in chain(
+            args.ignore_names_if_decorated_with or (),
+            args.ignore_definitions_if_decorated_with or (),
+            args.ignore_if_decorated_with or (),
+        ):
+            patterns.append(pat)
+            if not pat.startswith('@'):
+                patterns.append('@' + pat)
+        self.ignore_decorators = patterns
 
         verbose = False
         # verbose = args.verbose
