@@ -196,6 +196,11 @@ A comment on the first decorator line is still accepted.
 `unittest` lifecycle methods (`setUp`, `tearDown`, `setUpClass`, `tearDownClass`, `asyncSetUp`, `asyncTearDown`, `setUpModule`, `tearDownModule`) declared in test files are ignored by default, alongside the existing pytest hooks.
 Declarations with those names outside test files are still reported as unused code.
 
+## Ignoring Django test lifecycle methods
+Django test lifecycle methods (`setUpTestData`, the `django.test.TestCase` class method invoked by the framework, and the internal hooks `_pre_setup`, `_post_teardown`, `_fixture_setup`, `_fixture_teardown`) declared in test files are ignored by default.
+Declarations with those names outside test files are still reported as unused code.
+Django helpers that your test code invokes itself are not suppressed, so an unreferenced `assertContains`, `assertNumQueries`, `settings`, `modify_settings`, or `captureOnCommitCallbacks` is still reported.
+
 ## Contributing
 
 Create a feature branch from `main`, open a pull request targeting `main`, and
