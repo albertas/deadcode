@@ -1,0 +1,4 @@
+comment:
+  require_changes: true
+  require_base: true
+  require_head: true
