@@ -40,6 +40,7 @@ REQUIRED_FEATURES = {
     '# noqa comments',
     'Unittest lifecycle methods',
     'FastAPI guide',
+    'Django guide',
     'Pre-commit hook',
     'Wildcard imports and __all__',
     'Syntax-error files',

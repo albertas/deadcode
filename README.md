@@ -75,6 +75,48 @@ ignore-bodies-if-inherits-from = ["BaseModel"]
 Read the [FastAPI guide](https://deadcode.readthedocs.io/en/latest/fastapi.html) for common use cases, the complete example application,
 the dependency injection strategy, and the expected output with no wrong detections.
 
+## Using deadcode on a Django project
+
+Django registers models, views, admin classes, and signal handlers through base classes, decorators, settings strings, and URLconfs, so
+framework entry points look unused to a static analyser. Configure deadcode like this:
+
+```toml
+[tool.deadcode]
+ignore-names-if-decorated-with = [
+    "@admin.*",
+    "@receiver",
+    "@register.*",
+    "@login_required",
+    "@permission_required",
+    "@require_http_methods",
+    "@require_POST",
+    "@method_decorator",
+]
+ignore-bodies-if-inherits-from = [
+    "models.Model",
+    "ModelAdmin",
+    "forms.Form",
+    "forms.ModelForm",
+    "View",
+    "BaseCommand",
+    "Migration",
+    "AppConfig",
+    "MiddlewareMixin",
+]
+ignore-names-in-files = ["*/settings.py", "*/urls.py", "*/migrations/*"]
+ignore-definitions = ["*Config", "*Middleware", "Command"]
+ignore-names = [
+    "setUpTestData",
+    "_pre_setup",
+    "_post_teardown",
+    "_fixture_setup",
+    "_fixture_teardown",
+]
+```
+
+Read the [Django guide](https://deadcode.readthedocs.io/en/latest/django.html) for the common use cases, every framework area, the complete
+example application, and the expected output with no wrong detections.
+
 ## Pre-commit hook
 Create a `.pre-commit-config.yaml` file in the root of your project directory, if it doesn't exist, and add the following to the file:
 
