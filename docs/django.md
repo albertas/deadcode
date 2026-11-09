@@ -34,13 +34,6 @@ ignore-bodies-if-inherits-from = [
 ]
 ignore-names-in-files = ["*/settings.py", "*/urls.py", "*/migrations/*"]
 ignore-definitions = ["*Config", "*Middleware", "Command"]
-ignore-names = [
-    "setUpTestData",
-    "_pre_setup",
-    "_post_teardown",
-    "_fixture_setup",
-    "_fixture_teardown",
-]
 ```
 
 The same options are available as command-line flags, with one occurrence per list item:
@@ -69,12 +62,7 @@ deadcode . \
     --ignore-names-in-files='*/migrations/*' \
     --ignore-definitions='*Config' \
     --ignore-definitions='*Middleware' \
-    --ignore-definitions=Command \
-    --ignore-names=setUpTestData \
-    --ignore-names=_pre_setup \
-    --ignore-names=_post_teardown \
-    --ignore-names=_fixture_setup \
-    --ignore-names=_fixture_teardown
+    --ignore-definitions=Command
 ```
 
 deadcode reads configuration only from `./pyproject.toml` in the current working directory. It does not search parent directories and there is no
@@ -103,7 +91,7 @@ relative (`project/settings.py`) and absolute (`/home/me/project/settings.py`) p
 | `@register.simple_tag` and `@register.filter` | Covered by `@register.*` in `ignore-names-if-decorated-with` |
 | Management commands | Covered by `Command` in `ignore-definitions` and `BaseCommand` in `ignore-bodies-if-inherits-from` |
 | `AppConfig` subclasses | Covered by `*Config` in `ignore-definitions` and `AppConfig` in `ignore-bodies-if-inherits-from` |
-| Django test lifecycle names such as `setUpTestData` and `_pre_setup` | Covered by the explicit `ignore-names` entries |
+| Django test lifecycle names such as `setUpTestData` and `_pre_setup` | `None` in the base block; ignored by default in test files |
 | Context processors and other string-referenced callables | `None` in the base block; use `# noqa: DC02` or add the name to `ignore-names` |
 | `@login_required` and the other security decorators | Covered by the decorator entries in `ignore-names-if-decorated-with` |
 
@@ -315,10 +303,9 @@ name, and `BaseCommand` in `ignore-bodies-if-inherits-from` covers `help`, `add_
 constructs the command by convention, so there is no name load to follow. A helper command class with another name is still reported unless it has a name
 load; the example application keeps one intentionally unused command to show that difference.
 
-Django's `TestCase` lifecycle methods are called by the framework, not by project code. The recommended configuration adds `setUpTestData`, `_pre_setup`,
-`_post_teardown`, `_fixture_setup`, and `_fixture_teardown` to `ignore-names`. The local base commit does not suppress those names, so all five are
-reported in a test file without the entries. Releases containing the Django lifecycle suppression upstream (PR #104) already ignore these names in test
-files, which makes the entries redundant there. A genuine helper that is not a lifecycle name and is not called is still reported.
+Django's `TestCase` lifecycle methods are called by the framework, not by project code. deadcode ignores `setUpTestData`, `_pre_setup`, `_post_teardown`,
+`_fixture_setup`, and `_fixture_teardown` by default in test files, so the recommended configuration needs no entry for them. A genuine helper that is
+not a lifecycle name and is not called is still reported.
 
 Deployment modules have the same string-reference problem as settings. A WSGI or ASGI module assigns `application` without loading it, so add the module
 pattern to `ignore-names-in-files` or mark the assignment with `# noqa: DC01`. Static files are collected through the `staticfiles` application and
@@ -406,8 +393,9 @@ plus one intentionally unused admin class. `apps.py` defines a `BlogConfig` with
 test, and one intentionally unused helper.
 
 Without configuration, the settings and URLconf variables, the middleware and its hook, the class-based view handlers, the registered template tags,
-the form fields and validation hooks, the admin options and action method, the application configuration, the management command members, the
-decorated signal handler, and the test lifecycle hooks are reported together with the intentionally unused code:
+the form fields and validation hooks, the admin options and action method, the application configuration, the management command members, and the
+decorated signal handler are reported together with the intentionally unused code. The test lifecycle hooks are not reported, because deadcode ignores
+them by default in test files:
 
 ```text
 project/admin.py:8:0: DC03 Class `ArticleAdmin` is never used
@@ -460,11 +448,6 @@ project/signals.py:12:0: DC02 Function `unused_signal_handler` is never used
 project/templatetags/blog_tags.py:7:0: DC02 Function `greeting` is never used
 project/templatetags/blog_tags.py:12:0: DC02 Function `shout` is never used
 project/templatetags/blog_tags.py:16:0: DC02 Function `unused_tag` is never used
-project/tests.py:8:4: DC04 Method `setUpTestData` is never used
-project/tests.py:11:4: DC04 Method `_pre_setup` is never used
-project/tests.py:14:4: DC04 Method `_post_teardown` is never used
-project/tests.py:17:4: DC04 Method `_fixture_setup` is never used
-project/tests.py:20:4: DC04 Method `_fixture_teardown` is never used
 project/tests.py:26:4: DC04 Method `unused_test_helper` is never used
 project/urls.py:5:0: DC01 Variable `app_name` is never used
 project/urls.py:7:0: DC01 Variable `urlpatterns` is never used
@@ -478,8 +461,8 @@ project/views.py:21:4: DC04 Method `get` is never used
 
 With the recommended configuration, only the intentionally unused code in `views.py`, `models.py`, `managers.py`, `forms.py`, `admin.py`,
 `templatetags/blog_tags.py`, `signals.py`, `management/commands/import_data.py`, and `tests.py` remains. The settings, URLconf, model-field,
-nested-`Meta`, property, migration, middleware-hook, `@register.*`, form, admin, application-configuration, management-command, receiver, and
-lifecycle findings disappear because the base-class, decorator, definition, and file options cover them. The final report is:
+nested-`Meta`, property, migration, middleware-hook, `@register.*`, form, admin, application-configuration, management-command, and receiver findings
+disappear because the base-class, decorator, definition, and file options cover them. The final report is:
 
 ```text
 project/admin.py:19:0: DC03 Class `UnusedAdmin` is never used

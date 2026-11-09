@@ -39,6 +39,7 @@ REQUIRED_FEATURES = {
     'Per-rule fixing',
     '# noqa comments',
     'Unittest lifecycle methods',
+    'Django test lifecycle methods',
     'FastAPI guide',
     'Django guide',
     'Pre-commit hook',

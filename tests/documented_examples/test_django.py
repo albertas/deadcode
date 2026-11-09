@@ -31,13 +31,6 @@ ignore-bodies-if-inherits-from = [
 ]
 ignore-names-in-files = ["*/settings.py", "*/urls.py", "*/migrations/*"]
 ignore-definitions = ["*Config", "*Middleware", "Command"]
-ignore-names = [
-    "setUpTestData",
-    "_pre_setup",
-    "_post_teardown",
-    "_fixture_setup",
-    "_fixture_teardown",
-]
 """
 
 COMMAND_LINE_OPTIONS = [
@@ -64,11 +57,6 @@ COMMAND_LINE_OPTIONS = [
     '--ignore-definitions=*Config',
     '--ignore-definitions=*Middleware',
     '--ignore-definitions=Command',
-    '--ignore-names=setUpTestData',
-    '--ignore-names=_pre_setup',
-    '--ignore-names=_post_teardown',
-    '--ignore-names=_fixture_setup',
-    '--ignore-names=_fixture_teardown',
 ]
 
 FINDING_PATTERN = re.compile(r'^(?P<path>.+):\d+:\d+: (?P<code>DC\d+) \w+ `(?P<name>[^`]+)` is never used$')
@@ -96,11 +84,6 @@ BASELINE_FINDINGS = {
     ('project/management/commands/import_data.py', 'DC04', 'handle'),
     ('project/signals.py', 'DC02', 'article_saved'),
     ('project/signals.py', 'DC02', 'unused_signal_handler'),
-    ('project/tests.py', 'DC04', 'setUpTestData'),
-    ('project/tests.py', 'DC04', '_pre_setup'),
-    ('project/tests.py', 'DC04', '_post_teardown'),
-    ('project/tests.py', 'DC04', '_fixture_setup'),
-    ('project/tests.py', 'DC04', '_fixture_teardown'),
     ('project/tests.py', 'DC04', 'unused_test_helper'),
     ('project/admin.py', 'DC03', 'ArticleAdmin'),
     ('project/admin.py', 'DC03', 'UnusedAdmin'),
@@ -398,4 +381,4 @@ def test_development_process_without_configuration(project_directory: Path) -> N
     assert {'BlogConfig', 'default_auto_field', 'ready'} <= names
     assert {'Command', 'help', 'add_arguments', 'handle'} <= names
     assert 'article_saved' in names
-    assert {'setUpTestData', '_pre_setup', '_post_teardown', '_fixture_setup', '_fixture_teardown'} <= names
+    assert not {'setUpTestData', '_pre_setup', '_post_teardown', '_fixture_setup', '_fixture_teardown'} & names
