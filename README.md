@@ -196,6 +196,11 @@ A comment on the first decorator line is still accepted.
 `unittest` lifecycle methods (`setUp`, `tearDown`, `setUpClass`, `tearDownClass`, `asyncSetUp`, `asyncTearDown`, `setUpModule`, `tearDownModule`) declared in test files are ignored by default, alongside the existing pytest hooks.
 Declarations with those names outside test files are still reported as unused code.
 
+## Ignoring Django test lifecycle methods
+Django test lifecycle methods (`setUpTestData`, the `django.test.TestCase` class method invoked by the framework, and the internal hooks `_pre_setup`, `_post_teardown`, `_fixture_setup`, `_fixture_teardown`) declared in test files are ignored by default.
+Declarations with those names outside test files are still reported as unused code.
+Django helpers that your test code invokes itself are not suppressed, so an unreferenced `assertContains`, `assertNumQueries`, `settings`, `modify_settings`, or `captureOnCommitCallbacks` is still reported.
+
 ## Contributing
 
 Create a feature branch from `main`, open a pull request targeting `main`, and
@@ -294,6 +299,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
     - Features:
         - Audit runtime and development dependencies for known vulnerabilities in CI on every pull request and weekly.
         - Declare the package development status as Beta.
+        - Ignore Django test lifecycle methods in test files.
 - **v2.6.0** `2026-11-08`:
     - Features:
         - Add support for Python 3.13, 3.14 and 3.15.

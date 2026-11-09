@@ -31,6 +31,13 @@ UNITTEST_FUNCTION_NAMES = {
     'setUpModule',
     'tearDownModule',
 }
+DJANGO_METHOD_NAMES = {
+    'setUpTestData',
+    '_pre_setup',
+    '_post_teardown',
+    '_fixture_setup',
+    '_fixture_teardown',
+}
 # Built-in interface markers: abstract and overriding definitions are never reported, no option needed.
 IGNORED_INTERFACE_DECORATOR_NAMES: set[str] = {
     '@abstractmethod',
@@ -111,17 +118,24 @@ def _ignore_import(filename: Path, import_name: str) -> bool:
 def _ignore_function(filename: Path, function_name: str) -> bool:
     # Class-level lifecycle methods such as `def setUpClass(cls)` have no decorator and a first argument other
     # than `self`, so `visit_FunctionDef` classifies them as functions and they must be suppressed here as well.
+    # Django lifecycle methods are declared the same way.
     return (
         function_name in PYTEST_FUNCTION_NAMES
         or function_name in UNITTEST_METHOD_NAMES
         or function_name in UNITTEST_FUNCTION_NAMES
+        or function_name in DJANGO_METHOD_NAMES
         or function_name.startswith('test_')
     ) and _is_test_file(filename)
 
 
 def _ignore_method(filename: Path, method_name: str) -> bool:
     return _is_special_name(method_name) or (
-        (method_name in PYTEST_METHOD_NAMES or method_name in UNITTEST_METHOD_NAMES or method_name.startswith('test_'))
+        (
+            method_name in PYTEST_METHOD_NAMES
+            or method_name in UNITTEST_METHOD_NAMES
+            or method_name in DJANGO_METHOD_NAMES
+            or method_name.startswith('test_')
+        )
         and _is_test_file(filename)
     )
 

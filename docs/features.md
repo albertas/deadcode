@@ -43,6 +43,7 @@ for every row.
 | Per-rule fixing | `### Rules` | `deadcode/actions/remove_file_parts_from_content.py` | `tests/fix/test_unused_imports.py`, `tests/fix/test_assign.py` | 3 |
 | `# noqa` comments | `## Ignoring checks with noqa comments` | `deadcode/visitor/noqa.py` | `tests/noqa/test_noqa_comments.py` | 3 |
 | Unittest lifecycle methods | `## Ignoring unittest lifecycle methods` | `deadcode/visitor/ignore.py` | `tests/visitor/test_unittest_lifecycle_methods.py` | 3 |
+| Django test lifecycle methods | `## Ignoring Django test lifecycle methods` | `deadcode/visitor/ignore.py` | `tests/visitor/test_django_lifecycle_methods.py` | 3 |
 | FastAPI guide | `## Using deadcode on a FastAPI project` | `deadcode/actions/parse_arguments.py` | `tests/documented_examples/test_fastapi.py`, `tests/documented_examples/test_fastapi_documentation.py` | 3 |
 | Pre-commit hook | `## Pre-commit hook` | `.pre-commit-hooks.yaml` | `tests/documented_examples/test_pre_commit_hook_configuration.py` | 3 |
 | Wildcard imports and `__all__` | `## Known limitations` | `deadcode/visitor/module_exports.py` | `tests/visitor/test_wildcard_imports.py` | 3 |
