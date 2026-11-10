@@ -1,9 +1,8 @@
 # Django
 
 deadcode parses source text and never imports the project, so it sees only Python name loads. Django reaches code through base classes, decorators,
-`MIDDLEWARE` strings, settings modules, and URLconfs, and those framework entry points look unused to a static analyser. This page shows one small
-configuration for Django and Django REST Framework, explains `MIDDLEWARE` registrations and both qualified import forms, and gives a complete example
-application whose two reports you can reproduce.
+`MIDDLEWARE` strings, settings modules, and URLconfs, and those framework entry points look unused to a static analyser. This page shows a short Django
+configuration, explains `MIDDLEWARE` registrations and both qualified import forms, and lists the entries to append for Django REST Framework.
 
 ## Recommended configuration
 
@@ -17,7 +16,6 @@ ignore-definitions-if-decorated-with = [
     "@django.dispatch.receiver",
     "@django.utils.decorators.method_decorator",
     "@django.views.decorators.http.require_*",
-    "@rest_framework.*",
     "@*register.*",
 ]
 ignore-definitions-if-inherits-from = [
@@ -29,22 +27,14 @@ ignore-definitions-if-inherits-from = [
     "django.forms.*Form",
     "django.utils.deprecation.MiddlewareMixin",
     "django.views.*View",
-    "rest_framework.*View",
-    "rest_framework.*ViewSet",
-    "rest_framework.*Serializer",
-    "rest_framework.*Permission",
-    "rest_framework.*Authentication",
-    "rest_framework.*Pagination",
-    "rest_framework.*FilterBackend",
-    "rest_framework.*Throttle",
 ]
 ignore-names-in-files = ["*/settings.py", "*/urls.py"]
 ```
 
-Each entry covers one family, and no two entries match the same qualified base or decorator. One inheritance entry hides a framework subclass name and
-its whole body; one decorator entry hides a decorated definition name and its body; the file patterns remove settings and URLconf configuration names.
-`MIDDLEWARE` registrations need no entry because deadcode parses the setting itself. See {doc}`usage` for the command-line form of every key and
-{doc}`rules` for the rule codes.
+Each Django entry covers one family, and no two entries match the same qualified base or decorator. One inheritance entry hides a framework subclass name
+and its whole body; one decorator entry hides a decorated definition name and its body; the file patterns remove settings and URLconf configuration names.
+`MIDDLEWARE` registrations need no entry because deadcode parses the setting itself. Django REST Framework needs the entries in the
+[Django REST Framework](#django-rest-framework) section. See {doc}`usage` for the command-line form of every key and {doc}`rules` for the rule codes.
 
 ## Common use cases
 
@@ -66,7 +56,7 @@ its whole body; one decorator entry hides a decorated definition name and its bo
 | Tests | No entry; the Django test lifecycle names are ignored by default in test files |
 | Auth and security | `@django.contrib.auth.*` for the auth decorators and `*/settings.py` for the settings |
 | i18n, caching, and GIS | `*/settings.py` for the settings; ordinary calls and name loads need no entry |
-| Django REST Framework | `rest_framework.*View`, `rest_framework.*ViewSet`, `rest_framework.*Serializer`, and the permission, authentication, pagination, filter, and throttle families, plus `@rest_framework.*` |
+| Django REST Framework | See [Django REST Framework](#django-rest-framework) for the entries to append. |
 
 ## Versions
 
@@ -111,8 +101,7 @@ class D(M):
 ```
 
 Relative imports and dynamic imports are not resolved. `from .models import Model` with `class Article(Model)` keeps working through the source
-candidate and a bare or wildcard expression such as `Model` or `*Model`, but it does not match `django.db.models.Model`. An import performed inside a
-function is also outside the module-level map.
+candidate and a bare or wildcard expression such as `Model` or `*Model`, but it does not match `django.db.models.Model`.
 
 Custom managers and `QuerySet` subclasses are not `Model` subclasses. A method that only other code calls is still reported; add the manager base to the
 inheritance list when its whole body should be ignored, or mark the method with `# noqa: DC04`. Migrations are covered by
@@ -158,8 +147,8 @@ through a string, a dynamic import, or code outside the analysed tree looks unus
 | `@admin.register`, `@admin.display`, `@admin.action` | `@django.contrib.admin.*` |
 
 Class-based views are covered by inheritance. `django.views.*View` matches `View`, `TemplateView`, `RedirectView`, `DetailView`, `ListView`, `FormView`,
-`CreateView`, `UpdateView`, `DeleteView`, and the archive views. `rest_framework.*View` matches `APIView` and the generic API views, and
-`rest_framework.*ViewSet` matches the viewset family.
+`CreateView`, `UpdateView`, `DeleteView`, and the archive views. Django REST Framework views and viewsets need the entries in
+[Django REST Framework](#django-rest-framework).
 
 A project subclass such as `ArticleListView(django.views.generic.ListView)` is covered through its inherited framework base, so the class name and the
 whole body are suppressed. Router-called methods (`list`, `create`, `retrieve`, `update`, `partial_update`, `destroy`) are suppressed with the class body
@@ -393,7 +382,28 @@ itself, such as `assertContains`, `assertNumQueries`, `settings`, and `modify_se
 Django REST Framework needs the class families and the policy decorators. `rest_framework.*Serializer` covers `Serializer`, `ModelSerializer`, and
 `HyperlinkedModelSerializer`; `rest_framework.*Permission`, `rest_framework.*Authentication`, `rest_framework.*Pagination`, `rest_framework.*FilterBackend`,
 and `rest_framework.*Throttle` cover the extension classes. `@rest_framework.*` covers `@api_view`, `@action`, `@schema`, and the `*_classes` policy
-decorators such as `@permission_classes` and `@authentication_classes`:
+decorators such as `@permission_classes` and `@authentication_classes`.
+
+These entries are appended to the two arrays in `## Recommended configuration`; the fragment intentionally has no `[tool.deadcode]` header and no
+`ignore-names-in-files` key:
+
+```toml
+ignore-definitions-if-decorated-with = [
+    "@rest_framework.*",
+]
+ignore-definitions-if-inherits-from = [
+    "rest_framework.*View",
+    "rest_framework.*ViewSet",
+    "rest_framework.*Serializer",
+    "rest_framework.*Permission",
+    "rest_framework.*Authentication",
+    "rest_framework.*Pagination",
+    "rest_framework.*FilterBackend",
+    "rest_framework.*Throttle",
+]
+```
+
+The snippet below uses these entries:
 
 ```python
 from rest_framework import serializers, viewsets
@@ -451,185 +461,10 @@ The same three keys cover the rest of Django:
 - **Checks, async, and deployment.** `@register` covers a custom check, `async def` views follow the same decorator and base-class rules as synchronous
   ones, and `WSGI_APPLICATION` or `ASGI_APPLICATION` is a string covered by the settings file pattern.
 
-## Example application
-
-The acceptance fixture in `tests/files/django/` is a small multi-module Django application. It contains `settings.py`, `urls.py`, `views.py`,
-`middleware.py`, `models.py`, `managers.py`, `migrations/0001_initial.py`, `templatetags/blog_tags.py`, `forms.py`, `import_forms.py`, `admin.py`,
-`apps.py`, `signals.py`, `management/commands/import_data.py`, `tests.py`, and the DRF module `api.py`.
-
-`settings.py` lists all three middleware forms in `MIDDLEWARE` and keeps one intentionally unused setting. `urls.py` defines `app_name`, `urlpatterns`,
-a DRF router registration, and one intentionally unused URLconf variable. `views.py` defines function views, the three `@require_*` decorators, a
-decorated helper that no URLconf loads, `ListView`, `DetailView`, and `View` subclasses, and intentionally unused definitions. `middleware.py` contains
-the function factory, the current class form, the `MiddlewareMixin` form, and `UnusedMiddleware`. `models.py` defines a `Category`/`Article` pair with
-fields, nested `Meta` classes, and properties. `managers.py` defines a custom `QuerySet` and manager. `migrations/0001_initial.py` is a generated-style
-migration. `templatetags/blog_tags.py` registers a simple tag and a filter. `forms.py` defines a `ModelForm` with a nested `Meta` and a validation hook.
-`import_forms.py` shows the dotted and directly imported model bases and the qualified and bare admin and receiver decorators. `admin.py` registers an
-`ArticleAdmin` with options and an action method. `apps.py` defines a `BlogConfig` with `default_auto_field` and a `ready()` hook. `signals.py` defines a
-decorated handler, a directly connected handler, and an unconnected handler. `management/commands/import_data.py` defines a `Command` with `help`,
-`add_arguments()`, and `handle()`. `tests.py` defines a `TestCase` with Django's five lifecycle hooks and one unused helper. `api.py` defines a
-`ModelSerializer`, a `ModelViewSet` with an `@action` method and the router-called methods, an `@api_view` function with `@permission_classes`, and
-intentionally unused code.
-
-Without configuration, the settings and URLconf variables, the legacy middleware hook, the unregistered middleware class, the class-based view handlers,
-the registered template tags, the form fields and validation hooks, the admin options and action method, the application configuration, the management
-command members, the decorated signal handler, the import forms, and the DRF serializer, action, and function view are reported together with the
-intentionally unused code. The registered middleware names are not reported, because deadcode parses `MIDDLEWARE`. The test lifecycle hooks are also
-not reported, because deadcode ignores them by default in test files:
-
-```text
-project/admin.py:8:0: DC03 Class `ArticleAdmin` is never used
-project/admin.py:9:4: DC06 Name `form` is never used
-project/admin.py:10:4: DC06 Name `list_display` is never used
-project/admin.py:11:4: DC06 Name `search_fields` is never used
-project/admin.py:12:4: DC06 Name `list_filter` is never used
-project/admin.py:13:4: DC06 Name `actions` is never used
-project/admin.py:15:4: DC04 Method `mark_featured` is never used
-project/admin.py:19:0: DC03 Class `UnusedAdmin` is never used
-project/admin.py:20:4: DC06 Name `list_display` is never used
-project/api.py:10:4: DC03 Class `Meta` is never used
-project/api.py:11:8: DC06 Name `model` is never used
-project/api.py:12:8: DC06 Name `fields` is never used
-project/api.py:17:4: DC06 Name `serializer_class` is never used
-project/api.py:20:4: DC04 Method `publish` is never used
-project/api.py:29:4: DC04 Method `retrieve` is never used
-project/api.py:35:4: DC04 Method `destroy` is never used
-project/api.py:41:0: DC02 Function `article_stats` is never used
-project/api.py:45:0: DC02 Function `unused_api_helper` is never used
-project/apps.py:4:0: DC03 Class `BlogConfig` is never used
-project/apps.py:5:4: DC06 Name `default_auto_field` is never used
-project/apps.py:8:4: DC04 Method `ready` is never used
-project/forms.py:7:4: DC03 Class `Meta` is never used
-project/forms.py:8:8: DC06 Name `model` is never used
-project/forms.py:9:8: DC06 Name `fields` is never used
-project/forms.py:11:4: DC04 Method `clean_title` is never used
-project/forms.py:15:0: DC03 Class `UnusedForm` is never used
-project/import_forms.py:14:0: DC03 Class `QualifiedModel` is never used
-project/import_forms.py:18:0: DC03 Class `ImportedForm` is never used
-project/import_forms.py:23:0: DC03 Class `QualifiedAdmin` is never used
-project/import_forms.py:28:0: DC03 Class `BareAdmin` is never used
-project/import_forms.py:33:0: DC02 Function `imported_receiver` is never used
-project/management/commands/import_data.py:4:0: DC03 Class `Command` is never used
-project/management/commands/import_data.py:5:4: DC06 Name `help` is never used
-project/management/commands/import_data.py:7:4: DC04 Method `add_arguments` is never used
-project/management/commands/import_data.py:10:4: DC04 Method `handle` is never used
-project/management/commands/import_data.py:14:0: DC03 Class `UnusedCommand` is never used
-project/management/commands/import_data.py:15:4: DC04 Method `handle` is never used
-project/managers.py:13:4: DC04 Method `unused_manager_method` is never used
-project/middleware.py:20:4: DC04 Method `process_request` is never used
-project/middleware.py:24:0: DC03 Class `UnusedMiddleware` is never used
-project/migrations/0001_initial.py:5:4: DC06 Name `initial` is never used
-project/migrations/0001_initial.py:7:4: DC06 Name `dependencies` is never used
-project/migrations/0001_initial.py:9:4: DC06 Name `operations` is never used
-project/models.py:9:4: DC03 Class `Meta` is never used
-project/models.py:10:8: DC06 Name `verbose_name_plural` is never used
-project/models.py:18:4: DC06 Name `category` is never used
-project/models.py:23:4: DC03 Class `Meta` is never used
-project/models.py:24:8: DC06 Name `ordering` is never used
-project/models.py:27:4: DC08 Property `display_name` is never used
-project/models.py:31:4: DC08 Property `published_titles` is never used
-project/models.py:35:0: DC03 Class `UnusedModel` is never used
-project/settings.py:1:0: DC01 Variable `SECRET_KEY` is never used
-project/settings.py:2:0: DC01 Variable `DEBUG` is never used
-project/settings.py:4:0: DC01 Variable `INSTALLED_APPS` is never used
-project/settings.py:11:0: DC01 Variable `MIDDLEWARE` is never used
-project/settings.py:18:0: DC01 Variable `TEMPLATES` is never used
-project/settings.py:30:0: DC01 Variable `DATABASES` is never used
-project/settings.py:36:0: DC01 Variable `ROOT_URLCONF` is never used
-project/settings.py:38:0: DC01 Variable `UNUSED_SETTING` is never used
-project/signals.py:8:0: DC02 Function `article_saved` is never used
-project/signals.py:19:0: DC02 Function `unused_signal_handler` is never used
-project/templatetags/blog_tags.py:7:0: DC02 Function `greeting` is never used
-project/templatetags/blog_tags.py:12:0: DC02 Function `shout` is never used
-project/templatetags/blog_tags.py:16:0: DC02 Function `unused_tag` is never used
-project/tests.py:26:4: DC04 Method `unused_test_helper` is never used
-project/urls.py:7:0: DC01 Variable `app_name` is never used
-project/urls.py:12:0: DC01 Variable `urlpatterns` is never used
-project/urls.py:21:0: DC01 Variable `UNUSED_URL_NAME` is never used
-project/views.py:6:0: DC01 Variable `UNUSED_VIEW_SETTING` is never used
-project/views.py:13:0: DC02 Function `unused_view` is never used
-project/views.py:33:0: DC02 Function `unreferenced_require_view` is never used
-project/views.py:37:0: DC03 Class `ArticleListView` is never used
-project/views.py:38:4: DC04 Method `get` is never used
-project/views.py:42:0: DC03 Class `ArticleDetailView` is never used
-project/views.py:43:4: DC04 Method `get` is never used
-project/views.py:48:4: DC04 Method `get` is never used
-project/views.py:52:0: DC03 Class `UnusedView` is never used
-project/views.py:53:4: DC04 Method `get` is never used
-```
-
-With the recommended configuration, only deliberately unused code and the unregistered middleware remain:
-
-```text
-project/api.py:45:0: DC02 Function `unused_api_helper` is never used
-project/managers.py:13:4: DC04 Method `unused_manager_method` is never used
-project/middleware.py:24:0: DC03 Class `UnusedMiddleware` is never used
-project/signals.py:19:0: DC02 Function `unused_signal_handler` is never used
-project/templatetags/blog_tags.py:16:0: DC02 Function `unused_tag` is never used
-project/tests.py:26:4: DC04 Method `unused_test_helper` is never used
-project/views.py:6:0: DC01 Variable `UNUSED_VIEW_SETTING` is never used
-project/views.py:13:0: DC02 Function `unused_view` is never used
-```
-
-The intentionally unused classes `UnusedModel`, `UnusedAdmin`, `UnusedForm`, `UnusedCommand`, and `UnusedView` are not in the second report, because the
-definition options hide a matching class name together with its body. `UnusedMiddleware` remains because it is not registered in `MIDDLEWARE`. The
-registered middleware names and the class-based view handlers disappear, as do the settings and URLconf variables, the template tags, the form and admin
-definitions, the app configuration, the management command, the decorated signal handler, the import forms, and the DRF definitions.
-
-## Verifying the recommended configuration
-
-To reproduce the reports, copy the fixture, write the recommended block, and run deadcode:
-
-```shell
-rm -rf /tmp/deadcode-django-example
-mkdir -p /tmp/deadcode-django-example
-cp -r tests/files/django /tmp/deadcode-django-example/project
-cat > /tmp/deadcode-django-example/pyproject.toml <<'EOF'
-[tool.deadcode]
-ignore-definitions-if-decorated-with = [
-    "@django.contrib.admin.*",
-    "@django.contrib.auth.*",
-    "@django.dispatch.receiver",
-    "@django.utils.decorators.method_decorator",
-    "@django.views.decorators.http.require_*",
-    "@rest_framework.*",
-    "@*register.*",
-]
-ignore-definitions-if-inherits-from = [
-    "django.apps.AppConfig",
-    "django.contrib.admin.*",
-    "django.core.management.base.BaseCommand",
-    "django.db.migrations.Migration",
-    "django.db.models.Model",
-    "django.forms.*Form",
-    "django.utils.deprecation.MiddlewareMixin",
-    "django.views.*View",
-    "rest_framework.*View",
-    "rest_framework.*ViewSet",
-    "rest_framework.*Serializer",
-    "rest_framework.*Permission",
-    "rest_framework.*Authentication",
-    "rest_framework.*Pagination",
-    "rest_framework.*FilterBackend",
-    "rest_framework.*Throttle",
-]
-ignore-names-in-files = ["*/settings.py", "*/urls.py"]
-EOF
-cd /tmp/deadcode-django-example
-deadcode project --no-color
-```
-
-The unconfigured run reports the first block and exits with status `1`. Removing `pyproject.toml` restores that output. With the file in place, the
-command reports only the second block and still exits with status `1`, because real dead code remains in the example. A project with no findings exits
-with status `0`.
-
-If a framework entry point is still reported, compare its decorator, base class, or file path with the patterns above. Use the table in this page to find
-the missing family, add the narrowest matching pattern, and run the command again.
-
 ## Limitations
 
 - Relative and dynamic imports are not resolved. `from .models import Model` and `from . import models` keep working through a bare or wildcard
-  expression, but they do not match a module-qualified pattern such as `django.db.models.Model`. An import inside a function is outside the module-level
-  map, and `importlib`, `getattr`, string paths, and code generation cannot be seen by a static analyser.
+  expression, but they do not match a module-qualified pattern such as `django.db.models.Model`. `importlib`, `getattr`, string paths, and code generation cannot be seen by a static analyser.
 - `UnusedMiddleware` is intentionally reported. It is absent from `MIDDLEWARE`, so registration cannot mark it as used; the example keeps it to show that
   an unregistered middleware class is still detected.
 - The fixture contains deliberately unused definitions: `unused_api_helper`, `unused_manager_method`, `unused_signal_handler`, `unused_tag`,
