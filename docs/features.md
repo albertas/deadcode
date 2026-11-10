@@ -45,6 +45,7 @@ for every row.
 | Unittest lifecycle methods | `## Ignoring unittest lifecycle methods` | `deadcode/visitor/ignore.py` | `tests/visitor/test_unittest_lifecycle_methods.py` | 3 |
 | Django test lifecycle methods | `## Ignoring Django test lifecycle methods` | `deadcode/visitor/ignore.py` | `tests/visitor/test_django_lifecycle_methods.py` | 3 |
 | FastAPI guide | `## Using deadcode on a FastAPI project` | `deadcode/actions/parse_arguments.py` | `tests/documented_examples/test_fastapi.py`, `tests/documented_examples/test_fastapi_documentation.py` | 3 |
+| Django guide | `## Using deadcode on a Django project` | `deadcode/actions/parse_arguments.py` | `tests/documented_examples/test_django.py` | 3 |
 | Pre-commit hook | `## Pre-commit hook` | `.pre-commit-hooks.yaml` | `tests/documented_examples/test_pre_commit_hook_configuration.py` | 3 |
 | Wildcard imports and `__all__` | `## Known limitations` | `deadcode/visitor/module_exports.py` | `tests/visitor/test_wildcard_imports.py` | 3 |
 | Syntax-error files | `## Known limitations` | `deadcode/actions/parse_abstract_syntax_tree.py` | `tests/visitor/test_imports.py`, `tests/cli/test_deadcode.py` | 3 |

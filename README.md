@@ -75,6 +75,43 @@ ignore-bodies-if-inherits-from = ["BaseModel"]
 Read the [FastAPI guide](https://deadcode.readthedocs.io/en/latest/fastapi.html) for common use cases, the complete example application,
 the dependency injection strategy, and the expected output with no wrong detections.
 
+## Using deadcode on a Django project
+
+Django registers models, views, admin classes, middleware, and signal handlers through base classes, decorators, settings strings, and URLconfs, so
+framework entry points look unused to a static analyser. Configure deadcode like this:
+
+```toml
+[tool.deadcode]
+ignore-definitions-if-decorated-with = [
+    "@django.contrib.admin.*",
+    "@django.contrib.auth.*",
+    "@django.dispatch.receiver",
+    "@django.utils.decorators.method_decorator",
+    "@django.views.decorators.http.require_*",
+    "@*register.*",
+]
+ignore-definitions-if-inherits-from = [
+    "django.apps.AppConfig",
+    "django.contrib.admin.*",
+    "django.core.management.base.BaseCommand",
+    "django.db.migrations.Migration",
+    "django.db.models.Model",
+    "django.forms.*Form",
+    "django.utils.deprecation.MiddlewareMixin",
+    "django.views.*View",
+]
+ignore-names-in-files = ["*/settings.py", "*/urls.py"]
+```
+
+The example targets Django 5.2 LTS (5.2.19). The Django REST Framework 3.18.3 entries are additions to the same two keys; see the
+[Django REST Framework section of the Django guide](https://deadcode.readthedocs.io/en/latest/django.html#django-rest-framework). The three keys replace the
+older overlapping name, body, and definition options: one inheritance entry hides a framework subclass name and body, and one decorator entry hides a
+decorated definition name and body. deadcode parses `MIDDLEWARE` registrations and resolves absolute-import qualified names, so a registered middleware
+name and a `models.Model` base need no separate name pattern.
+
+Read the [Django guide](https://deadcode.readthedocs.io/en/latest/django.html) for the framework areas, the current and legacy
+middleware forms, both import forms, database signals, the Django REST Framework entries, and the expected behaviour.
+
 ## Pre-commit hook
 Create a `.pre-commit-config.yaml` file in the root of your project directory, if it doesn't exist, and add the following to the file:
 
@@ -299,7 +336,9 @@ A checked entry is implemented on `main` and is included in the next release; pu
     - Features:
         - Audit runtime and development dependencies for known vulnerabilities in CI on every pull request and weekly.
         - Declare the package development status as Beta.
+        - Add a Django usage guide covering models, admin, views, forms, middleware, signals and more, plus Django `MIDDLEWARE` registration parsing and Django-aware qualified matching through absolute imports.
         - Ignore Django test lifecycle methods in test files.
+        - Django `MIDDLEWARE` registrations are treated as used and absolute-import qualified expressions resolve to their modules.
 - **v2.6.0** `2026-11-08`:
     - Features:
         - Add support for Python 3.13, 3.14 and 3.15.

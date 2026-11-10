@@ -41,6 +41,7 @@ REQUIRED_FEATURES = {
     'Unittest lifecycle methods',
     'Django test lifecycle methods',
     'FastAPI guide',
+    'Django guide',
     'Pre-commit hook',
     'Wildcard imports and __all__',
     'Syntax-error files',

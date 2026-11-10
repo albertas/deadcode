@@ -117,7 +117,7 @@ def test_stacked_decorators_are_ignored(virtual_file_system):
     assert unused_names is None
 
 
-def test_aliased_import_is_still_reported(virtual_file_system):
+def test_aliased_import_is_resolved_for_interface_decorators(virtual_file_system):
     # Having
     virtual_file_system.files = {
         'foo.py': b"""
@@ -138,7 +138,7 @@ def test_aliased_import_is_still_reported(virtual_file_system):
     unused_names = main(['foo.py', '--no-color'])
 
     # Then
-    assert unused_names == 'foo.py:6:4: DC04 Method `compute` is never used'
+    assert unused_names is None
 
 
 def test_unused_method_next_to_ignored_method_is_reported(virtual_file_system):

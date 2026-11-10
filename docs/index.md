@@ -20,6 +20,9 @@ Read the {doc}`rules` page for the implemented rules and for ignoring findings w
 Read the {doc}`fastapi` page for running deadcode on a FastAPI project, including common use cases, dependency injection, and a complete
 example application.
 
+Read the {doc}`django` page for running deadcode on a Django project, including the recommended configuration, settings, models, views, templates,
+forms, the admin, middleware, signals, and Django REST Framework.
+
 Read the {doc}`pre_commit` page for setting up and using the pre-commit hook.
 
 Read the {doc}`contributing` page for the contribution workflow and the feature-request checklist.
@@ -42,6 +45,7 @@ installation
 usage
 rules
 fastapi
+django
 pre_commit
 contributing
 security
