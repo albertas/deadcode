@@ -143,6 +143,5 @@ def test_relative_import_is_not_resolved_to_a_qualified_name(virtual_file_system
 
     # Then
     assert unused_names == (
-        'foo.py:4:0: DC03 Class `LocalModel` is never used\n'
-        'foo.py:8:0: DC02 Function `unused_sentinel` is never used'
+        'foo.py:4:0: DC03 Class `LocalModel` is never used\nfoo.py:8:0: DC02 Function `unused_sentinel` is never used'
     )
