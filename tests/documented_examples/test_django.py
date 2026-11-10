@@ -8,43 +8,33 @@ from deadcode.cli import main, print_main
 FIXTURE_DIRECTORY = Path(__file__).resolve().parents[1] / 'files' / 'django'
 
 DECORATOR_PATTERNS = [
-    '@*admin.*',
-    '@*register',
-    '@*display',
-    '@*action',
-    '@*receiver',
+    '@django.contrib.admin.*',
+    '@django.contrib.auth.*',
+    '@django.dispatch.receiver',
+    '@django.utils.decorators.method_decorator',
+    '@django.views.decorators.http.require_*',
+    '@rest_framework.*',
     '@*register.*',
-    '@*require_*',
-    '@*login_required',
-    '@*permission_required',
-    '@*user_passes_test',
-    '@*method_decorator',
-    '@*api_view',
-    '@*_classes',
-    '@*schema',
 ]
 
 INHERITANCE_PATTERNS = [
-    'Model',
-    'ModelAdmin',
-    'Form',
-    'ModelForm',
-    '*Inline',
-    'BaseCommand',
-    'Migration',
-    'AppConfig',
-    'MiddlewareMixin',
-    '*View',
-    '*ViewSet',
-    '*Serializer',
-    '*Permission',
-    '*Authentication',
-    '*Pagination',
-    '*FilterBackend',
-    '*Throttle',
+    'django.apps.AppConfig',
+    'django.contrib.admin.*',
+    'django.core.management.base.BaseCommand',
+    'django.db.migrations.Migration',
+    'django.db.models.Model',
+    'django.forms.*Form',
+    'django.utils.deprecation.MiddlewareMixin',
+    'django.views.*View',
+    'rest_framework.*View',
+    'rest_framework.*ViewSet',
+    'rest_framework.*Serializer',
+    'rest_framework.*Permission',
+    'rest_framework.*Authentication',
+    'rest_framework.*Pagination',
+    'rest_framework.*FilterBackend',
+    'rest_framework.*Throttle',
 ]
-
-NAME_PATTERNS = ['*Middleware', '*middleware']
 
 FILE_PATTERNS = ['*/settings.py', '*/urls.py']
 
@@ -56,21 +46,18 @@ CONFIGURATION = (
     'ignore-definitions-if-inherits-from = [\n'
     + ''.join(f'    "{pattern}",\n' for pattern in INHERITANCE_PATTERNS)
     + ']\n'
-    'ignore-names = ["*Middleware", "*middleware"]\n'
     'ignore-names-in-files = ["*/settings.py", "*/urls.py"]\n'
 )
 
 COMMAND_LINE_OPTIONS = [
     *(f'--ignore-definitions-if-decorated-with={pattern}' for pattern in DECORATOR_PATTERNS),
     *(f'--ignore-definitions-if-inherits-from={pattern}' for pattern in INHERITANCE_PATTERNS),
-    *(f'--ignore-names={pattern}' for pattern in NAME_PATTERNS),
     *(f'--ignore-names-in-files={pattern}' for pattern in FILE_PATTERNS),
 ]
 
 COMMA_SEPARATED_COMMAND_LINE_OPTIONS = [
     f'--ignore-definitions-if-decorated-with={",".join(DECORATOR_PATTERNS)}',
     f'--ignore-definitions-if-inherits-from={",".join(INHERITANCE_PATTERNS)}',
-    f'--ignore-names={",".join(NAME_PATTERNS)}',
     f'--ignore-names-in-files={",".join(FILE_PATTERNS)}',
 ]
 
@@ -113,10 +100,8 @@ BASELINE_FINDINGS = {
     ('project/management/commands/import_data.py', 'DC04', 'handle'),
     ('project/management/commands/import_data.py', 'DC03', 'UnusedCommand'),
     ('project/managers.py', 'DC04', 'unused_manager_method'),
-    ('project/middleware.py', 'DC02', 'simple_middleware'),
-    ('project/middleware.py', 'DC03', 'CurrentMiddleware'),
-    ('project/middleware.py', 'DC03', 'SimpleMiddleware'),
     ('project/middleware.py', 'DC04', 'process_request'),
+    ('project/middleware.py', 'DC03', 'UnusedMiddleware'),
     ('project/migrations/0001_initial.py', 'DC06', 'initial'),
     ('project/migrations/0001_initial.py', 'DC06', 'dependencies'),
     ('project/migrations/0001_initial.py', 'DC06', 'operations'),
@@ -155,6 +140,7 @@ BASELINE_FINDINGS = {
 
 CONFIGURED_FINDINGS = {
     ('project/api.py', 'DC02', 'unused_api_helper'),
+    ('project/middleware.py', 'DC03', 'UnusedMiddleware'),
     ('project/managers.py', 'DC04', 'unused_manager_method'),
     ('project/signals.py', 'DC02', 'unused_signal_handler'),
     ('project/templatetags/blog_tags.py', 'DC02', 'unused_tag'),
@@ -251,11 +237,17 @@ def test_middleware_forms_without_configuration(project_directory: Path) -> None
     _assert_no_parse_warning(output)
     findings = _findings(output)
     assert {
-        ('project/middleware.py', 'DC02', 'simple_middleware'),
-        ('project/middleware.py', 'DC03', 'CurrentMiddleware'),
-        ('project/middleware.py', 'DC03', 'SimpleMiddleware'),
         ('project/middleware.py', 'DC04', 'process_request'),
+        ('project/middleware.py', 'DC03', 'UnusedMiddleware'),
     } <= findings
+    assert (
+        not {
+            ('project/middleware.py', 'DC02', 'simple_middleware'),
+            ('project/middleware.py', 'DC03', 'CurrentMiddleware'),
+            ('project/middleware.py', 'DC03', 'SimpleMiddleware'),
+        }
+        & findings
+    )
 
 
 def test_middleware_forms_with_documented_configuration(project_directory: Path) -> None:
@@ -266,7 +258,8 @@ def test_middleware_forms_with_documented_configuration(project_directory: Path)
     findings = _configured_findings(project_directory)
 
     # Then
-    assert not any(path == 'project/middleware.py' for path, _, _ in findings)
+    middleware_findings = {finding for finding in findings if finding[0] == 'project/middleware.py'}
+    assert middleware_findings == {('project/middleware.py', 'DC03', 'UnusedMiddleware')}
 
 
 def test_class_based_view_families_without_configuration(project_directory: Path) -> None:
@@ -501,7 +494,7 @@ def test_view_and_template_layers_without_configuration(project_directory: Path)
     _assert_no_parse_warning(output)
     findings = _findings(output)
     names = {name for _, _, name in findings}
-    assert {'SimpleMiddleware', 'process_request', 'get', 'greeting', 'shout', 'unused_tag'} <= names
+    assert {'process_request', 'UnusedMiddleware', 'get', 'greeting', 'shout', 'unused_tag'} <= names
     assert ('project/views.py', 'DC03', 'UnusedView') in findings
 
 
