@@ -70,3 +70,14 @@ other line is covered by a test that asserts an observable value or output, not 
 `make coverage-new BASE_BRANCH=origin/main` enforces 100% diff coverage for newly introduced package lines, and the pytest gate enforces 100%
 package coverage for the whole suite. A defensive branch that a test cannot reach must be justified in the specification before it receives a
 pragma; lowering the threshold is not an option.
+
+Codecov pull-request comments are configured to post only when the patch itself has uncovered lines. The setting lives in the repository-root
+`codecov.yml` as `comment.require_changes: "uncovered_patch"`; an unchanged project delta or a fully covered patch is not a finding and posts
+nothing. `require_base` and `require_head` are report-existence guards, not change gates, so they cannot by themselves silence a no-findings
+comment. Codecov reads repository YAML only from the repository root, `dev/`, or `.github/`, and only from the default branch (`main`).
+
+When a no-findings pull request still receives a comment, escalate in this order. First, read the authenticated configuration at
+`GET https://api.codecov.io/api/v2/github/albertas/repos/deadcode/config/` or the Codecov UI to see which YAML is effective. Second, if the
+repository YAML is ignored, set `comment: false` in the same file.
+Third, if comments persist with `comment: false`, install the Codecov GitHub App so comments use the supported path. The rollback is `git revert`
+of the single configuration commit, which restores `require_changes: true`.
