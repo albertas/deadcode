@@ -9,5 +9,12 @@ def article_saved(sender, instance, **kwargs: object):
     pass
 
 
+def article_saved_direct(sender, instance, **kwargs: object):
+    pass
+
+
+post_save.connect(article_saved_direct, sender=Article)
+
+
 def unused_signal_handler(sender, **kwargs: object):
     pass

@@ -7,61 +7,126 @@ from deadcode.cli import main, print_main
 
 FIXTURE_DIRECTORY = Path(__file__).resolve().parents[1] / 'files' / 'django'
 
-CONFIGURATION = """[tool.deadcode]
-ignore-names-if-decorated-with = [
-    "@admin.*",
-    "@receiver",
-    "@register.*",
-    "@login_required",
-    "@permission_required",
-    "@require_http_methods",
-    "@require_POST",
-    "@method_decorator",
+DECORATOR_PATTERNS = [
+    '@*admin.*',
+    '@*register',
+    '@*display',
+    '@*action',
+    '@*receiver',
+    '@*register.*',
+    '@*require_*',
+    '@*login_required',
+    '@*permission_required',
+    '@*user_passes_test',
+    '@*method_decorator',
+    '@*api_view',
+    '@*_classes',
+    '@*schema',
 ]
-ignore-bodies-if-inherits-from = [
-    "models.Model",
-    "ModelAdmin",
-    "forms.Form",
-    "forms.ModelForm",
-    "View",
-    "BaseCommand",
-    "Migration",
-    "AppConfig",
-    "MiddlewareMixin",
+
+INHERITANCE_PATTERNS = [
+    'Model',
+    'ModelAdmin',
+    'Form',
+    'ModelForm',
+    '*Inline',
+    'BaseCommand',
+    'Migration',
+    'AppConfig',
+    'MiddlewareMixin',
+    '*View',
+    '*ViewSet',
+    '*Serializer',
+    '*Permission',
+    '*Authentication',
+    '*Pagination',
+    '*FilterBackend',
+    '*Throttle',
 ]
-ignore-names-in-files = ["*/settings.py", "*/urls.py", "*/migrations/*"]
-ignore-definitions = ["*Config", "*Middleware", "Command"]
-"""
+
+NAME_PATTERNS = ['*Middleware', '*middleware']
+
+FILE_PATTERNS = ['*/settings.py', '*/urls.py']
+
+CONFIGURATION = (
+    '[tool.deadcode]\n'
+    'ignore-definitions-if-decorated-with = [\n'
+    + ''.join(f'    "{pattern}",\n' for pattern in DECORATOR_PATTERNS)
+    + ']\n'
+    'ignore-definitions-if-inherits-from = [\n'
+    + ''.join(f'    "{pattern}",\n' for pattern in INHERITANCE_PATTERNS)
+    + ']\n'
+    'ignore-names = ["*Middleware", "*middleware"]\n'
+    'ignore-names-in-files = ["*/settings.py", "*/urls.py"]\n'
+)
 
 COMMAND_LINE_OPTIONS = [
-    '--ignore-names-if-decorated-with=@admin.*',
-    '--ignore-names-if-decorated-with=@receiver',
-    '--ignore-names-if-decorated-with=@register.*',
-    '--ignore-names-if-decorated-with=@login_required',
-    '--ignore-names-if-decorated-with=@permission_required',
-    '--ignore-names-if-decorated-with=@require_http_methods',
-    '--ignore-names-if-decorated-with=@require_POST',
-    '--ignore-names-if-decorated-with=@method_decorator',
-    '--ignore-bodies-if-inherits-from=models.Model',
-    '--ignore-bodies-if-inherits-from=ModelAdmin',
-    '--ignore-bodies-if-inherits-from=forms.Form',
-    '--ignore-bodies-if-inherits-from=forms.ModelForm',
-    '--ignore-bodies-if-inherits-from=View',
-    '--ignore-bodies-if-inherits-from=BaseCommand',
-    '--ignore-bodies-if-inherits-from=Migration',
-    '--ignore-bodies-if-inherits-from=AppConfig',
-    '--ignore-bodies-if-inherits-from=MiddlewareMixin',
-    '--ignore-names-in-files=*/settings.py',
-    '--ignore-names-in-files=*/urls.py',
-    '--ignore-names-in-files=*/migrations/*',
-    '--ignore-definitions=*Config',
-    '--ignore-definitions=*Middleware',
-    '--ignore-definitions=Command',
+    *(f'--ignore-definitions-if-decorated-with={pattern}' for pattern in DECORATOR_PATTERNS),
+    *(f'--ignore-definitions-if-inherits-from={pattern}' for pattern in INHERITANCE_PATTERNS),
+    *(f'--ignore-names={pattern}' for pattern in NAME_PATTERNS),
+    *(f'--ignore-names-in-files={pattern}' for pattern in FILE_PATTERNS),
+]
+
+COMMA_SEPARATED_COMMAND_LINE_OPTIONS = [
+    f'--ignore-definitions-if-decorated-with={",".join(DECORATOR_PATTERNS)}',
+    f'--ignore-definitions-if-inherits-from={",".join(INHERITANCE_PATTERNS)}',
+    f'--ignore-names={",".join(NAME_PATTERNS)}',
+    f'--ignore-names-in-files={",".join(FILE_PATTERNS)}',
 ]
 
 FINDING_PATTERN = re.compile(r'^(?P<path>.+):\d+:\d+: (?P<code>DC\d+) \w+ `(?P<name>[^`]+)` is never used$')
 
 BASELINE_FINDINGS = {
+    ('project/admin.py', 'DC03', 'ArticleAdmin'),
+    ('project/admin.py', 'DC06', 'form'),
+    ('project/admin.py', 'DC06', 'list_display'),
+    ('project/admin.py', 'DC06', 'search_fields'),
+    ('project/admin.py', 'DC06', 'list_filter'),
+    ('project/admin.py', 'DC06', 'actions'),
+    ('project/admin.py', 'DC04', 'mark_featured'),
+    ('project/admin.py', 'DC03', 'UnusedAdmin'),
+    ('project/api.py', 'DC03', 'Meta'),
+    ('project/api.py', 'DC06', 'model'),
+    ('project/api.py', 'DC06', 'fields'),
+    ('project/api.py', 'DC06', 'serializer_class'),
+    ('project/api.py', 'DC04', 'publish'),
+    ('project/api.py', 'DC04', 'retrieve'),
+    ('project/api.py', 'DC04', 'destroy'),
+    ('project/api.py', 'DC02', 'article_stats'),
+    ('project/api.py', 'DC02', 'unused_api_helper'),
+    ('project/apps.py', 'DC03', 'BlogConfig'),
+    ('project/apps.py', 'DC06', 'default_auto_field'),
+    ('project/apps.py', 'DC04', 'ready'),
+    ('project/forms.py', 'DC03', 'Meta'),
+    ('project/forms.py', 'DC06', 'model'),
+    ('project/forms.py', 'DC06', 'fields'),
+    ('project/forms.py', 'DC04', 'clean_title'),
+    ('project/forms.py', 'DC03', 'UnusedForm'),
+    ('project/import_forms.py', 'DC03', 'QualifiedModel'),
+    ('project/import_forms.py', 'DC03', 'ImportedForm'),
+    ('project/import_forms.py', 'DC03', 'QualifiedAdmin'),
+    ('project/import_forms.py', 'DC03', 'BareAdmin'),
+    ('project/import_forms.py', 'DC02', 'imported_receiver'),
+    ('project/management/commands/import_data.py', 'DC03', 'Command'),
+    ('project/management/commands/import_data.py', 'DC06', 'help'),
+    ('project/management/commands/import_data.py', 'DC04', 'add_arguments'),
+    ('project/management/commands/import_data.py', 'DC04', 'handle'),
+    ('project/management/commands/import_data.py', 'DC03', 'UnusedCommand'),
+    ('project/managers.py', 'DC04', 'unused_manager_method'),
+    ('project/middleware.py', 'DC02', 'simple_middleware'),
+    ('project/middleware.py', 'DC03', 'CurrentMiddleware'),
+    ('project/middleware.py', 'DC03', 'SimpleMiddleware'),
+    ('project/middleware.py', 'DC04', 'process_request'),
+    ('project/migrations/0001_initial.py', 'DC06', 'initial'),
+    ('project/migrations/0001_initial.py', 'DC06', 'dependencies'),
+    ('project/migrations/0001_initial.py', 'DC06', 'operations'),
+    ('project/models.py', 'DC03', 'Meta'),
+    ('project/models.py', 'DC06', 'verbose_name_plural'),
+    ('project/models.py', 'DC06', 'category'),
+    ('project/models.py', 'DC06', 'ordering'),
+    ('project/models.py', 'DC08', 'display_name'),
+    ('project/models.py', 'DC08', 'published_titles'),
+    ('project/models.py', 'DC03', 'UnusedModel'),
     ('project/settings.py', 'DC01', 'SECRET_KEY'),
     ('project/settings.py', 'DC01', 'DEBUG'),
     ('project/settings.py', 'DC01', 'INSTALLED_APPS'),
@@ -70,71 +135,33 @@ BASELINE_FINDINGS = {
     ('project/settings.py', 'DC01', 'DATABASES'),
     ('project/settings.py', 'DC01', 'ROOT_URLCONF'),
     ('project/settings.py', 'DC01', 'UNUSED_SETTING'),
-    ('project/urls.py', 'DC01', 'app_name'),
-    ('project/urls.py', 'DC01', 'urlpatterns'),
-    ('project/urls.py', 'DC01', 'UNUSED_URL_NAME'),
-    ('project/apps.py', 'DC03', 'BlogConfig'),
-    ('project/apps.py', 'DC06', 'default_auto_field'),
-    ('project/apps.py', 'DC04', 'ready'),
-    ('project/management/commands/import_data.py', 'DC03', 'Command'),
-    ('project/management/commands/import_data.py', 'DC06', 'help'),
-    ('project/management/commands/import_data.py', 'DC04', 'add_arguments'),
-    ('project/management/commands/import_data.py', 'DC04', 'handle'),
-    ('project/management/commands/import_data.py', 'DC03', 'UnusedCommand'),
-    ('project/management/commands/import_data.py', 'DC04', 'handle'),
     ('project/signals.py', 'DC02', 'article_saved'),
     ('project/signals.py', 'DC02', 'unused_signal_handler'),
-    ('project/tests.py', 'DC04', 'unused_test_helper'),
-    ('project/admin.py', 'DC03', 'ArticleAdmin'),
-    ('project/admin.py', 'DC03', 'UnusedAdmin'),
-    ('project/admin.py', 'DC04', 'mark_featured'),
-    ('project/admin.py', 'DC06', 'actions'),
-    ('project/admin.py', 'DC06', 'form'),
-    ('project/admin.py', 'DC06', 'list_display'),
-    ('project/admin.py', 'DC06', 'list_filter'),
-    ('project/admin.py', 'DC06', 'search_fields'),
-    ('project/forms.py', 'DC03', 'Meta'),
-    ('project/forms.py', 'DC03', 'UnusedForm'),
-    ('project/forms.py', 'DC04', 'clean_title'),
-    ('project/forms.py', 'DC06', 'fields'),
-    ('project/forms.py', 'DC06', 'model'),
-    ('project/views.py', 'DC01', 'UNUSED_VIEW_SETTING'),
-    ('project/views.py', 'DC02', 'unused_view'),
-    ('project/views.py', 'DC03', 'UnusedView'),
-    ('project/views.py', 'DC04', 'get'),
-    ('project/middleware.py', 'DC03', 'SimpleMiddleware'),
-    ('project/middleware.py', 'DC04', 'process_request'),
     ('project/templatetags/blog_tags.py', 'DC02', 'greeting'),
     ('project/templatetags/blog_tags.py', 'DC02', 'shout'),
     ('project/templatetags/blog_tags.py', 'DC02', 'unused_tag'),
-    ('project/managers.py', 'DC04', 'unused_manager_method'),
-    ('project/models.py', 'DC03', 'Meta'),
-    ('project/models.py', 'DC03', 'UnusedModel'),
-    ('project/models.py', 'DC06', 'category'),
-    ('project/models.py', 'DC06', 'ordering'),
-    ('project/models.py', 'DC06', 'verbose_name_plural'),
-    ('project/models.py', 'DC08', 'display_name'),
-    ('project/models.py', 'DC08', 'published_titles'),
-    ('project/migrations/0001_initial.py', 'DC06', 'dependencies'),
-    ('project/migrations/0001_initial.py', 'DC06', 'initial'),
-    ('project/migrations/0001_initial.py', 'DC06', 'operations'),
+    ('project/tests.py', 'DC04', 'unused_test_helper'),
+    ('project/urls.py', 'DC01', 'app_name'),
+    ('project/urls.py', 'DC01', 'urlpatterns'),
+    ('project/urls.py', 'DC01', 'UNUSED_URL_NAME'),
+    ('project/views.py', 'DC01', 'UNUSED_VIEW_SETTING'),
+    ('project/views.py', 'DC02', 'unused_view'),
+    ('project/views.py', 'DC02', 'unreferenced_require_view'),
+    ('project/views.py', 'DC03', 'ArticleListView'),
+    ('project/views.py', 'DC04', 'get'),
+    ('project/views.py', 'DC03', 'ArticleDetailView'),
+    ('project/views.py', 'DC03', 'UnusedView'),
 }
 
 CONFIGURED_FINDINGS = {
-    ('project/admin.py', 'DC03', 'UnusedAdmin'),
-    ('project/forms.py', 'DC03', 'UnusedForm'),
+    ('project/api.py', 'DC02', 'unused_api_helper'),
+    ('project/managers.py', 'DC04', 'unused_manager_method'),
+    ('project/signals.py', 'DC02', 'unused_signal_handler'),
+    ('project/templatetags/blog_tags.py', 'DC02', 'unused_tag'),
+    ('project/tests.py', 'DC04', 'unused_test_helper'),
     ('project/views.py', 'DC01', 'UNUSED_VIEW_SETTING'),
     ('project/views.py', 'DC02', 'unused_view'),
-    ('project/views.py', 'DC03', 'UnusedView'),
-    ('project/templatetags/blog_tags.py', 'DC02', 'unused_tag'),
-    ('project/models.py', 'DC03', 'UnusedModel'),
-    ('project/managers.py', 'DC04', 'unused_manager_method'),
-    ('project/management/commands/import_data.py', 'DC03', 'UnusedCommand'),
-    ('project/signals.py', 'DC02', 'unused_signal_handler'),
-    ('project/tests.py', 'DC04', 'unused_test_helper'),
 }
-
-MODEL_LAYER_FINDINGS = CONFIGURED_FINDINGS
 
 
 def _copy_fixture(tmp_path: Path) -> None:
@@ -156,6 +183,13 @@ def _assert_no_parse_warning(output: str | None) -> None:
     assert 'could not parse' not in output
 
 
+def _configured_findings(tmp_path: Path) -> set[tuple[str, str, str]]:
+    (tmp_path / 'pyproject.toml').write_text(CONFIGURATION)
+    output = main(['project', '--no-color'])
+    _assert_no_parse_warning(output)
+    return _findings(output)
+
+
 def test_django_fixture_without_configuration(project_directory: Path) -> None:
     # Having
     _copy_fixture(project_directory)
@@ -172,14 +206,12 @@ def test_django_fixture_without_configuration(project_directory: Path) -> None:
 def test_django_fixture_with_documented_configuration(project_directory: Path) -> None:
     # Having
     _copy_fixture(project_directory)
-    (project_directory / 'pyproject.toml').write_text(CONFIGURATION)
 
     # When
-    output = main(['project', '--no-color'])
+    findings = _configured_findings(project_directory)
 
     # Then
-    _assert_no_parse_warning(output)
-    assert _findings(output) == CONFIGURED_FINDINGS
+    assert findings == CONFIGURED_FINDINGS
     assert print_main(['project', '--no-color']) == 1
 
 
@@ -196,10 +228,21 @@ def test_django_fixture_with_documented_command_line_options(project_directory: 
     assert print_main(['project', '--no-color', *COMMAND_LINE_OPTIONS]) == 1
 
 
-def test_model_layer_false_positives_with_documented_configuration(project_directory: Path) -> None:
+def test_django_fixture_with_comma_separated_command_line_options(project_directory: Path) -> None:
     # Having
     _copy_fixture(project_directory)
-    (project_directory / 'pyproject.toml').write_text(CONFIGURATION)
+
+    # When
+    output = main(['project', '--no-color', *COMMA_SEPARATED_COMMAND_LINE_OPTIONS])
+
+    # Then
+    _assert_no_parse_warning(output)
+    assert _findings(output) == CONFIGURED_FINDINGS
+
+
+def test_middleware_forms_without_configuration(project_directory: Path) -> None:
+    # Having
+    _copy_fixture(project_directory)
 
     # When
     output = main(['project', '--no-color'])
@@ -207,10 +250,210 @@ def test_model_layer_false_positives_with_documented_configuration(project_direc
     # Then
     _assert_no_parse_warning(output)
     findings = _findings(output)
-    assert findings == MODEL_LAYER_FINDINGS
-    assert ('project/models.py', 'DC03', 'UnusedModel') in findings
-    assert ('project/managers.py', 'DC04', 'unused_manager_method') in findings
-    assert not any(path == 'project/models.py' and code == 'DC06' for path, code, _ in findings)
+    assert {
+        ('project/middleware.py', 'DC02', 'simple_middleware'),
+        ('project/middleware.py', 'DC03', 'CurrentMiddleware'),
+        ('project/middleware.py', 'DC03', 'SimpleMiddleware'),
+        ('project/middleware.py', 'DC04', 'process_request'),
+    } <= findings
+
+
+def test_middleware_forms_with_documented_configuration(project_directory: Path) -> None:
+    # Having
+    _copy_fixture(project_directory)
+
+    # When
+    findings = _configured_findings(project_directory)
+
+    # Then
+    assert not any(path == 'project/middleware.py' for path, _, _ in findings)
+
+
+def test_class_based_view_families_without_configuration(project_directory: Path) -> None:
+    # Having
+    _copy_fixture(project_directory)
+
+    # When
+    output = main(['project', '--no-color'])
+
+    # Then
+    _assert_no_parse_warning(output)
+    findings = _findings(output)
+    assert {
+        ('project/views.py', 'DC03', 'ArticleListView'),
+        ('project/views.py', 'DC03', 'ArticleDetailView'),
+        ('project/views.py', 'DC03', 'UnusedView'),
+        ('project/views.py', 'DC04', 'get'),
+    } <= findings
+    assert any(path == 'project/views.py' and code == 'DC04' and name == 'get' for path, code, name in findings)
+
+
+def test_class_based_view_families_with_documented_configuration(project_directory: Path) -> None:
+    # Having
+    _copy_fixture(project_directory)
+
+    # When
+    findings = _configured_findings(project_directory)
+
+    # Then
+    view_findings = {finding for finding in findings if finding[0] == 'project/views.py'}
+    assert view_findings == {
+        ('project/views.py', 'DC01', 'UNUSED_VIEW_SETTING'),
+        ('project/views.py', 'DC02', 'unused_view'),
+    }
+
+
+def test_decorator_wildcards_without_configuration(project_directory: Path) -> None:
+    # Having
+    _copy_fixture(project_directory)
+
+    # When
+    output = main(['project', '--no-color'])
+
+    # Then
+    _assert_no_parse_warning(output)
+    findings = _findings(output)
+    assert {
+        ('project/views.py', 'DC02', 'unreferenced_require_view'),
+        ('project/import_forms.py', 'DC02', 'imported_receiver'),
+        ('project/import_forms.py', 'DC03', 'QualifiedAdmin'),
+        ('project/import_forms.py', 'DC03', 'BareAdmin'),
+        ('project/api.py', 'DC02', 'article_stats'),
+        ('project/api.py', 'DC04', 'publish'),
+    } <= findings
+
+
+def test_decorator_wildcards_with_documented_configuration(project_directory: Path) -> None:
+    # Having
+    _copy_fixture(project_directory)
+
+    # When
+    findings = _configured_findings(project_directory)
+
+    # Then
+    names = {name for _, _, name in findings}
+    assert 'unreferenced_require_view' not in names
+    assert 'imported_receiver' not in names
+    assert 'QualifiedAdmin' not in names
+    assert 'BareAdmin' not in names
+    assert 'article_stats' not in names
+    assert 'publish' not in names
+    assert 'article_update' not in names
+
+
+def test_require_put_uses_require_http_methods(project_directory: Path) -> None:
+    # Having
+    fixture_sources = {path.name: path.read_text() for path in FIXTURE_DIRECTORY.glob('*.py')}
+
+    # Then
+    assert 'require_PUT' not in ''.join(fixture_sources.values())
+    assert "@require_http_methods(['PUT'])" in fixture_sources['views.py']
+
+
+def test_import_forms_without_configuration(project_directory: Path) -> None:
+    # Having
+    _copy_fixture(project_directory)
+
+    # When
+    output = main(['project', '--no-color'])
+
+    # Then
+    _assert_no_parse_warning(output)
+    findings = _findings(output)
+    assert {
+        ('project/import_forms.py', 'DC03', 'QualifiedModel'),
+        ('project/import_forms.py', 'DC03', 'ImportedForm'),
+        ('project/import_forms.py', 'DC03', 'QualifiedAdmin'),
+        ('project/import_forms.py', 'DC03', 'BareAdmin'),
+        ('project/import_forms.py', 'DC02', 'imported_receiver'),
+    } <= findings
+    assert ('project/import_forms.py', 'DC03', 'ImportedModel') not in findings
+
+
+def test_import_forms_with_documented_configuration(project_directory: Path) -> None:
+    # Having
+    _copy_fixture(project_directory)
+
+    # When
+    findings = _configured_findings(project_directory)
+
+    # Then
+    assert not any(path == 'project/import_forms.py' for path, _, _ in findings)
+
+
+def test_signal_forms_without_configuration(project_directory: Path) -> None:
+    # Having
+    _copy_fixture(project_directory)
+
+    # When
+    output = main(['project', '--no-color'])
+
+    # Then
+    _assert_no_parse_warning(output)
+    findings = _findings(output)
+    assert {
+        ('project/signals.py', 'DC02', 'article_saved'),
+        ('project/signals.py', 'DC02', 'unused_signal_handler'),
+        ('project/import_forms.py', 'DC02', 'imported_receiver'),
+    } <= findings
+    assert ('project/signals.py', 'DC02', 'article_saved_direct') not in findings
+
+
+def test_signal_forms_with_documented_configuration(project_directory: Path) -> None:
+    # Having
+    _copy_fixture(project_directory)
+
+    # When
+    findings = _configured_findings(project_directory)
+
+    # Then
+    signal_findings = [finding for finding in findings if finding[0] == 'project/signals.py']
+    assert signal_findings == [('project/signals.py', 'DC02', 'unused_signal_handler')]
+
+
+def test_django_rest_framework_without_configuration(project_directory: Path) -> None:
+    # Having
+    _copy_fixture(project_directory)
+
+    # When
+    output = main(['project', '--no-color'])
+
+    # Then
+    _assert_no_parse_warning(output)
+    findings = _findings(output)
+    assert {
+        ('project/api.py', 'DC03', 'Meta'),
+        ('project/api.py', 'DC06', 'serializer_class'),
+        ('project/api.py', 'DC04', 'publish'),
+        ('project/api.py', 'DC02', 'article_stats'),
+        ('project/api.py', 'DC02', 'unused_api_helper'),
+    } <= findings
+    assert ('project/api.py', 'DC03', 'ArticleViewSet') not in findings
+    assert ('project/api.py', 'DC03', 'ArticleSerializer') not in findings
+
+
+def test_django_rest_framework_with_documented_configuration(project_directory: Path) -> None:
+    # Having
+    _copy_fixture(project_directory)
+
+    # When
+    findings = _configured_findings(project_directory)
+
+    # Then
+    api_findings = [finding for finding in findings if finding[0] == 'project/api.py']
+    assert api_findings == [('project/api.py', 'DC02', 'unused_api_helper')]
+
+
+def test_model_layer_false_positives_with_documented_configuration(project_directory: Path) -> None:
+    # Having
+    _copy_fixture(project_directory)
+
+    # When
+    findings = _configured_findings(project_directory)
+
+    # Then
+    assert not any(path == 'project/models.py' for path, _, _ in findings)
+    assert not any(path == 'project/managers.py' and code != 'DC04' for path, code, _ in findings)
     assert not any(name == 'Meta' for _, _, name in findings)
     assert not any(name == 'display_name' for _, _, name in findings)
     assert not any(path.startswith('project/migrations/') for path, _, _ in findings)
@@ -232,41 +475,17 @@ def test_model_layer_false_positives_without_configuration(project_directory: Pa
     assert any(path.startswith('project/migrations/') for path, _, _ in findings)
 
 
-def test_view_layer_false_positives_with_documented_configuration(project_directory: Path) -> None:
-    # Having
-    _copy_fixture(project_directory)
-    (project_directory / 'pyproject.toml').write_text(CONFIGURATION)
-
-    # When
-    output = main(['project', '--no-color'])
-
-    # Then
-    _assert_no_parse_warning(output)
-    findings = _findings(output)
-    names = {name for _, _, name in findings}
-    assert 'ArticleListView' not in names
-    assert 'get' not in names
-    assert 'process_request' not in names
-    assert 'SimpleMiddleware' not in names
-    assert ('project/views.py', 'DC03', 'UnusedView') in findings
-    assert not any(
-        code == 'DC04' and path in {'project/views.py', 'project/middleware.py'} for path, code, _ in findings
-    )
-
-
 def test_template_layer_false_positives_with_documented_configuration(project_directory: Path) -> None:
     # Having
     _copy_fixture(project_directory)
-    (project_directory / 'pyproject.toml').write_text(CONFIGURATION)
 
     # When
-    output = main(['project', '--no-color'])
+    findings = _configured_findings(project_directory)
 
     # Then
-    _assert_no_parse_warning(output)
-    findings = _findings(output)
-    assert not any(name == 'greeting' for _, _, name in findings)
-    assert not any(name == 'shout' for _, _, name in findings)
+    names = {name for _, _, name in findings}
+    assert 'greeting' not in names
+    assert 'shout' not in names
     tag_findings = [finding for finding in findings if finding[0] == 'project/templatetags/blog_tags.py']
     assert tag_findings == [('project/templatetags/blog_tags.py', 'DC02', 'unused_tag')]
 
@@ -289,42 +508,34 @@ def test_view_and_template_layers_without_configuration(project_directory: Path)
 def test_forms_false_positives_with_documented_configuration(project_directory: Path) -> None:
     # Having
     _copy_fixture(project_directory)
-    (project_directory / 'pyproject.toml').write_text(CONFIGURATION)
 
     # When
-    output = main(['project', '--no-color'])
+    findings = _configured_findings(project_directory)
 
     # Then
-    _assert_no_parse_warning(output)
-    findings = _findings(output)
     names = {name for _, _, name in findings}
     assert 'Meta' not in names
     assert 'model' not in names
     assert 'fields' not in names
     assert 'clean_title' not in names
-    assert 'ArticleForm' not in names
-    assert ('project/forms.py', 'DC03', 'UnusedForm') in findings
+    assert not any(path == 'project/forms.py' for path, _, _ in findings)
 
 
 def test_admin_false_positives_with_documented_configuration(project_directory: Path) -> None:
     # Having
     _copy_fixture(project_directory)
-    (project_directory / 'pyproject.toml').write_text(CONFIGURATION)
 
     # When
-    output = main(['project', '--no-color'])
+    findings = _configured_findings(project_directory)
 
     # Then
-    _assert_no_parse_warning(output)
-    findings = _findings(output)
     names = {name for _, _, name in findings}
     assert 'list_display' not in names
     assert 'search_fields' not in names
     assert 'list_filter' not in names
     assert 'actions' not in names
     assert 'mark_featured' not in names
-    assert 'ArticleAdmin' not in names
-    assert ('project/admin.py', 'DC03', 'UnusedAdmin') in findings
+    assert not any(path == 'project/admin.py' for path, _, _ in findings)
 
 
 def test_forms_and_admin_without_configuration(project_directory: Path) -> None:
@@ -347,15 +558,13 @@ def test_forms_and_admin_without_configuration(project_directory: Path) -> None:
 def test_development_process_false_positives_with_documented_configuration(project_directory: Path) -> None:
     # Having
     _copy_fixture(project_directory)
-    (project_directory / 'pyproject.toml').write_text(CONFIGURATION)
 
     # When
-    output = main(['project', '--no-color'])
+    findings = _configured_findings(project_directory)
 
     # Then
-    _assert_no_parse_warning(output)
-    findings = _findings(output)
     assert not any(path == 'project/apps.py' for path, _, _ in findings)
+    assert not any(path == 'project/management/commands/import_data.py' for path, _, _ in findings)
     assert not any(name in {'Command', 'help', 'add_arguments', 'handle', 'article_saved'} for _, _, name in findings)
     assert not any(
         path == 'project/tests.py'
@@ -363,7 +572,6 @@ def test_development_process_false_positives_with_documented_configuration(proje
         for path, _, name in findings
     )
     assert ('project/signals.py', 'DC02', 'unused_signal_handler') in findings
-    assert ('project/management/commands/import_data.py', 'DC03', 'UnusedCommand') in findings
     assert ('project/tests.py', 'DC04', 'unused_test_helper') in findings
 
 

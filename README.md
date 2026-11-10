@@ -77,38 +77,58 @@ the dependency injection strategy, and the expected output with no wrong detecti
 
 ## Using deadcode on a Django project
 
-Django registers models, views, admin classes, and signal handlers through base classes, decorators, settings strings, and URLconfs, so
+Django registers models, views, admin classes, middleware, and signal handlers through base classes, decorators, settings strings, and URLconfs, so
 framework entry points look unused to a static analyser. Configure deadcode like this:
 
 ```toml
 [tool.deadcode]
-ignore-names-if-decorated-with = [
-    "@admin.*",
-    "@receiver",
-    "@register.*",
-    "@login_required",
-    "@permission_required",
-    "@require_http_methods",
-    "@require_POST",
-    "@method_decorator",
+ignore-definitions-if-decorated-with = [
+    "@*admin.*",
+    "@*register",
+    "@*display",
+    "@*action",
+    "@*receiver",
+    "@*register.*",
+    "@*require_*",
+    "@*login_required",
+    "@*permission_required",
+    "@*user_passes_test",
+    "@*method_decorator",
+    "@*api_view",
+    "@*_classes",
+    "@*schema",
 ]
-ignore-bodies-if-inherits-from = [
-    "models.Model",
+ignore-definitions-if-inherits-from = [
+    "Model",
     "ModelAdmin",
-    "forms.Form",
-    "forms.ModelForm",
-    "View",
+    "Form",
+    "ModelForm",
+    "*Inline",
     "BaseCommand",
     "Migration",
     "AppConfig",
     "MiddlewareMixin",
+    "*View",
+    "*ViewSet",
+    "*Serializer",
+    "*Permission",
+    "*Authentication",
+    "*Pagination",
+    "*FilterBackend",
+    "*Throttle",
 ]
-ignore-names-in-files = ["*/settings.py", "*/urls.py", "*/migrations/*"]
-ignore-definitions = ["*Config", "*Middleware", "Command"]
+ignore-names = ["*Middleware", "*middleware"]
+ignore-names-in-files = ["*/settings.py", "*/urls.py"]
 ```
 
-Read the [Django guide](https://deadcode.readthedocs.io/en/latest/django.html) for the common use cases, every framework area, the complete
-example application, and the expected output with no wrong detections.
+The example targets Django 5.2 LTS (5.2.19) and Django REST Framework 3.18.3 and uses APIs present in Django 5.2 through 6.1. The four keys replace the
+older overlapping name, body, and definition options: one inheritance entry hides a framework subclass name and body, and one decorator entry hides a
+decorated definition name and body. Command-line flags accept the same values repeatedly, space-separated, or as one comma-separated string; a pipe is
+not a separator.
+
+Read the [Django guide](https://deadcode.readthedocs.io/en/latest/django.html) for the common use cases, every framework area, the current and legacy
+middleware forms, both import forms, database signals, Django REST Framework, the complete example application, and the expected output with no wrong
+detections.
 
 ## Pre-commit hook
 Create a `.pre-commit-config.yaml` file in the root of your project directory, if it doesn't exist, and add the following to the file:

@@ -5,12 +5,15 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'rest_framework',
     'project.apps.BlogConfig',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'project.middleware.SimpleMiddleware',
+    'project.middleware.CurrentMiddleware',
+    'project.middleware.simple_middleware',
 ]
 TEMPLATES = [
     {
