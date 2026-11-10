@@ -382,6 +382,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - Rules now sit under Ignoring checks with noqa comments, the Glossary under Command line options, and Decorator matching is more concise.
         - Python 3.10+ requirement is now shown as a badge in the README
 - **v2.5.0** `2026-11-07`:
+        - Stop Codecov report comments on pull requests with no coverage findings
     - Bugfixes:
         - Fix a crash when a decorator has no `id` attribute.
 - **v2.4.1** `2024-08-09`:
