@@ -88,7 +88,6 @@ ignore-definitions-if-decorated-with = [
     "@django.dispatch.receiver",
     "@django.utils.decorators.method_decorator",
     "@django.views.decorators.http.require_*",
-    "@rest_framework.*",
     "@*register.*",
 ]
 ignore-definitions-if-inherits-from = [
@@ -100,26 +99,18 @@ ignore-definitions-if-inherits-from = [
     "django.forms.*Form",
     "django.utils.deprecation.MiddlewareMixin",
     "django.views.*View",
-    "rest_framework.*View",
-    "rest_framework.*ViewSet",
-    "rest_framework.*Serializer",
-    "rest_framework.*Permission",
-    "rest_framework.*Authentication",
-    "rest_framework.*Pagination",
-    "rest_framework.*FilterBackend",
-    "rest_framework.*Throttle",
 ]
 ignore-names-in-files = ["*/settings.py", "*/urls.py"]
 ```
 
-The example targets Django 5.2 LTS (5.2.19) and Django REST Framework 3.18.3 and uses APIs present in Django 5.2 through 6.1. The three keys replace the
+The example targets Django 5.2 LTS (5.2.19). The Django REST Framework 3.18.3 entries are additions to the same two keys; see the
+[Django REST Framework section of the Django guide](https://deadcode.readthedocs.io/en/latest/django.html#django-rest-framework). The three keys replace the
 older overlapping name, body, and definition options: one inheritance entry hides a framework subclass name and body, and one decorator entry hides a
 decorated definition name and body. deadcode parses `MIDDLEWARE` registrations and resolves absolute-import qualified names, so a registered middleware
 name and a `models.Model` base need no separate name pattern.
 
-Read the [Django guide](https://deadcode.readthedocs.io/en/latest/django.html) for the common use cases, every framework area, the current and legacy
-middleware forms, both import forms, database signals, Django REST Framework, the complete example application, and the expected output with no wrong
-detections.
+Read the [Django guide](https://deadcode.readthedocs.io/en/latest/django.html) for the framework areas, the current and legacy
+middleware forms, both import forms, database signals, the Django REST Framework entries, and the expected behaviour.
 
 ## Pre-commit hook
 Create a `.pre-commit-config.yaml` file in the root of your project directory, if it doesn't exist, and add the following to the file:

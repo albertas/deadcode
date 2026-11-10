@@ -7,17 +7,16 @@ from deadcode.cli import main, print_main
 
 FIXTURE_DIRECTORY = Path(__file__).resolve().parents[1] / 'files' / 'django'
 
-DECORATOR_PATTERNS = [
+DJANGO_DECORATOR_PATTERNS = [
     '@django.contrib.admin.*',
     '@django.contrib.auth.*',
     '@django.dispatch.receiver',
     '@django.utils.decorators.method_decorator',
     '@django.views.decorators.http.require_*',
-    '@rest_framework.*',
     '@*register.*',
 ]
 
-INHERITANCE_PATTERNS = [
+DJANGO_INHERITANCE_PATTERNS = [
     'django.apps.AppConfig',
     'django.contrib.admin.*',
     'django.core.management.base.BaseCommand',
@@ -26,6 +25,11 @@ INHERITANCE_PATTERNS = [
     'django.forms.*Form',
     'django.utils.deprecation.MiddlewareMixin',
     'django.views.*View',
+]
+
+DJANGO_REST_FRAMEWORK_DECORATOR_PATTERNS = ['@rest_framework.*']
+
+DJANGO_REST_FRAMEWORK_INHERITANCE_PATTERNS = [
     'rest_framework.*View',
     'rest_framework.*ViewSet',
     'rest_framework.*Serializer',
@@ -36,28 +40,39 @@ INHERITANCE_PATTERNS = [
     'rest_framework.*Throttle',
 ]
 
+FULL_DECORATOR_PATTERNS = DJANGO_DECORATOR_PATTERNS + DJANGO_REST_FRAMEWORK_DECORATOR_PATTERNS
+
+FULL_INHERITANCE_PATTERNS = DJANGO_INHERITANCE_PATTERNS + DJANGO_REST_FRAMEWORK_INHERITANCE_PATTERNS
+
 FILE_PATTERNS = ['*/settings.py', '*/urls.py']
 
-CONFIGURATION = (
-    '[tool.deadcode]\n'
-    'ignore-definitions-if-decorated-with = [\n'
-    + ''.join(f'    "{pattern}",\n' for pattern in DECORATOR_PATTERNS)
-    + ']\n'
-    'ignore-definitions-if-inherits-from = [\n'
-    + ''.join(f'    "{pattern}",\n' for pattern in INHERITANCE_PATTERNS)
-    + ']\n'
-    'ignore-names-in-files = ["*/settings.py", "*/urls.py"]\n'
-)
+
+def _configuration(decorator_patterns: list[str], inheritance_patterns: list[str]) -> str:
+    return (
+        '[tool.deadcode]\n'
+        'ignore-definitions-if-decorated-with = [\n'
+        + ''.join(f'    "{pattern}",\n' for pattern in decorator_patterns)
+        + ']\n'
+        'ignore-definitions-if-inherits-from = [\n'
+        + ''.join(f'    "{pattern}",\n' for pattern in inheritance_patterns)
+        + ']\n'
+        'ignore-names-in-files = ["*/settings.py", "*/urls.py"]\n'
+    )
+
+
+DJANGO_CONFIGURATION = _configuration(DJANGO_DECORATOR_PATTERNS, DJANGO_INHERITANCE_PATTERNS)
+
+DJANGO_REST_FRAMEWORK_CONFIGURATION = _configuration(FULL_DECORATOR_PATTERNS, FULL_INHERITANCE_PATTERNS)
 
 COMMAND_LINE_OPTIONS = [
-    *(f'--ignore-definitions-if-decorated-with={pattern}' for pattern in DECORATOR_PATTERNS),
-    *(f'--ignore-definitions-if-inherits-from={pattern}' for pattern in INHERITANCE_PATTERNS),
+    *(f'--ignore-definitions-if-decorated-with={pattern}' for pattern in FULL_DECORATOR_PATTERNS),
+    *(f'--ignore-definitions-if-inherits-from={pattern}' for pattern in FULL_INHERITANCE_PATTERNS),
     *(f'--ignore-names-in-files={pattern}' for pattern in FILE_PATTERNS),
 ]
 
 COMMA_SEPARATED_COMMAND_LINE_OPTIONS = [
-    f'--ignore-definitions-if-decorated-with={",".join(DECORATOR_PATTERNS)}',
-    f'--ignore-definitions-if-inherits-from={",".join(INHERITANCE_PATTERNS)}',
+    f'--ignore-definitions-if-decorated-with={",".join(FULL_DECORATOR_PATTERNS)}',
+    f'--ignore-definitions-if-inherits-from={",".join(FULL_INHERITANCE_PATTERNS)}',
     f'--ignore-names-in-files={",".join(FILE_PATTERNS)}',
 ]
 
@@ -149,6 +164,17 @@ CONFIGURED_FINDINGS = {
     ('project/views.py', 'DC02', 'unused_view'),
 }
 
+DJANGO_CONFIGURED_FINDINGS = CONFIGURED_FINDINGS | {
+    ('project/api.py', 'DC03', 'Meta'),
+    ('project/api.py', 'DC06', 'model'),
+    ('project/api.py', 'DC06', 'fields'),
+    ('project/api.py', 'DC06', 'serializer_class'),
+    ('project/api.py', 'DC04', 'publish'),
+    ('project/api.py', 'DC04', 'retrieve'),
+    ('project/api.py', 'DC04', 'destroy'),
+    ('project/api.py', 'DC02', 'article_stats'),
+}
+
 
 def _copy_fixture(tmp_path: Path) -> None:
     shutil.copytree(FIXTURE_DIRECTORY, tmp_path / 'project')
@@ -170,7 +196,14 @@ def _assert_no_parse_warning(output: str | None) -> None:
 
 
 def _configured_findings(tmp_path: Path) -> set[tuple[str, str, str]]:
-    (tmp_path / 'pyproject.toml').write_text(CONFIGURATION)
+    (tmp_path / 'pyproject.toml').write_text(DJANGO_CONFIGURATION)
+    output = main(['project', '--no-color'])
+    _assert_no_parse_warning(output)
+    return _findings(output)
+
+
+def _rest_framework_configured_findings(tmp_path: Path) -> set[tuple[str, str, str]]:
+    (tmp_path / 'pyproject.toml').write_text(DJANGO_REST_FRAMEWORK_CONFIGURATION)
     output = main(['project', '--no-color'])
     _assert_no_parse_warning(output)
     return _findings(output)
@@ -197,7 +230,7 @@ def test_django_fixture_with_documented_configuration(project_directory: Path) -
     findings = _configured_findings(project_directory)
 
     # Then
-    assert findings == CONFIGURED_FINDINGS
+    assert findings == DJANGO_CONFIGURED_FINDINGS
     assert print_main(['project', '--no-color']) == 1
 
 
@@ -321,7 +354,7 @@ def test_decorator_wildcards_with_documented_configuration(project_directory: Pa
     _copy_fixture(project_directory)
 
     # When
-    findings = _configured_findings(project_directory)
+    findings = _rest_framework_configured_findings(project_directory)
 
     # Then
     names = {name for _, _, name in findings}
@@ -430,11 +463,33 @@ def test_django_rest_framework_with_documented_configuration(project_directory: 
     _copy_fixture(project_directory)
 
     # When
-    findings = _configured_findings(project_directory)
+    findings = _rest_framework_configured_findings(project_directory)
 
     # Then
     api_findings = [finding for finding in findings if finding[0] == 'project/api.py']
     assert api_findings == [('project/api.py', 'DC02', 'unused_api_helper')]
+
+
+def test_django_rest_framework_reported_with_pure_django_configuration(project_directory: Path) -> None:
+    # Having
+    _copy_fixture(project_directory)
+
+    # When
+    findings = _configured_findings(project_directory)
+
+    # Then
+    api_findings = {finding for finding in findings if finding[0] == 'project/api.py'}
+    assert api_findings == {
+        ('project/api.py', 'DC03', 'Meta'),
+        ('project/api.py', 'DC06', 'model'),
+        ('project/api.py', 'DC06', 'fields'),
+        ('project/api.py', 'DC06', 'serializer_class'),
+        ('project/api.py', 'DC04', 'publish'),
+        ('project/api.py', 'DC04', 'retrieve'),
+        ('project/api.py', 'DC04', 'destroy'),
+        ('project/api.py', 'DC02', 'article_stats'),
+        ('project/api.py', 'DC02', 'unused_api_helper'),
+    }
 
 
 def test_model_layer_false_positives_with_documented_configuration(project_directory: Path) -> None:
@@ -447,7 +502,7 @@ def test_model_layer_false_positives_with_documented_configuration(project_direc
     # Then
     assert not any(path == 'project/models.py' for path, _, _ in findings)
     assert not any(path == 'project/managers.py' and code != 'DC04' for path, code, _ in findings)
-    assert not any(name == 'Meta' for _, _, name in findings)
+    assert not any(name == 'Meta' for path, _, name in findings if path != 'project/api.py')
     assert not any(name == 'display_name' for _, _, name in findings)
     assert not any(path.startswith('project/migrations/') for path, _, _ in findings)
 
@@ -506,7 +561,7 @@ def test_forms_false_positives_with_documented_configuration(project_directory: 
     findings = _configured_findings(project_directory)
 
     # Then
-    names = {name for _, _, name in findings}
+    names = {name for path, _, name in findings if path != 'project/api.py'}
     assert 'Meta' not in names
     assert 'model' not in names
     assert 'fields' not in names
