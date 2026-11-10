@@ -83,48 +83,39 @@ framework entry points look unused to a static analyser. Configure deadcode like
 ```toml
 [tool.deadcode]
 ignore-definitions-if-decorated-with = [
-    "@*admin.*",
-    "@*register",
-    "@*display",
-    "@*action",
-    "@*receiver",
+    "@django.contrib.admin.*",
+    "@django.contrib.auth.*",
+    "@django.dispatch.receiver",
+    "@django.utils.decorators.method_decorator",
+    "@django.views.decorators.http.require_*",
+    "@rest_framework.*",
     "@*register.*",
-    "@*require_*",
-    "@*login_required",
-    "@*permission_required",
-    "@*user_passes_test",
-    "@*method_decorator",
-    "@*api_view",
-    "@*_classes",
-    "@*schema",
 ]
 ignore-definitions-if-inherits-from = [
-    "Model",
-    "ModelAdmin",
-    "Form",
-    "ModelForm",
-    "*Inline",
-    "BaseCommand",
-    "Migration",
-    "AppConfig",
-    "MiddlewareMixin",
-    "*View",
-    "*ViewSet",
-    "*Serializer",
-    "*Permission",
-    "*Authentication",
-    "*Pagination",
-    "*FilterBackend",
-    "*Throttle",
+    "django.apps.AppConfig",
+    "django.contrib.admin.*",
+    "django.core.management.base.BaseCommand",
+    "django.db.migrations.Migration",
+    "django.db.models.Model",
+    "django.forms.*Form",
+    "django.utils.deprecation.MiddlewareMixin",
+    "django.views.*View",
+    "rest_framework.*View",
+    "rest_framework.*ViewSet",
+    "rest_framework.*Serializer",
+    "rest_framework.*Permission",
+    "rest_framework.*Authentication",
+    "rest_framework.*Pagination",
+    "rest_framework.*FilterBackend",
+    "rest_framework.*Throttle",
 ]
-ignore-names = ["*Middleware", "*middleware"]
 ignore-names-in-files = ["*/settings.py", "*/urls.py"]
 ```
 
-The example targets Django 5.2 LTS (5.2.19) and Django REST Framework 3.18.3 and uses APIs present in Django 5.2 through 6.1. The four keys replace the
+The example targets Django 5.2 LTS (5.2.19) and Django REST Framework 3.18.3 and uses APIs present in Django 5.2 through 6.1. The three keys replace the
 older overlapping name, body, and definition options: one inheritance entry hides a framework subclass name and body, and one decorator entry hides a
-decorated definition name and body. Command-line flags accept the same values repeatedly, space-separated, or as one comma-separated string; a pipe is
-not a separator.
+decorated definition name and body. deadcode parses `MIDDLEWARE` registrations and resolves absolute-import qualified names, so a registered middleware
+name and a `models.Model` base need no separate name pattern.
 
 Read the [Django guide](https://deadcode.readthedocs.io/en/latest/django.html) for the common use cases, every framework area, the current and legacy
 middleware forms, both import forms, database signals, Django REST Framework, the complete example application, and the expected output with no wrong
@@ -354,7 +345,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
     - Features:
         - Audit runtime and development dependencies for known vulnerabilities in CI on every pull request and weekly.
         - Declare the package development status as Beta.
-        - Document how to run deadcode on a Django project, covering models, admin, views, forms and more.
+        - Add a Django usage guide covering models, admin, views, forms, middleware, signals and more, plus Django `MIDDLEWARE` registration parsing and Django-aware qualified matching through absolute imports.
         - Ignore Django test lifecycle methods in test files.
 - **v2.6.0** `2026-11-08`:
     - Features:
