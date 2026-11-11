@@ -238,6 +238,19 @@ def test_sys_argv_used_when_no_arguments_provided(monkeypatch: pytest.MonkeyPatc
     assert args.count is True
 
 
+def test_boolean_pyproject_setting_enables_flag(tmp_path, monkeypatch: pytest.MonkeyPatch):
+    # Having
+    (tmp_path / 'pyproject.toml').write_text('[tool.deadcode]\nfix = true\ncount = true\n')
+    monkeypatch.chdir(tmp_path)
+
+    # When
+    args = parse_arguments(['foo.py'])
+
+    # Then
+    assert args.fix is True
+    assert args.count is True
+
+
 def test_unknown_pyproject_setting_is_ignored(tmp_path, monkeypatch: pytest.MonkeyPatch):
     # Having
     (tmp_path / 'pyproject.toml').write_text('[tool.deadcode]\nunknown_setting = true\n')
