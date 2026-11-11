@@ -339,8 +339,8 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - Add a Django usage guide covering models, admin, views, forms, middleware, signals and more, plus Django `MIDDLEWARE` registration parsing and Django-aware qualified matching through absolute imports.
         - Ignore Django test lifecycle methods in test files.
         - Django `MIDDLEWARE` registrations are treated as used and absolute-import qualified expressions resolve to their modules.
-- **v2.6.0** `2026-11-08`:
         - Support boolean flags such as `fix = true` and `dry = true` in `[tool.deadcode]` configuration.
+- **v2.6.0** `2026-11-08`:
     - Features:
         - Add support for Python 3.13, 3.14 and 3.15.
         - Documentation is now published on Read the Docs at [deadcode.readthedocs.io](https://deadcode.readthedocs.io/).
