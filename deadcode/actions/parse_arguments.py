@@ -225,12 +225,12 @@ def parse_arguments(args: list[str] | None) -> Args:
     for key, item in parse_pyproject_toml().items():
         if key not in parsed_args:
             continue
-        if isinstance(parsed_args[key], bool):
-            parsed_args[key] = bool(item)
-            continue
-        if isinstance(item, str) and isinstance(parsed_args[key], list):
-            item = [item]
-        parsed_args[key].extend(item)
+        if isinstance(parsed_args[key], list):
+            if isinstance(item, str):
+                item = [item]
+            parsed_args[key].extend(item)
+        elif item:
+            parsed_args[key] = item
 
     # Do not fix if dry option is provided:
     if parsed_args['dry']:
