@@ -337,8 +337,8 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - Audit runtime and development dependencies for known vulnerabilities in CI on every pull request and weekly.
         - Declare the package development status as Beta.
         - Add a Django usage guide covering models, admin, views, forms, middleware, signals and more, plus Django `MIDDLEWARE` registration parsing and Django-aware qualified matching through absolute imports.
-        - Ignore Django test lifecycle methods in test files.
         - Django `MIDDLEWARE` registrations are treated as used and absolute-import qualified expressions resolve to their modules.
+    - Bugfixes:
         - Support boolean flags such as `fix = true` and `dry = true` in `[tool.deadcode]` configuration.
 - **v2.6.0** `2026-11-08`:
     - Features:
