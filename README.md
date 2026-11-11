@@ -344,6 +344,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - Declare the package development status as Beta.
         - Add a Django usage guide covering models, admin, views, forms, middleware, signals and more, plus Django `MIDDLEWARE` registration parsing and Django-aware qualified matching through absolute imports.
         - Django `MIDDLEWARE` registrations are treated as used and absolute-import qualified expressions resolve to their modules.
+        - Publish the Deadcode Enhancement Proposal (DEP) process, template, and index.
     - Bugfixes:
         - Support boolean flags such as `fix = true` and `dry = true` in `[tool.deadcode]` configuration.
 - **v2.6.0** `2026-11-08`:
