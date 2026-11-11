@@ -38,6 +38,9 @@ Read the {doc}`features` page for the checked map of README features to source f
 Read the {doc}`comparison` page for a comparison of deadcode with vulture, starting with the differences that matter most when choosing
 between them.
 
+Read the {doc}`tree_pruning` page for the source-code tree pruning use case, a survey of JavaScript bundle-pruning tools, and what expanding
+deadcode would require.
+
 ```{toctree}
 :maxdepth: 2
 
@@ -53,4 +56,5 @@ known_limitations
 release_notes
 features
 comparison
+tree_pruning
 ```
