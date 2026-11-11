@@ -120,7 +120,7 @@ Create a `.pre-commit-config.yaml` file in the root of your project directory, i
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
   - repo: https://github.com/albertas/deadcode
-    rev: v2.6.0
+    rev: v2.6.1
     hooks:
       - id: deadcode
 ```
