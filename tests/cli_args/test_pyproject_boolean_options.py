@@ -66,9 +66,7 @@ def test_disabled_pyproject_boolean_does_not_cancel_cli_flag(
 
 
 @pytest.mark.parametrize('option', BOOLEAN_OPTIONS)
-def test_enabled_pyproject_boolean_keeps_cli_flag(
-    option: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-):
+def test_enabled_pyproject_boolean_keeps_cli_flag(option: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     # Having
     write_pyproject(tmp_path, monkeypatch, f'{option} = true')
 
