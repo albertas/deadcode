@@ -103,14 +103,13 @@ ignore-definitions-if-inherits-from = [
 ignore-names-in-files = ["*/settings.py", "*/urls.py"]
 ```
 
-The example targets Django 5.2 LTS (5.2.19). The Django REST Framework 3.18.3 entries are additions to the same two keys; see the
-[Django REST Framework section of the Django guide](https://deadcode.readthedocs.io/en/latest/django.html#django-rest-framework). The three keys replace the
+The example targets Django 5.2 LTS (5.2.19). The three keys replace the
 older overlapping name, body, and definition options: one inheritance entry hides a framework subclass name and body, and one decorator entry hides a
 decorated definition name and body. deadcode parses `MIDDLEWARE` registrations and resolves absolute-import qualified names, so a registered middleware
 name and a `models.Model` base need no separate name pattern.
 
 Read the [Django guide](https://deadcode.readthedocs.io/en/latest/django.html) for the framework areas, the current and legacy
-middleware forms, both import forms, database signals, the Django REST Framework entries, and the expected behaviour.
+middleware forms, both import forms, database signals, and the expected behaviour.
 
 ## Pre-commit hook
 Create a `.pre-commit-config.yaml` file in the root of your project directory, if it doesn't exist, and add the following to the file:
