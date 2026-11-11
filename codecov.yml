@@ -1,4 +1,7 @@
+# Codecov pull-request comment policy.
+# Comment only when the patch itself contains uncovered lines. An unchanged
+# project delta or a fully covered patch is not a finding and posts nothing.
 comment:
-  require_changes: true
+  require_changes: "uncovered_patch"
   require_base: true
   require_head: true
