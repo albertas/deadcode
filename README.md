@@ -332,6 +332,8 @@ A checked entry is implemented on `main` and is included in the next release; pu
 
 ## Release notes
 - next:
+    - Features:
+        - Document a staged Rust accelerator plan for issue #67 and list it in the DEP index
 - **v2.6.1** `2026-11-11`:
     - Features:
         - Audit runtime and development dependencies for known vulnerabilities in CI on every pull request and weekly.
