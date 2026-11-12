@@ -332,6 +332,8 @@ A checked entry is implemented on `main` and is included in the next release; pu
 
 ## Release notes
 - next:
+    - Bugfixes:
+        - Add DEP 4 documenting how shadowed unused names could be detected
 - **v2.6.1** `2026-11-11`:
     - Features:
         - Audit runtime and development dependencies for known vulnerabilities in CI on every pull request and weekly.
@@ -341,7 +343,6 @@ A checked entry is implemented on `main` and is included in the next release; pu
     - Bugfixes:
         - Support boolean flags such as `fix = true` and `dry = true` in `[tool.deadcode]` configuration.
 - **v2.6.0** `2026-11-08`:
-        - Add DEP 4 documenting how shadowed unused names could be detected
     - Features:
         - Add support for Python 3.13, 3.14 and 3.15.
         - Documentation is now published on Read the Docs at [deadcode.readthedocs.io](https://deadcode.readthedocs.io/).
