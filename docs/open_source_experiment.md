@@ -188,7 +188,7 @@ The procedure below is the exact run order for every candidate repository. It us
 8. Derive the finding count, rule distribution, analysed files and lines, findings per KLOC, and parse-failure share from the captured outputs.
 9. Draw the false-positive sample, have two reviewers label it, discuss disagreements, and record the agreed labels.
 10. On a separate disposable copy, run `--fix`, capture `Removed N`, validate the edited files with `python -m compileall` or `ast.parse`, and rerun `--count`.
-11. Fill the reporting template, record anomalies and failed candidates, and keep the raw logs with the experiment record.
+11. Fill the reporting template, store each run's full table in its own markdown file in the repository and link it from Table 1, record anomalies and failed candidates, and keep the raw logs with the experiment record.
 
 The two configuration modes are defined as follows. In baseline mode the working directory is an empty temporary directory, so deadcode reads no `pyproject.toml` from the analysed project. In project-config mode the working directory is the repository root, so `[tool.deadcode]` is applied exactly as a project user would see it. deadcode reads `pyproject.toml` only from the current working directory and has no `--config` option. The file walker includes vendored and generated directories because it has no `.gitignore` handling, so every exclusion must be explicit and recorded with `--exclude` or the equivalent `[tool.deadcode]` key.
 
@@ -211,30 +211,22 @@ The file walker includes vendored and generated directories, so an exclusion tha
 
 Every table below is empty on purpose. To be completed after the experiment.
 
-Table 1 records one row per candidate repository and configuration mode. `Baseline` is the neutral-directory mode and `Project config` is the repository-root mode.
+Table 1 records one row per candidate repository. `Baseline` is the neutral-directory mode and `Project config` is the repository-root mode. A cell that holds two values reports them in that order as `baseline / project config`, so both modes stay visible in one row. The deadcode version is recorded for every repository because repeated runs with later releases can be compared.
 
-| Repository | Commit | Mode | Runtime (s) | Findings | Findings per KLOC | Peak memory (MiB) | Parse failures | Reviewed false-positive rate | Exit status |
-|---|---|---|---|---|---|---|---|---|---|
-| `django/django` | - | Baseline | - | - | - | - | - | - | - |
-| `django/django` | - | Project config | - | - | - | - | - | - | - |
-| `home-assistant/core` | - | Baseline | - | - | - | - | - | - | - |
-| `home-assistant/core` | - | Project config | - | - | - | - | - | - | - |
-| `apache/airflow` | - | Baseline | - | - | - | - | - | - | - |
-| `apache/airflow` | - | Project config | - | - | - | - | - | - | - |
-| `pandas-dev/pandas` | - | Baseline | - | - | - | - | - | - | - |
-| `pandas-dev/pandas` | - | Project config | - | - | - | - | - | - | - |
-| `scikit-learn/scikit-learn` | - | Baseline | - | - | - | - | - | - | - |
-| `scikit-learn/scikit-learn` | - | Project config | - | - | - | - | - | - | - |
-| `ansible/ansible` | - | Baseline | - | - | - | - | - | - | - |
-| `ansible/ansible` | - | Project config | - | - | - | - | - | - | - |
-| `pytest-dev/pytest` | - | Baseline | - | - | - | - | - | - | - |
-| `pytest-dev/pytest` | - | Project config | - | - | - | - | - | - | - |
-| `pydantic/pydantic` | - | Baseline | - | - | - | - | - | - | - |
-| `pydantic/pydantic` | - | Project config | - | - | - | - | - | - | - |
-| `pallets/flask` | - | Baseline | - | - | - | - | - | - | - |
-| `pallets/flask` | - | Project config | - | - | - | - | - | - | - |
-| `psf/requests` | - | Baseline | - | - | - | - | - | - | - |
-| `psf/requests` | - | Project config | - | - | - | - | - | - | - |
+Each run keeps its own full results table in a separate markdown file in this repository, for example `docs/experiments/<project>-<commit>.md`. The page does not duplicate those tables; the `Results file` column links to each one.
+
+| Repository | Commit | Deadcode version | Runtime (s) baseline / project config | Findings baseline / project config | Findings per KLOC baseline / project config | Peak memory (MiB) baseline / project config | Parse failures baseline / project config | Reviewed false-positive rate | Exit status baseline / project config | Results file |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `django/django` | - | - | - | - | - | - | - | - | - | - |
+| `home-assistant/core` | - | - | - | - | - | - | - | - | - | - |
+| `apache/airflow` | - | - | - | - | - | - | - | - | - | - |
+| `pandas-dev/pandas` | - | - | - | - | - | - | - | - | - | - |
+| `scikit-learn/scikit-learn` | - | - | - | - | - | - | - | - | - | - |
+| `ansible/ansible` | - | - | - | - | - | - | - | - | - | - |
+| `pytest-dev/pytest` | - | - | - | - | - | - | - | - | - | - |
+| `pydantic/pydantic` | - | - | - | - | - | - | - | - | - | - |
+| `pallets/flask` | - | - | - | - | - | - | - | - | - | - |
+| `psf/requests` | - | - | - | - | - | - | - | - | - | - |
 
 Table 2 records the rule distribution for the experiment as a whole. To be completed after the experiment.
 
@@ -273,5 +265,5 @@ Findings become triaged issues for deadcode. Reproducible examples become regres
 - Comparing deadcode with vulture or any other tool.
 - Changing deadcode code as part of the experiment.
 - Running upstream test suites.
-- Opening upstream pull requests.
+- Opening upstream pull requests, at least for now.
 - Publishing raw third-party source or logs that are not licence-compatible.
