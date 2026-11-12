@@ -41,6 +41,9 @@ between them.
 Read the {doc}`tree_pruning` page for the source-code tree pruning use case, a survey of JavaScript bundle-pruning tools, and what expanding
 deadcode would require.
 
+Read the {doc}`open_source_experiment` page for the planned experiment that runs deadcode on popular and large open source Python projects and
+defines the metrics, measurement procedure, and reporting template.
+
 ```{toctree}
 :maxdepth: 2
 
@@ -57,4 +60,5 @@ release_notes
 features
 comparison
 tree_pruning
+open_source_experiment
 ```

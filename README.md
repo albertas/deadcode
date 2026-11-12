@@ -332,6 +332,8 @@ A checked entry is implemented on `main` and is included in the next release; pu
 
 ## Release notes
 - next:
+    - Features:
+        - Add a documentation page planning an experiment on large open source Python projects with candidate repositories, metrics and a measurement protocol.
 - **v2.6.1** `2026-11-11`:
     - Features:
         - Audit runtime and development dependencies for known vulnerabilities in CI on every pull request and weekly.
