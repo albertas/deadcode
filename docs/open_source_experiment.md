@@ -21,7 +21,6 @@ The experiment is not meant to do the following:
 
 - Automatically fix large amounts of upstream code.
 - Compare deadcode with other analysers or rank tools against each other.
-- Claim that a finding is a defect before a human has reviewed it.
 
 ## Experiment questions
 
