@@ -21,19 +21,24 @@ pull request that adds a DEP also adds its row to `enhancement_proposals/dep_0.m
 
 ## Required header
 
-Every DEP starts with a level-1 title followed by three bold metadata lines:
+Every DEP starts with a level-1 title followed by three required bold metadata lines. The optional `Implemented in` line follows them when the proposal has been implemented:
 
 ```markdown
 # DEP <number> - <title>
 **Status**: <status>
 **Type**: <type>
 **Created**: <YYYY-MM-DD>
+**Implemented in**: <version>
 ```
+
+`Implemented in` is optional. Add it once the proposal has been implemented and released, using the Deadcode version that contains the
+implementation, for example `**Implemented in**: 3.1.0`. Leave the line out while the DEP is unimplemented.
 
 `Status` describes where the proposal is in its lifecycle:
 
 | Status | Meaning |
 |---|---|
+| `Draft` | The DEP is being written and is not yet ready for review. |
 | `Proposed` | The DEP is open for review and has not been accepted, rejected, or withdrawn. |
 | `Accepted` | The maintainer has accepted the proposal. |
 | `Rejected` | The proposal was declined and will not be implemented. |
@@ -68,9 +73,10 @@ Copy this skeleton and fill in each part. Delete the optional sections you do no
 
 ```markdown
 # DEP <number> - <title>
-**Status**: Proposed
+**Status**: Draft
 **Type**: Feature
 **Created**: <YYYY-MM-DD>
+**Implemented in**: <version>
 
 ## Problem statement
 
@@ -101,10 +107,14 @@ Optional. List decisions that are still unresolved. Delete this section if there
 Optional. Link related discussions, documentation, or prior art. Delete this section if there are none.
 ```
 
+Delete the `Implemented in` line in the skeleton until the proposal has been implemented and released.
+
 ## Status lifecycle
 
-A new DEP starts as `Proposed`. The maintainer changes the status:
+A new DEP starts as `Draft`. Once the proposal is complete and ready for review, the author changes it to `Proposed`. The maintainer then changes
+the status:
 
+- `Draft` to `Proposed` when the author is ready for review.
 - `Proposed` to `Accepted` when the maintainer merges the DEP pull request and records acceptance in the same pull request or a follow-up commit.
 - `Proposed` to `Rejected` when the maintainer declines the proposal. The DEP file stays in the repository, with the reason recorded in
   `## Chosen solution` or a status-history note.
@@ -123,8 +133,19 @@ branch naming, local checks, and the commands to run before opening the pull req
 
 ## Existing DEPs
 
-DEP 1 to DEP 3 predate this process and remain valid as they are. A DEP merged before this process must gain any missing required sections when it
-is next modified in substance.
+DEP 1 to DEP 3 predate this process. They are marked as `Draft` and are updated to the required format as part of the work that depends on
+them. A DEP merged before this process must gain any missing required sections when it is next modified in substance.
 
-For the current list, see `enhancement_proposals/dep_0.md` in the repository, or open
-https://github.com/albertas/deadcode/blob/main/enhancement_proposals/dep_0.md.
+The index below is included from `enhancement_proposals/dep_0.md`, so the published documentation and the repository index stay in sync.
+
+```{include} ../enhancement_proposals/dep_0.md
+:start-after: "<!-- dep-index-start -->"
+:end-before: "<!-- dep-index-end -->"
+```
+
+```{toctree}
+:hidden:
+dep_1
+dep_2
+dep_3
+```
