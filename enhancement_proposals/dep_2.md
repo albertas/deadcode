@@ -1,5 +1,5 @@
 # DEP 2 - Fixing code after removal of unused code fragments
-**Status**: Proposed
+**Status**: Draft
 **Type**: Feature
 **Created**: 2024-04-16
 
@@ -18,12 +18,14 @@ from foo import ()
 ```
 
 This invalid import clause should be removed all together.
-Various strategies exist, how it could be removed:
+
+## Considered alternatives
+
+Various strategies exist for removing the invalid import clause:
 - whole AST node could be preserved and used when removing code - node could be updated as well.
 - initial expression places could be memorised from initial AST parsing,
   so that the statement could once again be converted to AST to check its validity.
 - nothing could be remembered - on removal surrounding expression could be detected and validated.
-
 
 ## Chosen solution
 AST node can be modified and rendered back as valid code.
@@ -70,8 +72,8 @@ print("Fixed and cleaned up code, which can get merged")
 print(ast.unparse(nodes))
 ```
 
-## Examples of code adjustments
-### Empty code block
+### Examples of code adjustments
+#### Empty code block
 Another case is when all expressions are being removed from a block, e.g.
 
 ```
@@ -88,7 +90,7 @@ class Foo:
 print(Foo())
 ```
 
-### Solution for Empty code block
+#### Solution for Empty code block
 A pass statement has to be added in such cases:
 ```
 class Foo:
@@ -98,7 +100,7 @@ print(Foo())
 ```
 
 
-### Preserving empty lines after code removal
+#### Preserving empty lines after code removal
 When a method in the middle of a class have to be removed,
 either lines before or after the class have to be preserved.
 E.g. if `spam()` was removed:
