@@ -38,6 +38,9 @@ Read the {doc}`features` page for the checked map of README features to source f
 Read the {doc}`comparison` page for a comparison of deadcode with vulture, starting with the differences that matter most when choosing
 between them.
 
+Read the {doc}`open_source_experiment` page for the planned experiment that runs deadcode on popular and large open source Python projects and
+defines the metrics, measurement procedure, and reporting template.
+
 ```{toctree}
 :maxdepth: 2
 
@@ -53,4 +56,5 @@ known_limitations
 release_notes
 features
 comparison
+open_source_experiment
 ```
