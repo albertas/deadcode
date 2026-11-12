@@ -1,9 +1,9 @@
 # DEP 1 - More accurate usage detection
-**Status**: Proposed
+**Status**: Draft
 **Type**: Feature
 **Created**: 2024-01-14
 
-## Motivation
+## Problem statement
 Usage detection can be more accurate.
 It is common in other unused code detection tools to simply construct
 sets of names used in definitions and names used in usage expressions.
@@ -26,8 +26,25 @@ However, it is possible to track the types of definitions and usages and
 more accurately identify the usages. This DEP 1 proposal specifies the strategy,
 which could be used to more accurately track the types of variables.
 
+## Considered alternatives
 
-## Scope construction for definitions:
+- Keep the current name-based matching. This is simple, but cannot distinguish
+  definitions that share a name, so a name is reported only when no definition
+  with that name is used.
+- Track definitions and usages by their scope strings. This separates
+  definitions in different modules and classes, but still treats classes,
+  functions, and variables with the same scope as equivalent.
+- Track the type of every scope part as well as the scope string. This keeps
+  the scope information from the previous option and resolves overlapping
+  names by their kind.
+
+## Chosen solution
+
+Track the types of definitions and usages as well as their scopes, so that
+overlapping names can be matched to the definition that the expression
+actually refers to.
+
+### Scope construction for definitions:
 Dot-separated scope name is being used to identify a scope in each line.
 
 ```
@@ -42,7 +59,7 @@ For example, if the `foo.py` is in `ham.eggs` package, then the scope of `spam` 
 `ham.eggs.foo.Bar.spam`.
 
 
-## Matching defined type with a type in an expression
+### Matching defined type with a type in an expression
 
 Lets say we have a `Bar` type definition and an expression which uses it:
 
@@ -60,7 +77,7 @@ in a namespace `foo` and usages will be marked on it as well as usages of relate
 will be associated with that type.
 
 
-## Providing only a part of scope via options is fine
+### Providing only a part of scope via options is fine
 All of these scopes will match the `spam` method:
     `ham.eggs.foo.Bar.spam`
     `foo.Bar.spam`
@@ -72,7 +89,7 @@ i.e. `spam` scope would also match a variable named `spam` in any scope as well.
 In some sence scopes like `spam`` have wild cards `*.spam` matching any scope prefixes.
 
 
-## Identifying types of scope parts
+### Identifying types of scope parts
 When creating the scope parts, each part could also have the type
 (e.g. pacakge, module, class, method, variable) associated with it.
 When a usage expression is being detected its type could be searched by
@@ -109,9 +126,9 @@ For example, user could provide this `ham.eggs.foo.Bar.spam` path as well as a m
 `ham/eggs/foo#Bar>spam` to exactly match the types of scope parts.
 
 
-## Type tracking for method arguments and returned values
+### Type tracking for method arguments and returned values
 
-### Tracking type of arguments
+#### Tracking type of arguments
 When argument is being passed into a function/method the type remains the same, but the
 variable name might change, or it might be put into a container like tuple or dictionary.
 Deadcode will attempt to track the types of function/method parameters, however in some cases
@@ -134,7 +151,7 @@ eggs(spam)
 Deadcode will be able to accurately detect that type of `ham` is `Foo`.
 
 
-### Tracking types of returned values
+#### Tracking types of returned values
 It might be hard to track exact types of variables, for example:
 
 ```
