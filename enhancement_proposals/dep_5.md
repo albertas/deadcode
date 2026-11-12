@@ -1,5 +1,4 @@
 # DEP 5 - Support SARIF output
-
 **Status**: Proposed
 **Type**: Feature
 **Created**: 2026-11-12
@@ -18,7 +17,7 @@ Issue #100 (`https://github.com/albertas/deadcode/issues/100`) requests native S
 Scope: this DEP covers SARIF 2.1.0 output for findings. It does not cover a language server, a new analyser rule, auto-fix reporting, severity modelling,
 or a docs-site DEP page.
 
-## Considered solutions
+## Considered alternatives
 
 Five designs were compared against issue #100. The last one is selected; the other four are recorded with the reason they were not chosen.
 
@@ -144,7 +143,19 @@ Conformance means a valid SARIF 2.1.0 log that both named consumers accept witho
 SARIF Viewer. A generic linter aggregator that accepts SARIF 2.1.0 is covered by the same document. GitHub and the VS Code extension are chosen because the
 issue names no specific product, and these two document their SARIF requirements and accept a plain file path.
 
-## Implementation details
+## Scope
+
+The following are not part of this DEP's implementation:
+
+- SARIF `fixes`, `suppressions`, `fingerprints`, or `partialFingerprints` in v1 (D20).
+- A language server, IDE plugin, or aggregator-specific adapter (D5, D21).
+- A new analyser rule or auto-fix reporting; this DEP changes reported output only (D5).
+- Severity modelling beyond SARIF's default `warning` (D10).
+- SARIF 2.0 or earlier, multiple runs, `runAutomationDetails`, or an output-file flag.
+- Implementing SARIF output, the `--output-format` flag, or any Python, test, configuration, or workflow change in this task.
+- Changes to the docs-site DEP process page `docs/dep.md` beyond publishing this DEP.
+
+## Implementation notes
 
 ### CLI wiring
 
@@ -309,18 +320,6 @@ The DEP defines behavior but does not add tests, because this task changes no Py
 
 Existing text-output tests stay unchanged. The future code change must also add `--output-format` to the README option table, the argparse `--help` output, and
 `docs/features.md`, because those surfaces are contract-tested (D19, and the research constraint that README and feature documentation are checked).
-
-### Out of scope
-
-The following are not part of this DEP's implementation:
-
-- SARIF `fixes`, `suppressions`, `fingerprints`, or `partialFingerprints` in v1 (D20).
-- A language server, IDE plugin, or aggregator-specific adapter (D5, D21).
-- Severity modelling beyond SARIF's default `warning` (D10).
-- A docs-site DEP page; DEP pages live under `enhancement_proposals/` and are not in the Sphinx toctree (D1).
-- Editing `dep_0.md`, README, `docs/index.md`, or `docs/features.md` in this documentation-only task. Those changes belong to the future implementation or to
-the separate DEP-process work (D1).
-- SARIF 2.0 or earlier, multiple runs, `runAutomationDetails`, or an output-file flag.
 
 ## References
 
