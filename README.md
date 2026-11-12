@@ -248,6 +248,12 @@ commits are made by the maintainer on `main`.
   Set `PYTEST_XDIST_WORKERS` to change the worker count (`make test PYTEST_XDIST_WORKERS=2`), or pass
   `PYTEST_ME_PLEASE="-n 0"` to run serially.
 
+### Enhancement proposals
+
+A change that adds an analyser feature, changes rule semantics, or changes a documented process needs a Deadcode Enhancement Proposal (DEP).
+The published process and template page is <https://deadcode.readthedocs.io/en/stable/dep.html>. The repository index of existing proposals is
+`enhancement_proposals/dep_0.md`.
+
 ## Security
 
 The runtime dependencies in `requirements.txt` and the development dependencies in `requirements-dev.txt` are audited for known
@@ -334,6 +340,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
 - next:
     - Features:
         - Document a staged Rust accelerator plan for issue #67 and list it in the DEP index
+        - Publish the Deadcode Enhancement Proposal (DEP) process, template, and index.
         - Add a documentation page planning an experiment on large open source Python projects with candidate repositories, metrics and a measurement protocol.
 - **v2.6.1** `2026-11-11`:
     - Features:
