@@ -27,7 +27,8 @@ Read the {doc}`pre_commit` page for setting up and using the pre-commit hook.
 
 Read the {doc}`contributing` page for the contribution workflow and the feature-request checklist.
 
-Read the {doc}`dep` page for the Deadcode Enhancement Proposal (DEP) process and the DEP template.
+Read the {doc}`dep` page for the Deadcode Enhancement Proposal (DEP) process and the DEP template. DEP 4 proposes
+[source-code tree pruning](dep_4.md) that would trim a Python bundle to the modules its entry points reach.
 
 Read the {doc}`security` page for the vulnerability detection process and how to respond to a finding.
 
@@ -39,9 +40,6 @@ Read the {doc}`features` page for the checked map of README features to source f
 
 Read the {doc}`comparison` page for a comparison of deadcode with vulture, starting with the differences that matter most when choosing
 between them.
-
-Read the {doc}`tree_pruning` page for the source-code tree pruning use case, a survey of JavaScript bundle-pruning tools, and what expanding
-deadcode would require.
 
 Read the {doc}`open_source_experiment` page for the planned experiment that runs deadcode on popular and large open source Python projects and
 defines the metrics, measurement procedure, and reporting template.
@@ -62,6 +60,5 @@ known_limitations
 release_notes
 features
 comparison
-tree_pruning
 open_source_experiment
 ```
