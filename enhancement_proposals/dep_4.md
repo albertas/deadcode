@@ -1,6 +1,9 @@
 # DEP 4 - Tree pruning for smaller Python source bundles
+
 **Status**: Proposed
+
 **Type**: Feature
+
 **Created**: 2026-11-11
 
 ## Problem statement
