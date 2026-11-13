@@ -47,6 +47,23 @@ def test_exclude_files(arguments: Args):
     assert 'deadcode/cli.py' not in filenames
 
 
+def test_exclude_accepts_backslash_pattern(tmp_path, monkeypatch):
+    # Having
+    monkeypatch.chdir(tmp_path)
+    Path('keep.py').write_text('unused_kept = 1\n')
+    Path('package').mkdir()
+    Path('package/skip.py').write_text('unused_skipped = 1\n')
+
+    # When
+    result = main(['.', '--exclude', 'package\\*.py', '--no-color'])
+
+    # Then
+    assert result is not None
+    assert 'keep.py' in result
+    assert 'package/skip.py' not in result
+    assert '\\' not in result
+
+
 def test_exclude_skips_findings_end_to_end(tmp_path, monkeypatch):
     # Having
     monkeypatch.chdir(tmp_path)

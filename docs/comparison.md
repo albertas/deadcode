@@ -55,7 +55,7 @@ It covers released versions only: unreleased changes on the `vulture` `main` bra
 |---|---|---|
 | Configuration section and key spelling | `[tool.deadcode]`; the README shows hyphenated keys and the parser accepts hyphenated or underscored keys | `[tool.vulture]`; keys are underscored, such as `ignore_names` |
 | CLI versus TOML precedence | TOML list values are extended into CLI lists | CLI values overwrite TOML values |
-| `--exclude` syntax | Relative path patterns are used as given | Comma-separated patterns are matched against absolute paths, patterns without wildcards become `*PATTERN*`, and matching is case-insensitive |
+| `--exclude` syntax | Relative path patterns are matched with backslashes normalized to forward slashes | Comma-separated patterns are matched against absolute paths, patterns without wildcards become `*PATTERN*`, and matching is case-insensitive |
 | Decorator suppression scope | Separate name, body, and definition decorator options; patterns require `@` | One `--ignore-decorators` option that covers function and class names only |
 | `--ignore-names-in-files` | Supported | No equivalent option |
 | `# noqa` coverage | All DC codes, `DC`, bare noqa, F401/F841, and legacy DC00x aliases | F401/F841 and bare noqa only |

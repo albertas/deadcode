@@ -3,6 +3,7 @@ from fnmatch import fnmatch, fnmatchcase
 from pathlib import Path
 from collections.abc import Callable, Iterable
 
+from deadcode.utils.normalize_path import normalize_path
 from deadcode.visitor.code_item import CodeItem
 
 
@@ -80,7 +81,8 @@ def _is_special_name(name: str) -> bool:
 
 def _match(name: str | Path, patterns: Iterable[str], case: bool = True) -> bool:
     func = fnmatchcase if case else fnmatch
-    return any(func(str(name), pattern) for pattern in patterns)
+    normalized_name = normalize_path(name)
+    return any(func(normalized_name, normalize_path(pattern)) for pattern in patterns)
 
 
 def _match_many(names: Iterable[str] | Iterable[Path], patterns: Iterable[str], case: bool = True) -> bool:
