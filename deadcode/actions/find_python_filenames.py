@@ -15,13 +15,13 @@ def find_python_filenames(args: Args) -> list[str]:
 
         if _match(path, args.exclude):
             if args.verbose:
-                logger.info(f'Ignoring: {path}')
+                logger.info(f'Ignoring: {path.as_posix()}')
             continue
 
         if path.is_file() and path.suffix == '.py':
-            filenames.append(str(path))
+            filenames.append(path.as_posix())
         elif path.is_dir():
-            paths += list([str(p) for p in path.glob('*')])
+            paths += list([p.as_posix() for p in path.glob('*')])
         elif not path.exists():
             # TODO: unify error logging and reporting
             # Maybe a cli flag could be added to stop on error
