@@ -1,6 +1,9 @@
 # DEP 5 - Resolving name shadowing
+
 **Status**: Proposed
+
 **Type**: Feature
+
 **Created**: 2026-11-12
 
 ## Problem statement

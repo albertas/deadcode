@@ -21,13 +21,19 @@ pull request that adds a DEP also adds its row to `enhancement_proposals/dep_0.m
 
 ## Required header
 
-Every DEP starts with a level-1 title followed by three required bold metadata lines. The optional `Implemented in` line follows them when the proposal has been implemented:
+Every DEP starts with a level-1 title followed by three required bold metadata lines, and the optional `Implemented in` line follows them when the
+proposal has been implemented. Each metadata line is written on its own line, separated from the title and from the other metadata lines by a
+blank line:
 
 ```markdown
 # DEP <number> - <title>
+
 **Status**: <status>
+
 **Type**: <type>
+
 **Created**: <YYYY-MM-DD>
+
 **Implemented in**: <version>
 ```
 
@@ -73,9 +79,13 @@ Copy this skeleton and fill in each part. Delete the optional sections you do no
 
 ```markdown
 # DEP <number> - <title>
+
 **Status**: Draft
+
 **Type**: Feature
+
 **Created**: <YYYY-MM-DD>
+
 **Implemented in**: <version>
 
 ## Problem statement
@@ -107,7 +117,8 @@ Optional. List decisions that are still unresolved. Delete this section if there
 Optional. Link related discussions, documentation, or prior art. Delete this section if there are none.
 ```
 
-Delete the `Implemented in` line in the skeleton until the proposal has been implemented and released.
+Delete the `Implemented in` line, and the blank line that separates it from `Created`, in the skeleton until the proposal has been implemented and
+released.
 
 ## Status lifecycle
 

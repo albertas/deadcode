@@ -1,6 +1,9 @@
 # DEP 6 - Improving performance with a Rust implementation
+
 **Status**: Proposed
+
 **Type**: Process
+
 **Created**: 2026-11-12
 
 ## Problem statement
