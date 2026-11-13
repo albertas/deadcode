@@ -364,6 +364,9 @@ A checked entry is implemented on `main` and is included in the next release; pu
 - [ ] Investigate ways of extracting and backporting Python3.10+ `ast` implementation to lower Python versions.
 
 ## Release notes
+- next:
+    - Bugfixes:
+        - Distinguish definitions with the same name in different files when a usage resolves through the definition's own module or a statically known from-import path
 - **v2.6.3** `2026-11-13`:
     - Bugfixes:
         - Normalize paths to forward slashes in findings, discovery, fix grouping, and pattern matching
