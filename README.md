@@ -341,6 +341,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
     - Features:
         - Publish the Deadcode Enhancement Proposal (DEP) process, template, and index.
         - Add a documentation page planning an experiment on large open source Python projects with candidate repositories, metrics and a measurement protocol.
+        - Add DEP 4 proposing source-code tree pruning, with a survey of the JavaScript bundle-pruning tools that solve it and the capabilities expanding deadcode would require.
         - Add DEP 5 documenting native SARIF output support and publish it in the DEP index
 - **v2.6.1** `2026-11-11`:
     - Features:

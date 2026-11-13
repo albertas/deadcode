@@ -148,5 +148,6 @@ The index below is included from `enhancement_proposals/dep_0.md`, so the publis
 dep_1
 dep_2
 dep_3
+dep_4
 dep_5
 ```
