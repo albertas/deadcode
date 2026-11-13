@@ -10,6 +10,7 @@ from deadcode.data_types import Args
 from deadcode.visitor.code_item import CodeItem
 from deadcode.utils.flatten_lists import flatten_list
 from deadcode.utils.add_colors_to_diff import add_colors_to_diff
+from deadcode.utils.normalize_path import normalize_path
 from deadcode.visitor.ignore import _match
 
 
@@ -24,7 +25,7 @@ def fix_or_show_unused_code(unused_items: Iterable[CodeItem], args: Args) -> str
 
     filename_to_unused_items = defaultdict(list)
     for unused_item in unused_items:
-        filename_to_unused_items[str(unused_item.filename)].append(unused_item)
+        filename_to_unused_items[normalize_path(unused_item.filename)].append(unused_item)
 
     result = []
 
