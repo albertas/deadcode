@@ -1,6 +1,9 @@
 # DEP 2 - Fixing code after removal of unused code fragments
+
 **Status**: Draft
+
 **Type**: Feature
+
 **Created**: 2024-04-16
 
 ## Problem statement

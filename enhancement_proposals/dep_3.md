@@ -1,6 +1,9 @@
 # DEP 3 - Removal of unused code might create new unused code
+
 **Status**: Draft
+
 **Type**: Feature
+
 **Created**: 2024-04-16
 
 ## Problem statement

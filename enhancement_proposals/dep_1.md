@@ -1,6 +1,9 @@
 # DEP 1 - More accurate usage detection
+
 **Status**: Draft
+
 **Type**: Feature
+
 **Created**: 2024-01-14
 
 ## Problem statement
