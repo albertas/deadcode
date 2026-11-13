@@ -80,7 +80,8 @@ def _is_special_name(name: str) -> bool:
 
 def _match(name: str | Path, patterns: Iterable[str], case: bool = True) -> bool:
     func = fnmatchcase if case else fnmatch
-    return any(func(str(name), pattern) for pattern in patterns)
+    normalized_name = str(name).replace('\\', '/')
+    return any(func(normalized_name, pattern.replace('\\', '/')) for pattern in patterns)
 
 
 def _match_many(names: Iterable[str] | Iterable[Path], patterns: Iterable[str], case: bool = True) -> bool:

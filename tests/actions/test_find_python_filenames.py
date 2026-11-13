@@ -84,3 +84,15 @@ def test_verbose_logs_ignored_path(arguments: Args, caplog: pytest.LogCaptureFix
 
     # Then
     assert 'Ignoring: deadcode/cli.py' in [record.message for record in caplog.records]
+
+
+def test_windows_backslash_path_handling(arguments: Args):
+    # Having
+    arguments.paths = ['deadcode/cli.py']
+    arguments.exclude = ['deadcode\\cli.py']
+
+    # When
+    filenames = find_python_filenames(args=arguments)
+
+    # Then
+    assert filenames == []

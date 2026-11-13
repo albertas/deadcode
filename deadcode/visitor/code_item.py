@@ -61,7 +61,7 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
 
     @property
     def filename_with_position(self) -> str:
-        filename_with_position = str(self.filename)
+        filename_with_position = self.filename.as_posix() if isinstance(self.filename, Path) else str(self.filename).replace('\\', '/')
         if self.name_line is not None:
             filename_with_position += f':{self.name_line}'
             if self.name_column is not None:
