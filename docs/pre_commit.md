@@ -27,7 +27,7 @@ Create a `.pre-commit-config.yaml` file in the root of your project directory, i
 ```yaml
 repos:
   - repo: https://github.com/albertas/deadcode
-    rev: v2.6.2
+    rev: v2.6.3
     hooks:
       - id: deadcode
 ```
@@ -45,7 +45,7 @@ Add `args: [--fix]` to let the hook remove the findings instead of only reportin
 ```yaml
 repos:
   - repo: https://github.com/albertas/deadcode
-    rev: v2.6.2
+    rev: v2.6.3
     hooks:
       - id: deadcode
         args: [--fix]
@@ -70,7 +70,7 @@ Pass `--ignore` with one or more rule codes to suppress those findings for the w
 ```yaml
 repos:
   - repo: https://github.com/albertas/deadcode
-    rev: v2.6.2
+    rev: v2.6.3
     hooks:
       - id: deadcode
         args: [--ignore, DC12]
