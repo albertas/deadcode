@@ -27,7 +27,8 @@ Read the {doc}`pre_commit` page for setting up and using the pre-commit hook.
 
 Read the {doc}`contributing` page for the contribution workflow and the feature-request checklist.
 
-Read the {doc}`dep` page for the Deadcode Enhancement Proposal (DEP) process and the DEP template.
+Read the {doc}`dep` page for the Deadcode Enhancement Proposal (DEP) process and the DEP template. DEP 4 proposes
+[source-code tree pruning](dep_4.md) that would trim a Python bundle to the modules its entry points reach.
 
 Read the {doc}`security` page for the vulnerability detection process and how to respond to a finding.
 
