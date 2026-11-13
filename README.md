@@ -365,10 +365,13 @@ A checked entry is implemented on `main` and is included in the next release; pu
 ## Release notes
 - next:
     - Features:
+        - Document a staged Rust accelerator plan for issue #67 and list it in the DEP index
         - Publish the Deadcode Enhancement Proposal (DEP) process, template, and index.
         - Add a documentation page planning an experiment on large open source Python projects with candidate repositories, metrics and a measurement protocol.
         - Add DEP 4 proposing source-code tree pruning, with a survey of the JavaScript bundle-pruning tools that solve it and the capabilities expanding deadcode would require.
         - Stop reporting type-checker comments such as `# ty: ignore` as commented-out code (DC12).; Add `--ignore` to suppress findings by rule code via the CLI, `pyproject.toml` and pre-commit.
+        - Add DEP 5 documenting how an unused definition shadowed by a used name could be detected.
+        - Add DEP 7 documenting native SARIF output support and publish it in the DEP index
 - **v2.6.1** `2026-11-11`:
     - Features:
         - Audit runtime and development dependencies for known vulnerabilities in CI on every pull request and weekly.

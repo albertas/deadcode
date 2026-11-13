@@ -12,6 +12,9 @@ and the chosen solution with its motivation. The published process and template 
 | [DEP 2](dep_2.md) | Fixing code after removal of unused code fragments | Draft | Feature | 2024-04-16 |
 | [DEP 3](dep_3.md) | Removal of unused code might create new unused code | Draft | Feature | 2024-04-16 |
 | [DEP 4](dep_4.md) | Tree pruning for smaller Python source bundles | Proposed | Feature | 2026-11-11 |
+| [DEP 5](dep_5.md) | Resolving name shadowing | Proposed | Feature | 2026-11-12 |
+| [DEP 6](dep_6.md) | Improving performance with a Rust implementation | Proposed | Process | 2026-11-12 |
+| [DEP 7](dep_7.md) | Support SARIF output | Proposed | Feature | 2026-11-12 |
 
 <!-- dep-index-end -->
 
