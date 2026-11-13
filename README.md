@@ -119,7 +119,7 @@ Create a `.pre-commit-config.yaml` file in the root of your project directory, i
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
   - repo: https://github.com/albertas/deadcode
-    rev: v2.6.1
+    rev: v2.6.2
     hooks:
       - id: deadcode
 ```
@@ -248,7 +248,7 @@ A pre-commit hook can pass the option through `args`:
 ```yaml
 repos:
   - repo: https://github.com/albertas/deadcode
-    rev: v2.6.1
+    rev: v2.6.2
     hooks:
       - id: deadcode
         args: [--ignore, DC12]
@@ -363,7 +363,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
 - [ ] Investigate ways of extracting and backporting Python3.10+ `ast` implementation to lower Python versions.
 
 ## Release notes
-- next:
+- **v2.6.2** `2026-11-13`:
     - Features:
         - Document a staged Rust accelerator plan for issue #67 and list it in the DEP index
         - Publish the Deadcode Enhancement Proposal (DEP) process, template, and index.
