@@ -63,6 +63,21 @@ pre-commit appends the matched filenames to the hook command, so the effective c
 
 Extra deadcode options go under `args`, for example `args: [--no-color]` or `args: [--exclude, venv]`.
 
+## Ignoring rules globally
+
+Pass `--ignore` with one or more rule codes to suppress those findings for the whole hook run:
+
+```yaml
+repos:
+  - repo: https://github.com/albertas/deadcode
+    rev: v2.6.1
+    hooks:
+      - id: deadcode
+        args: [--ignore, DC12]
+```
+
+The same rule codes can be configured once in `pyproject.toml` with `[tool.deadcode] ignore = ["DC12"]`.
+
 ## Exit status
 
 - `0` when nothing is found.
