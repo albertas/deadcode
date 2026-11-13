@@ -14,6 +14,7 @@ PYTEST_XDIST_WORKERS ?= $(shell .venv/bin/python -c 'import os; print(max(1, (os
 	uv pip install -e .[test]
 
 VERSION := $(shell .venv/bin/hatch version)
+READTHEDOCS_API_URL ?= https://app.readthedocs.org/api/v3/projects/deadcode
 
 publish: .venv
 	rm -fr dist/*
@@ -26,16 +27,67 @@ publish: .venv
 	$(MAKE) readthedocs
 
 # Rebuild the released version, stable and latest documentation on Read the Docs.
+# Read the Docs registers a new tag asynchronously: right after the tag push the
+# version may not exist yet, and its builds endpoint answers 404. Sync the
+# versions and wait for each one to appear before triggering its build. The
+# documentation is not part of the published package, so an unreachable version
+# only prints a warning; rerun `make readthedocs` once Read the Docs has synced.
 readthedocs: .venv
-	@curl --fail-with-body --silent --show-error --request POST \
-		--header "Authorization: Token $(READTHEDOCS_API_TOKEN)" \
-		"https://app.readthedocs.org/api/v3/projects/deadcode/versions/v$(VERSION)/builds/" >/dev/null
-	@curl --fail-with-body --silent --show-error --request POST \
-		--header "Authorization: Token $(READTHEDOCS_API_TOKEN)" \
-		"https://app.readthedocs.org/api/v3/projects/deadcode/versions/stable/builds/" >/dev/null
-	@curl --fail-with-body --silent --show-error --request POST \
-		--header "Authorization: Token $(READTHEDOCS_API_TOKEN)" \
-		"https://app.readthedocs.org/api/v3/projects/deadcode/versions/latest/builds/" >/dev/null
+	@if [ -z "$(READTHEDOCS_API_TOKEN)" ]; then \
+		echo "readthedocs: set READTHEDOCS_API_TOKEN to a Read the Docs API token with build permissions; skipping" >&2; \
+		exit 0; \
+	fi; \
+	api="$(READTHEDOCS_API_URL)"; \
+	auth="Authorization: Token $(READTHEDOCS_API_TOKEN)"; \
+	request() { \
+		http_status=0; \
+		http_code=$$(curl --fail-with-body --silent --show-error --retry 5 --retry-delay 2 --retry-connrefused \
+			--header "$$auth" --header 'Accept: application/json' \
+			--write-out '%{http_code}' --output /dev/null "$$@") || http_status=$$?; \
+		sleep 2; \
+		return "$$http_status"; \
+	}; \
+	trigger() { \
+		version="$$1"; \
+		delay=2; \
+		attempt=1; \
+		while [ "$$attempt" -le 7 ]; do \
+			if request --request GET "$$api/versions/$$version/" \
+				&& request --request POST "$$api/versions/$$version/builds/"; then \
+				echo "readthedocs: triggered the '$$version' build"; \
+				return 0; \
+			fi; \
+			if [ "$$http_code" = "401" ] || [ "$$http_code" = "403" ]; then \
+				echo "readthedocs: Read the Docs rejected READTHEDOCS_API_TOKEN (HTTP $$http_code); skipping" >&2; \
+				return 2; \
+			fi; \
+			if [ "$$attempt" -eq 7 ]; then \
+				echo "readthedocs: could not trigger the '$$version' build" >&2; \
+				return 1; \
+			fi; \
+			echo "readthedocs: waiting $${delay}s for version '$$version'" >&2; \
+			sleep "$$delay"; \
+			if [ "$$delay" -lt 30 ]; then delay=$$((delay * 2)); fi; \
+			attempt=$$((attempt + 1)); \
+		done; \
+	}; \
+	request --request POST "$$api/sync-versions/" || { \
+		if [ "$$http_code" = "401" ] || [ "$$http_code" = "403" ]; then \
+			echo "readthedocs: Read the Docs rejected READTHEDOCS_API_TOKEN (HTTP $$http_code); skipping" >&2; \
+			exit 0; \
+		fi; \
+		echo "readthedocs: could not sync versions; waiting for new tags anyway" >&2; \
+	}; \
+	failed=0; \
+	for version in "v$(VERSION)" stable latest; do \
+		trigger "$$version"; \
+		trigger_status=$$?; \
+		if [ "$$trigger_status" -eq 2 ]; then failed=1; break; fi; \
+		if [ "$$trigger_status" -ne 0 ]; then failed=1; fi; \
+	done; \
+	if [ "$$failed" -ne 0 ]; then \
+		echo "readthedocs: some documentation builds were not triggered; rerun 'make readthedocs' once Read the Docs has synced the versions" >&2; \
+	fi
 
 test: .venv
 	.venv/bin/pytest -vv -n $(PYTEST_XDIST_WORKERS) $(PYTEST_ME_PLEASE)
