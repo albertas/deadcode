@@ -151,3 +151,15 @@ def test_discovery_normalizes_windows_paths(
         message.startswith('Files to be checked for dead code:') and 'C:/root/pkg/mod.py' in message
         for message in messages
     )
+
+
+def test_windows_backslash_path_handling(arguments: Args):
+    # Having
+    arguments.paths = ['deadcode/cli.py']
+    arguments.exclude = ['deadcode\\cli.py']
+
+    # When
+    filenames = find_python_filenames(args=arguments)
+
+    # Then
+    assert filenames == []
