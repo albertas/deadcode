@@ -6,7 +6,6 @@ import re
 import string
 import sys
 import tokenize
-from logging import getLogger
 
 from pathlib import Path
 
@@ -39,8 +38,6 @@ from deadcode.visitor.ignore import (
     _ignore_method,
     _ignore_variable,
 )
-
-logger = getLogger()
 
 TYPE_CHECKER_COMMENT_PATTERN = re.compile(r'^(?:(?:type|ty|pyright|pytype|mypy)\s*:|pyre-)', re.IGNORECASE)
 
@@ -79,6 +76,8 @@ class DeadCodeVisitor(ast.NodeVisitor):
         self.wildcard_imports: dict[str, set[str]] = {}
         self.explicit_imports: dict[str, set[str]] = {}
         self.qualified_imports: dict[str, dict[str, str]] = {}
+        self.import_edges: dict[str, dict[str, set[tuple[str, str]]]] = {}
+        self.module_definitions: dict[str, set[str]] = {}
 
         self.filename = Path()
         self.code: list[str] = []
@@ -121,12 +120,65 @@ class DeadCodeVisitor(ast.NodeVisitor):
         for importer, names in self.bare_used_names.items():
             if name not in names:
                 continue
-            if module not in self.wildcard_imports.get(importer, set()):
-                return True
-            exports = self.module_exports.get(module)
-            if exports is None or name in exports or name in self.explicit_imports.get(importer, set()):
+            if module in self.wildcard_imports.get(importer, set()):
+                exports = self.module_exports.get(module)
+                if exports is None or name in exports or name in self.explicit_imports.get(importer, set()):
+                    return True
+                continue
+            targets = self._resolve_bare_usage(name, importer)
+            if targets is None or (module, name) in targets:
                 return True
         return False
+
+    def _resolve_bare_usage(self, name: str, importer: str) -> set[tuple[str, str]] | None:
+        """Resolve a bare usage of `name` in module `importer` to binding targets.
+
+        Returns the set of ``(module, name)`` pairs the usage can bind to, or ``None`` when
+        the usage is unresolvable or ambiguous (both fall back to the legacy suppression).
+        """
+        candidates: set[tuple[str, str]] = set()
+
+        if name in self.module_definitions.get(importer, set()):
+            candidates.add((importer, name))
+
+        visited: set[tuple[str, str]] = set()
+        expanded: set[tuple[str, str]] = set()
+        frontier = list(self.import_edges.get(importer, {}).get(name, set()))
+        while frontier:
+            pair = frontier.pop()
+            if pair in visited:
+                # A cycle makes the usage unresolvable.
+                return None
+            visited.add(pair)
+            edge_module, edge_name = pair
+            # Package `__init__` twin hop (D6): `from x import n` can bind either in
+            # `x.py` (module key `x`) or in `x/__init__.py` (module key `__init__`),
+            # so every hop target also contributes its `__init__` twin. For a target
+            # already keyed `__init__` the twin is the target itself. Twin candidates
+            # only widen suppression; the `expanded` bookkeeping keeps every hop
+            # target's out-edges enqueued once, so twin hops follow re-export chains
+            # without inventing phantom cycles.
+            for hop_module in {edge_module, '__init__'}:
+                if (hop_module, edge_name) in expanded:
+                    continue
+                expanded.add((hop_module, edge_name))
+                if edge_name in self.module_definitions.get(hop_module, set()):
+                    candidates.add((hop_module, edge_name))
+                frontier.extend(self.import_edges.get(hop_module, {}).get(edge_name, set()))
+
+        if not candidates:
+            for wildcard_module in self.wildcard_imports.get(importer, set()):
+                exports = self.module_exports.get(wildcard_module)
+                if exports is None:
+                    # Unknown exports make the usage unresolvable.
+                    return None
+                if name in exports:
+                    candidates.add((wildcard_module, name))
+
+        if len(candidates) == 1:
+            return candidates
+        # No candidate at all, or more than one candidate: unresolvable or ambiguous.
+        return None
 
     def _is_item_used(self, item: CodeItem) -> bool:
         module = os.path.splitext(os.path.basename(str(item.filename)))[0]
@@ -467,6 +519,11 @@ class DeadCodeVisitor(ast.NodeVisitor):
             self._log(f'Ignoring {type_} "{name}"')
         else:
             collection.append(code_item)
+            is_module_level_definition = any(
+                collection is c for c in (self.defined_funcs, self.defined_classes, self.defined_vars)
+            ) and self.scope_parts == [self.module_name]
+            if is_module_level_definition:
+                self.module_definitions.setdefault(self.module_name, set()).add(name)
 
     def _get_assignment_removal_node(self, target: ast.AST) -> ast.AST | None:
         if not self._assignment_nodes:
@@ -659,9 +716,13 @@ class DeadCodeVisitor(ast.NodeVisitor):
         if node.module != '__future__':
             if node.module is not None:
                 explicit_imports = self.explicit_imports.setdefault(self.module_name, set())
+                edges = self.import_edges.setdefault(self.module_name, {})
                 for name_and_alias in node.names:
                     if name_and_alias.name != '*':
                         explicit_imports.add(name_and_alias.asname or name_and_alias.name)
+                        edges.setdefault(name_and_alias.asname or name_and_alias.name, set()).add(
+                            (node.module.rpartition('.')[2], name_and_alias.name)
+                        )
                 if any(name_and_alias.name == '*' for name_and_alias in node.names):
                     wildcard_module = node.module.rpartition('.')[2]
                     self.wildcard_imports.setdefault(self.module_name, set()).add(wildcard_module)

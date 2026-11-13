@@ -302,8 +302,9 @@ which are not used in a whole code base.
 There is an alternative [vulture](https://pypi.org/project/vulture/) package.
 
 ## Known limitations
-In case there are several definitions using the same name - they all wont be
-reported if at least one usage of that name is being detected.
+Definitions with the same name in different files are distinguished when a usage of that name resolves through the definition's own module or through a statically known `from ... import` path. A usage that cannot be resolved this way (for example a bare name that is neither defined nor imported in the using module, an ambiguous resolution, or a dynamic usage like attribute loads, `getattr` strings, or format-string names) still suppresses all same-named definitions.
+
+Modules with the same basename in different packages are treated as one module, so a usage may resolve ambiguously between their same-named definitions; ambiguous resolutions also suppress all same-named definitions.
 
 Files with syntax errors will be ignored, because `deadcode` uses `ast` to
 build abstract syntax tree for name usage detection.
@@ -344,7 +345,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
     - [x] --ignore-bodies-if-inherits-from
         - Question: would it be possible to ignore only certain types of checks for a body, e.g. only variable attributes of TypedDict and still check usage of methods and properties?
         - What expression would allow this type of precission?
-- [ ] Distinguish between definitions with same name, but different files.
+- [x] Distinguish between definitions with same name, but different files.
 - [ ] Repeated application of `deadcode` till the output stops changing.
 - [x] Unreachable code detection and fixing: this should only be scoped for if statements and only limited to primitive variables.
 - [ ] Benchmarking performance with larger projects (time, CPU and memory consumption) in order to optimize.
@@ -363,6 +364,9 @@ A checked entry is implemented on `main` and is included in the next release; pu
 - [ ] Investigate ways of extracting and backporting Python3.10+ `ast` implementation to lower Python versions.
 
 ## Release notes
+- next:
+    - Bugfixes:
+        - Distinguish definitions with the same name in different files when a usage resolves through the definition's own module or a statically known from-import path
 - **v2.6.3** `2026-11-13`:
     - Bugfixes:
         - Normalize paths to forward slashes in findings, discovery, fix grouping, and pattern matching
