@@ -1,6 +1,6 @@
 # DEP 5 - Resolving name shadowing
 
-**Status**: Proposed
+**Status**: Accepted
 
 **Type**: Feature
 
