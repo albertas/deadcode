@@ -1,334 +1,171 @@
-# DEP 5 - Support SARIF output
+# DEP 5 - Resolving name shadowing
 **Status**: Proposed
 **Type**: Feature
 **Created**: 2026-11-12
 
 ## Problem statement
 
-`deadcode` currently has exactly one report format: the text renderer in `deadcode/actions/get_unused_names_error_message.py`.
-It emits one `filename:line:column: CODE Message` line per finding and supports only the text modifiers `--count`, `--quiet`, and `--fix`/`--dry`.
-There is no format selector and no structured output channel, so every consumer must scrape the human-readable stream.
+This DEP is a proposal for later work. It does not change any analysis code in this repository.
 
-As a result, findings cannot be consumed natively by linter aggregators or IDEs. The only interoperability guidance on `main` is the README advice to run
-`deadcode` alongside `ruff`; the repository contains no SARIF implementation, documentation, issue comment, or pull request on `main`.
-Issue #100 (`https://github.com/albertas/deadcode/issues/100`) requests native SARIF output so that these tools can integrate without an adapter.
-`vulture`, the closest comparable tool, also lacks SARIF support, so native support would become a documented differentiator for `deadcode`.
+Issue [Resolve name shadowing](https://github.com/albertas/deadcode/issues/101) reports that deadcode misses an unused definition when the same name is
+defined in more than one file and used in only one of them. The issue body says:
 
-Scope: this DEP covers SARIF 2.1.0 output for findings. It does not cover a language server, a new analyser rule, auto-fix reporting, severity modelling,
-or a docs-site DEP page.
+> If the same name is defined in couple of files, but is used only in one file. The unsued name should be detected and flagged as dead code.
+
+and proposes:
+
+> deadcode should build metadata (place of definition) for each defined/used name and use the metadata when comparing the definitions against the usages.
+
+### Reproduction
+
+Create a directory with two modules. `a.py` defines and uses `foo`:
+
+```python
+# a.py
+def foo():
+    return 1
+
+
+print(foo())
+```
+
+`b.py` defines `foo` but never uses it:
+
+```python
+# b.py
+def foo():
+    return 2
+```
+
+Running `deadcode /tmp/shadowcase --no-color` on this project currently prints `Well done! ✨ 🚀 ✨` and exits with status `0`. No finding is emitted for
+`b.py`, although `b.py:1` defines a function that nothing uses. The reproduction is illustrative: issue #101 contains no example of its own.
+
+The root cause is that definitions are recorded as names, and usages are collected into the global `used_names` and `bare_used_names` sets. The
+`_get_unused_items` filter in `deadcode/visitor/ignore.py` checks only whether a definition's name is a member of those sets. A use of `foo` in any file
+therefore satisfies every definition named `foo`, so `a.py:foo` also marks `b.py:foo` as used. `CodeItem` already stores `filename`, `scope`, `line`, and
+`column`, but the unused filter ignores that metadata and compares names alone.
+
+The same false negative affects module-level functions, classes, and variables when another module defines and uses the same name. It also affects methods,
+attributes, builtin-shadowing names, redefinitions, and lambda or comprehension bindings whenever they share a name with a used definition elsewhere.
+The staged scope below limits the first implementation to the module-level case.
+
+After the proposed change, the reproduction should report the unused definition in `b.py` as:
+
+```text
+b.py:1:1: DC02 Function `foo` is never used
+```
+
+That is, the finding ``DC02 Function `foo` is never used`` is emitted for `b.py:1`, while `a.py:foo` remains unreported because `a.py` uses it.
 
 ## Considered alternatives
 
-Five designs were compared against issue #100. The last one is selected; the other four are recorded with the reason they were not chosen.
+### Global name-set comparison
 
-### 1. Keep the text renderer only (status quo)
+- Idea: keep collecting every definition name and every usage name in two global sets and report a definition when its name is absent from the usage set.
+- Trade-off: this is the simplest and most memory-light approach, but a use in any file satisfies every same-named definition, so it cannot tell which
+  definition a usage refers to.
+- Why not chosen: it is the status quo that produces the #101 false negative, so it cannot satisfy this proposal.
 
-Leave `get_unused_names_error_message` as the only output path and expect consumers to parse the `filename:line:column: CODE Message` lines.
+### Naive place-of-definition metadata
 
-**Rejected (D5):** it does not satisfy issue #100 and leaves aggregators and IDEs without a machine-readable report. Scraping human-readable lines is
-fragile and gives consumers no rule metadata, no locations objects, and no document version to validate.
+- Idea: attach the place of definition to each name, as the issue suggests, and compare the usage module with the definition module before deciding that a
+  definition is unused.
+- Trade-off: module comparison works for direct use in the defining module, but a usage in `a.py` of a name imported from `b.py` is recorded in `a.py`, so
+  the `b.py` definition would be wrongly reported. Import-aware propagation is required to avoid that regression.
+- Why not chosen: the plain module comparison replaces one false negative with false positives on ordinary cross-module imports.
 
-### 2. Add a neutral JSON format first, SARIF later
+### Scope- and type-aware usage tracking (DEP 1)
 
-Introduce a `--output-format json` document shaped for `deadcode` itself, then add `sarif` in a follow-up release.
+- Idea: track the scope and type of every definition and usage, then match usages to definitions through those scopes and types, as DEP 1 specifies.
+- Trade-off: it is the largest program of the alternatives and still loses types on function returns and arguments; DEP 1 itself falls back to name
+  matching when a type cannot be inferred, so it does not by itself guarantee the #101 case.
+- Why not chosen: it is the long-term destination rather than the smallest fix for the reported false negative, and its size delays the fix.
 
-**Rejected (D5):** it creates two formats and two migrations for the consumer that was actually requested, and there is no second consumer that would
-justify the generic schema. The requested target already has a standard, so a private intermediate document adds work without adding capability.
+### Scoped binding tables (pyflakes/pylint)
 
-### 3. Third-party adapter or wrapper script
+- Idea: model the bindings of each lexical scope and resolve a name to the binding visible at its use site, following the design used by pyflakes and
+  pylint.
+- Trade-off: pyflakes and pylint resolve lexical shadowing inside a file, but their tables are a per-scope linter design built for diagnostics in one
+  module.
+- Why not chosen: the tables do not by themselves establish cross-module definition identity, which whole-project dead-code detection needs for #101.
 
-Ship a small external converter that runs `deadcode` in text mode and translates the lines to SARIF.
+### Import and qualified-name resolution
 
-**Rejected (D5):** it is not native support, adds an install step to every consumer, and depends on unmaintained external code. Issue #100 asks for
-native integration, and a wrapper would still have to reimplement the finding-to-result mapping this DEP already specifies.
-
-### 4. Boolean `--sarif` flag
-
-Add a bare `--sarif` switch that turns SARIF output on.
-
-**Rejected (D5):** a boolean cannot express a third format and is inconsistent with the project's option style. A `--output-format` family extends to
-future formats without a new flag for each one, and its argparse choices give a clear usage error for unknown values.
-
-### 5. Built-in SARIF 2.1.0 emitter behind `--output-format {text,sarif}` (selected)
-
-Add `--output-format {text,sarif}` with default `text`, and implement a native SARIF 2.1.0 emitter in a sibling module. This is the smallest design that
-satisfies "native integration": one flag, one new renderer, no change to the analyser, no new dependency (`json` is in the standard library), and no
-consumer-specific adapter. It matches how `ruff` and `bandit` ship SARIF and leaves room for future formats (D5, D18).
-
-The sub-decisions of the selected emitter were also compared:
-
-- **Destination: stdout, no output file (D6).** Stdout is the existing output channel and shell redirection creates a file.
-  Rejected: always writing `results.sarif`, which is surprising in CI; and an `--output FILE` option now, which adds path, overwrite, and encoding
-  questions that issue #100 does not ask for and can be added later without changing the format.
-- **Artifact URIs: absolute `file://` URIs via `Path(...).resolve().as_uri()` (D13).** This matches GitHub's request for resolved paths and the VS Code
-  extension's workspace reconciliation, and `as_uri()` handles spaces and non-ASCII characters.
-  Rejected: the raw CLI path, which can be relative and is not a valid URI; a relative URI plus `uriBaseId`/`originalUriBaseIds`, whose base is ambiguous
-  outside the workspace root; and a bare POSIX path, which violates `uri-reference` expectations.
-- **Region: the reported name range, not the `code_parts` removal range (D11).** The tight name range highlights exactly what the result is about.
-  Rejected: `code_parts`, which can span a whole statement, differs from the reported name, and overlaps between findings; that mapping belongs to future
-  fix support. The removal range is documented as future work rather than conflated with highlighting.
-- **Columns: Unicode code points, not UTF-16 code units (D11).** `columnKind: "unicodeCodePoints"` matches both named consumers.
-  Rejected: `utf16CodeUnits`, which needs a second conversion from code points with no benefit, and mapping the zero-based UTF-8 byte offset directly,
-  which is wrong for any line with non-ASCII text before the name.
-- **`fixes`, `suppressions`, and `fingerprints` are out of v1 (D20).** None of them is required for a valid, displayable log, and each needs data the
-  renderer does not have. Rejected: emitting SARIF `fixes`, which needs a `code_parts`-to-`artifactChanges` mapping; `suppressions`, which are removed
-  during analysis; and `partialFingerprints`, because a finding identity of `ruleId + filename + name` would merge alerts for names that are not unique
-  across files or scopes. GitHub can compute fingerprints during an upload when they are absent.
-
-### Other rejected user-visible options
-
-These options were considered and rejected before the selected design was fixed:
-
-- **Emit SARIF by default (D5).** Rejected: it breaks every existing consumer and every golden output test, and it would change the default contract of
-the command without a flag a user can see.
-- **Overload `--count` or `--quiet` for structured output (D5, D16).** Rejected: both are output modifiers with established behavior and tests, and
-overloading them would conflate output selection with rendering.
-- **A separate `[tool.deadcode.output]` table (D7).** Rejected: a new configuration shape with no precedent; the existing `[tool.deadcode]` key
-normalization already maps `output-format` to `Args.output_format`.
-- **Depend on `sarif_om` or `jschema_to_python` (D18).** Rejected: new runtime dependencies for a small constant document, when the project has only
-`tomli` and `json` covers serialization.
-- **A consumer-specific adapter module per consumer, such as one for GitHub and one for VS Code (D5, D21).** Rejected: spec-conformant SARIF 2.1.0 is
-accepted by both, so separate modules would duplicate the same emitter and split the format by vendor.
+- Idea: resolve imports and qualified names so a usage is tied to the module and member path it refers to.
+- Trade-off: this improves cross-module identity, but it still leaves two same-named top-level definitions in different modules competing for the same bare
+  usage.
+- Why not chosen: it does not separate the two same-named definitions in the reproduction, which is exactly the reported symptom.
 
 ## Chosen solution
 
-Add an opt-in output-format selector to the command line:
+The chosen solution is definition-anchored usage resolution (DAUR). Its one-sentence summary is: "A definition is reported unused only when no usage
+resolves to it; a usage resolves to a definition through lexical scope in its own module or through a statically known import/qualification path."
 
-```text
-deadcode --output-format {text,sarif} PATH...
-```
+DAUR fixes the `a.py`/`b.py` reproduction because a use of `foo` in `a.py` resolves to `a.py:foo` and cannot satisfy `b.py:foo`. It reuses the `CodeItem`
+metadata that already exists (`filename`, `scope`, `line`, `column`), and it needs only per-module binding tables plus import edges. It avoids type
+inference for module-level names, so it does not inherit DEP 1's loss of types on returns and arguments, and it keeps a conservative fallback so dynamic
+usage cannot turn into a false positive.
 
-The default is `text`. In `text` mode the command behaves exactly as it does today, byte-for-byte, including `--count`, `--quiet`, `--fix`, `--dry`, colors,
-and the success banner. In `sarif` mode the command writes a SARIF 2.1.0 log to stdout and nothing else, so shell redirection is enough to produce a file:
-
-```shell
-deadcode --output-format sarif . > results.sarif
-```
-
-There is no output-file option in the first version (D6). The log goes to the existing stdout channel, and consumers that need a path can use shell
-redirection.
-
-### Configuration
-
-`[tool.deadcode]` accepts the same option as the CLI:
-
-```toml
-[tool.deadcode]
-output-format = "sarif"
-```
-
-The existing key normalization in `parse_arguments.py` strips leading `--` and converts `-` to `_`, so this key maps to `Args.output_format` without a new
-configuration concept. The existing truthy-scalar merge means a value from `pyproject.toml` overwrites the CLI value, including a CLI `--output-format text`;
-this DEP keeps and documents that precedence (D7).
-
-### Compatibility and exit status
-
-SARIF mode is incompatible with the text-only output modifiers. Each of the following is a command-line usage error: a message on stderr and exit status 2.
-
-- `--output-format sarif` with `--fix` (D15).
-- `--output-format sarif` with `--dry` (D15). `--fix --dry` keeps working in `text` mode.
-- `--output-format sarif` with `--count` (D16).
-- `--output-format sarif` with `--quiet` (D16).
-
-Validation happens after the `pyproject.toml` merge, so a configuration value cannot silently disable the check. The valid choices are enforced by argparse
-with `{text,sarif}`, and an unknown value is also a usage error with exit status 2.
-
-Exit statuses are unchanged (D17): 0 when no findings are reported, 1 when findings exist, 2 for invalid CLI usage, and 1 for an unexpected error. In
-`sarif` mode the success banner is not printed, because a human line before or after the document would make stdout unparseable. An empty report is still a
-complete document with one run, the tool driver, the rule table, and `results: []`, and it exits 0.
-
-### Conformance targets
-
-Conformance means a valid SARIF 2.1.0 log that both named consumers accept without vendor-specific extensions (D21): GitHub code scanning and the VS Code
-SARIF Viewer. A generic linter aggregator that accepts SARIF 2.1.0 is covered by the same document. GitHub and the VS Code extension are chosen because the
-issue names no specific product, and these two document their SARIF requirements and accept a plain file path.
+The rejected alternatives are global name-set comparison, naive place-of-definition metadata, scope- and type-aware tracking (DEP 1), scoped binding
+tables (pyflakes/pylint), and import and qualified-name resolution alone. DAUR wins on accuracy for #101 because it identifies which definition a usage can
+refer to. It wins on false-positive risk because unresolved usage falls back to the current behavior. It wins on memory because it stores only local
+binding tables and import edges. It wins on effort because stage A is a small change, while DEP 1 remains the long-term destination.
 
 ## Scope
 
-The following are not part of this DEP's implementation:
+### In scope
 
-- SARIF `fixes`, `suppressions`, `fingerprints`, or `partialFingerprints` in v1 (D20).
-- A language server, IDE plugin, or aggregator-specific adapter (D5, D21).
-- A new analyser rule or auto-fix reporting; this DEP changes reported output only (D5).
-- Severity modelling beyond SARIF's default `warning` (D10).
-- SARIF 2.0 or earlier, multiple runs, `runAutomationDetails`, or an output-file flag.
-- Implementing SARIF output, the `--output-format` flag, or any Python, test, configuration, or workflow change in this task.
-- Changes to the docs-site DEP process page `docs/dep.md` beyond publishing this DEP.
+- Stage A (`module-level`): module-level functions, classes, and module variables across files, with lexical resolution plus `import` and `from ...
+  import` propagation.
+- Stage B (`members`): methods and attributes when the receiver class or instance is statically known from a constructor call, an annotation, or a
+  class-name reference.
+- Stage C (`remaining shadowing`): a builtin-name table, lambda and comprehension lexical scopes, same-file redefinition handling, and package-qualified
+  module keys.
+
+### Out of scope
+
+- No analysis change in this DEP.
+- No tests or documentation beyond this DEP.
+- No rule-code or output-format change.
 
 ## Implementation notes
 
-### CLI wiring
+The staged outline is A -> B -> C, and each stage is independently shippable. Stage A alone fixes the #101 reproduction and covers module-level functions,
+classes, and variables; stage B extends the same resolution to methods and attributes; stage C closes the remaining shadowing cases.
 
-The change is additive and touches three small places:
+The data model is a per-module binding table. For each module, a map from a bound name to the `CodeItem` definitions it can denote is stored, together with
+the module's import edges: `from module import name`, `import module as alias`, and statically known `__all__` exports.
 
-1. `deadcode/data_types.py`: add `output_format: Literal['text', 'sarif'] = 'text'` to `Args`.
-2. `deadcode/actions/parse_arguments.py`: declare `--output-format` with `choices=('text', 'sarif')` and `default='text'`, and validate incompatible
-   combinations after the `pyproject.toml` merge, before returning `Args`. A parser error gives the documented stderr message and exit status 2.
-3. `deadcode/cli.py`: after parsing, dispatch between the unchanged `get_unused_names_error_message` for `text` and the new `get_sarif_report` for
-   `sarif`. The SARIF branch must not print the success banner. The existing `RunResult` contract remains: findings return the document as the message and
-   exit status 1; an empty report returns the document and exit status 0.
+The resolution order is: (1) lexical scope in the usage's own module, (2) import edges from the usage module to the defining module, and (3) qualified
+member access when the receiver's class or instance is statically known. Stage B treats a receiver as statically known when it is the constructor call of
+a known class, an annotation naming a known class, or a class-name reference; any other receiver falls back to name matching, and the exact enrichment of
+these cases is left to the implementing change.
 
-The new module is `deadcode/actions/get_sarif_report.py`; `get_unused_names_error_message` is not changed (D18). The renderer accepts the same
-`Iterable[CodeItem]` and `Args` as the text renderer, applies the same `--only` filtering with `deadcode.visitor.ignore._match`, and returns a `str` produced by
-`json.dumps`. No new dependency is needed because `json` and `pathlib` are in the standard library. No schema file is bundled: the build ships only `**/*.py`,
-and the document is generated in code (D18).
+The fallback rule is conservative. When a usage cannot be resolved statically, today's global-name matching is kept for that name, so dynamic usage
+suppresses findings instead of creating false positives.
 
-### Document shape
+When a name resolves to more than one definition and lexical or import evidence cannot separate them, the implementation emits a warning only in verbose
+mode rather than choosing a definition silently.
 
-The emitter builds one dictionary and serializes it. The top level has `$schema` set to `https://json.schemastore.org/sarif-2.1.0.json`, `version` set to
-`"2.1.0"`, and `runs` containing exactly one run (D8). The run contains:
+The rollout is default-on DAUR with a `--legacy-name-matching` CLI option (or the equivalent config key) for one release, then removal of that opt-out.
 
-- `tool.driver.name`: `"deadcode"`.
-- `tool.driver.version`: `deadcode.__version__`, the package version read through `importlib.metadata`.
-- `tool.driver.informationUri`: `https://github.com/albertas/deadcode`.
-- `tool.driver.rules`: the static rule table below, in the order given.
-- `results`: one entry per finding after `--only` filtering, or an empty array.
-- `columnKind`: `"unicodeCodePoints"`.
+Module keys use the current file basename without its extension for stages A and B. Package-qualified module keys are a Stage C refinement: until then,
+two same-named modules in different packages can collide, and this limitation is stated here rather than fixed by the DEP.
 
-The run deliberately omits `invocations`, `originalUriBaseIds`, `runAutomationDetails`, and `properties.metrics`; none is required for a valid, displayable
-result and each adds consumer-specific behavior (D8). A minimal populated document looks like this:
+The compatibility contract is unchanged. Rule codes DC01-DC13, message wording, the `filename:line:column: DCxx message` format, exit statuses `0`, `1`,
+and `2`, `# noqa` mapping, and all existing suppression options stay as they are; only which definitions are reported changes.
 
-```json
-{
-  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
-  "version": "2.1.0",
-  "runs": [
-    {
-      "tool": {
-        "driver": {
-          "name": "deadcode",
-          "version": "2.6.1",
-          "informationUri": "https://github.com/albertas/deadcode",
-          "rules": [
-            {
-              "id": "DC01",
-              "name": "Variable",
-              "shortDescription": {"text": "A variable is defined but never used."},
-              "helpUri": "https://deadcode.readthedocs.io/en/latest/rules.html"
-            }
-          ]
-        }
-      },
-      "results": [
-        {
-          "ruleId": "DC01",
-          "ruleIndex": 0,
-          "message": {"text": "Variable `unused_name` is never used"},
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {"uri": "file:///workspace/pkg/module.py"},
-                "region": {"startLine": 4, "startColumn": 5, "endLine": 4, "endColumn": 16}
-              }
-            }
-          ]
-        }
-      ],
-      "columnKind": "unicodeCodePoints"
-    }
-  ]
-}
-```
-
-### Rule metadata
-
-`tool.driver.rules` is built from `ERROR_TYPE_TO_ERROR_CODE` in `deadcode/constants.py`, preserving its insertion order so `ruleIndex` is stable (D9). Each
-entry has `id` equal to the `DCxx` code, `name` equal to the type label with underscores replaced by spaces and capitalized, `shortDescription.text` as
-below, and `helpUri` set to `https://deadcode.readthedocs.io/en/latest/rules.html`. Results carry both `ruleId` and `ruleIndex`.
-
-| Index | `id` | `name` | `shortDescription.text` |
-| --- | --- | --- | --- |
-| 0 | `DC01` | Variable | A variable is defined but never used. |
-| 1 | `DC02` | Function | A function is defined but never used. |
-| 2 | `DC03` | Class | A class is defined but never used. |
-| 3 | `DC04` | Method | A method is defined but never used. |
-| 4 | `DC05` | Attribute | An attribute is assigned but never used. |
-| 5 | `DC06` | Name | A name is defined but never used. |
-| 6 | `DC07` | Import | An import is never used. |
-| 7 | `DC08` | Property | A property is defined but never used. |
-| 8 | `DC09` | Unreachable body | A function body is unreachable. |
-| 9 | `DC11` | Unused file | A Python file is never imported. |
-| 10 | `DC12` | Commented out code | A comment contains commented-out code. |
-| 11 | `DC` | Ignore expression | An ignore expression is unused. |
-| 12 | `DC13` | Unreachable code | A statement after control flow is unreachable. |
-
-### Result mapping
-
-Each `CodeItem` becomes one result after the `--only` filter. The mapping is:
-
-| Result field | Source |
-| --- | --- |
-| `ruleId` | `item.error_code`, for example `DC01`. |
-| `ruleIndex` | The index of `item.error_code` in the static rule table above. |
-| `message.text` | `item.message` when set; otherwise `"<Type> `<name>` is never used"`, with the same type capitalization as the text renderer. |
-| `level` | Omitted. SARIF's default severity is `warning`; no severity model is added (D10). |
-| `locations` | Exactly one location. It always has `physicalLocation.artifactLocation.uri`; it has a `region` when the finding has a usable position. |
-| `fixes`, `suppressions`, `fingerprints`, `partialFingerprints` | Omitted in v1 (D20). |
-
-The message does not contain `filename:line:column:`, rule codes, or ANSI escape sequences (D14). `ruleId` carries the code, and `locations` carries the
-position. Examples of existing explicit messages that are passed through unchanged are the empty-file, commented-out-code, and unreachable-variant messages.
-
-### Artifact URIs
-
-`artifactLocation.uri` is `Path(item.filename).resolve().as_uri()` (D13). This produces an absolute `file://` URI with percent-encoding, resolves symlinks,
-and handles spaces and non-ASCII characters. The raw CLI path is never written as a bare path or a relative URI, and `uriBaseId`/`originalUriBaseIds` are
-not used.
-
-### Regions and column conversion
-
-`startLine` is `item.name_line`. `item.name_column` is a zero-based UTF-8 byte offset, so it must be converted to the one-based code-point column that
-`columnKind: "unicodeCodePoints"` promises (D11):
-
-1. Read the source file as bytes and split it into lines. Select `name_line - 1`.
-2. Take the first `name_column` bytes of that line and decode them as UTF-8.
-3. Set `startColumn = len(decoded_prefix) + 1`.
-4. Set `endLine = startLine` and `endColumn = startColumn + len(item.name)`, both in code points.
-
-If the file cannot be read, the line is missing, the byte offset is invalid, or the prefix cannot be decoded as UTF-8, the result still gets its location but
-no `region`; the emitter never guesses a column. A finding without `name_line` or `name_column` also emits only `physicalLocation.artifactLocation.uri`
-(D12). This covers `unused_file` (`DC11`) and any future finding without a position. Positionless findings are kept rather than dropped, because dropping them
-would silently lose results.
-
-### Empty results
-
-When there are no findings after filtering, the emitter still returns a complete document: `$schema`, `version`, one run with `tool.driver` (including the
-rules array), `results: []`, and `columnKind`. `cli.run` returns that document with exit status 0 and suppresses the success banner (D17). Consumers thus
-always receive parseable JSON, and CI can still rely on exit status 0.
-
-### Fixes, suppressions, and fingerprints are future work
-
-The following are explicitly out of the first version and each has a blocker (D20):
-
-- **`fixes`**: mapping `code_parts` to SARIF `artifactChanges` requires handling overlapping parts, partial imports, and multi-line removals. That is a
-  separate design, and it is why `--fix` and `--dry` are usage errors with `sarif` (D15).
-- **`suppressions`**: suppressed findings are removed during analysis, so the renderer never sees them and cannot mark them as suppressed.
-- **`fingerprints` and `partialFingerprints`**: a stable identity needs more than a bare name. `CodeItem` equality and hashing use only `name`, and names are
-  not unique across files or scopes, so a synthetic fingerprint could merge unrelated alerts. GitHub attempts to compute fingerprints during an upload when
-  they are absent.
-
-### Test plan for the future implementation
-
-The DEP defines behavior but does not add tests, because this task changes no Python. The implementation that follows this DEP should add:
-
-- `tests/cli_args/test_output_format.py`: parse `--output-format`, default to `text`, accept both choices, reject unknown values with exit status 2, map
-  `[tool.deadcode] output-format` through the existing normalization, cover the config-over-CLI precedence, and assert usage errors for `--fix`, `--dry`,
-  `--count`, and `--quiet` combined with `sarif` (D19).
-- `tests/cli/test_sarif_output.py`: run the CLI and parse stdout as JSON; assert `$schema`, `version`, one run, and `tool.driver` presence; assert one result
-  per finding, stable `ruleId`/`ruleIndex`, the message wording, and absolute `file://` URIs; cover an ASCII line and a non-ASCII line before the name for the
-  byte-to-code-point conversion; assert that an `unused_file` result has a location without a region; assert empty results with exit status 0; and assert that
-  no banner or other non-JSON text appears (D19).
-
-Existing text-output tests stay unchanged. The future code change must also add `--output-format` to the README option table, the argparse `--help` output, and
-`docs/features.md`, because those surfaces are contract-tested (D19, and the research constraint that README and feature documentation are checked).
+This DEP changes no code.
 
 ## References
 
-- Issue #100, "Support SARIF output": <https://github.com/albertas/deadcode/issues/100>
-- OASIS SARIF 2.1.0 specification: <https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html>
-- OASIS SARIF 2.1.0 JSON schema: <https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json>
-- GitHub code scanning SARIF support: <https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning>
-- VS Code SARIF Viewer: <https://github.com/microsoft/sarif-vscode-extension>
-- Text renderer: `deadcode/actions/get_unused_names_error_message.py`
-- Finding data model: `deadcode/visitor/code_item.py`
-- CLI argument parsing: `deadcode/actions/parse_arguments.py`
-- Published rule page: `docs/rules.md`
+- Issue #101, "Resolve name shadowing": https://github.com/albertas/deadcode/issues/101
+- DEP 1, "More accurate usage detection": [dep_1.md](dep_1.md)
+- DEP 3: [dep_3.md](dep_3.md)
+- README limitation: "In case there are several definitions using the same name - they all wont be reported if at least one usage of that name is being
+  detected" (`README.md`, known limitations section).
+- README feature requests: "Distinguish between definitions with same name, but different files", including package names in scopes and handling
+  redefinitions (`README.md`).
+- Pyflakes scoped binding implementation: https://github.com/PyCQA/pyflakes/blob/main/pyflakes/checker.py
+- Pylint variable checker and redefinition messages: https://github.com/pylint-dev/pylint/blob/main/pylint/checkers/variables.py
+- Vulture global usage set: https://github.com/jendrikseipp/vulture/blob/main/vulture/core.py
