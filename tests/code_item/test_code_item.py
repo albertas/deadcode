@@ -1,4 +1,4 @@
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 from deadcode.visitor.code_item import CodeItem
 
@@ -56,3 +56,47 @@ def test_code_item_is_not_equal_to_an_unrelated_object():
     # Then
     assert compared_to_object is False
     assert compared_to_integer is False
+
+
+def test_filename_with_position_uses_forward_slashes():
+    # Having
+    code_item = CodeItem(
+        name='Foo',
+        type_='variable',
+        filename=PureWindowsPath('pkg/mod.py'),
+        name_line=3,
+        name_column=7,
+    )
+
+    # When
+    filename_with_position = code_item.filename_with_position
+
+    # Then
+    assert filename_with_position == 'pkg/mod.py:3:7:'
+
+
+def test_filename_with_position_omits_line_and_column_when_unknown():
+    # Having
+    code_item = CodeItem(name='Foo', type_='variable', filename=PureWindowsPath('pkg/mod.py'))
+
+    # When
+    filename_with_position = code_item.filename_with_position
+
+    # Then
+    assert filename_with_position == 'pkg/mod.py'
+
+
+def test_filename_with_position_omits_column_when_unknown():
+    # Having
+    code_item = CodeItem(
+        name='Foo',
+        type_='variable',
+        filename=PureWindowsPath('pkg/mod.py'),
+        name_line=3,
+    )
+
+    # When
+    filename_with_position = code_item.filename_with_position
+
+    # Then
+    assert filename_with_position == 'pkg/mod.py:3'

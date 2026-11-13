@@ -3,6 +3,7 @@ from pathlib import Path
 from deadcode.constants import UnusedCodeType, ERROR_TYPE_TO_ERROR_CODE
 
 from deadcode.data_types import Part
+from deadcode.utils.normalize_path import normalize_path
 
 
 class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple methods are reimplemented.
@@ -61,7 +62,7 @@ class CodeItem:  # TODO: This should also be a dataclass, because hash and tuple
 
     @property
     def filename_with_position(self) -> str:
-        filename_with_position = str(self.filename)
+        filename_with_position = normalize_path(self.filename)
         if self.name_line is not None:
             filename_with_position += f':{self.name_line}'
             if self.name_column is not None:
