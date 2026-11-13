@@ -56,6 +56,14 @@ def parse_arguments(args: list[str] | None) -> Args:
         type=str,
     )
     parser.add_argument(
+        '--ignore',
+        help='Ignores findings with any of the provided rule codes, e.g. DC12.',
+        nargs='*',
+        action='append',
+        default=[],
+        type=str,
+    )
+    parser.add_argument(
         '--ignore-names',
         help=(
             'Removes provided list of names from the output. '

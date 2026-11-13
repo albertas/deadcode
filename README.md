@@ -135,6 +135,7 @@ run the same hook while developing deadcode itself, use `make pre-commit`.
 |`--dry`                                    | -    | Show changes which would be made in files. |
 |`--only`                                   | list | Filenames (or path expressions), that will be reflected in the output (and modified if needed). |
 |`--exclude`                                | list | Filenames (or path expressions), which will be completely skipped without being analysed. |
+|`--ignore`                                 | list | Ignores findings (and fixes) for the provided rule codes for the whole run. |
 |`--ignore-names`                           | list | Removes provided list of names from the output. Glob expressions to match multiple names can also be provided, e.g. `*Mixin` will match all classes ending with `Mixin`. |
 |`--ignore-names-in-files`                  | list | Ignores unused names in files, which filenames match provided path expressions. |
 |`--ignore-names-if-inherits-from`          | list | Ignores names of classes which inherit from any of the provided class names. The class name may be a plain name, a dotted path such as `graphene.ObjectType`, or a glob such as `*.ObjectType`; a dotted base also matches its final component (`ObjectType`). Only the class name is suppressed; its members and body are controlled by `--ignore-bodies-if-inherits-from` and `--ignore-definitions-if-inherits-from`. |
@@ -227,6 +228,31 @@ A comment on the first decorator line is still accepted.
 | DC12  | commented-out-code   | Commented out code
 | DC13  | unreachable-code     | Code after terminal statement, e.g. `return`, `raise`, `continue`, `break`
 | DC    | ignore-expression    | Do not show any findings for an expression, which starts on current line (this code can only be used in `# noqa: DC` comments)
+
+## Ignoring rules globally
+Use `--ignore` to suppress findings for one or more rule codes for the whole run:
+
+```shell
+deadcode . --ignore DC12
+```
+
+The same option can be set in `pyproject.toml`:
+
+```toml
+[tool.deadcode]
+ignore = ["DC12"]
+```
+
+A pre-commit hook can pass the option through `args`:
+
+```yaml
+repos:
+  - repo: https://github.com/albertas/deadcode
+    rev: v2.6.1
+    hooks:
+      - id: deadcode
+        args: [--ignore, DC12]
+```
 
 ## Ignoring unittest lifecycle methods
 `unittest` lifecycle methods (`setUp`, `tearDown`, `setUpClass`, `tearDownClass`, `asyncSetUp`, `asyncTearDown`, `setUpModule`, `tearDownModule`) declared in test files are ignored by default, alongside the existing pytest hooks.
@@ -343,6 +369,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - Publish the Deadcode Enhancement Proposal (DEP) process, template, and index.
         - Add a documentation page planning an experiment on large open source Python projects with candidate repositories, metrics and a measurement protocol.
         - Add DEP 4 proposing source-code tree pruning, with a survey of the JavaScript bundle-pruning tools that solve it and the capabilities expanding deadcode would require.
+        - Stop reporting type-checker comments such as `# ty: ignore` as commented-out code (DC12).; Add `--ignore` to suppress findings by rule code via the CLI, `pyproject.toml` and pre-commit.
         - Add DEP 5 documenting how an unused definition shadowed by a used name could be detected.
         - Add DEP 7 documenting native SARIF output support and publish it in the DEP index
 - **v2.6.1** `2026-11-11`:

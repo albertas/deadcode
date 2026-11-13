@@ -20,6 +20,7 @@ class Args:
     only: Iterable[Pathname] = ()
     paths: Iterable[Pathname] = ()
     exclude: Iterable[Pathname] = ()
+    ignore: Iterable[Pathname] = ()
     ignore_definitions: Iterable[Pathname] = ()
     ignore_definitions_if_decorated_with: Iterable[Pathname] = ()
     ignore_definitions_if_inherits_from: Iterable[Pathname] = ()

@@ -42,6 +42,8 @@ from deadcode.visitor.ignore import (
 
 logger = getLogger()
 
+TYPE_CHECKER_COMMENT_PATTERN = re.compile(r'^(?:(?:type|ty|pyright|pytype|mypy)\s*:|pyre-)', re.IGNORECASE)
+
 
 class DeadCodeVisitor(ast.NodeVisitor):
     """Finds dead code."""
@@ -315,6 +317,8 @@ class DeadCodeVisitor(ast.NodeVisitor):
     @staticmethod
     def _is_commented_out_code(code_text: str) -> bool:
         """Return True when a comment text looks like a Python expression or statement."""
+        if TYPE_CHECKER_COMMENT_PATTERN.match(code_text):
+            return False
         statement_keywords = (
             'import ',
             'from ',
