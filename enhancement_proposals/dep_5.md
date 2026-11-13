@@ -148,7 +148,7 @@ benchmark exists and the shipping gate has been evaluated.
 ## References
 
 - Issue #67, "Improve performance by using Rust": https://github.com/albertas/deadcode/issues/67
-- DEP process page proposed in PR #109: `docs/dep.md`
+- DEP process and template page, published as `docs/dep.md`: https://deadcode.readthedocs.io/en/stable/dep.html
 - Maturin guide: https://www.maturin.rs/
 - Maturin bindings and `abi3-py310`: https://www.maturin.rs/bindings
 - Maturin project layout and `module-name`: https://www.maturin.rs/project_layout
