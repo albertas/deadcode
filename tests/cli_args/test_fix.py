@@ -1,6 +1,29 @@
+from pathlib import PureWindowsPath
+
 import pytest
 
+from deadcode.actions.fix_or_show_unused_code import fix_or_show_unused_code
 from deadcode.cli import main
+from deadcode.data_types import Args, Part
+from deadcode.visitor.code_item import CodeItem
+
+
+def test_fix_groups_findings_by_forward_slash_filename(virtual_file_system):
+    # Having
+    virtual_file_system.files = {'pkg/mod.py': b'UNUSED = 1\nprint("keep")\n'}
+    code_item = CodeItem(
+        name='UNUSED',
+        type_='variable',
+        filename=PureWindowsPath('pkg\\mod.py'),
+        code_parts=[Part(1, 1, 0, 10)],
+    )
+
+    # When
+    result = fix_or_show_unused_code([code_item], Args(fix=True))
+
+    # Then
+    assert result == ''
+    virtual_file_system.assert_updated_files({'pkg/mod.py': b'print("keep")\n'})
 
 
 def test_unused_class_was_removed(virtual_file_system):

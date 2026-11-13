@@ -70,3 +70,30 @@ def test_fix_leaves_ignored_file_unchanged(virtual_file_system):
                 """,
         }
     )
+
+
+def test_backslash_pattern_matches_forward_slash_file(virtual_file_system):
+    # Having
+    virtual_file_system.files = FILES_WITH_UNUSED_CLASSES
+
+    # When
+    unused_names = main(['ignored', 'kept', '--ignore-names-in-files=ignored\\*', '--no-color'])
+
+    # Then
+    assert unused_names is not None
+    assert 'kept/bar.py' in unused_names
+    assert 'ignored/foo.py' not in unused_names
+    assert '\\' not in unused_names
+
+
+def test_only_accepts_backslash_pattern(virtual_file_system):
+    # Having
+    virtual_file_system.files = FILES_WITH_UNUSED_CLASSES
+
+    # When
+    unused_names = main(['ignored', 'kept', '--only', 'kept\\*', '--no-color'])
+
+    # Then
+    assert unused_names is not None
+    assert 'kept/bar.py' in unused_names
+    assert 'ignored/foo.py' not in unused_names
