@@ -43,6 +43,26 @@ def test_count_exit_status(virtual_file_system):
     assert exit_status == 1
 
 
+def test_count_on_cascade_counts_all_findings(virtual_file_system):
+    # Having
+    virtual_file_system.files = {
+        'main.py': b"""
+                def helper():
+                    return 1
+
+
+                def main_helper():
+                    helper()
+                """,
+    }
+
+    # When
+    message = main(['main.py', '--count', '--no-color'])
+
+    # Then
+    assert message == '2'
+
+
 def test_count_with_only_matching_nothing_is_clean(virtual_file_system):
     # Having
     virtual_file_system.files = {
