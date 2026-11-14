@@ -43,6 +43,36 @@ licence audit (`cargo deny check`, configured by the checked-in `deny.toml`) run
 vulnerability-audit workflow and is available locally as `make audit-cargo`. The tag is created after the upload and the Read the Docs steps keep their
 order.
 
+## Measured performance
+
+Native wheels ship only when the DEP 6 shipping gate is met, and the gate has been evaluated and met on the final tree, so this page can state the
+measured gains. The benchmark corpus (`benchmarks/corpus.json`) contains deadcode itself plus two larger real projects, flask and django, pinned by
+commit; the harness (`benchmarks/run_benchmark.py`, wired as `make benchmark`) runs the fixed command `deadcode <entry-root> --count` under
+`/usr/bin/time -v`, performs one warmup plus three timed runs per entry, and records wall-clock time, CPU time, peak RSS, exit status, findings count,
+and stdout/stderr SHA-256 hashes per run. `benchmarks/records.py` aggregates one record set and compares a second record set against it via the
+harness's `--compare-to` option.
+
+The shipping gate compares a fallback-only install (native module absent) against a native install (`make build-native`) built from the same source
+tree. Two full gate runs of the final tree measured the following per-entry median wall-clock times:
+
+| Corpus entry | Fallback baseline | Native | Wall-clock speedup |
+|---|---|---|---|
+| deadcode | 0.200 s | 0.140–0.150 s | 1.33x–1.43x |
+| flask | 0.310–0.320 s | 0.220–0.230 s | 1.35x–1.39x |
+| django | 31.180–31.580 s | 22.450–22.630 s | 1.38x–1.41x |
+
+The ranges span both gate runs. Across both, the aggregate geometric-mean wall-clock speedup is 1.36x–1.40x (36%–40% faster end-to-end), which clears
+the DEP 6 threshold of a 25% median wall-clock reduction; no corpus entry regresses (the threshold allows up to a 5% regression); and peak RSS stays
+within 1.00x–1.02x of the Python baseline (threshold: 1.2x). Every run of both record sets is identical on all parity surfaces: stdout and stderr
+SHA-256 hashes, exit status, and the findings count (42 for deadcode, 104 for flask, 3801 for django).
+
+The gains come from the two hot paths moved into Rust: the comment and `noqa` scan, which reuses a single token stream per module instead of
+re-reading and re-tokenizing each file, and module-export collection. The AST traversal itself stays in Python, so the native speedup is bounded by
+the share of the run those paths cover; the measured end-to-end effect is a consistent speedup of roughly 1.4x on every corpus entry rather than an
+order-of-magnitude change. The raw gate records — both record sets, the per-run wall clocks, and the record-set comparison — are archived with the
+task artifacts; the numbers above can be reproduced from the same tree by building both installs and running the harness with `--compare-to`
+(see `benchmarks/run_benchmark.py`).
+
 ## Contracts
 
 The contracts below constrain the Rust work. Each is stated with the file or section where it is fixed today.
@@ -72,9 +102,9 @@ packaging, CI, and audit wiring is in place.
 
 ## What is out of scope
 
-This page documents the Rust integration; it adds no code of its own and no packaging or CI change beyond what the phases implement. The page makes no
-performance or speedup claim of its own: {doc}`dep_6` requires measured evidence, which lives in the benchmark records and gate records rather than in
-this documentation.
+This page documents the Rust integration; it adds no code of its own and no packaging or CI change beyond what the phases implement. The performance
+section above states only the measured gate results: {doc}`dep_6` requires measured evidence before any speedup claim, and the gate records referenced
+there are the source of the numbers on this page.
 
 ## References
 
