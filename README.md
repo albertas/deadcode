@@ -376,6 +376,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
     - Bugfixes:
         - Distinguish definitions with the same name in different files when a usage resolves through the definition's own module or a statically known from-import path
         - Refine DEP 1 to Proposed status with a type-aware scope tracking solution
+        - Refine DEP 2 to Proposed status with an AST-based fix solution
 - **v2.6.3** `2026-11-13`:
     - Bugfixes:
         - Normalize paths to forward slashes in findings, discovery, fix grouping, and pattern matching
