@@ -10,7 +10,7 @@ from deadcode.actions.parse_arguments import parse_arguments
 LIST_OPTIONS = (
     'only',
     'exclude',
-    'ignore',
+    'ignore_rules',
     'ignore_names',
     'ignore_bodies_of',
     'ignore_bodies_if_decorated_with',

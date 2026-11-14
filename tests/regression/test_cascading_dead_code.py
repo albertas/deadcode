@@ -19,8 +19,7 @@ def test_cascade_reports_both_definitions_in_one_run(virtual_file_system):
 
     # Then
     assert unused_names == (
-        'main.py:1:0: DC02 Function `helper` is never used'
-        '\nmain.py:5:0: DC02 Function `main_helper` is never used'
+        'main.py:1:0: DC02 Function `helper` is never used\nmain.py:5:0: DC02 Function `main_helper` is never used'
     )
 
 
@@ -88,8 +87,7 @@ def test_mutually_recursive_dead_definitions_are_reported(virtual_file_system):
 
     # Then
     assert unused_names == (
-        'main.py:1:0: DC02 Function `a` is never used'
-        '\nmain.py:5:0: DC02 Function `b` is never used'
+        'main.py:1:0: DC02 Function `a` is never used\nmain.py:5:0: DC02 Function `b` is never used'
     )
 
 
@@ -207,8 +205,7 @@ def test_middleware_path_keeps_target_alive(virtual_file_system):
     # Then: the middleware path keeps `helper` alive; only the dead owner and the
     # unused `MIDDLEWARE` variable itself are reported.
     assert unused_names == (
-        'main.py:5:0: DC02 Function `dead_owner` is never used'
-        '\nmain.py:9:0: DC01 Variable `MIDDLEWARE` is never used'
+        'main.py:5:0: DC02 Function `dead_owner` is never used\nmain.py:9:0: DC01 Variable `MIDDLEWARE` is never used'
     )
 
 
@@ -350,8 +347,8 @@ def test_ignore_code_filters_cascade_findings(virtual_file_system):
     }
 
     # When
-    unused_names = main(['.', '--no-color', '--ignore', 'dc02'])
-    exit_status = print_main(['.', '--no-color', '--ignore', 'dc02'])
+    unused_names = main(['.', '--no-color', '--ignore-rules', 'dc02'])
+    exit_status = print_main(['.', '--no-color', '--ignore-rules', 'dc02'])
 
     # Then: every finding is filtered away, so no item survives and the run is
     # treated as clean.

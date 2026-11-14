@@ -56,7 +56,7 @@ def parse_arguments(args: list[str] | None) -> Args:
         type=str,
     )
     parser.add_argument(
-        '--ignore',
+        '--ignore-rules',
         help='Ignores findings with any of the provided rule codes, e.g. DC12.',
         nargs='*',
         action='append',

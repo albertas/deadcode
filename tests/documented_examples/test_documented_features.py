@@ -17,7 +17,7 @@ REQUIRED_FEATURES = {
     '--dry',
     '--only',
     '--exclude',
-    '--ignore',
+    '--ignore-rules',
     '--ignore-names',
     '--ignore-names-in-files',
     '--ignore-names-if-inherits-from',
