@@ -65,7 +65,7 @@ Extra deadcode options go under `args`, for example `args: [--no-color]` or `arg
 
 ## Ignoring rules globally
 
-Pass `--ignore` with one or more rule codes to suppress those findings for the whole hook run:
+Pass `--ignore-rules` with one or more rule codes to suppress those findings for the whole hook run:
 
 ```yaml
 repos:
@@ -73,10 +73,10 @@ repos:
     rev: v2.6.3
     hooks:
       - id: deadcode
-        args: [--ignore, DC12]
+        args: [--ignore-rules, DC12]
 ```
 
-The same rule codes can be configured once in `pyproject.toml` with `[tool.deadcode] ignore = ["DC12"]`.
+The same rule codes can be configured once in `pyproject.toml` with `[tool.deadcode] ignore_rules = ["DC12"]`.
 
 ## Exit status
 

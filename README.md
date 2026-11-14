@@ -135,7 +135,7 @@ run the same hook while developing deadcode itself, use `make pre-commit`.
 |`--dry`                                    | -    | Show changes which would be made in files. |
 |`--only`                                   | list | Filenames (or path expressions), that will be reflected in the output (and modified if needed). |
 |`--exclude`                                | list | Filenames (or path expressions), which will be completely skipped without being analysed. |
-|`--ignore`                                 | list | Ignores findings (and fixes) for the provided rule codes for the whole run. |
+|`--ignore-rules`                           | list | Ignores findings (and fixes) for the provided rule codes for the whole run. |
 |`--ignore-names`                           | list | Removes provided list of names from the output. Glob expressions to match multiple names can also be provided, e.g. `*Mixin` will match all classes ending with `Mixin`. |
 |`--ignore-names-in-files`                  | list | Ignores unused names in files, which filenames match provided path expressions. |
 |`--ignore-names-if-inherits-from`          | list | Ignores names of classes which inherit from any of the provided class names. The class name may be a plain name, a dotted path such as `graphene.ObjectType`, or a glob such as `*.ObjectType`; a dotted base also matches its final component (`ObjectType`). Only the class name is suppressed; its members and body are controlled by `--ignore-bodies-if-inherits-from` and `--ignore-definitions-if-inherits-from`. |
@@ -230,17 +230,17 @@ A comment on the first decorator line is still accepted.
 | DC    | ignore-expression    | Do not show any findings for an expression, which starts on current line (this code can only be used in `# noqa: DC` comments)
 
 ## Ignoring rules globally
-Use `--ignore` to suppress findings for one or more rule codes for the whole run:
+Use `--ignore-rules` to suppress findings for one or more rule codes for the whole run:
 
 ```shell
-deadcode . --ignore DC12
+deadcode . --ignore-rules DC12
 ```
 
 The same option can be set in `pyproject.toml`:
 
 ```toml
 [tool.deadcode]
-ignore = ["DC12"]
+ignore_rules = ["DC12"]
 ```
 
 A pre-commit hook can pass the option through `args`:
@@ -251,7 +251,7 @@ repos:
     rev: v2.6.3
     hooks:
       - id: deadcode
-        args: [--ignore, DC12]
+        args: [--ignore-rules, DC12]
 ```
 
 ## Ignoring unittest lifecycle methods

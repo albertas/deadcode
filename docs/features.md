@@ -21,7 +21,7 @@ for every row.
 | `--dry` | `## Command line options` | `deadcode/actions/fix_or_show_unused_code.py`, `deadcode/actions/parse_arguments.py` | `tests/cli_args/test_dry.py` | 3 |
 | `--only` | `## Command line options` | `deadcode/actions/get_unused_names_error_message.py` | `tests/cli_args/test_only.py` | 3 |
 | `--exclude` | `## Command line options` | `deadcode/actions/find_python_filenames.py`, `deadcode/utils/normalize_path.py` | `tests/cli_args/test_exclude.py` | 3 |
-| `--ignore` | `## Command line options` | `deadcode/actions/find_unused_names.py` | `tests/cli_args/test_ignore.py` | 3 |
+| `--ignore-rules` | `## Command line options` | `deadcode/actions/find_unused_names.py` | `tests/cli_args/test_ignore_rules.py` | 3 |
 | `--ignore-names` | `## Command line options` | `deadcode/visitor/dead_code_visitor.py` | `tests/cli_args/test_ignore_names.py` | 3 |
 | `--ignore-names-in-files` | `## Command line options` | `deadcode/visitor/dead_code_visitor.py`, `deadcode/utils/normalize_path.py` | `tests/cli_args/test_ignore_names_in_files.py` | 3 |
 | `--ignore-names-if-inherits-from` | `## Command line options` | `deadcode/visitor/dead_code_visitor.py` | `tests/cli_args/test_ignore_names_if_inherits_from.py` | 3 |
