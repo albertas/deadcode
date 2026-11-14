@@ -1,6 +1,6 @@
 # DEP 3 - Removal of unused code might create new unused code
 
-**Status**: Proposed
+**Status**: Accepted
 
 **Type**: Feature
 
