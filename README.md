@@ -371,6 +371,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - DEP 3 now proposes detecting cascading dead code in a single run through a definition-anchored usage graph and a reachability pass
     - Bugfixes:
         - Distinguish definitions with the same name in different files when a usage resolves through the definition's own module or a statically known from-import path
+        - The README feature-requests checklist now marks already-implemented entries as done: per-check disabling, --ignore options, the pre-commit hook, and noqa coverage of all rules
 - **v2.6.3** `2026-11-13`:
     - Bugfixes:
         - Normalize paths to forward slashes in findings, discovery, fix grouping, and pattern matching
