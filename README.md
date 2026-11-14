@@ -326,15 +326,15 @@ A checked entry is implemented on `main` and is included in the next release; pu
 - [x] Add a check for empty python files.
 - [x] Split error codes into DC01, DC02, DC03 for variables, functions, class.
     - [x] Should have different codes for ignoring name and ignoring whole definition (reserved DCxx0 - ignore name, DCxx1 - ignore definition).
-    - [ ] Allow to disable each check separately using:
-        - [ ] inline comment.
-        - [ ] pyproject.toml file
+    - [x] Allow to disable each check separately using:
+        - [x] inline comment.
+        - [x] pyproject.toml file
 - [x] Add a check for code in comments.
 - [x] DC06: detect an unused name.
 - [x] DC09: report an unreachable body, e.g. an `if` or `while` block that cannot run.
 - [ ] Add target python version option, if specified it will be used for code base check.
 - [ ] Add a `--depth` parameter to ignore nested code.. (To only check global scope use 0).
-- [ ] Add options:
+- [x] Add options:
     - [x] --ignore-definitions
     - [x] --ignore-definitions-if-inherits-from
     - [x] --ignore-definitions-if-decorated-with
@@ -351,11 +351,11 @@ A checked entry is implemented on `main` and is included in the next release; pu
 - [ ] Benchmarking performance with larger projects (time, CPU and memory consumption) in order to optimize.
 - [ ] `--fix` could accept a list of filenames as well (only those files would be changed, but the summary could would be full).
     (This might be confusing, because filenames, which have to be considered are provided without any flag, --fix is expected to not accept arguments)
-- [ ] pre-commit-hook.
+- [x] pre-commit-hook.
 - [ ] language server.
 - [x] DC13: remove code after terminal statements like `raise`, `return`, `break`, `continue` and comes in the same scope.
 - [ ] Add `ignore` and `per-file-ignores` command line and pyproject.toml options, which allows to skip some rules.
-- [ ] Make sure that all rules are being skipped by `noqa` comment and all rules react to `noqa: rule_id` comments.
+- [x] Make sure that all rules are being skipped by `noqa` comment and all rules react to `noqa: rule_id` comments.
 - [ ] Include package names into code item scope (dot-separated path), e.g. "package1.package2.module.class.method.variable".
 - [ ] All options should be able to accept dot-separated path or a generic name, e.g. "marshmallow.Schema" vs "Schema",
   documentation should cleary demonstrate the behaviour/example that "Schema" means "*.Schema".
