@@ -373,11 +373,11 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - DEP 3 now proposes detecting cascading dead code in a single run through a definition-anchored usage graph and a reachability pass
         - Report dead-code cascades: definitions used only by other unused definitions are now found in a single run; Remove cascading dead code in one pass with --fix or --dry
         - DEP 1 now proposes type-aware scope tracking for usage detection, with a generic-name fallback for usages whose types cannot be resolved statically
+        - DEP 2 now proposes validated removal of unused code fragments, with import, empty-block and blank-line cleanups applied during the removal step
     - Bugfixes:
         - Distinguish definitions with the same name in different files when a usage resolves through the definition's own module or a statically known from-import path
         - The README feature-requests checklist now marks already-implemented entries as done: per-check disabling, --ignore options, the pre-commit hook, and noqa coverage of all rules
         - Refine DEP 1 to Proposed status with a type-aware scope tracking solution
-        - Refine DEP 2 to Proposed status with an AST-based fix solution
 - **v2.6.3** `2026-11-13`:
     - Bugfixes:
         - Normalize paths to forward slashes in findings, discovery, fix grouping, and pattern matching

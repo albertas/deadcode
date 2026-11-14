@@ -18,6 +18,6 @@ and the chosen solution with its motivation. The published process and template 
 
 <!-- dep-index-end -->
 
-New DEPs are added by following the published process page. Existing proposals that predate the process are kept as `Draft` until they are
-brought up to the required format. A merged DEP is not edited except to update its status or to add the required sections on its next substantive
+New DEPs are added by following the published process page. The proposals that predate the process (DEP 1 to DEP 3) have all been brought
+up to the required format. A merged DEP is not edited except to update its status or to add the required sections on its next substantive
 change.
