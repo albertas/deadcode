@@ -56,7 +56,8 @@ def test_parse_class_names_from_files(virtual_file_system):
     unused_name_count = main(['ignore_names_by_pattern.py', '--no-color', '--count'])
 
     # Then
-    assert unused_name_count == '4'
+    # `Foo` is cascaded away too: its only user, the dead class `Bar`, is reported.
+    assert unused_name_count == '5'
 
 
 def test_parse_lambda_function_names_from_files(virtual_file_system):
