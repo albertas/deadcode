@@ -64,7 +64,8 @@ aliases keep valid comma placement. Overlapping parts are merged by `deadcode/ac
 targeted cleanups happen in `deadcode/actions/remove_file_parts_from_content.py`: dangling `as` keywords, leading commas, and trailing commas are
 cleaned up, a `pass` statement is inserted when a removal empties an indented block whose previous line ends with a colon, and blank lines are
 kept valid by empty-line bookkeeping. The test suite asserts that every file updated by `--fix` still parses via `assert_valid_python`
-(`tests/conftest.py`).
+(`tests/conftest.py`). Known gaps are recorded as TODOs in the code (`deadcode/actions/fix_or_show_unused_code.py:24`,
+`deadcode/actions/remove_file_parts_from_content.py:127`).
 
 ## Considered alternatives
 
@@ -94,6 +95,15 @@ kept valid by empty-line bookkeeping. The test suite asserts that every file upd
   knows the shape of what it just deleted.
 - Why not chosen: this is the chosen direction; it is described in the next section.
 
+### Keep the current text-level adjustments and add more case by case
+
+- Idea: keep the shipped text-level adjustments for imports, empty blocks, and empty lines, and add a new hand-written adjustment for every newly
+  discovered invalid-output case without changing the architecture.
+- Trade-off: no architecture change and no new mechanism to build, but each new case needs bespoke bookkeeping in the text-removal step, and the
+  adjustments accumulate in the text-removal step instead of a single validating mechanism.
+- Why not chosen: it treats the shipped adjustments as an end state rather than a mechanism; the chosen approach folds validation into the removal
+  step itself, so new invalid-output cases are covered by the same rule instead of by new case-specific code.
+
 ### Do nothing and keep manual fixes
 
 - Idea: report the unused fragments and leave it to the user to repair any invalid result of a removal.
@@ -106,7 +116,8 @@ kept valid by empty-line bookkeeping. The test suite asserts that every file upd
 
 Validated removal. The rejected alternatives are modifying AST nodes and rendering them back (prototyped in `5fdd707`, never implemented, and
 needing machinery the codebase lacks), memorising initial expression positions for re-validation (duplicates what a fresh parse gives and keeps a
-second source of truth), and doing nothing (leaves `--fix` output invalid, contradicting the tool's contract). The chosen approach was selected
+second source of truth), keeping the current text-level adjustments and adding case-by-case adjustments (each new case needs bespoke bookkeeping in
+the text-removal step), and doing nothing (leaves `--fix` output invalid, contradicting the tool's contract). The chosen approach was selected
 because it produces valid output incrementally: every cleanup runs while the part is being removed, using only the local context of the removal,
 so no retained AST nodes, no second source of position truth, and no manual repair steps are needed.
 
@@ -175,8 +186,8 @@ print(foo.spam())
 In scope: the removal-time cleanups described above — whole-statement and per-alias import removal, `pass` insertion into emptied blocks, comma
 and `as` cleanup, and blank-line reconciliation around removals.
 
-Out of scope: handling context-manager (`with`) blocks after removal. No context-manager-specific adjustment exists today, and this DEP does not
-specify one.
+Out of scope: handling context-manager (`with`) blocks after removal — no context-manager-specific adjustment exists today, and this DEP does not
+specify one — and the fix-pipeline rewrites proposed in DEP 3, such as single-run cascading removals.
 
 ## Implementation notes
 

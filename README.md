@@ -302,6 +302,8 @@ which are not used in a whole code base.
 There is an alternative [vulture](https://pypi.org/project/vulture/) package.
 
 ## Known limitations
+Definitions that are used only by other definitions which are themselves reported unused are reported in the same run (cascading dead code, [DEP 3](enhancement_proposals/dep_3.md)), so repeated runs of `deadcode` are no longer needed to uncover such chains. Cascading findings respect the same anchors as regular findings: dynamic usages and ignore-protected definitions still keep their targets alive.
+
 Definitions with the same name in different files are distinguished when a usage of that name resolves through the definition's own module or through a statically known `from ... import` path. A usage that cannot be resolved this way (for example a bare name that is neither defined nor imported in the using module, an ambiguous resolution, or a dynamic usage like attribute loads, `getattr` strings, or format-string names) still suppresses all same-named definitions.
 
 Modules with the same basename in different packages are treated as one module, so a usage may resolve ambiguously between their same-named definitions; ambiguous resolutions also suppress all same-named definitions.
@@ -346,7 +348,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - Question: would it be possible to ignore only certain types of checks for a body, e.g. only variable attributes of TypedDict and still check usage of methods and properties?
         - What expression would allow this type of precission?
 - [x] Distinguish between definitions with same name, but different files.
-- [ ] Repeated application of `deadcode` till the output stops changing.
+- [x] Repeated application of `deadcode` till the output stops changing. (Implemented by [DEP 3](enhancement_proposals/dep_3.md): cascading findings are reported and removed in a single run.)
 - [x] Unreachable code detection and fixing: this should only be scoped for if statements and only limited to primitive variables.
 - [ ] Benchmarking performance with larger projects (time, CPU and memory consumption) in order to optimize.
 - [ ] `--fix` could accept a list of filenames as well (only those files would be changed, but the summary could would be full).
@@ -369,11 +371,13 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - Add a performance page reviewing the implementation's efficiency and explaining how the analysis cost grows with the input in O notation
         - Rename the --ignore option to --ignore-rules
         - DEP 3 now proposes detecting cascading dead code in a single run through a definition-anchored usage graph and a reachability pass
+        - Report dead-code cascades: definitions used only by other unused definitions are now found in a single run; Remove cascading dead code in one pass with --fix or --dry
         - DEP 1 now proposes type-aware scope tracking for usage detection, with a generic-name fallback for usages whose types cannot be resolved statically
         - DEP 2 now proposes validated removal of unused code fragments, with import, empty-block and blank-line cleanups applied during the removal step
     - Bugfixes:
         - Distinguish definitions with the same name in different files when a usage resolves through the definition's own module or a statically known from-import path
         - Refine DEP 1 to Proposed status with a type-aware scope tracking solution
+        - Refine DEP 2 to Proposed status with an AST-based fix solution
         - Refine DEP 2 to Proposed status with a validated removal solution documented against the shipped fix pipeline
 - **v2.6.3** `2026-11-13`:
     - Bugfixes:

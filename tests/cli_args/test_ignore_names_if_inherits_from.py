@@ -120,7 +120,10 @@ def test_non_matching_base_class_is_still_reported(virtual_file_system):
     unused_names = main(['foo.py', '--no-color', '--ignore-names-if-inherits-from=*.Other'])
 
     # Then
-    assert unused_names == 'foo.py:4:0: DC03 Class `UnusedQuery` is never used'
+    # The `graphene` import is cascaded away too: its only user is the reported class.
+    assert unused_names == (
+        'foo.py:1:7: DC07 Import `graphene` is never used\nfoo.py:4:0: DC03 Class `UnusedQuery` is never used'
+    )
 
 
 def test_ignored_class_body_is_still_reported_and_fixed(virtual_file_system):
