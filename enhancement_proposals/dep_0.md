@@ -9,7 +9,7 @@ and the chosen solution with its motivation. The published process and template 
 | DEP | Title | Status | Type | Created |
 |---|---|---|---|---|
 | [DEP 1](dep_1.md) | More accurate usage detection | Proposed | Feature | 2024-01-14 |
-| [DEP 2](dep_2.md) | Fixing code after removal of unused code fragments | Draft | Feature | 2024-04-16 |
+| [DEP 2](dep_2.md) | Fixing code after removal of unused code fragments | Proposed | Feature | 2024-04-16 |
 | [DEP 3](dep_3.md) | Removal of unused code might create new unused code | Proposed | Feature | 2024-04-16 |
 | [DEP 4](dep_4.md) | Tree pruning for smaller Python source bundles | Proposed | Feature | 2026-11-11 |
 | [DEP 5](dep_5.md) | Resolving name shadowing | Accepted | Feature | 2026-11-12 |
@@ -18,6 +18,6 @@ and the chosen solution with its motivation. The published process and template 
 
 <!-- dep-index-end -->
 
-New DEPs are added by following the published process page. Existing proposals that predate the process are kept as `Draft` until they are
-brought up to the required format. A merged DEP is not edited except to update its status or to add the required sections on its next substantive
+New DEPs are added by following the published process page. The proposals that predate the process (DEP 1 to DEP 3) have all been brought
+up to the required format. A merged DEP is not edited except to update its status or to add the required sections on its next substantive
 change.
