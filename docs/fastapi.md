@@ -148,10 +148,18 @@ def dead_route_helper() -> None:
     pass
 ```
 
-Without configuration, every handler, the event callback, and the Pydantic fields are reported:
+Without configuration, every handler, the event callback, and the Pydantic fields are reported, together with the definitions
+and imports they keep alive: `on_startup` is dead and is the only caller of `log_startup`, whose body is the only user of
+`SETTING`; `read_me` is the only user of the `User` import; `read_user` is dead and its default argument is the only user of
+`get_current_user` and both `Depends` imports:
 
 ```text
+project/dependencies.py:1:20: DC07 Import `Depends` is never used
+project/dependencies.py:4:0: DC02 Function `get_current_user` is never used
 project/dependencies.py:8:0: DC02 Function `unused_dependency` is never used
+project/main.py:3:19: DC07 Import `User` is never used
+project/main.py:9:0: DC01 Variable `SETTING` is never used
+project/main.py:12:0: DC02 Function `log_startup` is never used
 project/main.py:24:0: DC02 Function `on_startup` is never used
 project/main.py:29:0: DC02 Function `read_me` is never used
 project/main.py:33:0: DC01 Variable `UNUSED_SETTING` is never used
@@ -160,6 +168,8 @@ project/models.py:5:4: DC06 Name `name` is never used
 project/models.py:6:4: DC06 Name `email` is never used
 project/models.py:9:0: DC03 Class `UnusedModel` is never used
 project/models.py:10:4: DC06 Name `value` is never used
+project/routes/users.py:1:31: DC07 Import `Depends` is never used
+project/routes/users.py:3:25: DC07 Import `get_current_user` is never used
 project/routes/users.py:10:0: DC02 Function `read_user` is never used
 project/routes/users.py:15:0: DC02 Function `create_user` is never used
 project/routes/users.py:19:0: DC02 Function `dead_route_helper` is never used

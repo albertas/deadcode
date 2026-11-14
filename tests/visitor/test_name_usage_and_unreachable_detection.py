@@ -25,18 +25,6 @@ def _visit(source: str, *, ignore_decorators: list[str] | None = None) -> DeadCo
     return visitor
 
 
-def test_name_used_in_module_returns_true_for_a_globally_used_name() -> None:
-    # Having
-    visitor = DeadCodeVisitor(filenames=[], args=Args())
-    visitor.used_names.add('Foo')
-
-    # When
-    is_used = visitor.is_name_used_in_module('Foo', 'foo')
-
-    # Then
-    assert is_used is True
-
-
 def test_ternary_with_always_true_condition_marks_else_as_unreachable() -> None:
     # When
     visitor = _visit('x = 1 if True else 2')

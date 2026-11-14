@@ -116,7 +116,9 @@ def test_relative_import_keeps_bare_source_candidate(virtual_file_system):
     unused_names = main(['foo.py', '--no-color', '--ignore-definitions-if-inherits-from=Model'])
 
     # Then
+    # The `RelativeModel` import is cascaded away too: the dead `AnotherLocalModel` is its only user.
     assert unused_names == (
+        'foo.py:2:14: DC07 Import `RelativeModel` is never used\n'
         'foo.py:9:0: DC03 Class `AnotherLocalModel` is never used\n'
         'foo.py:13:0: DC02 Function `unused_sentinel` is never used'
     )
@@ -142,6 +144,8 @@ def test_relative_import_is_not_resolved_to_a_qualified_name(virtual_file_system
     unused_names = main(['foo.py', '--no-color', '--ignore-definitions-if-inherits-from=django.db.models.Model'])
 
     # Then
+    # The `Model` import is cascaded away too: the dead `LocalModel` is its only user.
     assert unused_names == (
+        'foo.py:1:20: DC07 Import `Model` is never used\n'
         'foo.py:4:0: DC03 Class `LocalModel` is never used\nfoo.py:8:0: DC02 Function `unused_sentinel` is never used'
     )
