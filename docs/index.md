@@ -43,6 +43,8 @@ between them.
 
 Read the {doc}`performance` page for a review of the implementation's efficiency and for how the analysis cost grows with the size of the input.
 
+Read the {doc}`rust` page for how Rust integrates into deadcode, where the Rust code will be stored, how the package is built, and how releases reach PyPI.
+
 Read the {doc}`open_source_experiment` page for the planned experiment that runs deadcode on popular and large open source Python projects and
 defines the metrics, measurement procedure, and reporting template.
 
@@ -63,5 +65,6 @@ release_notes
 features
 comparison
 performance
+rust
 open_source_experiment
 ```
