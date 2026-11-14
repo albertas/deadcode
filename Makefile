@@ -1,4 +1,4 @@
-.PHONY: compile publish readthedocs check fix lint fixlint format mypy deadcode audit audit-runtime audit-development test coverage-new pre-commit hook-test
+.PHONY: compile publish readthedocs check fix lint fixlint format mypy deadcode audit audit-runtime audit-development audit-cargo benchmark build-native test coverage-new pre-commit hook-test
 
 check: test lint mypy deadcode
 fix: format fixlint
@@ -16,9 +16,16 @@ PYTEST_XDIST_WORKERS ?= $(shell .venv/bin/python -c 'import os; print(max(1, (os
 VERSION := $(shell .venv/bin/hatch version)
 READTHEDOCS_API_URL ?= https://app.readthedocs.org/api/v3/projects/deadcode
 
-publish: .venv
+# The shipping gate (D7) was met (benchmarks/gate_record.md), so publish
+# builds both wheel families: the universal `py3-none-any` fallback wheel with
+# hatchling plus the host platform's `abi3-py310` wheel with maturin via the
+# scratch toolchain. The remaining D8 matrix platforms (macosx arm64,
+# windows x86_64) are built by the CI wheel-matrix job; add their wheels to
+# dist/ before publishing when they are not built on this machine.
+publish: .venv .venv-maturin
 	rm -fr dist/*
 	.venv/bin/hatch build
+	.venv-maturin/bin/maturin build --release --out dist
 	.venv/bin/uv publish
 
 	git tag -a v$(VERSION) -m "deadcode $(VERSION)"
@@ -131,6 +138,26 @@ fixlint: .venv
 format: .venv
 	.venv/bin/ruff format deadcode tests
 
+# Run the benchmark corpus (deadcode, flask, django) and record baseline metrics
+# under benchmarks/results/. Requires network on the first run to clone the
+# corpus; not part of `make check`.
+benchmark: .venv
+	.venv/bin/python benchmarks/run_benchmark.py --label baseline
+
+# Build the optional Rust extension (deadcode._native) with maturin in a
+# scratch venv. Not part of `make check`: dev and CI installs stay
+# native-free so the pure-Python fallback paths remain exercised. The wheel
+# is installed into the scratch venv only; `maturin develop` would drop the
+# compiled module into the source tree and break the fallback there.
+build-native: .venv-maturin
+	rm -f deadcode/_native.abi3.so
+	.venv-maturin/bin/maturin build --release --out .venv-maturin/wheels
+	uv pip install --python .venv-maturin/bin/python --force-reinstall --no-deps .venv-maturin/wheels/deadcode-*abi3*.whl
+
+.venv-maturin:
+	uv venv -p $(PYTHON_VERSION) .venv-maturin
+	uv pip install --python .venv-maturin/bin/python maturin
+
 audit: audit-runtime audit-development
 
 audit-runtime: .venv
@@ -138,6 +165,11 @@ audit-runtime: .venv
 
 audit-development: .venv
 	.venv/bin/pip-audit --no-deps --disable-pip -r requirements-dev.txt
+
+# Licence and advisory audit of the Rust crate tree (D9), driven by the
+# checked-in deny.toml.
+audit-cargo:
+	cargo deny check
 
 sync: .venv
 	uv pip sync requirements-dev.txt
