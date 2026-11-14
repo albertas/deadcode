@@ -1,0 +1,13 @@
+[package]
+name = "deadcode"
+version = "2.6.3"
+edition = "2021"
+description = "Rust acceleration crate for the deadcode CLI."
+license = "AGPL-3.0-or-later"
+
+[lib]
+name = "deadcode_native"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.23", features = ["abi3-py310", "extension-module"] }

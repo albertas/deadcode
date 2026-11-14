@@ -201,3 +201,12 @@ exclude = ["tests", "docs", "docs/*"]
 
 [tool.pytest.ini_options]
 addopts = "--cov=deadcode --no-cov-on-fail --cov-fail-under=100.0"
+
+# Native extension builds (maturin). Only used by explicit `maturin build`
+# invocations (`make build-native`, the CI wheel-matrix job); the default
+# build backend above stays hatchling, so fallback installs never contain
+# the compiled module.
+[tool.maturin]  # https://www.maturin.rs/project_layout
+module-name = "deadcode._native"
+python-source = "."
+abi3 = true
