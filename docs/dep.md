@@ -144,8 +144,8 @@ branch naming, local checks, and the commands to run before opening the pull req
 
 ## Existing DEPs
 
-DEP 1 to DEP 3 predate this process. DEP 2 is the remaining pre-process DEP still marked as `Draft`; it is updated to the required format as
-part of the work that depends on it. A DEP merged before this process must gain any missing required sections when it is next modified in substance.
+DEP 1 to DEP 3 predate this process and have been brought up to the required format: DEP 1 in its refinement change, and DEP 2 in the refinement
+that brought it to `Proposed`. A DEP merged before this process must gain any missing required sections when it is next modified in substance.
 
 The index below is included from `enhancement_proposals/dep_0.md`, so the published documentation and the repository index stay in sync.
 
