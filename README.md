@@ -365,6 +365,8 @@ A checked entry is implemented on `main` and is included in the next release; pu
 
 ## Release notes
 - next:
+    - Features:
+        - Add a performance page reviewing the implementation's efficiency and explaining how the analysis cost grows with the input in O notation
     - Bugfixes:
         - Distinguish definitions with the same name in different files when a usage resolves through the definition's own module or a statically known from-import path
 - **v2.6.3** `2026-11-13`:
