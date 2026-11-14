@@ -375,6 +375,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - DEP 1 now proposes type-aware scope tracking for usage detection, with a generic-name fallback for usages whose types cannot be resolved statically
         - DEP 2 now proposes validated removal of unused code fragments, with import, empty-block and blank-line cleanups applied during the removal step
         - Add a documentation page describing the planned Rust integration, package build, and PyPI release flow
+        - Speed up analysis by parsing each module once per run, reusing one token stream for comment and noqa scanning, and accelerating comment/noqa scanning and module-export collection with an optional native Rust extension that falls back to pure Python automatically when the native module is not installed; Publish abi3-py310 native wheels for the release platforms alongside the universal wheel and audit the Rust dependency graph with cargo-deny in CI
     - Bugfixes:
         - Distinguish definitions with the same name in different files when a usage resolves through the definition's own module or a statically known from-import path
         - The README feature-requests checklist now marks already-implemented entries as done: per-check disabling, --ignore options, the pre-commit hook, and noqa coverage of all rules
