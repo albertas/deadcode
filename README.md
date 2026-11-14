@@ -369,9 +369,11 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - Add a performance page reviewing the implementation's efficiency and explaining how the analysis cost grows with the input in O notation
         - Rename the --ignore option to --ignore-rules
         - DEP 3 now proposes detecting cascading dead code in a single run through a definition-anchored usage graph and a reachability pass
+        - DEP 1 now proposes type-aware scope tracking for usage detection, with a generic-name fallback for usages whose types cannot be resolved statically
     - Bugfixes:
         - Distinguish definitions with the same name in different files when a usage resolves through the definition's own module or a statically known from-import path
         - The README feature-requests checklist now marks already-implemented entries as done: per-check disabling, --ignore options, the pre-commit hook, and noqa coverage of all rules
+        - Refine DEP 1 to Proposed status with a type-aware scope tracking solution
 - **v2.6.3** `2026-11-13`:
     - Bugfixes:
         - Normalize paths to forward slashes in findings, discovery, fix grouping, and pattern matching
