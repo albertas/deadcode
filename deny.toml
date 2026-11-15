@@ -1,0 +1,37 @@
+# cargo-deny configuration for the deadcode Rust acceleration crate.
+# https://embarkstudios.github.io/cargo-deny/
+#
+# The crate is part of an AGPL-3.0-or-later project, so only licences that can
+# legally be bundled in (linked against) an AGPLv3 work are allowed: the
+# standard permissive licences. Copyleft-compatible-but-strong licences are not
+# needed by the current dependency tree (pyo3 and friends) and stay out of the
+# allow-list until a dependency actually introduces one.
+
+[licenses]
+version = 2
+allow = [
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "MIT",
+    "Unicode-3.0",
+    "Unicode-DFS-2016",
+]
+
+# The deadcode crate itself is the AGPLv3 project root, not a bundled
+# third-party dependency.
+[[licenses.exceptions]]
+allow = ["AGPL-3.0-or-later"]
+name = "deadcode"
+
+# Advisory database checks are enabled alongside the licence gate so known
+# vulnerabilities in the crate tree fail the audit.
+[advisories]
+version = 2
+yanked = "deny"
+# Both entries affect pyo3 0.23 only, and only APIs this crate does not call:
+# RUSTSEC-2025-0020 is PyString::from_object (unused) and RUSTSEC-2026-0177 is
+# PyCFunction::new_closure (unused); src/lib.rs spawns no threads either, so
+# neither exposure applies to the comment/noqa scan and module export
+# collection exposed by deadcode._native. A pyo3 upgrade to >= 0.29 clears
+# both and is a later API-migration change, not packaging work.
+ignore = ["RUSTSEC-2025-0020", "RUSTSEC-2026-0177"]
