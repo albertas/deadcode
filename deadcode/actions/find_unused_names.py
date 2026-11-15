@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+import asyncio
 
 from deadcode.data_types import Args, Filename
 from deadcode.visitor.code_item import CodeItem
@@ -10,7 +11,7 @@ def find_unused_names(
     args: Args,
 ) -> Iterable[CodeItem]:
     dead_code_visitor = DeadCodeVisitor(filenames, args)
-    dead_code_visitor.visit_abstract_syntax_trees()
+    asyncio.run(dead_code_visitor.visit_abstract_syntax_trees())
     unused_code_items = dead_code_visitor.get_unused_code_items()
     ignored_codes = {code.upper() for code in args.ignore_rules}
     if not ignored_codes:

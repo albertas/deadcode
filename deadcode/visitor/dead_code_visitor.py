@@ -1,3 +1,4 @@
+import asyncio
 import ast
 from itertools import chain
 import io
@@ -12,11 +13,12 @@ from pathlib import Path
 from typing import Any, TextIO, cast
 from collections.abc import Callable, Iterable
 from deadcode.constants import UnusedCodeType
-from deadcode.data_types import Args, Part
+from deadcode.data_types import AbstractSyntaxTree, Args, FileContent, Filename, Part
 from deadcode.visitor.code_item import CodeItem
 from deadcode.visitor.utils import LoggingList, LoggingSet
 from deadcode.visitor import utils
-from deadcode.actions.parse_abstract_syntax_tree import parse_abstract_syntax_tree
+from deadcode.actions.parse_abstract_syntax_tree import report_parse_failure
+from deadcode.actions.read_python_files import DEFAULT_WORKERS, _read_and_parse_chunk, chunk_filenames
 from deadcode.utils.nested_scopes import NestedScope
 from deadcode.visitor.usage_graph import compute_live_item_keys
 
@@ -217,49 +219,60 @@ class DeadCodeVisitor(ast.NodeVisitor):
             self.explicit_imports,
         )
 
-    def _collect_module_exports(self) -> None:
-        for file_path in self.filenames:
-            module_name = os.path.splitext(os.path.basename(file_path))[0]
-            try:
-                with open(file_path, 'rb') as f:
-                    file_content = f.read()
-                tree = ast.parse(file_content, filename=file_path)
-            except (SyntaxError, OSError):
-                continue
-            exports = collect_module_exports(tree)
-            if exports is not None:
-                self.module_exports[module_name] = exports
+    def _register_module_exports(self, file_path: Filename, tree: AbstractSyntaxTree) -> None:
+        module_name = os.path.splitext(os.path.basename(file_path))[0]
+        exports = collect_module_exports(tree)
+        if exports is not None:
+            self.module_exports[module_name] = exports
 
-    def visit_abstract_syntax_trees(self) -> None:
-        self._collect_module_exports()
-        for file_path in self.filenames:
-            with open(file_path, 'rb') as f:
-                filename = os.path.basename(file_path)
-                module_name = os.path.splitext(filename)[0]
-                self.module_name = module_name
-                self.qualified_imports[self.module_name] = {}
-                self.scope_parts = [module_name]
-                self._usage_context_stack = []
-                self._last_defined_item = None
+    def _register_module_exports_from_plain_parse(self, file_path: Filename, file_content: FileContent) -> None:
+        try:
+            tree = ast.parse(file_content, filename=file_path)
+        except (SyntaxError, OSError):
+            return
+        self._register_module_exports(file_path, tree)
 
-                file_content = f.read()
-                if file_content.strip() or (filename.startswith('__') and filename.endswith('__.py')):
-                    self.noqa_lines = noqa.parse_noqa(file_content)
+    async def visit_abstract_syntax_trees(self) -> None:
+        chunks = chunk_filenames(self.filenames)
+        for start in range(0, len(chunks), DEFAULT_WORKERS):
+            wave = chunks[start : start + DEFAULT_WORKERS]
+            results: list[list[tuple[Filename, FileContent, AbstractSyntaxTree | None]]] = await asyncio.gather(
+                *(asyncio.to_thread(_read_and_parse_chunk, chunk) for chunk in wave)
+            )
+            parsed_files = [parsed_file for chunk_result in results for parsed_file in chunk_result]
+            for file_path, file_content, tree in parsed_files:
+                self._visit_file(file_path, file_content, tree)
 
-                    node = parse_abstract_syntax_tree(file_content, args=self.args, filename=file_path)
-                    self.filename = Path(file_path)
-                    self.code = file_content.decode('utf-8', errors='replace').splitlines()
-                    self._collect_commented_out_code(file_content)
-                    self.visit(node)
-                else:
-                    self.unused_file.append(
-                        CodeItem(
-                            name=filename,
-                            type_='unused_file',
-                            filename=Path(file_path),
-                            message='Empty file',
-                        )
-                    )
+    def _visit_file(self, file_path: Filename, file_content: FileContent, tree: AbstractSyntaxTree | None) -> None:
+        filename = os.path.basename(file_path)
+        module_name = os.path.splitext(filename)[0]
+        self.module_name = module_name
+        self.qualified_imports[self.module_name] = {}
+        self.scope_parts = [module_name]
+        self._usage_context_stack = []
+        self._last_defined_item = None
+
+        if file_content.strip() or (filename.startswith('__') and filename.endswith('__.py')):
+            self.noqa_lines = noqa.parse_noqa(file_content)
+            self.filename = Path(file_path)
+            self.code = file_content.decode('utf-8', errors='replace').splitlines()
+            self._collect_commented_out_code(file_content)
+            if tree is None:
+                report_parse_failure(self.args, file_path)
+                self._register_module_exports_from_plain_parse(file_path, file_content)
+            else:
+                self._register_module_exports(file_path, tree)
+            self.visit(tree if tree is not None else ast.Module(body=[], type_ignores=[]))
+        else:
+            self.module_exports[self.module_name] = set()
+            self.unused_file.append(
+                CodeItem(
+                    name=filename,
+                    type_='unused_file',
+                    filename=Path(file_path),
+                    message='Empty file',
+                )
+            )
 
     def get_unused_code_items(self) -> Iterable[CodeItem]:
         """
