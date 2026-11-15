@@ -2,10 +2,13 @@
 
 ## What this page covers
 
-This page documents, ahead of any implementation work, how Rust will integrate into deadcode: the runtime integration model, where the Rust code will be
-stored in this repository, how the package will be built for both native and pure-Python installs, and how a release reaches PyPI. Everything on this
-page describes a plan recorded in {doc}`dep_6`, which is the design record for the whole Rust effort; nothing described here is implemented yet. No Rust
-code, no `Cargo.toml`, and no build configuration exist in the repository at the time of writing, and this page adds none of them.
+This page documents how Rust integrates into deadcode: the runtime integration model, where the Rust code is stored in this repository, how the package is
+built for both native and pure-Python installs, and how a release reaches PyPI. The integration model and the packaging plan were recorded ahead of the
+implementation in {doc}`dep_6`, which is the design record for the whole Rust effort. The first stage of that plan is now implemented: the parser stage
+runs through a Rust implementation exposed as the private `deadcode._native` extension module, with the previous Python implementation kept as the
+fallback for installs without a compiled extension (a pure-Python install behaves exactly as before). CI builds the native module and runs the parser
+parity tests against it in a dedicated `native-parity` job. No performance claim is made here beyond the benchmark harness record; see the benchmark
+records and {doc}`dep_6` for the gate evaluation.
 
 ## Integration model
 
@@ -17,17 +20,15 @@ effects of `--fix` and `--dry` stay identical; DEP 6 makes this an explicit cont
 
 ## Where the Rust code lives
 
-The future Rust crate will live inside this repository as a maturin "mixed" project: `Cargo.toml` at the repository root and Rust sources under `src/`,
-the default mixed layout that maturin documents (see the [project-layout reference](https://www.maturin.rs/project_layout) cited by {doc}`dep_6`). The
-`src/` directory is unused today — the only code directories are `deadcode/`, `tests/`, `docs/`, and `enhancement_proposals/` — so the layout introduces
-no collision. Hatchling's `include = ["**/*.py"]` setting in `pyproject.toml:56-58` keeps `Cargo.toml` and `src/` out of the fallback wheel, which
+The Rust crate lives inside this repository as a maturin "mixed" project: `Cargo.toml` at the repository root and Rust sources under `src/`,
+the default mixed layout that maturin documents (see the [project-layout reference](https://www.maturin.rs/project_layout) cited by {doc}`dep_6`). Hatchling's `include = ["**/*.py"]` setting in `pyproject.toml:56-58` keeps `Cargo.toml` and `src/` out of the fallback wheel, which
 preserves the pure-Python fallback guarantee: the universal wheel remains Python-only no matter what lands in `src/`.
 
 ## Building the package
 
-Two build paths will produce wheels from the same source tree and the same version. Native wheels are built with `maturin` and `pyo3` using the
+Two build paths produce wheels from the same source tree and the same version. Native wheels are built with `maturin` and `pyo3` using the
 `abi3-py310` stable ABI, which matches the project's Python 3.10 floor (`pyproject.toml:9`) and lets one native wheel serve every Python version from
-3.10 up on a given platform. The universal `py3-none-any` fallback wheel continues to be built by the existing hatchling backend from the same source
+3.10 up on a given platform. The universal `py3-none-any` fallback wheel is built by the existing hatchling backend from the same source
 tree and the same version, so pip always has an OS-independent artifact to install. A Rust toolchain is required only for native builds, never for
 installing deadcode or for building the fallback wheel. The platform list of the release matrix — which platforms get native wheels — is fixed by the
 future implementation task, not by this page; {doc}`dep_6` deliberately does not enumerate it and no existing repository file can derive it.

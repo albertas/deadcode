@@ -51,3 +51,45 @@ jobs:
         files: ./coverage.xml
         token: ${{ secrets.CODECOV_TOKEN }}
         fail_ci_if_error: false
+
+  native-parity:
+    # Build the Rust parser module and run the full suite against it on the
+    # newest interpreter. The parser parity tests skip when the native module
+    # is absent, so with the module installed they exercise the native path
+    # and fail if it diverges from the interpreter's ast.parse. Coverage is
+    # still reported from the 3.10 native-free job above.
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v7
+      with:
+          persist-credentials: false
+
+    - name: Set up Python 3.14
+      uses: actions/setup-python@v7
+      with:
+        python-version: "3.14"
+
+    - name: Set up Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        components: clippy
+
+    - name: Install maturin
+      run: pipx install maturin
+
+    - name: Build the native module into a scratch venv
+      run: |
+        python3.14 -m venv .venv-maturin
+        .venv-maturin/bin/pip install maturin pytest pytest-cov pytest-xdist pyyaml
+        VIRTUAL_ENV=$PWD/.venv-maturin .venv-maturin/bin/maturin develop --release
+
+    - name: Run parser parity tests against the native module
+      run: |
+        .venv-maturin/bin/python -m pytest tests/parser -q
+
+    - name: Run the test suite with the native module installed
+      # The 100%-changed-line coverage gate applies to the Python fallback and
+      # stays reported from the 3.10 native-free job; the native run skips it.
+      run: |
+        .venv-maturin/bin/python -m pytest -q -o addopts=""
