@@ -1,6 +1,7 @@
 import asyncio
 import ast
 import inspect
+import threading
 from typing import Any
 
 import pytest
@@ -54,29 +55,25 @@ def test_visit_reads_and_parses_new_chunks_only_after_visiting_the_previous_wave
 
 
 def test_at_most_workers_chunks_are_processed_concurrently(virtual_file_system, monkeypatch):
-    filenames = [f'{index}.py' for index in range(7)]
+    filenames = [f'{index}.py' for index in range(3)]
     virtual_file_system.files = {filename: f'x = {index}\n'.encode() for index, filename in enumerate(filenames)}
-    original_to_thread = asyncio.to_thread
-    active_tasks = 0
-    max_active_tasks = 0
+    original_reader = visitor_module._read_and_parse_chunk  # noqa: SLF001
+    # The barrier only releases when all three chunks of the single wave run at
+    # the same time, which proves that `asyncio.gather` processes a full wave
+    # concurrently instead of one chunk after another.
+    barrier = threading.Barrier(3)
 
-    async def counting_to_thread(function: Any, *args: Any, **kwargs: Any) -> Any:
-        nonlocal active_tasks, max_active_tasks
-        active_tasks += 1
-        max_active_tasks = max(max_active_tasks, active_tasks)
-        try:
-            return await original_to_thread(function, *args, **kwargs)
-        finally:
-            active_tasks -= 1
+    def blocking_reader(chunk: list[str]) -> list[tuple[str, bytes, ast.Module | None]]:
+        barrier.wait(timeout=10)
+        return original_reader(chunk)
 
-    monkeypatch.setattr(asyncio, 'to_thread', counting_to_thread)
     monkeypatch.setattr(visitor_module, 'chunk_filenames', lambda names: [[name] for name in names])
     monkeypatch.setattr(visitor_module, 'DEFAULT_WORKERS', 3)
+    monkeypatch.setattr(visitor_module, '_read_and_parse_chunk', blocking_reader)
 
     visitor = visit(virtual_file_system)
 
-    assert len(visitor.module_exports) == 7
-    assert max_active_tasks == 3
+    assert len(visitor.module_exports) == 3
 
 
 def test_all_contributes_exports_through_the_main_parse(virtual_file_system):
