@@ -201,3 +201,11 @@ exclude = ["tests", "docs", "docs/*"]
 
 [tool.pytest.ini_options]
 addopts = "--cov=deadcode --no-cov-on-fail --cov-fail-under=100.0"
+
+# Only read by maturin when building the native module (`.venv-maturin` scratch
+# venv); the default build backend above stays hatchling so dev installs, the
+# test suite and CI keep exercising the pure-Python fallback paths.
+[tool.maturin]
+module-name = "deadcode._native"
+python-source = "."
+abi3 = true
