@@ -85,8 +85,10 @@ jobs:
         VIRTUAL_ENV=$PWD/.venv-maturin .venv-maturin/bin/maturin develop --release
 
     - name: Run parser parity tests against the native module
+      # Only the parser tests run here, so the 100%-changed-line coverage gate
+      # from pyproject's addopts does not apply; it stays with the 3.10 job.
       run: |
-        .venv-maturin/bin/python -m pytest tests/parser -q
+        .venv-maturin/bin/python -m pytest tests/parser -q -o addopts=""
 
     - name: Run the test suite with the native module installed
       # The 100%-changed-line coverage gate applies to the Python fallback and
