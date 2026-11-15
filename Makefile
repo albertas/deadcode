@@ -1,4 +1,4 @@
-.PHONY: compile publish readthedocs check fix lint fixlint format mypy deadcode audit audit-runtime audit-development test coverage-new pre-commit hook-test
+.PHONY: compile publish readthedocs check fix lint fixlint format mypy deadcode audit audit-runtime audit-development test coverage-new pre-commit hook-test benchmark
 
 check: test lint mypy deadcode
 fix: format fixlint
@@ -91,6 +91,13 @@ readthedocs: .venv
 
 test: .venv
 	.venv/bin/pytest -vv -n $(PYTEST_XDIST_WORKERS) $(PYTEST_ME_PLEASE)
+
+# Run the benchmark corpus (deadcode, flask, django) and record baseline metrics
+# under benchmarks/results/. Requires network on the first run to clone the
+# corpus; not part of `make check`. Extra arguments pass through, e.g.
+# `make benchmark ARGS="--label before-parser --compare-to baseline"`.
+benchmark: .venv
+	.venv/bin/python benchmarks/run_benchmark.py --label baseline $(ARGS)
 
 # Require 100% coverage for every line added or changed against the base branch.
 coverage-new: test
