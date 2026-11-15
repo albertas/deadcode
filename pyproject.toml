@@ -207,6 +207,7 @@ addopts = "--cov=deadcode --no-cov-on-fail --cov-fail-under=100.0"
 # build backend above stays hatchling, so fallback installs never contain
 # the compiled module.
 [tool.maturin]  # https://www.maturin.rs/project_layout
+manifest-path = "deadcode_rust/Cargo.toml"
 module-name = "deadcode._native"
 python-source = "."
 abi3 = true

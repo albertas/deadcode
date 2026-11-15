@@ -4,8 +4,9 @@
 
 This page documents how Rust integrates into deadcode: the runtime integration model, the native API, where the Rust code is stored in this repository, how
 the package is built for both native and pure-Python installs, how a release reaches PyPI, and the measured effect of the combined extension. The plan was
-recorded in {doc}`dep_6`, which is the design record for the whole Rust effort. The implementation lives in the repository: one crate at the repository root
-(`Cargo.toml` plus Rust sources under `src/`), one native extension module `deadcode._native`, and the packaging, CI, and audit wiring described below.
+recorded in {doc}`dep_6`, which is the design record for the whole Rust effort. The implementation lives in the repository: one crate under `deadcode_rust/`
+(`deadcode_rust/Cargo.toml` plus Rust sources under `deadcode_rust/src/`), one native extension module `deadcode._native`, and the packaging, CI, and audit
+wiring described below.
 
 ## Integration model
 
@@ -41,11 +42,12 @@ performs one read, one parse, and one comment scan per file. The visitor, reacha
 
 ## Where the Rust code lives
 
-The Rust crate lives inside this repository as a maturin "mixed" project: `Cargo.toml` at the repository root and Rust sources under `src/`, the default
-mixed layout that maturin documents (see the [project-layout reference](https://www.maturin.rs/project_layout) cited by {doc}`dep_6`). `src/lib.rs` holds
-the module registration, the comment/`noqa` scanner, the module-export collector, and the parser entry points; `src/convert.rs` holds the Rust-AST to
-Python-`ast` converter. Hatchling's `include = ["**/*.py"]` setting in `pyproject.toml` keeps `Cargo.toml` and `src/` out of the fallback wheel, which
-preserves the pure-Python fallback guarantee: the universal wheel remains Python-only no matter what lands in `src/`.
+The Rust crate lives inside this repository under `deadcode_rust/`, a subdirectory of the Python project: `deadcode_rust/Cargo.toml` and Rust sources under
+`deadcode_rust/src/`, wired into the root `pyproject.toml` through `[tool.maturin]`'s `manifest-path`, module name, and `python-source` settings (see the
+[project-layout reference](https://www.maturin.rs/project_layout) cited by {doc}`dep_6`). `deadcode_rust/src/lib.rs` holds
+the module registration, the comment/`noqa` scanner, the module-export collector, and the parser entry points; `deadcode_rust/src/convert.rs` holds the Rust-AST to
+Python-`ast` converter. Hatchling's `include = ["**/*.py"]` setting in `pyproject.toml` keeps `deadcode_rust/` out of the fallback wheel, which
+preserves the pure-Python fallback guarantee: the universal wheel remains Python-only no matter what lands in `deadcode_rust/`.
 
 ## Building the package
 
@@ -68,7 +70,7 @@ native wheel via the scratch toolchain, then `uv publish`, creates the `v$(VERSI
 new tag, `stable`, and `latest` via the Read the Docs API. Both wheel families carry the same name, version, console script, and Python floor, so pip
 always finds an installable artifact — a native wheel where one exists for the platform, the universal wheel otherwise. The fallback wheel is published
 for every release even when a native build fails, so an unsupported platform can never fall through to a source build. The Cargo dependency and AGPLv3
-licence audit (`cargo deny check`, configured by the checked-in `deny.toml`) runs alongside the existing Python audits in the vulnerability-audit workflow
+licence audit (`cargo deny check`, configured by the checked-in `deadcode_rust/deny.toml`) runs alongside the existing Python audits in the vulnerability-audit workflow
 and is available locally as `make audit-cargo`. The tag is created after the upload and the Read the Docs steps keep their order.
 
 ## Measured performance
@@ -78,8 +80,8 @@ The benchmark corpus (`benchmarks/corpus.json`) contains deadcode itself plus tw
 warmup plus three timed runs per entry, and records wall-clock time, CPU time, peak RSS, exit status, findings count, and stdout/stderr SHA-256 hashes per
 run. `benchmarks/records.py` aggregates one record set and compares a second record set against it via the harness's `--compare-to` option.
 
-This combined tree was measured once in each install mode on the same sources: a fallback-only install (`.venv`, native module absent) and a native install
-(`make build-native`, combined parser-plus-accelerator wheel in `.venv-maturin`). The per-entry median wall-clock times from that run are:
+This combined tree was measured once in each install mode on the same sources, both modes under Python 3.10: a fallback-only install (`.venv`, native module absent)
+and a native install (`make build-native`, combined parser-plus-accelerator wheel in `.venv-maturin`). The per-entry median wall-clock times from that run are:
 
 | Corpus entry | Fallback baseline | Native | Wall-clock speedup |
 |---|---|---|---|
@@ -92,10 +94,14 @@ corpus entry regresses (the threshold allows up to a 5% regression); and peak RS
 recorded run of both record sets is identical on all parity surfaces: stdout and stderr SHA-256 hashes, exit status, and the findings count (42 for
 deadcode, 104 for flask, 3801 for django). The combined tree therefore meets the DEP 6 gate on this run.
 
-The gains come from both hot paths now in Rust: the parser, which replaces the Python `ast.parse` call for every module, and the comment/`noqa` scan plus
-module-export collection, which reuse one token stream and the already-parsed tree. The AST traversal itself stays in Python, so the native speedup is
-bounded by the share of the run those paths cover; the measured end-to-end effect is a consistent speedup of roughly 1.4x on every corpus entry rather than
-an order-of-magnitude change. The raw records — the fallback and native record sets, the per-run wall clocks, and the record-set comparison — are archived
+These figures were measured with the native parser active, so they include the Rust parse and the conversion of the Rust AST into Python `ast` nodes. The parser
+is not the source of the gain, however: on Python 3.14 the parse-plus-convert step takes about 1.2x the time of CPython's `ast.parse` over the same files
+(measured with `benchmarks/prototype_parse.py` on the corpus), and on Python 3.10 the converter raises `TypeError` for most node types, so those files fall
+back to `ast.parse` (and pay both parse attempts). Nearly all of the measured end-to-end gain therefore comes from the native comment/`noqa` scan and
+module-export collection, which replace a Python `tokenize` pass and a Python export walk with one native scan per file; the recorded speedup is
+essentially the same as the accelerator-only measurement, which is what the parser's break-even cost predicts. The AST traversal itself stays in Python, so
+the native speedup is bounded by the share of the run those paths cover; the measured end-to-end effect is a consistent speedup of roughly 1.4x on every
+corpus entry rather than an order-of-magnitude change. The raw records — the fallback and native record sets, the per-run wall clocks, and the record-set comparison — are archived
 with the task artifacts; the numbers can be reproduced from the same tree by building both installs and running the harness with `--compare-to` (see
 `benchmarks/run_benchmark.py`). Pass an absolute `--deadcode` path: the harness runs each corpus entry with that entry as its working directory.
 
@@ -106,7 +112,7 @@ The contracts below constrain the Rust work. Each is stated with the file or sec
 - **Identical CLI output, exit status, and `--fix`/`--dry` file effects.** Fixed by {doc}`dep_6`'s contract bullets and implemented through the `deadcode`
   console script declared in `pyproject.toml`; any observable difference between the native and Python paths fails the gate.
 - **AGPLv3-compatible crates with a Cargo audit alongside the Python audit.** Fixed by `LICENSE`, the AGPLv3 classifier in `pyproject.toml`, the
-  implementation notes of {doc}`dep_6`, the `audit-cargo` target in the `Makefile`, the checked-in `deny.toml`, and
+  implementation notes of {doc}`dep_6`, the `audit-cargo` target in the `Makefile`, the checked-in `deadcode_rust/deny.toml`, and
   `.github/workflows/vulnerability-audit.yml`.
 - **Python 3.10 floor and `abi3-py310`.** Fixed by `requires-python` in `pyproject.toml`, the CI matrix of Python 3.10–3.15, and {doc}`dep_6`.
 - **Universal-wheel fallback and the OS-independent claim.** Fixed by the `Operating System :: OS Independent` classifier in `pyproject.toml` and the scope

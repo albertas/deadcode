@@ -25,7 +25,7 @@ READTHEDOCS_API_URL ?= https://app.readthedocs.org/api/v3/projects/deadcode
 publish: .venv .venv-maturin
 	rm -fr dist/*
 	.venv/bin/hatch build
-	.venv-maturin/bin/maturin build --release --out dist
+	.venv-maturin/bin/maturin build --release --manifest-path deadcode_rust/Cargo.toml --out dist
 	.venv/bin/uv publish
 
 	git tag -a v$(VERSION) -m "deadcode $(VERSION)"
@@ -152,7 +152,7 @@ benchmark: .venv
 # compiled module into the source tree and break the fallback there.
 build-native: .venv-maturin
 	rm -f deadcode/_native.abi3.so
-	.venv-maturin/bin/maturin build --release --out .venv-maturin/wheels
+	.venv-maturin/bin/maturin build --release --manifest-path deadcode_rust/Cargo.toml --out .venv-maturin/wheels
 	uv pip install --python .venv-maturin/bin/python --force-reinstall --no-deps .venv-maturin/wheels/deadcode-*abi3*.whl
 	# tomli is a conditional runtime dependency on Python < 3.11; install it so
 	# the scratch venv can run the built wheel when PYTHON_VERSION is 3.10.
@@ -164,7 +164,7 @@ build-native: .venv-maturin
 test-native: build-native
 	uv pip install --python .venv-maturin/bin/python pytest pyyaml tomli
 	@trap 'rm -f $(CURDIR)/deadcode/_native*.so' EXIT; \
-		VIRTUAL_ENV=$(CURDIR)/.venv-maturin .venv-maturin/bin/maturin develop --release; \
+		VIRTUAL_ENV=$(CURDIR)/.venv-maturin .venv-maturin/bin/maturin develop --release --manifest-path deadcode_rust/Cargo.toml; \
 		.venv-maturin/bin/python -m pytest -q -o addopts="" --ignore=tests/visitor/test_native_fallback.py
 
 .venv-maturin:
@@ -180,9 +180,9 @@ audit-development: .venv
 	.venv/bin/pip-audit --no-deps --disable-pip -r requirements-dev.txt
 
 # Licence and advisory audit of the Rust crate tree (D9), driven by the
-# checked-in deny.toml.
+# checked-in deadcode_rust/deny.toml.
 audit-cargo:
-	cargo deny check
+	cargo deny --manifest-path deadcode_rust/Cargo.toml --config deadcode_rust/deny.toml check
 
 sync: .venv
 	uv pip sync requirements-dev.txt

@@ -74,7 +74,7 @@ docs/_build/
 
 # PyBuilder
 .pybuilder/
-target/
+deadcode_rust/target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
