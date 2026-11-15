@@ -350,7 +350,10 @@ A checked entry is implemented on `main` and is included in the next release; pu
 - [x] Distinguish between definitions with same name, but different files.
 - [x] Repeated application of `deadcode` till the output stops changing. (Implemented by [DEP 3](enhancement_proposals/dep_3.md): cascading findings are reported and removed in a single run.)
 - [x] Unreachable code detection and fixing: this should only be scoped for if statements and only limited to primitive variables.
-- [ ] Benchmarking performance with larger projects (time, CPU and memory consumption) in order to optimize.
+- [x] Benchmarking performance with larger projects (time, CPU and memory consumption) in order to optimize. (Implemented by
+  [DEP 6](enhancement_proposals/dep_6.md): a pinned benchmark corpus — deadcode, flask, django — records wall-clock time, CPU time,
+  peak memory, and output parity, and the measured combined native Rust extension speedup is documented in the
+  [performance docs](docs/rust.md).)
 - [ ] `--fix` could accept a list of filenames as well (only those files would be changed, but the summary could would be full).
     (This might be confusing, because filenames, which have to be considered are provided without any flag, --fix is expected to not accept arguments)
 - [x] pre-commit-hook.
@@ -375,6 +378,9 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - DEP 1 now proposes type-aware scope tracking for usage detection, with a generic-name fallback for usages whose types cannot be resolved statically
         - DEP 2 now proposes validated removal of unused code fragments, with import, empty-block and blank-line cleanups applied during the removal step
         - Add a documentation page describing the planned Rust integration, package build, and PyPI release flow
+        - Add a Rust parser, native comment/noqa scanning and module-export collection behind one optional native extension that falls back to
+          pure Python automatically; publish abi3-py310 native wheels for the release platforms alongside the universal wheel and audit the Rust
+          dependency graph with cargo-deny in CI
     - Bugfixes:
         - Distinguish definitions with the same name in different files when a usage resolves through the definition's own module or a statically known from-import path
         - The README feature-requests checklist now marks already-implemented entries as done: per-check disabling, --ignore options, the pre-commit hook, and noqa coverage of all rules

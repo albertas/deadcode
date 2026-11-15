@@ -1,0 +1,22 @@
+{
+    "repos": [
+        {
+            "name": "deadcode",
+            "url": null,
+            "commit": null,
+            "path": "deadcode"
+        },
+        {
+            "name": "flask",
+            "url": "https://github.com/pallets/flask.git",
+            "commit": "49943b5a94413a530761350f04e896f76e8d620e",
+            "path": "src"
+        },
+        {
+            "name": "django",
+            "url": "https://github.com/django/django.git",
+            "commit": "f24f38c6b2825f15628c07bf2892f1664eed9361",
+            "path": "."
+        }
+    ]
+}
