@@ -53,6 +53,11 @@ class VirtualFileSystem:
             raising=False,
         )
         self.monkeypatch.setattr(
+            'deadcode.actions.read_python_files.open',
+            MagicMock(side_effect=self._read_file_side_effect),
+            raising=False,
+        )
+        self.monkeypatch.setattr(
             'deadcode.actions.fix_or_show_unused_code.open',
             MagicMock(side_effect=self._read_file_side_effect),
             raising=False,

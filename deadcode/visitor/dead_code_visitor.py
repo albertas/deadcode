@@ -16,7 +16,11 @@ from deadcode.data_types import Args, Part
 from deadcode.visitor.code_item import CodeItem
 from deadcode.visitor.utils import LoggingList, LoggingSet
 from deadcode.visitor import utils
-from deadcode.actions.parse_abstract_syntax_tree import parse_abstract_syntax_tree
+from deadcode.actions.parse_abstract_syntax_tree import (
+    parse_abstract_syntax_tree_or_none,
+    report_parse_failure,
+)
+from deadcode.actions.read_python_files import read_python_files_sync
 from deadcode.utils.nested_scopes import NestedScope
 from deadcode.visitor.usage_graph import compute_live_item_keys
 
@@ -217,49 +221,56 @@ class DeadCodeVisitor(ast.NodeVisitor):
             self.explicit_imports,
         )
 
-    def _collect_module_exports(self) -> None:
-        for file_path in self.filenames:
-            module_name = os.path.splitext(os.path.basename(file_path))[0]
-            try:
-                with open(file_path, 'rb') as f:
-                    file_content = f.read()
-                tree = ast.parse(file_content, filename=file_path)
-            except (SyntaxError, OSError):
-                continue
-            exports = collect_module_exports(tree)
-            if exports is not None:
-                self.module_exports[module_name] = exports
+    def _register_module_exports(self, file_path: str, tree: ast.Module) -> None:
+        module_name = os.path.splitext(os.path.basename(file_path))[0]
+        exports = collect_module_exports(tree)
+        if exports is not None:
+            self.module_exports[module_name] = exports
+
+    def _register_module_exports_from_plain_parse(self, file_path: str, file_content: bytes) -> None:
+        try:
+            tree = ast.parse(file_content, filename=file_path)
+        except Exception:  # noqa: BLE001
+            return
+        self._register_module_exports(file_path, tree)
 
     def visit_abstract_syntax_trees(self) -> None:
-        self._collect_module_exports()
-        for file_path in self.filenames:
-            with open(file_path, 'rb') as f:
-                filename = os.path.basename(file_path)
-                module_name = os.path.splitext(filename)[0]
-                self.module_name = module_name
-                self.qualified_imports[self.module_name] = {}
-                self.scope_parts = [module_name]
-                self._usage_context_stack = []
-                self._last_defined_item = None
+        file_contents = read_python_files_sync(self.filenames)
+        for file_path, file_content in zip(self.filenames, file_contents, strict=True):
+            filename = os.path.basename(file_path)
+            module_name = os.path.splitext(filename)[0]
+            self.module_name = module_name
+            self.qualified_imports[self.module_name] = {}
+            self.scope_parts = [module_name]
+            self._usage_context_stack = []
+            self._last_defined_item = None
 
-                file_content = f.read()
-                if file_content.strip() or (filename.startswith('__') and filename.endswith('__.py')):
-                    self.noqa_lines = noqa.parse_noqa(file_content)
+            if file_content.strip() or (filename.startswith('__') and filename.endswith('__.py')):
+                self.noqa_lines = noqa.parse_noqa(file_content)
 
-                    node = parse_abstract_syntax_tree(file_content, args=self.args, filename=file_path)
-                    self.filename = Path(file_path)
-                    self.code = file_content.decode('utf-8', errors='replace').splitlines()
-                    self._collect_commented_out_code(file_content)
-                    self.visit(node)
+                node = parse_abstract_syntax_tree_or_none(file_content, filename=file_path)
+                if node is not None:
+                    self._register_module_exports(file_path, node)
                 else:
-                    self.unused_file.append(
-                        CodeItem(
-                            name=filename,
-                            type_='unused_file',
-                            filename=Path(file_path),
-                            message='Empty file',
-                        )
+                    # The old export pass parsed without `type_comments`, so a file can
+                    # succeed there and fail in the main pass. Mirror that fallback once.
+                    self._register_module_exports_from_plain_parse(file_path, file_content)
+                    report_parse_failure(self.args, file_path)
+                    node = ast.Module(body=[], type_ignores=[])
+                self.filename = Path(file_path)
+                self.code = file_content.decode('utf-8', errors='replace').splitlines()
+                self._collect_commented_out_code(file_content)
+                self.visit(node)
+            else:
+                self.module_exports[module_name] = set()
+                self.unused_file.append(
+                    CodeItem(
+                        name=filename,
+                        type_='unused_file',
+                        filename=Path(file_path),
+                        message='Empty file',
                     )
+                )
 
     def get_unused_code_items(self) -> Iterable[CodeItem]:
         """
