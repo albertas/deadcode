@@ -381,6 +381,7 @@ A checked entry is implemented on `main` and is included in the next release; pu
         - Add a Rust parser, native comment/noqa scanning and module-export collection behind one optional native extension that falls back to
           pure Python automatically; publish abi3-py310 native wheels for the release platforms alongside the universal wheel and audit the Rust
           dependency graph with cargo-deny in CI
+        - Add an optional native Rust extension that parses Python and collects comments, noqa directives, and module exports, with a pure-Python fallback; Analyze each file once with the native parser and scanner to speed up the CLI while keeping output unchanged; Publish abi3-py310 native wheels for Linux, macOS, and Windows alongside the universal wheel; Record 1.33x-1.42x faster analysis with identical findings on the benchmark corpus
     - Bugfixes:
         - Distinguish definitions with the same name in different files when a usage resolves through the definition's own module or a statically known from-import path
         - The README feature-requests checklist now marks already-implemented entries as done: per-check disabling, --ignore options, the pre-commit hook, and noqa coverage of all rules
