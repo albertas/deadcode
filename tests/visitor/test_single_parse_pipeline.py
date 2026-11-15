@@ -1,6 +1,11 @@
+import asyncio
 import ast
+import inspect
 from typing import Any
 
+import pytest
+
+from deadcode.visitor import dead_code_visitor as visitor_module
 from deadcode.actions import parse_abstract_syntax_tree as parse_module
 from deadcode.actions.parse_abstract_syntax_tree import parse_abstract_syntax_tree
 from deadcode.data_types import Args
@@ -10,8 +15,68 @@ from deadcode.visitor.dead_code_visitor import DeadCodeVisitor
 def visit(virtual_file_system, args: Args | None = None) -> DeadCodeVisitor:
     filenames = list(virtual_file_system.files)
     visitor = DeadCodeVisitor(filenames, args or Args())
-    visitor.visit_abstract_syntax_trees()
+    asyncio.run(visitor.visit_abstract_syntax_trees())
     return visitor
+
+
+def test_visit_abstract_syntax_trees_is_a_coroutine_function():
+    assert inspect.iscoroutinefunction(DeadCodeVisitor.visit_abstract_syntax_trees)
+
+
+def test_visit_reads_and_parses_new_chunks_only_after_visiting_the_previous_wave(virtual_file_system, monkeypatch):
+    filenames = [f'{index}.py' for index in range(10)]
+    virtual_file_system.files = {filename: f'x = {index}\n'.encode() for index, filename in enumerate(filenames)}
+    reader = visitor_module._read_and_parse_chunk  # noqa: SLF001
+    read_calls: list[list[str]] = []
+    visited: list[str] = []
+
+    def recording_reader(chunk: list[str]) -> list[tuple[str, bytes, ast.Module | None]]:
+        read_calls.append(list(chunk))
+        return reader(chunk)
+
+    def failing_visit(self: DeadCodeVisitor, file_path: str, _file_content: bytes, _node: ast.Module | None) -> None:
+        visited.append(file_path)
+        message = 'stop after the first file'
+        raise RuntimeError(message)
+
+    monkeypatch.setattr(visitor_module, '_read_and_parse_chunk', recording_reader)
+    monkeypatch.setattr(visitor_module, 'chunk_filenames', lambda names: [[name] for name in names])
+    monkeypatch.setattr(visitor_module, 'DEFAULT_WORKERS', 2)
+    monkeypatch.setattr(DeadCodeVisitor, '_visit_file', failing_visit)
+
+    with pytest.raises(RuntimeError, match='stop after the first file'):
+        visit(virtual_file_system)
+
+    # Only the first wave of two chunks is read before the visitor starts; the
+    # remaining eight chunks are never loaded into memory.
+    assert read_calls == [['0.py'], ['1.py']]
+    assert visited == ['0.py']
+
+
+def test_at_most_workers_chunks_are_processed_concurrently(virtual_file_system, monkeypatch):
+    filenames = [f'{index}.py' for index in range(7)]
+    virtual_file_system.files = {filename: f'x = {index}\n'.encode() for index, filename in enumerate(filenames)}
+    original_to_thread = asyncio.to_thread
+    active_tasks = 0
+    max_active_tasks = 0
+
+    async def counting_to_thread(function: Any, *args: Any, **kwargs: Any) -> Any:
+        nonlocal active_tasks, max_active_tasks
+        active_tasks += 1
+        max_active_tasks = max(max_active_tasks, active_tasks)
+        try:
+            return await original_to_thread(function, *args, **kwargs)
+        finally:
+            active_tasks -= 1
+
+    monkeypatch.setattr(asyncio, 'to_thread', counting_to_thread)
+    monkeypatch.setattr(visitor_module, 'chunk_filenames', lambda names: [[name] for name in names])
+    monkeypatch.setattr(visitor_module, 'DEFAULT_WORKERS', 3)
+
+    visitor = visit(virtual_file_system)
+
+    assert len(visitor.module_exports) == 7
+    assert max_active_tasks == 3
 
 
 def test_all_contributes_exports_through_the_main_parse(virtual_file_system):
@@ -32,7 +97,9 @@ def test_file_without_all_contributes_public_names(virtual_file_system):
 
 def test_empty_file_contributes_an_empty_export_set(virtual_file_system, monkeypatch):
     virtual_file_system.files = {'empty.py': b''}
-    monkeypatch.setattr('deadcode.actions.read_python_files._read_chunk', lambda filenames: [b'' for _ in filenames])
+    monkeypatch.setattr(
+        'deadcode.visitor.dead_code_visitor.read_file_chunk', lambda filenames: [b'' for _ in filenames]
+    )
 
     visitor = visit(virtual_file_system)
 

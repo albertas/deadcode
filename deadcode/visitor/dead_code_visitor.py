@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any, TextIO, cast
 from collections.abc import Callable, Iterable
 from deadcode.constants import UnusedCodeType
-from deadcode.data_types import Args, Part
+from deadcode.data_types import AbstractSyntaxTree, Args, FileContent, Filename, Part
 from deadcode.visitor.code_item import CodeItem
 from deadcode.visitor.utils import LoggingList, LoggingSet
 from deadcode.visitor import utils
@@ -20,7 +20,7 @@ from deadcode.actions.parse_abstract_syntax_tree import (
     parse_abstract_syntax_tree_or_none,
     report_parse_failure,
 )
-from deadcode.actions.read_python_files import read_python_files_sync
+from deadcode.actions.read_python_files import DEFAULT_WORKERS, chunk_filenames, read_file_chunk
 from deadcode.utils.nested_scopes import NestedScope
 from deadcode.visitor.usage_graph import compute_live_item_keys
 
@@ -45,6 +45,15 @@ from deadcode.visitor.ignore import (
 )
 
 TYPE_CHECKER_COMMENT_PATTERN = re.compile(r'^(?:(?:type|ty|pyright|pytype|mypy)\s*:|pyre-)', re.IGNORECASE)
+
+
+def _read_and_parse_chunk(filenames: list[Filename]) -> list[tuple[Filename, FileContent, AbstractSyntaxTree | None]]:
+    """Read one chunk of files and parse every file in it, preserving input order."""
+    file_contents = read_file_chunk(filenames)
+    return [
+        (file_path, file_content, parse_abstract_syntax_tree_or_none(file_content, file_path))
+        for file_path, file_content in zip(filenames, file_contents, strict=True)
+    ]
 
 
 class DeadCodeVisitor(ast.NodeVisitor):
@@ -234,43 +243,60 @@ class DeadCodeVisitor(ast.NodeVisitor):
             return
         self._register_module_exports(file_path, tree)
 
-    def visit_abstract_syntax_trees(self) -> None:
-        file_contents = read_python_files_sync(self.filenames)
-        for file_path, file_content in zip(self.filenames, file_contents, strict=True):
-            filename = os.path.basename(file_path)
-            module_name = os.path.splitext(filename)[0]
-            self.module_name = module_name
-            self.qualified_imports[self.module_name] = {}
-            self.scope_parts = [module_name]
-            self._usage_context_stack = []
-            self._last_defined_item = None
+    async def visit_abstract_syntax_trees(self) -> None:
+        """Read and parse the files in bounded chunks, then visit every tree in input order.
 
-            if file_content.strip() or (filename.startswith('__') and filename.endswith('__.py')):
-                self.noqa_lines = noqa.parse_noqa(file_content)
+        Each chunk is read and parsed in one worker thread, and up to
+        `DEFAULT_WORKERS` chunks are processed concurrently with
+        `asyncio.gather`. Chunks are consumed wave by wave instead of loaded up
+        front, so memory stays bounded by the chunk window rather than by the
+        size of the analysed directory. The visitor state is per file, so the
+        sequential visit keeps the findings and their order unchanged.
+        """
+        import asyncio  # noqa: PLC0415
 
-                node = parse_abstract_syntax_tree_or_none(file_content, filename=file_path)
-                if node is not None:
-                    self._register_module_exports(file_path, node)
-                else:
-                    # The old export pass parsed without `type_comments`, so a file can
-                    # succeed there and fail in the main pass. Mirror that fallback once.
-                    self._register_module_exports_from_plain_parse(file_path, file_content)
-                    report_parse_failure(self.args, file_path)
-                    node = ast.Module(body=[], type_ignores=[])
-                self.filename = Path(file_path)
-                self.code = file_content.decode('utf-8', errors='replace').splitlines()
-                self._collect_commented_out_code(file_content)
-                self.visit(node)
+        chunks = chunk_filenames(self.filenames)
+        for wave_start in range(0, len(chunks), DEFAULT_WORKERS):
+            wave = chunks[wave_start : wave_start + DEFAULT_WORKERS]
+            parsed_chunks = await asyncio.gather(*(asyncio.to_thread(_read_and_parse_chunk, chunk) for chunk in wave))
+            for parsed_chunk in parsed_chunks:
+                for file_path, file_content, node in parsed_chunk:
+                    self._visit_file(file_path, file_content, node)
+
+    def _visit_file(self, file_path: Filename, file_content: FileContent, node: AbstractSyntaxTree | None) -> None:
+        filename = os.path.basename(file_path)
+        module_name = os.path.splitext(filename)[0]
+        self.module_name = module_name
+        self.qualified_imports[self.module_name] = {}
+        self.scope_parts = [module_name]
+        self._usage_context_stack = []
+        self._last_defined_item = None
+
+        if file_content.strip() or (filename.startswith('__') and filename.endswith('__.py')):
+            self.noqa_lines = noqa.parse_noqa(file_content)
+
+            if node is not None:
+                self._register_module_exports(file_path, node)
             else:
-                self.module_exports[module_name] = set()
-                self.unused_file.append(
-                    CodeItem(
-                        name=filename,
-                        type_='unused_file',
-                        filename=Path(file_path),
-                        message='Empty file',
-                    )
+                # The old export pass parsed without `type_comments`, so a file can
+                # succeed there and fail in the main pass. Mirror that fallback once.
+                self._register_module_exports_from_plain_parse(file_path, file_content)
+                report_parse_failure(self.args, file_path)
+                node = ast.Module(body=[], type_ignores=[])
+            self.filename = Path(file_path)
+            self.code = file_content.decode('utf-8', errors='replace').splitlines()
+            self._collect_commented_out_code(file_content)
+            self.visit(node)
+        else:
+            self.module_exports[module_name] = set()
+            self.unused_file.append(
+                CodeItem(
+                    name=filename,
+                    type_='unused_file',
+                    filename=Path(file_path),
+                    message='Empty file',
                 )
+            )
 
     def get_unused_code_items(self) -> Iterable[CodeItem]:
         """

@@ -12,11 +12,13 @@ lines of code. The Benchmark section reports measured end-to-end wall clock, the
 
 The findings below come from reading the implementation of the analysis pipeline. Each finding names the concrete source file on the hot path.
 
-**(a) The analysis reads each file once and parses each file once.** `visit_abstract_syntax_trees` in `deadcode/visitor/dead_code_visitor.py` calls
-`read_python_files_sync` from `deadcode/actions/read_python_files.py`, which reads every discovered file exactly once: small corpora are read as one
-synchronous batch, and larger corpora go through the `asyncio` chunked read stage. The main loop then calls `ast.parse` once per successfully parsed file,
-and that single tree feeds both module-export collection and the AST
-traversal. `find_unused_names` in `deadcode/actions/find_unused_names.py` builds one `DeadCodeVisitor` and visits every discovered file once, and the
+**(a) The analysis reads each file once and parses each file once, in bounded asynchronous chunks.** `visit_abstract_syntax_trees` is an `async def` in
+`deadcode/visitor/dead_code_visitor.py`. It splits the discovered files into chunks of `READ_CHUNK_FILES` (32) entries with `chunk_filenames` from
+`deadcode/actions/read_python_files.py`, then processes up to `DEFAULT_WORKERS` (2) chunks concurrently with `asyncio.gather`: each chunk is handed to a
+worker thread that reads its files with `read_file_chunk` and parses every file once with `ast.parse`. The parsed chunks are consumed in input order and
+each chunk is released before the next wave is read, so a directory of any size is streamed through a fixed-size window instead of being loaded into
+memory up front. That single tree per file feeds both module-export collection and the AST traversal. `find_unused_names` in
+`deadcode/actions/find_unused_names.py` runs the coroutine with `asyncio.run` on one `DeadCodeVisitor` and visits every discovered file once, and the
 `# noqa` comments are parsed from the same bytes returned by the read stage.
 
 **(b) There is no second module-export read or parse pass.** Module exports are registered from the tree that the main pass already produced, so the
@@ -64,45 +66,40 @@ so the baseline package is imported while the `.venv` supplies the dependencies.
 
 ### End-to-end results
 
-Medians of three timed runs after one warmup, one paired run of the commands in `benchmarks/README.md`:
+Medians of five timed runs after one warmup, one paired run of the commands in `benchmarks/README.md`:
 
 | Corpus | Files | Baseline median | Feature median | Change | Baseline peak RSS | Feature peak RSS |
 |---|---|---|---|---|---|---|
-| `deadcode/` | 32 | 206.1 ms | 197.2 ms | 1.05x faster (-8.9 ms) | 24.1 MB | 24.4 MB |
-| `/tmp/django-src/django` | 909 | 7,710.4 ms | 7,318.7 ms | 1.05x faster (-391.7 ms) | 102.9 MB | 111.1 MB |
+| `deadcode/` | 32 | 219.2 ms | 214.4 ms | 1.02x faster (-4.8 ms) | 24.0 MB | 28.5 MB |
+| `/tmp/django-src/django` | 909 | 7,755.7 ms | 7,346.4 ms | 1.06x faster (-409.3 ms) | 102.9 MB | 122.8 MB |
 
-Three interleaved baseline/feature pairs on the same machine gave 7,265–7,721 ms for the baseline on Django and 7,289–7,331 ms for the feature branch; the
-`deadcode/` pairs ranged 204.2–207.2 ms baseline and 194.9–199.6 ms feature. Absolute values move with machine load, but the ordering is stable: the feature
-branch is about 1.05x faster on both corpora.
+Interleaved baseline/feature pairs on the same machine ranged 7,339–7,793 ms for the baseline on Django and 7,289–7,684 ms for the feature branch; the
+`deadcode/` pairs ranged 202.7–227.0 ms baseline and 214.4–240.4 ms feature. Absolute values move with machine load, but the ordering is stable: the
+feature branch is about 1.06x faster on Django and about level on the 32-file corpus.
 
-### Isolated read stage
+### Chunk window and memory
 
-Medians of seven in-process repetitions of reading the same file lists, comparing a plain sequential loop with `read_python_files_sync` (a synchronous batch
-below the file threshold, the `asyncio` chunked reader with eight workers above it):
-
-| Corpus | Bytes | Sequential loop | `read_python_files_sync` | Read-stage cost |
-|---|---|---|---|---|
-| `deadcode/` (32 files) | 116,349 | 0.10 ms | 0.10 ms | +0.00 ms |
-| `/tmp/django-src/django` (909 files) | 5,958,239 | 8.78 ms | 38.81 ms | +30.03 ms |
-
-The small corpus stays on the sequential path, so the event loop and worker threads add nothing. On Django the chunked reader costs about 30 ms — 0.4% of
-the run — because the operating system serves a warm page cache quickly and the worker threads add scheduling overhead. The measured read cost is small but
-real; it does not become a parallel speedup because reading is already fast relative to parsing.
+The pipeline holds at most `DEFAULT_WORKERS × READ_CHUNK_FILES` files in flight: two chunks of 32 files, so 64 file contents and their parsed trees. That
+window is what makes the async stage bounded: a 1 GB directory is never read into memory at once, it passes through 64-file windows. The cost of the window
+is visible in the peak RSS column above: the feature branch uses about 4.5 MB more on the 32-file corpus and about 20 MB more on Django, because a worker
+thread pool and up to 64 parsed trees exist at the same time. A smaller window trades memory back for fewer concurrent reads.
 
 ### Parse-stage share
 
-Instrumenting `ast.parse` in-process (timers wrapped around the call, so these runs exclude interpreter startup) gives a median parse share of 8.4% on
-`deadcode/` (12.4 ms of 147.2 ms) and 9.8% on Django (670.4 ms of 6,811.3 ms) across three runs. A default run of the 32-file corpus issues a median of 60
+Instrumenting `ast.parse` in-process (timers wrapped around the call, so these runs exclude interpreter startup) gives a median parse share of 10.5% on
+`deadcode/` (14.6 ms of 138.9 ms) and 19.9% on Django (1,383 ms of 6,951 ms) across three runs. A default run of the 32-file corpus issues a median of 60
 `ast.parse` calls and the Django corpus a median of 4,536, because comment candidates and type comments add calls beyond the one per file; those calls sit
-inside the measured share.
+inside the measured share. On Django the share includes time a parsing thread waits for the GIL while another thread runs, so it measures wall clock under
+concurrency rather than interpreter-only parse work.
 
 ### What the numbers mean (decision D9)
 
-Async reads contribute at most noise or a small cost: the chunked read stage saves no wall clock and adds about 30 ms on Django, while the 32-file corpus
-stays below `ASYNC_READ_MIN_FILES` and is read as one sequential batch, so it pays no event-loop or worker-thread cost. The net gain comes from removing the
-second parse pass, not from parallel parsing. On Django the removed pass is worth roughly 390–490 ms, comfortably more than the read overhead, so the
-end-to-end result is about 1.05x faster. On the 32-file corpus the removed pass outweighs the read stage, and the run is about 9 ms faster rather than
-slower. `ast.parse` holds the GIL in CPython, so parsing is not offloaded to threads and no parallel parse gain is claimed.
+The async read-and-parse stage is primarily a memory-shape and responsiveness decision, not a parallel-speedup claim: `ast.parse` holds the GIL in
+CPython, so the worker threads do not parse in parallel, and they add a small scheduling cost. The net gain still comes from removing the second parse pass.
+On Django the removed pass is worth roughly 400 ms, comfortably more than the chunked stage costs, so the run is about 1.06x faster. On the 32-file corpus
+the removed pass outweighs the read and threading overhead, and the run is about 5 ms faster rather than slower. The chunk window keeps memory bounded at
+the price of roughly 20 MB of extra peak RSS on Django, which is the deliberate trade: directories far larger than this one stream through the same
+64-file window instead of being loaded up front.
 
 ## Algorithm complexity
 
@@ -120,7 +117,7 @@ of code across the analysed files. Some stages are driven by other quantities, w
 | Stage | Cost | Source files |
 |---|---|---|
 | File discovery | `O(F)` | `deadcode/actions/find_python_filenames.py`, called from `deadcode/cli.py` |
-| Reading every discovered file once | `O(F)` | `deadcode/actions/read_python_files.py`, called from `deadcode/visitor/dead_code_visitor.py` |
+| Reading and parsing every discovered file once, in bounded chunks | `O(F)` | `deadcode/actions/read_python_files.py`, called from `deadcode/visitor/dead_code_visitor.py` |
 | Per-file `noqa` scan, parsing, and comment scanning | `O(n)` | `deadcode/actions/find_unused_names.py`, `deadcode/visitor/noqa.py`, `deadcode/visitor/dead_code_visitor.py` |
 | AST traversal with per-node and per-`definition` ignore matching | `O(N × P)` | `deadcode/visitor/dead_code_visitor.py`, `deadcode/visitor/ignore.py` |
 | Unused-item pass with cross-module bare-name resolution | `O(D)`, worst case `O(D × M)` | `deadcode/visitor/dead_code_visitor.py` |
