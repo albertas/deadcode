@@ -1,0 +1,6 @@
+# The parity fixtures are parser test material: they deliberately contain
+# constructs the project's lint rules reject (undefined free names, bare
+# f-strings, lambda assignments, ...). Ruff discovers this nearest config and
+# applies it only to files in this directory.
+[lint]
+select = []
