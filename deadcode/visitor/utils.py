@@ -1,5 +1,6 @@
 import ast
 
+from deadcode.actions.parse_abstract_syntax_tree import _native_parse
 from deadcode.visitor.code_item import CodeItem
 from deadcode.constants import UnusedCodeType
 from deadcode.utils.print_safely import print_safely
@@ -53,7 +54,7 @@ def collect_names_from_annotation_strings(annotation: ast.AST | None, max_depth:
         if not isinstance(node, ast.Constant) or not isinstance(node.value, str):
             continue
         try:
-            parsed: ast.AST = ast.parse(node.value, filename='<annotation>', mode='eval')
+            parsed: ast.AST = _native_parse('eval', node.value, '<annotation>')
         except SyntaxError:
             continue
         names.update(
