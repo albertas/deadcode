@@ -1,7 +1,47 @@
+from typing import Any, cast
+
 import ast
+
+from deadcode import _native_loader
+
+# Sentinel distinguishing "the native path cannot be used" from a valid native
+# ``None`` result (exports unknown).
+_NATIVE_FAILED = object()
 
 
 def collect_module_exports(tree: ast.Module) -> set[str] | None:
+    """Return statically known exported names, or None when exports are unknown.
+
+    Dispatch seam for the native module-export collector (D5): when the
+    ``deadcode._native`` extension is installed and exposes
+    ``collect_module_exports``, the already-parsed tree is traversed in Rust
+    (no Rust-side parsing); otherwise — or when the native traversal raises —
+    the pure-Python implementation below runs unchanged as the automatic
+    fallback. A native ``None`` return is a valid "exports unknown" result,
+    not a fallback signal.
+    """
+    native_result = _native_exports(tree)
+    if native_result is _NATIVE_FAILED:
+        return _collect_module_exports(tree)
+    return cast('set[str] | None', native_result)
+
+
+def _native_exports(tree: ast.Module) -> Any:
+    """Return the native collector's result, or ``_NATIVE_FAILED`` when the
+    native module is absent, lacks the collector, or cannot handle the tree."""
+    native = _native_loader._native  # noqa: SLF001
+    collect = getattr(native, 'collect_module_exports', None) if native is not None else None
+    if collect is None:
+        return _NATIVE_FAILED
+    try:
+        return collect(tree)
+    except Exception:  # noqa: BLE001
+        # The native traversal cannot handle this tree; parity is never lost,
+        # only speed.
+        return _NATIVE_FAILED
+
+
+def _collect_module_exports(tree: ast.Module) -> set[str] | None:
     """Return statically known exported names, or None when exports are unknown."""
     has_binding = False
     has_unknown_binding = False

@@ -1,6 +1,5 @@
 import ast
 from itertools import chain
-import io
 import os
 import re
 import string
@@ -9,14 +8,14 @@ import tokenize
 
 from pathlib import Path
 
-from typing import Any, TextIO, cast
+from typing import Any, NamedTuple, TextIO, cast
 from collections.abc import Callable, Iterable
 from deadcode.constants import UnusedCodeType
-from deadcode.data_types import Args, Part
+from deadcode.data_types import AbstractSyntaxTree, Args, FileContent, Part
 from deadcode.visitor.code_item import CodeItem
 from deadcode.visitor.utils import LoggingList, LoggingSet
 from deadcode.visitor import utils
-from deadcode.actions.parse_abstract_syntax_tree import parse_abstract_syntax_tree
+from deadcode.actions.parse_abstract_syntax_tree import _native_parse, parse_abstract_syntax_tree
 from deadcode.utils.nested_scopes import NestedScope
 from deadcode.visitor.usage_graph import compute_live_item_keys
 
@@ -41,6 +40,25 @@ from deadcode.visitor.ignore import (
 )
 
 TYPE_CHECKER_COMMENT_PATTERN = re.compile(r'^(?:(?:type|ty|pyright|pytype|mypy)\s*:|pyre-)', re.IGNORECASE)
+
+
+class _ParsedModule(NamedTuple):
+    """Per-run cache entry: one file read, tokenized and parsed exactly once."""
+
+    file_content: FileContent
+    tree: AbstractSyntaxTree
+    module_name: str
+    noqa_lines: dict[bytes, set[int]]
+    parsed: bool
+    is_empty: bool
+    # COMMENT tokens from the file's single tokenize pass; empty when tokenisation
+    # failed (commented-out-code collection then yields nothing, as before).
+    comment_tokens: list[tokenize.TokenInfo]
+
+
+def _has_code_lines(file_content: bytes) -> bool:
+    """Whether any line holds code rather than only comments or blank lines."""
+    return any(line.strip() and not line.lstrip().startswith(b'#') for line in file_content.splitlines())
 
 
 class DeadCodeVisitor(ast.NodeVisitor):
@@ -105,6 +123,9 @@ class DeadCodeVisitor(ast.NodeVisitor):
         self._root_usage_sources: set[tuple[str, str]] = set()
         self._last_defined_item: CodeItem | None = None
         self._live_item_keys: set[tuple[str, str]] | None = None
+
+        # Per-run parse cache: every file is read and parsed exactly once (Phase 1a/1c).
+        self._parsed_modules: dict[str, _ParsedModule] = {}
 
         self._assignment_nodes: list[ast.Assign | ast.AnnAssign | ast.AugAssign] = []
 
@@ -217,49 +238,79 @@ class DeadCodeVisitor(ast.NodeVisitor):
             self.explicit_imports,
         )
 
-    def _collect_module_exports(self) -> None:
+    def _parse_all_modules(self) -> None:
+        """Read and parse every file exactly once, caching the per-file results."""
+        self._parsed_modules = {}
         for file_path in self.filenames:
-            module_name = os.path.splitext(os.path.basename(file_path))[0]
-            try:
-                with open(file_path, 'rb') as f:
-                    file_content = f.read()
-                tree = ast.parse(file_content, filename=file_path)
-            except (SyntaxError, OSError):
+            filename = os.path.basename(file_path)
+            module_name = os.path.splitext(filename)[0]
+
+            with open(file_path, 'rb') as f:
+                file_content = f.read()
+
+            is_empty = not (file_content.strip() or (filename.startswith('__') and filename.endswith('__.py')))
+            comment_tokens: list[tokenize.TokenInfo] = []
+            noqa_lines: dict[bytes, set[int]] = {}
+            if not is_empty:
+                # Dispatches to the native comment/noqa scan when deadcode._native
+                # is installed; tokenizes in Python otherwise (D5).
+                comment_tokens, noqa_lines = noqa.scan_comments_and_noqa(file_content)
+
+            # The native-first seam parses each file exactly once and owns the
+            # failure contract, so a failed parse never raises here.
+            tree = parse_abstract_syntax_tree(file_content, args=self.args, filename=file_path)
+            # A failed parse returns the empty-module sentinel; a genuine parse
+            # can only yield an empty module when the content holds no code lines
+            # (comments and blank lines only).
+            parsed = bool(tree.body) or bool(tree.type_ignores) or not _has_code_lines(file_content)
+
+            self._parsed_modules[file_path] = _ParsedModule(
+                file_content=file_content,
+                tree=tree,
+                module_name=module_name,
+                noqa_lines=noqa_lines,
+                parsed=parsed,
+                is_empty=is_empty,
+                comment_tokens=comment_tokens,
+            )
+
+    def _collect_module_exports(self) -> None:
+        for parsed_module in self._parsed_modules.values():
+            if not parsed_module.parsed:
                 continue
-            exports = collect_module_exports(tree)
+            exports = collect_module_exports(parsed_module.tree)
             if exports is not None:
-                self.module_exports[module_name] = exports
+                self.module_exports[parsed_module.module_name] = exports
 
     def visit_abstract_syntax_trees(self) -> None:
+        self._parse_all_modules()
         self._collect_module_exports()
-        for file_path in self.filenames:
-            with open(file_path, 'rb') as f:
-                filename = os.path.basename(file_path)
-                module_name = os.path.splitext(filename)[0]
-                self.module_name = module_name
-                self.qualified_imports[self.module_name] = {}
-                self.scope_parts = [module_name]
-                self._usage_context_stack = []
-                self._last_defined_item = None
+        for file_path, parsed_module in self._parsed_modules.items():
+            filename = os.path.basename(file_path)
+            module_name = os.path.splitext(filename)[0]
+            self.module_name = module_name
+            self.qualified_imports[self.module_name] = {}
+            self.scope_parts = [module_name]
+            self._usage_context_stack = []
+            self._last_defined_item = None
 
-                file_content = f.read()
-                if file_content.strip() or (filename.startswith('__') and filename.endswith('__.py')):
-                    self.noqa_lines = noqa.parse_noqa(file_content)
+            if not parsed_module.is_empty:
+                file_content = parsed_module.file_content
+                self.noqa_lines = parsed_module.noqa_lines
 
-                    node = parse_abstract_syntax_tree(file_content, args=self.args, filename=file_path)
-                    self.filename = Path(file_path)
-                    self.code = file_content.decode('utf-8', errors='replace').splitlines()
-                    self._collect_commented_out_code(file_content)
-                    self.visit(node)
-                else:
-                    self.unused_file.append(
-                        CodeItem(
-                            name=filename,
-                            type_='unused_file',
-                            filename=Path(file_path),
-                            message='Empty file',
-                        )
+                self.filename = Path(file_path)
+                self.code = file_content.decode('utf-8', errors='replace').splitlines()
+                self._collect_commented_out_code(file_content, parsed_module.comment_tokens)
+                self.visit(parsed_module.tree)
+            else:
+                self.unused_file.append(
+                    CodeItem(
+                        name=filename,
+                        type_='unused_file',
+                        filename=Path(file_path),
+                        message='Empty file',
                     )
+                )
 
     def get_unused_code_items(self) -> Iterable[CodeItem]:
         """
@@ -369,15 +420,14 @@ class DeadCodeVisitor(ast.NodeVisitor):
             return None
         return f'{target}{separator}{remaining}' if separator else target
 
-    def _collect_commented_out_code(self, file_content: bytes) -> None:
-        """Collect comments whose text parses as Python code."""
-        try:
-            tokens = list(tokenize.tokenize(io.BytesIO(file_content).readline))
-        except (tokenize.TokenError, IndentationError):
-            return
-        for token in tokens:
-            if token.type != tokenize.COMMENT:
-                continue
+    def _collect_commented_out_code(self, file_content: bytes, comment_tokens: list[tokenize.TokenInfo]) -> None:
+        """Collect comments whose text parses as Python code.
+
+        ``comment_tokens`` come from the file's single tokenize pass (Phase 1b);
+        it is empty when tokenisation failed, matching the old error path that
+        collected nothing.
+        """
+        for token in comment_tokens:
             comment_text = token.string[1:]
             code_text = re.sub(r'#\s*noqa.*$', '', comment_text, flags=re.IGNORECASE).strip()
             if not self._is_commented_out_code(code_text):
@@ -429,13 +479,13 @@ class DeadCodeVisitor(ast.NodeVisitor):
         if not has_code_marker and not code_text.startswith(statement_keywords):
             return False
         try:
-            expression = ast.parse(code_text, mode='eval')
+            expression = cast('ast.Expression', _native_parse('eval', code_text, '<commented_out_code>'))
         except SyntaxError:
             expression = None
         if expression is not None and not isinstance(expression.body, (ast.Constant, ast.Name)):
             return True
         try:
-            module = ast.parse(code_text)
+            module = cast('ast.Module', _native_parse('exec', code_text, '<commented_out_code>'))
         except SyntaxError:
             return False
         return any(
@@ -894,7 +944,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
         type_comment = getattr(node, 'type_comment', None)
         if type_comment is not None:
             mode = 'func_type' if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) else 'eval'
-            self.visit(ast.parse(type_comment, filename='<type_comment>', mode=mode))
+            self.visit(_native_parse(mode, type_comment, '<type_comment>'))
 
         ###########
         # Single-target assignments are removed as a whole statement via `removal_node`.

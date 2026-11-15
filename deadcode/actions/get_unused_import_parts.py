@@ -2,7 +2,7 @@ import ast
 
 from collections.abc import Iterable
 
-from deadcode.data_types import Part
+from deadcode.data_types import AbstractSyntaxTree, Part
 from deadcode.utils.flatten_lists import flatten_list
 from deadcode.visitor.code_item import CodeItem
 
@@ -93,20 +93,27 @@ def _end_of_whitespace_after_comma(content_lines: list[bytes], comma: tuple[int,
     return end_col
 
 
-def get_unused_import_parts(content: bytes, unused_import_items: Iterable[CodeItem]) -> list[Part]:
+def get_unused_import_parts(
+    content: bytes,
+    unused_import_items: Iterable[CodeItem],
+    cached_tree: AbstractSyntaxTree | None = None,
+) -> list[Part]:
     """Returns code parts to remove for unused import findings.
 
     When every non-wildcard alias of an import statement is unused, the whole
     statement is returned as a single part. Otherwise each unused alias is
     returned together with one adjacent comma, so the remaining aliases keep
     valid comma placement.
+
+    ``cached_tree`` is an already parsed tree of ``content``; when given, the
+    function reuses it instead of parsing ``content`` again.
     """
     unused_import_items = list(unused_import_items)
     fallback_parts = flatten_list([item.code_parts for item in unused_import_items])
     removable_keys = {(item.name, item.name_line, item.name_column) for item in unused_import_items}
 
     try:
-        tree = ast.parse(content)
+        tree = cached_tree if cached_tree is not None else ast.parse(content)
     except SyntaxError:
         return fallback_parts
 
