@@ -16,7 +16,7 @@ for every row.
 
 | Feature | README | Source | Tests | Minimum test cases |
 |---|---|---|---|---|
-| Detection and usage examples | `## Usage` | `deadcode/cli.py`, `deadcode/actions/find_unused_names.py` | `tests/cli/test_deadcode.py`, `tests/cli/test_output.py` | 3 |
+| Detection and usage examples | `## Usage` | `deadcode/cli.py`, `deadcode/actions/find_unused_names.py`, `deadcode/actions/read_python_files.py` | `tests/cli/test_deadcode.py`, `tests/cli/test_output.py` | 3 |
 | `--fix` | `## Command line options` | `deadcode/actions/fix_or_show_unused_code.py` | `tests/cli_args/test_fix.py`, `tests/fix/test_assign.py` | 3 |
 | `--dry` | `## Command line options` | `deadcode/actions/fix_or_show_unused_code.py`, `deadcode/actions/parse_arguments.py` | `tests/cli_args/test_dry.py` | 3 |
 | `--only` | `## Command line options` | `deadcode/actions/get_unused_names_error_message.py` | `tests/cli_args/test_only.py` | 3 |
