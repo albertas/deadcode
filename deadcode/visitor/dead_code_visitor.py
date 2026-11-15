@@ -9,14 +9,14 @@ import tokenize
 
 from pathlib import Path
 
-from typing import Any, TextIO, cast
+from typing import Any, NamedTuple, TextIO, cast
 from collections.abc import Callable, Iterable
 from deadcode.constants import UnusedCodeType
-from deadcode.data_types import Args, Part
+from deadcode.data_types import AbstractSyntaxTree, Args, FileContent, Part
 from deadcode.visitor.code_item import CodeItem
 from deadcode.visitor.utils import LoggingList, LoggingSet
 from deadcode.visitor import utils
-from deadcode.actions.parse_abstract_syntax_tree import parse_abstract_syntax_tree
+from deadcode.actions.parse_abstract_syntax_tree import _native_parse, parse_abstract_syntax_tree
 from deadcode.utils.nested_scopes import NestedScope
 from deadcode.visitor.usage_graph import compute_live_item_keys
 
@@ -41,6 +41,21 @@ from deadcode.visitor.ignore import (
 )
 
 TYPE_CHECKER_COMMENT_PATTERN = re.compile(r'^(?:(?:type|ty|pyright|pytype|mypy)\s*:|pyre-)', re.IGNORECASE)
+
+
+class _ParsedModule(NamedTuple):
+    """Per-run cache entry: one file read and parsed exactly once."""
+
+    file_content: FileContent
+    tree: AbstractSyntaxTree
+    module_name: str
+    parsed: bool
+    is_empty: bool
+
+
+def _has_code_lines(file_content: bytes) -> bool:
+    """Whether any line holds code rather than only comments or blank lines."""
+    return any(line.strip() and not line.lstrip().startswith(b'#') for line in file_content.splitlines())
 
 
 class DeadCodeVisitor(ast.NodeVisitor):
@@ -217,49 +232,79 @@ class DeadCodeVisitor(ast.NodeVisitor):
             self.explicit_imports,
         )
 
-    def _collect_module_exports(self) -> None:
-        for file_path in self.filenames:
-            module_name = os.path.splitext(os.path.basename(file_path))[0]
-            try:
-                with open(file_path, 'rb') as f:
-                    file_content = f.read()
-                tree = ast.parse(file_content, filename=file_path)
-            except (SyntaxError, OSError):
-                continue
-            exports = collect_module_exports(tree)
-            if exports is not None:
-                self.module_exports[module_name] = exports
+    def _parse_module(self, file_path: str) -> _ParsedModule:
+        """Read and parse the file exactly once, producing its cache entry.
+
+        The parsed tree is reused by module export collection and the visiting
+        pass, so a run parses each file a single time. Files whose parse fails
+        keep the parse-error message path of `parse_abstract_syntax_tree` and
+        are skipped by module export collection, as before.
+        """
+        filename = os.path.basename(file_path)
+        module_name = os.path.splitext(filename)[0]
+
+        with open(file_path, 'rb') as f:
+            file_content = f.read()
+
+        is_empty = not (file_content.strip() or (filename.startswith('__') and filename.endswith('__.py')))
+        node = parse_abstract_syntax_tree(file_content, args=self.args, filename=file_path)
+        # A failed parse returns the empty-module sentinel; a genuine parse can
+        # only yield an empty module when the content holds no code lines
+        # (comments and blank lines only).
+        parsed = bool(node.body) or bool(node.type_ignores) or not _has_code_lines(file_content)
+
+        return _ParsedModule(
+            file_content=file_content,
+            tree=node,
+            module_name=module_name,
+            parsed=parsed,
+            is_empty=is_empty,
+        )
+
+    def _collect_module_exports(self, parsed_module: _ParsedModule) -> None:
+        if not parsed_module.parsed:
+            return
+        exports = collect_module_exports(parsed_module.tree)
+        if exports is not None:
+            self.module_exports[parsed_module.module_name] = exports
 
     def visit_abstract_syntax_trees(self) -> None:
-        self._collect_module_exports()
+        # Every file is read and parsed exactly once (D5): the tree is reused
+        # by module export collection and the visiting pass. Files are fully
+        # processed one at a time and the parsed tree is dropped with the loop
+        # variable, so peak memory stays at a single tree instead of growing
+        # with the number of analysed files. All cross-file state consumed by
+        # the reachability pass is accumulated before it runs, so the results
+        # match collecting every module's exports up front.
         for file_path in self.filenames:
-            with open(file_path, 'rb') as f:
-                filename = os.path.basename(file_path)
-                module_name = os.path.splitext(filename)[0]
-                self.module_name = module_name
-                self.qualified_imports[self.module_name] = {}
-                self.scope_parts = [module_name]
-                self._usage_context_stack = []
-                self._last_defined_item = None
+            parsed_module = self._parse_module(file_path)
+            self._collect_module_exports(parsed_module)
 
-                file_content = f.read()
-                if file_content.strip() or (filename.startswith('__') and filename.endswith('__.py')):
-                    self.noqa_lines = noqa.parse_noqa(file_content)
+            filename = os.path.basename(file_path)
+            module_name = os.path.splitext(filename)[0]
+            self.module_name = module_name
+            self.qualified_imports[self.module_name] = {}
+            self.scope_parts = [module_name]
+            self._usage_context_stack = []
+            self._last_defined_item = None
 
-                    node = parse_abstract_syntax_tree(file_content, args=self.args, filename=file_path)
-                    self.filename = Path(file_path)
-                    self.code = file_content.decode('utf-8', errors='replace').splitlines()
-                    self._collect_commented_out_code(file_content)
-                    self.visit(node)
-                else:
-                    self.unused_file.append(
-                        CodeItem(
-                            name=filename,
-                            type_='unused_file',
-                            filename=Path(file_path),
-                            message='Empty file',
-                        )
+            file_content = parsed_module.file_content
+            if not parsed_module.is_empty:
+                self.noqa_lines = noqa.parse_noqa(file_content)
+
+                self.filename = Path(file_path)
+                self.code = file_content.decode('utf-8', errors='replace').splitlines()
+                self._collect_commented_out_code(file_content)
+                self.visit(parsed_module.tree)
+            else:
+                self.unused_file.append(
+                    CodeItem(
+                        name=filename,
+                        type_='unused_file',
+                        filename=Path(file_path),
+                        message='Empty file',
                     )
+                )
 
     def get_unused_code_items(self) -> Iterable[CodeItem]:
         """
@@ -429,13 +474,13 @@ class DeadCodeVisitor(ast.NodeVisitor):
         if not has_code_marker and not code_text.startswith(statement_keywords):
             return False
         try:
-            expression = ast.parse(code_text, mode='eval')
+            expression = cast('ast.Expression', _native_parse('eval', code_text, '<commented_out_code>'))
         except SyntaxError:
             expression = None
         if expression is not None and not isinstance(expression.body, (ast.Constant, ast.Name)):
             return True
         try:
-            module = ast.parse(code_text)
+            module = cast('ast.Module', _native_parse('exec', code_text, '<commented_out_code>'))
         except SyntaxError:
             return False
         return any(
@@ -894,7 +939,7 @@ class DeadCodeVisitor(ast.NodeVisitor):
         type_comment = getattr(node, 'type_comment', None)
         if type_comment is not None:
             mode = 'func_type' if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) else 'eval'
-            self.visit(ast.parse(type_comment, filename='<type_comment>', mode=mode))
+            self.visit(_native_parse(mode, type_comment, '<type_comment>'))
 
         ###########
         # Single-target assignments are removed as a whole statement via `removal_node`.
