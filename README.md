@@ -119,7 +119,7 @@ Create a `.pre-commit-config.yaml` file in the root of your project directory, i
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
   - repo: https://github.com/albertas/deadcode
-    rev: v2.6.3
+    rev: v2.7.0
     hooks:
       - id: deadcode
 ```
@@ -248,7 +248,7 @@ A pre-commit hook can pass the option through `args`:
 ```yaml
 repos:
   - repo: https://github.com/albertas/deadcode
-    rev: v2.6.3
+    rev: v2.7.0
     hooks:
       - id: deadcode
         args: [--ignore-rules, DC12]
@@ -366,14 +366,14 @@ A checked entry is implemented on `main` and is included in the next release; pu
 - [ ] Investigate ways of extracting and backporting Python3.10+ `ast` implementation to lower Python versions.
 
 ## Release notes
-- next:
+- **v2.7.0** `2026-11-16`:
     - Features:
-        - Add a performance page reviewing the implementation's efficiency and explaining how the analysis cost grows with the input in O notation
-        - Rename the --ignore option to --ignore-rules
-        - DEP 3 now proposes detecting cascading dead code in a single run through a definition-anchored usage graph and a reachability pass
         - Report dead-code cascades: definitions used only by other unused definitions are now found in a single run; Remove cascading dead code in one pass with --fix or --dry
+        - Rename the --ignore option to --ignore-rules
         - DEP 1 now proposes type-aware scope tracking for usage detection, with a generic-name fallback for usages whose types cannot be resolved statically
         - DEP 2 now proposes validated removal of unused code fragments, with import, empty-block and blank-line cleanups applied during the removal step
+        - DEP 3 now proposes detecting cascading dead code in a single run through a definition-anchored usage graph and a reachability pass
+        - Add a performance page reviewing the implementation's efficiency and explaining how the analysis cost grows with the input in O notation
         - Add a documentation page describing the planned Rust integration, package build, and PyPI release flow
     - Bugfixes:
         - Distinguish definitions with the same name in different files when a usage resolves through the definition's own module or a statically known from-import path
